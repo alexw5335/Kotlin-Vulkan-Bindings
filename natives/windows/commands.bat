@@ -1,0 +1,1 @@
+gcc -shared src/main/c/common/commands.c -o natives/windows/commands.dll -Iinclude/windows/jni -Iinclude/windows/vulkan -Llib/windows -lvulkan-1 -D VK_USE_PLATFORM_WIN32_KHR
