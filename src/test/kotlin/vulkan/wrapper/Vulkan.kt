@@ -36,7 +36,7 @@ object Vulkan {
 	/**
 	 * Implementation of vkCreateInstance.
 	 */
-	fun createInstance(info: InstanceCreateInfo, stack: MemStack = MemStacks.default) = stack.get {
+	fun createInstance(info: InstanceCreateInfo) = MemStacks.get {
 		val instance = mallocPointer()
 		StandaloneCommands.createInstance(info, null, instance).check()
 		InstanceH(instance.value)
@@ -55,14 +55,13 @@ object Vulkan {
 		apiVersion            : Version      = latestApiVersion,
 		enabledLayerNames     : List<String> = emptyList(),
 		enabledExtensionNames : List<String> = emptyList(),
-		stack                 : MemStack     = MemStacks.default
-	) = stack.get {
+	) = MemStacks.get {
 		val appInfo = ApplicationInfo {
 			it.applicationName = encodeUtf8NT(applicationName)
 			it.applicationVersion = applicationVersion.value
 			it.engineName = encodeUtf8NT(engineName)
 			it.engineVersion = engineVersion.value
-			it.apiVersion        = apiVersion.value
+			it.apiVersion = apiVersion.value
 		}
 
 		val info = InstanceCreateInfo {
@@ -71,7 +70,7 @@ object Vulkan {
 			it.enabledExtensionNames = encodeUtf8NTList(enabledExtensionNames)
 		}
 
-		createInstance(info, stack)
+		createInstance(info)
 	}
 
 

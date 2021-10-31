@@ -7,7 +7,7 @@ import java.nio.file.Paths
 object VkGenerator {
 
 
-	init { Files.createDirectories(Paths.get("gen2")) }
+	init { Files.createDirectories(Paths.get("gen2")) } // backup path
 
 
 
