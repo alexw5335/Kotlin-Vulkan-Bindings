@@ -1,23 +1,14 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+group = "untitled"
+version = "1.0"
 
 
 
-plugins {
-    kotlin("jvm") version "1.5.30"
-}
+allprojects {
+    group = project.group
+    version = project.version
 
+    repositories {
+        mavenCentral()
+    }
 
-
-version = "1.0-SNAPSHOT"
-
-
-
-repositories {
-    mavenCentral()
-}
-
-
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
 }
