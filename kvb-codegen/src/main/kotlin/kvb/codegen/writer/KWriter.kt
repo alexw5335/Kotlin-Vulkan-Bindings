@@ -123,9 +123,9 @@ class KWriter(writer: Writer) : CodeWriter(writer) {
 
 
 
-	fun suppress(vararg suppressions: String) {
+	fun suppress(vararg suppressions: String, label: String? = null) {
 		declaration {
-			write("@Suppress(")
+			if(label != null) write("@$label:Suppress(") else write("@Suppress(")
 
 			for(i in 0 until suppressions.size - 1)
 				write('"' + suppressions[i] + "\", ")
@@ -134,6 +134,13 @@ class KWriter(writer: Writer) : CodeWriter(writer) {
 		}
 
 		spacing = 0
+	}
+
+
+
+	fun suppressFile(vararg suppressions: String) {
+		suppress(*suppressions, label = "file")
+		spacing = 1
 	}
 
 

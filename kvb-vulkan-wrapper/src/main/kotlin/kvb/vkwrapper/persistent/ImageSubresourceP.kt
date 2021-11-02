@@ -1,7 +1,7 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.enumeration.ImageAspectFlags
-import kvb.vulkan.struct.ImageSubresource
+import kvb.vulkan.ImageAspectFlags
+import kvb.vulkan.ImageSubresource
 
 /**
  * Persistent implementation of [vkImageSubresource][ImageSubresource].

@@ -4,9 +4,8 @@ import kvb.codegen.*
 import kvb.codegen.vulkan.scraper.element.VkCommand
 import kvb.codegen.vulkan.scraper.element.VkExtension
 import kvb.codegen.vulkan.scraper.element.VkProvider
-import kvb.codegen.vulkan.scraper.type.*
 import kvb.codegen.vulkan.scraper.element.VkVar
-import kvb.codegen.vulkan.scraper.list.VkProviderList
+import kvb.codegen.vulkan.scraper.type.*
 import kvb.codegen.writer.CWriter
 import kvb.codegen.writer.KWriter
 import kvb.codegen.writer.procedural.JniGeneration
@@ -14,7 +13,6 @@ import kvb.codegen.writer.procedural.KFunction
 import kvb.codegen.writer.procedural.Primitive
 import kvb.core.memory.Addressable
 import kvb.core.memory.MemStacks
-import java.nio.file.Path
 
 object VkCommandGenerator {
 
@@ -137,7 +135,7 @@ object VkCommandGenerator {
 
 
 	private val VkCommand.asCFunction get() = JniGeneration.createCFunction(
-		packageName  = commandPackage,
+		packageName  = vkCommandPackage,
 		className    = "Commands",
 		functionName = genName,
 		returnType   = returnType?.primitive?.jniName,
@@ -251,10 +249,10 @@ object VkCommandGenerator {
 
 
 
-	private fun writeCommandsK(providers: Iterable<VkProvider>) = KWriter.write(commandDir, "Commands") {
+	private fun writeCommandsK(providers: Iterable<VkProvider>) = KWriter.write(vkCommandDir, "Commands") {
 		start {
 			autogenComment()
-			package_(commandPackage)
+			package_(vkCommandPackage)
 		}
 
 		suppress("unused")
@@ -364,16 +362,14 @@ object VkCommandGenerator {
 
 
 
-	private fun writeInstanceCommands(providers: Iterable<VkProvider>) = KWriter.write(commandDir, "InstanceCommands") {
+	private fun writeInstanceCommands(providers: Iterable<VkProvider>) = KWriter.write(vkCommandDir, "InstanceCommands") {
 		start {
 			autogenComment()
-			package_(commandPackage)
+			package_(vkCommandPackage)
 			imports(
 				MemStacks::class,
 				Addressable::class.qualifiedName + ".Companion.addressOrNULL",
-				"$enumPackage.*",
-				"$structPackage.*",
-				"$handlePackage.*",
+				"$vulkanPackage.*",
 				"$primitivePackage.*"
 			)
 		}
@@ -386,14 +382,14 @@ object VkCommandGenerator {
 
 			multilineComment("Command addresses")
 			declaration(noStyle) {
-				writeln("init { stack.push() }")
+				writeln("private val frameIndex = stack.push()")
 
 				for(p in providers)
 					for(c in p.commands)
 						if(c.type == VkCommand.Type.INSTANCE && c.shouldGen)
 							writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
 
-				writeln("init { stack.pop() }")
+				writeln("init { stack.pop(frameIndex) }")
 			}
 
 			multilineComment("Instance commands")
@@ -407,16 +403,14 @@ object VkCommandGenerator {
 
 
 
-	private fun writeDeviceCommands(providers: Iterable<VkProvider>) = KWriter.write(commandDir, "DeviceCommands") {
+	private fun writeDeviceCommands(providers: Iterable<VkProvider>) = KWriter.write(vkCommandDir, "DeviceCommands") {
 		start {
 			autogenComment()
-			package_(commandPackage)
+			package_(vkCommandPackage)
 			imports(
 				MemStacks::class,
 				Addressable::class.qualifiedName + ".Companion.addressOrNULL",
-				"$enumPackage.*",
-				"$structPackage.*",
-				"$handlePackage.*",
+				"$vulkanPackage.*",
 				"$primitivePackage.*"
 			)
 		}
@@ -429,14 +423,14 @@ object VkCommandGenerator {
 
 			multilineComment("Command addresses")
 			declaration(noStyle) {
-				writeln("init { stack.push() }")
+				writeln("private val frameIndex = stack.push()")
 
 				for(p in providers)
 					for(c in p.commands)
 						if(c.type == VkCommand.Type.DEVICE && c.shouldGen)
 							writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
 
-				writeln("init { stack.pop() }")
+				writeln("init { stack.pop(frameIndex) }")
 			}
 
 			multilineComment("Device commands")
@@ -450,15 +444,14 @@ object VkCommandGenerator {
 
 
 
-	private fun writeStandaloneCommands(providers: Iterable<VkProvider>) = KWriter.write(commandDir, "StandaloneCommands") {
+	private fun writeStandaloneCommands(providers: Iterable<VkProvider>) = KWriter.write(vkCommandDir, "StandaloneCommands") {
 		start {
 			autogenComment()
-			package_(commandPackage)
+			package_(vkCommandPackage)
 			imports(
 				MemStacks::class,
 				Addressable::class.qualifiedName + ".Companion.addressOrNULL",
-				"$enumPackage.*",
-				"$structPackage.*",
+				"$vulkanPackage.*",
 				"$primitivePackage.*"
 			)
 		}
@@ -471,14 +464,14 @@ object VkCommandGenerator {
 
 			multilineComment("Command addresses")
 			declaration(noStyle) {
-				writeln("init { stack.push() }")
+				writeln("private val frameIndex = stack.push()")
 
 				for(p in providers)
 					for(c in p.commands)
 						if(c.type == VkCommand.Type.STANDALONE && c.shouldGen)
 							writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
 
-				writeln("init { stack.pop() }")
+				writeln("init { stack.pop(frameIndex) }")
 			}
 
 			multilineComment("Standalone commands")

@@ -1,8 +1,8 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.enumeration.ColorSpace
-import kvb.vulkan.enumeration.Format
-import kvb.vulkan.struct.SurfaceFormat
+import kvb.vulkan.ColorSpace
+import kvb.vulkan.Format
+import kvb.vulkan.SurfaceFormat
 
 /**
  * Persistent implementation of [VkSurfaceFormatKHR][SurfaceFormat].

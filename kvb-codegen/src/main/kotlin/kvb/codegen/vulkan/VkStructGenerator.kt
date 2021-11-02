@@ -242,18 +242,16 @@ object VkStructGenerator {
 
 
 
-	private fun printStruct(struct: VkTypeStruct) = KWriter.write(structDir, struct.genName) {
+	private fun printStruct(struct: VkTypeStruct) = KWriter.write(vulkanDir, struct.genName) {
 		start {
 			autogenComment()
-			package_(structPackage)
+			package_(vulkanPackage)
 
 			imports(
 				DirectBuffer::class,
 				Allocator::class,
 				Unsafe::class,
 				Addressable::class,
-				"$enumPackage.*",
-				"$handlePackage.*",
 				"$primitivePackage.*"
 			)
 		}

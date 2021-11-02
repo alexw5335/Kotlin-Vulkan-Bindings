@@ -14,20 +14,8 @@ import java.nio.file.Paths
 
 
 
-fun main() {
-	genEnums()
-	genBitmasks()
-	genHandles()
-	genStructs()
-	genCommands()
-	genAllocations()
-	genConstants()
-}
-
-
-
 /*
-Scraping
+Generation
  */
 
 
@@ -51,74 +39,7 @@ val types = VkTypeList().apply {
 
 
 
-val commands = VkElementList<VkCommand>().apply {
-	for(provider in providers)
-		addAll(provider.commands)
-}
-
-
-
-/*
-Packages
- */
-
-
-
-const val genDir = "gen"
-
-const val rootPackage = "kvb"
-
-const val primitivePackage = "$rootPackage.core.memory.direct"
-
-const val vulkanPackage = "$rootPackage.vulkan"
-
-const val enumPackage = "$vulkanPackage.enumeration"
-
-const val handlePackage = "$vulkanPackage.handle"
-
-const val structPackage = "$vulkanPackage.struct"
-
-const val commandPackage = "$vulkanPackage.command"
-
-const val allocationPackage = "$vulkanPackage.allocation"
-
-
-
-val primitiveDir get() = primitivePackage.packageToPath
-
-val vulkanDir get() = vulkanPackage.packageToPath
-
-val enumDir get() = enumPackage.packageToPath
-
-val handleDir get() = handlePackage.packageToPath
-
-val structDir get() = structPackage.packageToPath
-
-val commandDir get() = commandPackage.packageToPath
-
-val allocationDir get() = allocationPackage.packageToPath
-
-val cDir get() = "$genDir/c".toPath
-
-
-
-private val String.toPath get() =
-	Paths.get(this).also(Files::createDirectories)
-
-
-
-private val String.packageToPath get() =
-	Paths.get(genDir + "/" + replace('.', '/')).also(Files::createDirectories)
-
-
-
-/*
-Generation
- */
-
-
-
-private fun genPrimitives() = PrimitiveGenerator.generate(primitivePackage.packageToPath)
+private fun genPrimitives() = PrimitiveGenerator.generate()
 
 private fun genEnums() = VkEnumGenerator.generate(types.enums)
 
@@ -133,3 +54,57 @@ private fun genCommands() = VkCommandGenerator.generate(providers)
 private fun genAllocations() = VkAllocationGenerator.generate(types.structs)
 
 private fun genConstants() = VkConstantGenerator.generate(scraper.constants)
+
+
+
+fun main() {
+	//genEnums()
+	genBitmasks()
+	//genHandles()
+	//genStructs()
+	//genCommands()
+	//genAllocations()
+	//genConstants()
+}
+
+
+
+/*
+Packages
+ */
+
+
+
+const val rootPackage = "kvb"
+
+const val primitivePackage = "$rootPackage.core.memory.direct"
+
+const val vulkanPackage = "$rootPackage.vulkan"
+
+const val vkCommandPackage = "$vulkanPackage.command"
+
+
+
+private val String.toPath get() =
+	Paths.get(this).also(Files::createDirectories)
+
+private val String.packageToPath get() =
+	Paths.get("gen" + "/" + replace('.', '/')).also(Files::createDirectories)
+
+
+
+/*
+Directories
+ */
+
+
+
+const val genDir = "gen"
+
+val primitiveDir get() = primitivePackage.packageToPath
+
+val vulkanDir get() = vulkanPackage.packageToPath
+
+val vkCommandDir get() = vkCommandPackage.packageToPath
+
+val cDir get() = "$genDir/c".toPath

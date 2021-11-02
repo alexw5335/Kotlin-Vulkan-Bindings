@@ -1,22 +1,20 @@
 package kvb.codegen.vulkan
 
-import kvb.codegen.allocationDir
-import kvb.codegen.allocationPackage
-import kvb.codegen.structPackage
+import kvb.codegen.*
 import kvb.codegen.vulkan.scraper.type.VkTypeStruct
 import kvb.codegen.writer.KWriter
 import kvb.core.memory.Allocator
-import java.nio.file.Path
 
 object VkAllocationGenerator {
 
 
-	fun generate(structs: Iterable<VkTypeStruct>) = KWriter.write(allocationDir, "Allocations") {
+	fun generate(structs: Iterable<VkTypeStruct>) = KWriter.write(vulkanDir, "_Allocations") {
 		start {
 			autogenComment()
-			declaration("@file:Suppress(\"unused\", \"FunctionName\")")
-			package_(allocationPackage)
-			imports(Allocator::class, "$structPackage.*")
+			comment("This file's name has been prefixed with '_' so that it appears at the top of the package.")
+			suppressFile("Unused", "FunctionName")
+			package_(vulkanPackage)
+			imports(Allocator::class)
 		}
 
 		currentStyle = style(decSpacing = 1)

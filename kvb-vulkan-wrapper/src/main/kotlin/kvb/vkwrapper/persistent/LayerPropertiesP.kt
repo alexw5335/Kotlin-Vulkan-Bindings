@@ -1,6 +1,6 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.struct.LayerProperties
+import kvb.vulkan.LayerProperties
 
 /**
  * Persistent implementation of [VkLayerProperties][LayerProperties]

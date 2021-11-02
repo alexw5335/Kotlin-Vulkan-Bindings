@@ -1,6 +1,6 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.struct.Extent3D
+import kvb.vulkan.Extent3D
 
 /**
  * Persistent implementation of [VkExtent3D][Extent3D].

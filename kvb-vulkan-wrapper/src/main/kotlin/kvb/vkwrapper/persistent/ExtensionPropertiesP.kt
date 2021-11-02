@@ -1,6 +1,6 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.struct.ExtensionProperties
+import kvb.vulkan.ExtensionProperties
 
 /**
  * Persistent implementation of [VkExtensionProperties][ExtensionProperties]

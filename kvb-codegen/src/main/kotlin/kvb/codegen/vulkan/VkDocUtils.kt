@@ -4,6 +4,7 @@ import kvb.codegen.vulkan.scraper.element.VkVar
 import kvb.codegen.vulkan.scraper.type.VkTypeEnum
 import kvb.codegen.vulkan.scraper.type.VkTypeStruct
 
+@Suppress("unused")
 object VkDocUtils {
 
 

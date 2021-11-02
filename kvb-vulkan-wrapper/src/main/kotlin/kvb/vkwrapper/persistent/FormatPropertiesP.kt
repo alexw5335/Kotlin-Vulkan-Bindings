@@ -1,7 +1,7 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.enumeration.FormatFeatureFlags
-import kvb.vulkan.struct.FormatProperties
+import kvb.vulkan.FormatFeatureFlags
+import kvb.vulkan.FormatProperties
 
 /**
  * Persistent implementation of [FormatProperties].

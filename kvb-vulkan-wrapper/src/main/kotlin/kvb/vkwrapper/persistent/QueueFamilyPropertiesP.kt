@@ -1,8 +1,8 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.enumeration.QueueFlags
-import kvb.vulkan.handle.SurfaceH
-import kvb.vulkan.struct.QueueFamilyProperties
+import kvb.vulkan.QueueFlags
+import kvb.vulkan.SurfaceH
+import kvb.vulkan.QueueFamilyProperties
 
 /**
  * Persistent implementation of [VkQueueFamilyProperties][QueueFamilyProperties].

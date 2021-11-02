@@ -1,7 +1,7 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.enumeration.SampleCountFlags
-import kvb.vulkan.struct.PhysicalDeviceLimits
+import kvb.vulkan.SampleCountFlags
+import kvb.vulkan.PhysicalDeviceLimits
 
 /**
  * Persistent implementation of [VkPhysicalDeviceLimits][PhysicalDeviceLimits].

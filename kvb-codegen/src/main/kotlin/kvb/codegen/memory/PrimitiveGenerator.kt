@@ -13,10 +13,10 @@ import java.nio.file.Path
 object PrimitiveGenerator {
 
 
-	fun generate(directory: Path) {
+	fun generate() {
 		for(p in Primitive.values()) {
 			writeDirectPrimitive(p)
-			writeDirectPrimitiveBuffer(directory, p)
+			writeDirectPrimitiveBuffer(p)
 		}
 	}
 
@@ -43,10 +43,7 @@ object PrimitiveGenerator {
 
 
 
-	private fun writeDirectPrimitiveBuffer(
-		directory: Path,
-		primitive: Primitive
-	) = KWriter.write(directory, primitive.bufferName) {
+	private fun writeDirectPrimitiveBuffer(primitive: Primitive) = KWriter.write(primitiveDir, primitive.bufferName) {
 		start {
 			autogenComment()
 			package_(primitivePackage)

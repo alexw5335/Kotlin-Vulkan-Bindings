@@ -1,6 +1,6 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.struct.MemoryRequirements
+import kvb.vulkan.MemoryRequirements
 
 /**
  * Persistent implementation of [vkMemoryRequirements][MemoryRequirements].

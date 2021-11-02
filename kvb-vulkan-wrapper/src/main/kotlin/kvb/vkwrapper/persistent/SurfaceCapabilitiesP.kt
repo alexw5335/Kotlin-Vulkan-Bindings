@@ -1,9 +1,9 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.enumeration.CompositeAlphaFlags
-import kvb.vulkan.enumeration.ImageUsageFlags
-import kvb.vulkan.enumeration.SurfaceTransformFlags
-import kvb.vulkan.struct.SurfaceCapabilities
+import kvb.vulkan.CompositeAlphaFlags
+import kvb.vulkan.ImageUsageFlags
+import kvb.vulkan.SurfaceTransformFlags
+import kvb.vulkan.SurfaceCapabilities
 
 /**
  * Persistent implementation of [VkSurfaceCapabilitiesKHR][SurfaceCapabilities].

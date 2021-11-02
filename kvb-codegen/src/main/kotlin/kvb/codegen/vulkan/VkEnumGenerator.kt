@@ -1,9 +1,9 @@
 package kvb.codegen.vulkan
 
-import kvb.codegen.enumDir
-import kvb.codegen.enumPackage
 import kvb.codegen.vulkan.VkDocUtils.docStrings
 import kvb.codegen.vulkan.scraper.type.VkTypeEnum
+import kvb.codegen.vulkanDir
+import kvb.codegen.vulkanPackage
 import kvb.codegen.writer.KWriter
 
 object VkEnumGenerator {
@@ -20,10 +20,10 @@ object VkEnumGenerator {
 
 
 
-	private fun printPlainEnum(enum: VkTypeEnum) = KWriter.write(enumDir, enum.genName) {
+	private fun printPlainEnum(enum: VkTypeEnum) = KWriter.write(vulkanDir, enum.genName) {
 		start {
 			autogenComment()
-			package_(enumPackage)
+			package_(vulkanPackage)
 		}
 
 		val entries = enum.entries.filter { it.shouldGen }
@@ -39,10 +39,10 @@ object VkEnumGenerator {
 
 
 
-	private fun printValueEnum(enum: VkTypeEnum) = KWriter.write(enumDir, enum.genName) {
+	private fun printValueEnum(enum: VkTypeEnum) = KWriter.write(vulkanDir, enum.genName) {
 		start {
 			autogenComment()
-			package_(enumPackage)
+			package_(vulkanPackage)
 		}
 
 		val entries = enum.entries.filter { it.shouldGen }

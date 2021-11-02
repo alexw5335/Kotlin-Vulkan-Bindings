@@ -1,6 +1,6 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.struct.PhysicalDeviceSparseProperties
+import kvb.vulkan.PhysicalDeviceSparseProperties
 
 /**
  * Persistent implementation of [VkPhysicalDeviceSparseProperties][PhysicalDeviceSparseProperties]

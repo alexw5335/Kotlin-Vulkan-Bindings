@@ -1,7 +1,7 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.enumeration.MemoryHeapFlags
-import kvb.vulkan.struct.MemoryHeap
+import kvb.vulkan.MemoryHeapFlags
+import kvb.vulkan.MemoryHeap
 
 /**
  * Persistent implementation of [VkMemoryHeap][MemoryHeap].

@@ -1,6 +1,6 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.struct.PhysicalDeviceMemoryProperties
+import kvb.vulkan.PhysicalDeviceMemoryProperties
 
 /**
  * Persistent implementation of [VkPhysicalDeviceMemoryProperties][PhysicalDeviceMemoryProperties].
