@@ -1,7 +1,7 @@
 rootProject.name = "Kotlin-Vulkan-Bindings"
 
-include(":core")
-include(":codegen")
-include(":vulkan-bindings")
-include(":windowing")
-include(":vulkan-wrapper")
+include(":kvb-core")
+include(":kvb-codegen")
+include(":kvb-vulkan")
+include(":kvb-windowing")
+include(":kvb-vulkan-wrapper")
