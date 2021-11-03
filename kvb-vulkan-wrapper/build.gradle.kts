@@ -9,7 +9,7 @@ plugins {
 
 
 dependencies {
-    implementation(project(":kvb-windowing"))
+    implementation(project(":kvb-window"))
     implementation(project(":kvb-vulkan"))
     implementation(project(":kvb-core"))
 }

@@ -144,9 +144,9 @@ class CWriter(writer: Writer) : CodeWriter(writer) {
 			write('(')
 
 			for((index, param) in params.withIndex()) {
-				write(param.second)
-				write(' ')
 				write(param.first)
+				write(' ')
+				write(param.second)
 				if(index != params.lastIndex) write(", ")
 			}
 

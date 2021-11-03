@@ -1,13 +1,14 @@
 package kvb.vkwrapper.persistent
 
-import kvb.vulkan.QueueFlags
-import kvb.vulkan.SurfaceH
 import kvb.vulkan.QueueFamilyProperties
+import kvb.vulkan.QueueFlags
+import kvb.vkwrapper.handle.PhysicalDevice
+import kvb.vkwrapper.handle.Surface
 
 /**
  * Persistent implementation of [VkQueueFamilyProperties][QueueFamilyProperties].
  */
-/*class QueueFamilyPropertiesP(
+class QueueFamilyPropertiesP(
 	val index: Int,
 	val physicalDevice: PhysicalDevice,
 	val queueFlags: QueueFlags,
@@ -40,9 +41,9 @@ import kvb.vulkan.QueueFamilyProperties
 
 
 
-	fun supportsSurface(surface: SurfaceH) = physicalDevice.supportsSurface(index, surface)
+	fun supportsSurface(surface: Surface) = physicalDevice.supportsSurface(index, surface)
 
 
-}*/
+}
 
 

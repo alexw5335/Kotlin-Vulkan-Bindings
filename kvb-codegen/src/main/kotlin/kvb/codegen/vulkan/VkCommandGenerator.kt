@@ -139,7 +139,7 @@ object VkCommandGenerator {
 		className    = "Commands",
 		functionName = genName,
 		returnType   = returnType?.primitive?.jniName,
-		params       = listOf("address" to "jlong") + params.map { Pair(it.name, it.cType) },
+		params       = listOf("jlong" to "address") + params.map { Pair(it.cType, it.name) },
 		contents     = jniContents
 	)
 
@@ -257,7 +257,8 @@ object VkCommandGenerator {
 
 		suppress("unused")
 		class_("object Commands") {
-			declaration("external fun init(): Boolean")
+			declaration("private external fun init(): Boolean")
+			declaration("init { init() }")
 			declaration("external fun getInstanceProcAddr(instance: Long, pname: Long): Long")
 
 			for(p in providers) {
@@ -320,22 +321,29 @@ object VkCommandGenerator {
 			}
 		""")
 
-		multilineDeclaration("""
-			JNIEXPORT jboolean JNICALL Java_vulkan_generated_command_Commands_init() {
-				return (jboolean) initVulkan();
-			}
-		""")
+		// init function, gets the address of vkGetInstanceProcAddr. Must be called before using getInstanceProcAddr.
+		function(
+			JniGeneration.createCFunction(
+				packageName  = vkCommandPackage,
+				className    = "Commands",
+				functionName = "init",
+				returnType   = "jboolean",
+				params       = emptyList(),
+				contents     = "return (jboolean) initVulkan();"
+			)
+		)
 
-		multilineDeclaration("""
-			JNIEXPORT jlong JNICALL Java_vulkan_generated_command_Commands_getInstanceProcAddr(
-				JNIEnv* env, 
-				jobject obj, 
-				jlong instance,
-				jlong pName
-			) {
-				return (jlong) getInstanceProcAddr((VkInstance) instance, (const char*) pName);
-			}
-		""")
+		// getInstanceProcAddr function, used to get the function addresses of all other Vulkan functions.
+		function(
+			JniGeneration.createCFunction(
+				packageName  = vkCommandPackage,
+				className    = "Commands",
+				functionName = "getInstanceProcAddr",
+				returnType   = "jlong",
+				params       = listOf("jlong" to "instance", "jlong" to "pName"),
+				contents     = "return (jlong) getInstanceProcAddr((VkInstance) instance, (const char*) pName);"
+			)
+		)
 
 		for(p in providers) {
 			if(p.commands.isEmpty()) continue

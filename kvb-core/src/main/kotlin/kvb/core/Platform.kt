@@ -28,7 +28,7 @@ object Platform {
 
 
 	private fun loadFileNatives(path: String, extension: String) = Files.walk(Paths.get(path)).forEach {
-		if(it.endsWith(extension))
+		if(it.toString().endsWith(extension))
 			System.load(it.toAbsolutePath().toString())
 	}
 
@@ -55,6 +55,11 @@ object Platform {
 
 		loadNatives()
 	}
+
+
+
+	/** Triggers static initialisers. */
+	fun init() { }
 
 
 }

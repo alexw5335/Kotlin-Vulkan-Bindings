@@ -48,7 +48,7 @@ object VkEnumGenerator {
 		val entries = enum.entries.filter { it.shouldGen }
 
 		doc(enum.docStrings)
-		suppress("unused", "propertyName")
+		suppress("unused")
 		annotation("JvmInline")
 		class_("value class ${enum.genName}(val value: Int)") {
 			companion_ {

@@ -51,18 +51,13 @@ int initVulkan() {
 
 
 
-JNIEXPORT jboolean JNICALL Java_vulkan_generated_command_Commands_init() {
+JNIEXPORT jboolean JNICALL Java_kvb_vulkan_command_Commands_init(JNIEnv* env, jobject obj) {
 	return (jboolean) initVulkan();
 }
 
 
 
-JNIEXPORT jlong JNICALL Java_vulkan_generated_command_Commands_getInstanceProcAddr(
-	JNIEnv* env, 
-	jobject obj, 
-	jlong instance,
-	jlong pName
-) {
+JNIEXPORT jlong JNICALL Java_kvb_vulkan_command_Commands_getInstanceProcAddr(JNIEnv* env, jobject obj, jlong instance, jlong pName) {
 	return (jlong) getInstanceProcAddr((VkInstance) instance, (const char*) pName);
 }
 

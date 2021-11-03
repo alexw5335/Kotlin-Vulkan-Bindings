@@ -49,7 +49,7 @@ object VkBitmaskGenerator {
 		val entries = bitmask.enum!!.entries.filter { it.shouldGen }
 
 		doc(bitmask.enum!!.docStrings)
-		suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+		suppress("unused")
 		annotation("JvmInline")
 		class_("value class $name(val value: $primitive)") {
 			companion_ {

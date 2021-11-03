@@ -59,10 +59,10 @@ private fun genConstants() = VkConstantGenerator.generate(scraper.constants)
 
 fun main() {
 	//genEnums()
-	genBitmasks()
+	//genBitmasks()
 	//genHandles()
 	//genStructs()
-	//genCommands()
+	genCommands()
 	//genAllocations()
 	//genConstants()
 }

@@ -13,7 +13,7 @@ object JniGeneration {
 
 	private val MODIFIERS2   = listOf("JNICALL")
 
-	private val DEFAULT_ARGS = listOf("env" to "JNIEnv*", "obj" to "jobject")
+	private val DEFAULT_ARGS = listOf("JNIEnv*" to "env", "jobject" to "obj")
 
 
 
