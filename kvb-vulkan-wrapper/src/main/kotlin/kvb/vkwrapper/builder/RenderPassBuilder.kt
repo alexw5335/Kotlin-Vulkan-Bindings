@@ -112,8 +112,8 @@ class RenderPassBuilder(private val allocator: Allocator) {
 
 		subpasses[subpassCount++].also {
 			it.pipelineBindPoint = bindPoint
-			it.inputAttachmentCount = 1
-			it.inputAttachments = allocator.AttachmentReference { ref ->
+			it.colorAttachmentCount = 1
+			it.colorAttachments = allocator.AttachmentReference { ref ->
 				ref.attachment = colourAttachment
 				ref.layout = colourLayout
 			}.asBuffer
