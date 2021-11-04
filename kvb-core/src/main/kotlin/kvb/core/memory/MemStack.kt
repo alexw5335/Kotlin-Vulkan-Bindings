@@ -45,45 +45,16 @@ package kvb.core.memory
  *         stack.reset()
  *     }
  */
-class MemStack(val address: Long, private val size: Long) : Allocator {
+class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 
 
 	constructor(allocator: Allocator, size: Long) : this(allocator.malloc(size, 8), size)
 
 
 
-
-
-	/*
-	Variables
-	 */
-
-
-
-
 	private val frames = LongArray(64)
 
 	private var frameIndex = 0
-
-
-
-	private val maxAddress = address + size
-
-	private var pointer = address
-
-
-
-	/*
-	Diagnostics
-	 */
-
-
-
-	val bytesUsed get() = pointer - address
-
-	val bytesAvailable get() = size - pointer
-
-	val usage get() = bytesUsed.toFloat() / size.toFloat() * 100F
 
 
 

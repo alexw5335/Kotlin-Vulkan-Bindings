@@ -5,5 +5,5 @@ import kvb.samples.sample0.App
 
 fun main() {
 	Platform.init()
-	App.run()
+	//App.run()
 }

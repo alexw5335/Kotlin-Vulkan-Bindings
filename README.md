@@ -28,6 +28,40 @@ Only **core** and **vulkan-bindings** are needed in order to use the library.
 
 ## Overview
 
-This library encourages stack allocation wherever possible. Native stack allocation cannot be 
-used from Java, so memory stacks are simulated using the 
-[MemStack](kvb-core/src/main/kotlin/kvb/core/memory/MemStack.kt) class.
+### Allocation
+Off-heap memory is allocated using the [Allocator](kvb-core/src/main/kotlin/kvb/core/memory/Allocator.kt) interface, which
+can describe either heap or linear allocators. This library encourages stack allocation wherever possible. Native stack 
+allocation is simulated using the [MemStack](kvb-core/src/main/kotlin/kvb/core/memory/MemStack.kt) class. Struct 
+allocations in **kvb-vulkan-bindings** are done using inline functions that take an Allocator as a receiver parameter.
+
+##Bindings
+
+## Samples
+### Instance creation
+Using the bindings:
+```kotlin
+import kvb.vulkan.*
+import kvb.core.memory.MemStacks
+
+fun createInstance() = MemStacks.get {
+	val pInstance = mallocPointer()
+	
+	val appInfo = ApplicationInfo {
+		it.applicationName = encodeUtf8NT("My application")
+		it.applicationVersion = VkVersion(1, 0, 0).value
+		it.engineName = encodeUtf8NT("My engine")
+		it.engineVersion = VkVersion(1, 0, 0).value
+		it.apiVersion = VkVersion(1, 2, 0).value
+	}
+	
+	val info = InstanceCreateInfo {
+		it.applicationInfo = appInfo
+		it.enabledLayerNames = encodeUtf8NTList("VK_LAYER_KHRONOS_valiation")
+		it.enabledExtensionNames = encodeUtf8NTList(listOf("VK_KHR_surface", "VK_KHR_surface_win32"))
+	}
+	
+	StandaloneCommands.createInstance(info, null, pInstance).check()
+	
+	pInstance.value
+}
+```

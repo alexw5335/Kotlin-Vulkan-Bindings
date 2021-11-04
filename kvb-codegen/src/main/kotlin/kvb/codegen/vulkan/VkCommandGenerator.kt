@@ -295,7 +295,7 @@ object VkCommandGenerator {
 					#endif
 				#else
 					#include <vulkan.h>
-					#include <dlfnc.h>
+					#include <dlfcn.h>
 				#endif
 		""")
 
@@ -308,11 +308,11 @@ object VkCommandGenerator {
 					getInstanceProcAddr = (PFN_vkGetInstanceProcAddr) GetProcAddress(module, "vkGetInstanceProcAddr");
 					if(module == NULL) return 0;
 				#elif defined(__APPLE__)
-					void* module = LoadLibrary("libMoltenVK.dylib", RLTD_NOW | RLTD_LOCAL);
+					void* module = dlopen("libMoltenVK.dylib", RTLD_NOW | RTLD_LOCAL);
 					getInstanceProcAddr = dlsym(module, "vkGetInstanceProcAddr");
 					if(module == NULL) return 0;
 				#else
-					void* module = LoadLibary("libvulkan.so", RLTD_NOW | RLTD_LOCAL);
+					void* module = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
 					getInstanceProcAddr = dlsym(module, "vkGetInstanceProcAddr");
 					if(module == NULL) return 0;
 				#endif
