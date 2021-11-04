@@ -25,12 +25,12 @@ object StandaloneCommands {
 	
 	
 	
-	private val frameIndex = stack.push()
+	private val stackPointer = stack.push()
 	private val createInstanceAddr = addr("vkCreateInstance")
 	private val enumerateInstanceExtensionPropertiesAddr = addr("vkEnumerateInstanceExtensionProperties")
 	private val enumerateInstanceLayerPropertiesAddr = addr("vkEnumerateInstanceLayerProperties")
 	private val enumerateInstanceVersionAddr = addr("vkEnumerateInstanceVersion")
-	init { stack.pop(frameIndex) }
+	init { stack.pop(stackPointer) }
 	
 	
 	

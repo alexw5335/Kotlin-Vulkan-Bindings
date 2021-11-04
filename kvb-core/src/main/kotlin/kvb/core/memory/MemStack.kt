@@ -52,39 +52,17 @@ class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 
 
 
-	private val frames = LongArray(64)
-
-	private var frameIndex = 0
-
-
-
 	/*
 	Stack implementation
 	 */
 
 
 
-	fun push(): Int {
-		if(frameIndex == frames.size - 1)
-			throw IllegalStateException("Memory stack frame overflow.")
+	fun push() = pointer
 
-		frames[frameIndex++] = pointer
-		return frameIndex - 1
-	}
+	fun pop(pointer: Long) { this.pointer = pointer }
 
-
-
-	fun pop(frameIndex: Int) {
-		this.frameIndex = frameIndex
-		pointer = frames[frameIndex]
-	}
-
-
-
-	fun reset() {
-		frameIndex = 0
-		pointer = address
-	}
+	fun reset() { pointer = address }
 
 
 
@@ -122,18 +100,18 @@ class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 
 
 
-	fun with(block: MemStack.() -> Unit) {
-		val index = push()
+	inline fun with(block: MemStack.() -> Unit) {
+		val pointer = this.pointer // push
 		block(this)
-		pop(index)
+		this.pointer = pointer // pop
 	}
 
 
 
-	fun<T> get(block: MemStack.() -> T): T {
-		val index = push()
+	inline fun<T> get(block: MemStack.() -> T): T {
+		val pointer = this.pointer // push
 		val result = block(this)
-		pop(index)
+		this.pointer = pointer // pop
 		return result
 	}
 

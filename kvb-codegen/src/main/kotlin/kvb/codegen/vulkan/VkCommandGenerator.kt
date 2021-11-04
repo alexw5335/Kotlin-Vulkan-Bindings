@@ -345,6 +345,56 @@ object VkCommandGenerator {
 			)
 		)
 
+/*		// InstanceCommands struct
+		declaration {
+			write("typedef struct")
+			braced {
+				writeln("VkInstance instance;")
+				for(p in providers) {
+					for(c in p.commands)
+						if(c.type == VkCommand.Type.INSTANCE)
+							writeln("PFN_${c.name} ${c.genName};")
+				}
+			}
+			writelnReset(" InstanceCommands;")
+		}
+
+		// DeviceCommands struct
+		declaration {
+			write("typedef struct")
+			braced {
+				writeln("VkDevice device;")
+				for(p in providers) {
+					for(c in p.commands)
+						if(c.type == VkCommand.Type.DEVICE)
+							writeln("PFN_${c.name} ${c.genName};")
+				}
+			}
+			writelnReset(" DeviceCommands;")
+		}
+
+		function(
+			JniGeneration.createCFunction(
+				packageName = vkCommandPackage,
+				className = "Commands",
+				functionName = "getInstanceCommandsSize",
+				returnType = "jlong",
+				params = emptyList(),
+				contents = "return (jlong) sizeof(InstanceCommands);"
+			)
+		)
+
+		function(
+			JniGeneration.createCFunction(
+				packageName = vkCommandPackage,
+				className = "Commands",
+				functionName = "getDeviceCommandsSize",
+				returnType = "jlong",
+				params = emptyList(),
+				contents = "return (jlong) sizeof(DeviceCommands);"
+			)
+		)*/
+
 		for(p in providers) {
 			if(p.commands.isEmpty()) continue
 
@@ -353,8 +403,7 @@ object VkCommandGenerator {
 					ifdef(p.platform.define) // #ifdef VK_USE_PLATFORM_...
 
 				for(c in p.commands)
-					if(c.shouldGen)
-						function(c.asCFunction)
+					function(c.asCFunction)
 
 				if(p is VkExtension && p.platform != null)
 					endif() // #endif
@@ -390,14 +439,14 @@ object VkCommandGenerator {
 
 			multilineComment("Command addresses")
 			declaration(noStyle) {
-				writeln("private val frameIndex = stack.push()")
+				writeln("private val stackPointer = stack.push()")
 
 				for(p in providers)
 					for(c in p.commands)
 						if(c.type == VkCommand.Type.INSTANCE && c.shouldGen)
 							writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
 
-				writeln("init { stack.pop(frameIndex) }")
+				writeln("init { stack.pop(stackPointer) }")
 			}
 
 			multilineComment("Instance commands")
@@ -431,14 +480,14 @@ object VkCommandGenerator {
 
 			multilineComment("Command addresses")
 			declaration(noStyle) {
-				writeln("private val frameIndex = stack.push()")
+				writeln("private val stackPointer = stack.push()")
 
 				for(p in providers)
 					for(c in p.commands)
 						if(c.type == VkCommand.Type.DEVICE && c.shouldGen)
 							writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
 
-				writeln("init { stack.pop(frameIndex) }")
+				writeln("init { stack.pop(stackPointer) }")
 			}
 
 			multilineComment("Device commands")
@@ -472,14 +521,14 @@ object VkCommandGenerator {
 
 			multilineComment("Command addresses")
 			declaration(noStyle) {
-				writeln("private val frameIndex = stack.push()")
+				writeln("private val stackPointer = stack.push()")
 
 				for(p in providers)
 					for(c in p.commands)
 						if(c.type == VkCommand.Type.STANDALONE && c.shouldGen)
 							writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
 
-				writeln("init { stack.pop(frameIndex) }")
+				writeln("init { stack.pop(stackPointer) }")
 			}
 
 			multilineComment("Standalone commands")

@@ -34,7 +34,9 @@ val providers = VkProviderList().apply {
 
 val types = VkTypeList().apply {
 	for(provider in providers)
-		addAll(provider.types)
+		for(type in provider.types)
+			if(type.shouldGen)
+				add(type)
 }
 
 

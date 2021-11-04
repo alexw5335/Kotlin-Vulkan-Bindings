@@ -196,6 +196,16 @@ open class CodeWriter(private val writer: Writer) : AutoCloseable by writer {
 
 
 	/**
+	 * Resets the newline state and then calls [writeln].
+	 */
+	fun writelnReset(string: String) {
+		resetNewline()
+		writeln(string)
+	}
+
+
+
+	/**
 	 * Writes a multi-line string literal. The string is trimmed by its smallest indent. All of the lines in the string
 	 * are also indented by the current [indent].
 	 */

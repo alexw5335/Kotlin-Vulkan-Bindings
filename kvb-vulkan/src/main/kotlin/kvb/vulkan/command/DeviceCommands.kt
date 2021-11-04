@@ -25,7 +25,7 @@ class DeviceCommands(private val device: DeviceH, private val instanceCommands: 
 	
 	
 	
-	private val frameIndex = stack.push()
+	private val stackPointer = stack.push()
 	private val destroyDeviceAddr = addr("vkDestroyDevice")
 	private val getDeviceQueueAddr = addr("vkGetDeviceQueue")
 	private val queueSubmitAddr = addr("vkQueueSubmit")
@@ -347,7 +347,7 @@ class DeviceCommands(private val device: DeviceH, private val instanceCommands: 
 	private val getMemoryZirconHandlePropertiesAddr = addr("vkGetMemoryZirconHandlePropertiesFUCHSIA")
 	private val importSemaphoreZirconHandleAddr = addr("vkImportSemaphoreZirconHandleFUCHSIA")
 	private val getSemaphoreZirconHandleAddr = addr("vkGetSemaphoreZirconHandleFUCHSIA")
-	init { stack.pop(frameIndex) }
+	init { stack.pop(stackPointer) }
 	
 	
 	

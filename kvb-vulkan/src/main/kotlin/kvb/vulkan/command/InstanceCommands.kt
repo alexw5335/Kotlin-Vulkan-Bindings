@@ -25,7 +25,7 @@ class InstanceCommands(private val instance: InstanceH) {
 	
 	
 	
-	private val frameIndex = stack.push()
+	private val stackPointer = stack.push()
 	private val destroyInstanceAddr = addr("vkDestroyInstance")
 	private val enumeratePhysicalDevicesAddr = addr("vkEnumeratePhysicalDevices")
 	private val getPhysicalDeviceFeaturesAddr = addr("vkGetPhysicalDeviceFeatures")
@@ -105,7 +105,7 @@ class InstanceCommands(private val instance: InstanceH) {
 	private val getPhysicalDeviceDirectFBPresentationSupportAddr = addr("vkGetPhysicalDeviceDirectFBPresentationSupportEXT")
 	private val createScreenSurfaceQAddr = addr("vkCreateScreenSurfaceQNX")
 	private val getPhysicalDeviceScreenPresentationSupportQAddr = addr("vkGetPhysicalDeviceScreenPresentationSupportQNX")
-	init { stack.pop(frameIndex) }
+	init { stack.pop(stackPointer) }
 	
 	
 	

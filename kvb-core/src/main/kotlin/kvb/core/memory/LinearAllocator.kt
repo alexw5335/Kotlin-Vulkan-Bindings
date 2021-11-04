@@ -7,7 +7,7 @@ open class LinearAllocator(val address: Long, val size: Long) : Allocator {
 
 
 
-	var pointer = address; protected set
+	var pointer = address
 
 	val maxAddress = address + size
 
