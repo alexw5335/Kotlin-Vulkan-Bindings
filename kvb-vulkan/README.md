@@ -16,7 +16,7 @@ Vulkan are generated. Types that are not generated include:
 - The VkStructureType enum
 
 ### Naming
-All Vulkan types have had their Vk prefix removed. All extension postfixes have been removed exception where removal
+All Vulkan types have had their Vk prefix removed. All extension postfixes have been removed except where removal
 would cause naming conflicts, e.g. with VkAccelerationStructureKHR and VkAccelerationStructureNV. Handle types are
 postfixed with 'H', e.g. 'InstanceH' and 'DeviceH'. This is so that wrapper classes can use the name 'Instance' and
 'Device' while extending the handle classes. FlagBits enums are **not** generated. They are represented by their Flags
