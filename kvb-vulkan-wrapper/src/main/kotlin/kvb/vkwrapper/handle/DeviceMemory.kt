@@ -93,7 +93,7 @@ class DeviceMemory(
 	fun map(offset: Long, size: Long, stack: MemStack = default) = stack.get {
 		val data = mallocPointer()
 		map(offset, size, data)
-		DirectByteBuffer(data.value, if(size == WHOLE_SIZE) self.size - offset else size)
+		DirectByteBuffer(data.value, if(size == VK_WHOLE_SIZE) self.size - offset else size)
 	}
 
 
@@ -138,7 +138,7 @@ class DeviceMemory(
 		device.flushMappedMemoryRanges(MappedMemoryRange {
 			it.memory = self
 			it.offset = device.alignMemOffset(offset)
-			it.size   = if(size == WHOLE_SIZE) size else device.alignMemSize(size)
+			it.size   = if(size == VK_WHOLE_SIZE) size else device.alignMemSize(size)
 		}.asBuffer)
 	}
 
@@ -147,7 +147,7 @@ class DeviceMemory(
 	/**
 	 * Convenience version of vkFlushMappedMemoryRanges that flushes the entire memory range.
 	 */
-	fun flushWhole(stack: MemStack) = flush(0L, WHOLE_SIZE, stack)
+	fun flushWhole(stack: MemStack) = flush(0L, VK_WHOLE_SIZE, stack)
 
 
 }

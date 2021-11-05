@@ -57,6 +57,8 @@ private fun genAllocations() = VkAllocationGenerator.generate(types.structs)
 
 private fun genConstants() = VkConstantGenerator.generate(scraper.constants)
 
+private fun genUtils() = VkUtilsGenerator.generate()
+
 
 
 fun main() {

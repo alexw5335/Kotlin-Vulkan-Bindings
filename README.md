@@ -24,7 +24,10 @@ The library is separated into gradle submodules:
 - **window**: A simple platform-agnostic windowing system.
 - **samples**: Testing for vulkan-wrapper.
 
-Only **core** and **vulkan-bindings** are needed in order to use the library.
+Only **core** and **vulkan-bindings** are needed in order to use the library. More detailed summaries can be found in
+the individual READMEs in the module folders.
+
+
 
 ## Overview
 
@@ -34,34 +37,52 @@ can describe either heap or linear allocators. This library encourages stack all
 allocation is simulated using the [MemStack](kvb-core/src/main/kotlin/kvb/core/memory/MemStack.kt) class. Struct 
 allocations in **kvb-vulkan-bindings** are done using inline functions that take an Allocator as a receiver parameter.
 
-##Bindings
 
-## Samples
-### Instance creation
+
+### Sample
+
 Using the bindings:
+
 ```kotlin
 import kvb.vulkan.*
 import kvb.core.memory.MemStacks
 
 fun createInstance() = MemStacks.get {
-	val pInstance = mallocPointer()
+    val pInstance = mallocPointer()
 	
-	val appInfo = ApplicationInfo {
-		it.applicationName = encodeUtf8NT("My application")
-		it.applicationVersion = VkVersion(1, 0, 0).value
-		it.engineName = encodeUtf8NT("My engine")
-		it.engineVersion = VkVersion(1, 0, 0).value
-		it.apiVersion = VkVersion(1, 2, 0).value
-	}
+    val appInfo = ApplicationInfo {
+        it.applicationName    = encodeUtf8NT("My application")
+        it.applicationVersion = VkVersion(1, 0, 0).value
+        it.engineName         = encodeUtf8NT("My engine")
+        it.engineVersion      = VkVersion(1, 0, 0).value
+        it.apiVersion         = VkVersion(1, 2, 0).value
+    }
 	
-	val info = InstanceCreateInfo {
-		it.applicationInfo = appInfo
-		it.enabledLayerNames = encodeUtf8NTList("VK_LAYER_KHRONOS_valiation")
-		it.enabledExtensionNames = encodeUtf8NTList(listOf("VK_KHR_surface", "VK_KHR_surface_win32"))
-	}
+    val info = InstanceCreateInfo {
+        it.applicationInfo       = appInfo
+        it.enabledLayerNames     = encodeUtf8NTList("VK_LAYER_KHRONOS_validation")
+        it.enabledExtensionNames = encodeUtf8NTList(listOf("VK_KHR_surface", "VK_KHR_surface_win32"))
+    }
 	
-	StandaloneCommands.createInstance(info, null, pInstance).check()
+    StandaloneCommands.createInstance(info, null, pInstance).check()
 	
-	pInstance.value
+    pInstance.value
 }
+```
+
+Using the wrapper:
+
+```kotlin
+    import kvb.vkwrapper.Vulkan
+    import kvb.vulkan.VkVersion
+
+    fun createInstance() = Vulkan.createInstance(
+        appName       = "My app",
+        appVersion    = VkVersion(1, 0, 0),
+        engineName    = "My engine",
+        engineVersion = VkVersion(1, 0, 0),
+        apiVersion    = VkVersion(1, 2, 0),
+        layers        = listOf("VK_LAYER_KHRONOS_validation"),
+        extensions    = listOf("VK_KHR_surface", "VK_KHR_surface_win32")
+    )
 ```

@@ -1,12 +1,10 @@
 package kvb.vkwrapper.handle
 
 import kvb.core.memory.MemStack
-import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
 import kvb.vulkan.command.DeviceCommands
 import kvb.core.memory.MemStacks.default
 import kvb.core.memory.direct.DirectByteBuffer
-import kvb.vkwrapper.persistent.ImageSubresourceRangeP
 import kvb.vkwrapper.builder.GraphicsPipelineBuilder
 import kvb.vkwrapper.builder.RenderPassBuilder
 
@@ -700,7 +698,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 			it.preTransform = SurfaceTransformFlags.IDENTITY
 			it.compositeAlpha = CompositeAlphaFlags.OPAQUE
 			it.presentMode = presentMode
-			it.clipped = TRUE
+			it.clipped = VK_TRUE
 			it.oldSwapchain = oldSwapchain ?: SwapchainH(0L)
 		})
 
@@ -835,7 +833,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		commands.waitForFences(
 			fenceCount = fences.size,
 			pFences    = wrapPointers(fences),
-			waitAll    = if(waitAll) TRUE else FALSE,
+			waitAll    = if(waitAll) VK_TRUE else VK_FALSE,
 			timeout   = timeout
 		).check()
 	}

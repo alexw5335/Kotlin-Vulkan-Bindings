@@ -142,7 +142,7 @@ class AppContext(window: WinApiWindow) {
 		it.colourSubpass(0, ImageLayout.COLOR_ATTACHMENT_OPTIMAL)
 
 		it.dependency(
-			srcSubpass    = SUBPASS_EXTERNAL,
+			srcSubpass    = VK_SUBPASS_EXTERNAL,
 			dstSubpass    = 0,
 			srcStageMask  = PipelineStageFlags.COLOR_ATTACHMENT_OUTPUT,
 			dstStageMask  = PipelineStageFlags.COLOR_ATTACHMENT_OUTPUT,

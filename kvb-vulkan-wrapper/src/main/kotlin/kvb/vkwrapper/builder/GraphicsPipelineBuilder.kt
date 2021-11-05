@@ -309,7 +309,7 @@ class GraphicsPipelineBuilder(private val allocator: Allocator) {
 		writeMask   : Int       = UInt.MAX_VALUE.toInt(),
 		reference   : Int       = 0
 	): Unit = depthStencilState.front.let {
-		depthStencilState.stencilTestEnable = TRUE
+		depthStencilState.stencilTestEnable = VK_TRUE
 		it.failOp = failOp
 		it.passOp = passOp
 		it.depthFailOp = depthFailOp
@@ -330,7 +330,7 @@ class GraphicsPipelineBuilder(private val allocator: Allocator) {
 		writeMask   : Int       = UInt.MAX_VALUE.toInt(),
 		reference   : Int       = 0
 	): Unit = depthStencilState.back.let {
-		depthStencilState.stencilTestEnable = TRUE
+		depthStencilState.stencilTestEnable = VK_TRUE
 		it.failOp = failOp
 		it.passOp = passOp
 		it.depthFailOp = depthFailOp

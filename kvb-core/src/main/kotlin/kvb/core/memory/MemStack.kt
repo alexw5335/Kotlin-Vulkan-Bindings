@@ -10,7 +10,7 @@ package kvb.core.memory
  * improve performance as the block functions are used very frequently. None of these precautions are necessary if the
  * exceptions are never caught.
  *
- *     Some examples:
+ * ### Examples:
  *
  *     val stack: MemStack
  *
@@ -58,39 +58,23 @@ class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 
 
 
+	/**
+	 * Only use when block functions ([with] and [get]) cannot be used. Returns the current [pointer] address to be used
+	 * in a future call to [pop]. Each [push] must be paired with a [pop].
+	 */
 	fun push() = pointer
 
+	/**
+	 * Only use when block functions ([with] and [get]) cannot be used. Must only be used with a [pointer] address
+	 * obtained by a call to [push]. Each [push] must be paired with a [pop].
+	 */
 	fun pop(pointer: Long) { this.pointer = pointer }
 
-	fun reset() { pointer = address }
-
-
-
-	/*
-	Allocation implementation
+	/**
+	 * Resets this stack's [pointer], effectively 'freeing' all memory that has been allocated by it. The stack can be
+	 * used normally after calling [reset], but any memory allocated beforehand is not guaranteed to be valid.
 	 */
-
-
-
-	override fun malloc(size: Long, alignment: Int): Long {
-		// round pointer up to nearest multiple of alignment.
-		val address = (pointer + (alignment - 1)) and -alignment.toLong()
-
-		pointer = address + size
-
-		if(pointer > maxAddress)
-			throw IllegalAccessException("Memory stack overflow.")
-
-		return address
-	}
-
-
-
-	override fun calloc(size: Long, alignment: Int): Long {
-		val address = malloc(size, alignment)
-		Unsafe.set(address, size, 0)
-		return address
-	}
+	fun reset() { pointer = address }
 
 
 
@@ -100,6 +84,13 @@ class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 
 
 
+	/**
+	 * Calls [push], then the [block], then [pop]. Any memory allocations made within the [block] are freed when exiting
+	 * the function. If an exception is thrown within the [block], then memory may not be freed. If the exception is
+	 * caught within another [with] or [get] block, then the memory will be freed. If the exception is caught at the
+	 * top level (outside of any [with] or [get] blocks), then the memory will not be freed, and [reset] should be
+	 * called.
+	 */
 	inline fun with(block: MemStack.() -> Unit) {
 		val pointer = this.pointer // push
 		block(this)
@@ -108,6 +99,10 @@ class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 
 
 
+	/**
+	 * Calls [push], then the [block], then [pop], before returning the result computed within the block. See [with] for
+	 * more details.
+	 */
 	inline fun<T> get(block: MemStack.() -> T): T {
 		val pointer = this.pointer // push
 		val result = block(this)

@@ -40,7 +40,7 @@ open class LinearAllocator(val address: Long, val size: Long) : Allocator {
 		pointer = address + size
 
 		if(pointer > maxAddress)
-			throw IllegalAccessException("Memory stack overflow.")
+			throw IllegalAccessException("Memory stack overflow for allocation of $size bytes")
 
 		return address
 	}

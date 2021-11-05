@@ -1,4 +1,8 @@
-package kvb.vkwrapper
+// This file has been automatically generated.
+
+// This file's name has been prefixed with '_' so that it appears at the top of the package.
+
+package kvb.vulkan
 
 /**
  * An abstraction of the macros VK_VERSION_MAJOR, VK_VERSION_MINOR, and VK_VERSION_PATCH.

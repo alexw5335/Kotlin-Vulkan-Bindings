@@ -31,7 +31,7 @@ class Fence(address: Long, val device: Device) : FenceH(address) {
 		commands.waitForFences(
 			1,
 			wrapPointer(self),
-			TRUE,
+			VK_TRUE,
 			timeout,
 		).check()
 	}

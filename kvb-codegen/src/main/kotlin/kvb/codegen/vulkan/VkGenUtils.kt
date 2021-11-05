@@ -24,7 +24,7 @@ object VkGenUtils {
 
 	fun shouldGenExtension(extension: VkExtension) = extension.deprecatedBy == null && extension.promotedTo == null && !extension.disabled
 
-	fun shouldGenProvider(provider: VkProvider) = provider !is VkExtension || shouldGenExtension(provider)
+	fun shouldGenProvider(provider: VkProvider)    = provider !is VkExtension || shouldGenExtension(provider)
 
 	fun shouldGenEnumEntry(entry: VkEnumEntry)     = !entry.isAliased && !(entry.provider is VkExtension && !shouldGenExtension(entry.provider as VkExtension) )
 
@@ -69,7 +69,7 @@ object VkGenUtils {
 
 	fun handleShortName(name: String)   = name.dropPostfix.dropVk
 
-	fun constantShortName(name: String) = name.drop(3) // drop VK_ prefix
+	fun constantShortName(name: String) = name // Keep VK_ as Constants are now top-level. //name.drop(3) // drop VK_ prefix
 
 
 
