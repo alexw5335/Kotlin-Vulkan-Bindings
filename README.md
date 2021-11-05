@@ -14,6 +14,8 @@ All Vulkan bindings are automatically generated from the
 [Vulkan API registry](https://github.com/KhronosGroup/Vulkan-Headers/tree/master/registry). 
 Specifically, from the registry/vk.xml file.
 
+For a detailed overview of the bindings themselves, see the [README](kvb-vulkan/README.md) in the bindings module.
+
 ## Modules
 The library is separated into gradle submodules:
 
