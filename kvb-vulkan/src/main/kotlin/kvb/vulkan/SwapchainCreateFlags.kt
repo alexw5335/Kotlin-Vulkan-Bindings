@@ -9,7 +9,7 @@ package kvb.vulkan
  *         VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR               = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SwapchainCreateFlags(val value: Int) {
 	

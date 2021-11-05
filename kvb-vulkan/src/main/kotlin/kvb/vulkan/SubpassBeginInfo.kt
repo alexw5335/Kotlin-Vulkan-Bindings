@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkSubpassBeginInfo {
@@ -28,7 +25,7 @@ value class SubpassBeginInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var contents: SubpassContents
-		get()      = SubpassContents.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _SubpassContents(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 
 

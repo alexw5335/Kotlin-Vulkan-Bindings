@@ -28,7 +28,7 @@ package kvb.vulkan
  *         VK_SHADER_STAGE_MESH_BIT_NV                  = 128
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ShaderStageFlags(val value: Int) {
 	

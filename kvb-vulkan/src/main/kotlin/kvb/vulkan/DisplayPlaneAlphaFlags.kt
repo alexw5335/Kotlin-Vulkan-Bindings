@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR  = 8
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class DisplayPlaneAlphaFlags(val value: Int) {
 	

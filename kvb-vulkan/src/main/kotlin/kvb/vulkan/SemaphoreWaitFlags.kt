@@ -8,7 +8,7 @@ package kvb.vulkan
  *         VK_SEMAPHORE_WAIT_ANY_BIT_KHR  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SemaphoreWaitFlags(val value: Int) {
 	

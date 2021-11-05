@@ -8,7 +8,7 @@ package kvb.vulkan
  *         VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT_KHR  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class FramebufferCreateFlags(val value: Int) {
 	

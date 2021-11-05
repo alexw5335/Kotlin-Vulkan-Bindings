@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_SPARSE_MEMORY_BIND_METADATA_BIT  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SparseMemoryBindFlags(val value: Int) {
 	

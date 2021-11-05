@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkSurfaceFormatKHR {
@@ -23,7 +21,7 @@ value class SurfaceFormat(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 0, value.value)
 	
 	var colorSpace: ColorSpace
-		get()      = ColorSpace.values().first { it.value == Unsafe.getInt(address + 4) }
+		get()      = _ColorSpace(Unsafe.getInt(address + 4))
 		set(value) = Unsafe.setInt(address + 4, value.value)
 	
 	

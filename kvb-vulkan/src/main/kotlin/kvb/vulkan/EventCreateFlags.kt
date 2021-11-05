@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_EVENT_CREATE_DEVICE_ONLY_BIT_KHR  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class EventCreateFlags(val value: Int) {
 	

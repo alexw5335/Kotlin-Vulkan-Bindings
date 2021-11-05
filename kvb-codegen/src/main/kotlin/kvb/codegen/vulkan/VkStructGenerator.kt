@@ -97,7 +97,7 @@ object VkStructGenerator {
 
 				else -> """
 					var $name: $typeName
-						get()      = $typeName.values().first { it.value == $unsafeGetter($memString) }
+						get()      = _$typeName($unsafeGetter($memString))
 						set(value) = $unsafeSetter($memString, value.value)
 				"""
 			}

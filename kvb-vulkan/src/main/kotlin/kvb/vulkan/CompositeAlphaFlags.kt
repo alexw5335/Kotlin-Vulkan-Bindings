@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR          = 8
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class CompositeAlphaFlags(val value: Int) {
 	

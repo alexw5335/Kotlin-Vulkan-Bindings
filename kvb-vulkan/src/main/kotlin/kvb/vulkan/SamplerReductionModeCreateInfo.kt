@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkSamplerReductionModeCreateInfo {
@@ -28,7 +25,7 @@ value class SamplerReductionModeCreateInfo(override val address: Long) : Address
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var reductionMode: SamplerReductionMode
-		get()      = SamplerReductionMode.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _SamplerReductionMode(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 
 

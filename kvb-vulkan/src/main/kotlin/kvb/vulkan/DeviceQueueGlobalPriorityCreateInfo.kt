@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkDeviceQueueGlobalPriorityCreateInfoEXT {
@@ -28,7 +25,7 @@ value class DeviceQueueGlobalPriorityCreateInfo(override val address: Long) : Ad
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var globalPriority: QueueGlobalPriority
-		get()      = QueueGlobalPriority.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _QueueGlobalPriority(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 
 

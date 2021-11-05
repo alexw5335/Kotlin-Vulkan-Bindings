@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_PIPELINE_SHADER_STAGE_CREATE_RESERVED_3_BIT_KHR                   = 8
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class PipelineShaderStageCreateFlags(val value: Int) {
 	

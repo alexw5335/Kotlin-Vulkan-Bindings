@@ -2,9 +2,11 @@
 
 package kvb.vulkan.command
 
-import kvb.core.memory.MemStacks
 import kvb.core.memory.Addressable.Companion.addressOrNULL
-import kvb.core.memory.direct.*
+import kvb.core.memory.MemStacks
+import kvb.core.memory.direct.DirectByteBuffer
+import kvb.core.memory.direct.DirectInt
+import kvb.core.memory.direct.DirectLong
 import kvb.vulkan.*
 
 @Suppress("unused")

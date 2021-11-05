@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkQueryPoolCreateInfo {
@@ -39,7 +36,7 @@ value class QueryPoolCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 16, value)
 	
 	var queryType: QueryType
-		get()      = QueryType.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _QueryType(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var queryCount: Int

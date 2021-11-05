@@ -1,8 +1,8 @@
 package kvb.samples
 
-import kvb.core.Platform
+import kotlin.system.measureNanoTime
 
 fun main() {
-	Platform.init()
+	//Platform.init()
 	//App.run()
 }

@@ -30,7 +30,7 @@ package kvb.vulkan
  *         VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_KHR                         = 131072
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class BufferUsageFlags(val value: Int) {
 	

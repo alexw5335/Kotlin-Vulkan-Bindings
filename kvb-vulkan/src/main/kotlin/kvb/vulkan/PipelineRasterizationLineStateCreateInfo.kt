@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkPipelineRasterizationLineStateCreateInfoEXT {
@@ -31,7 +28,7 @@ value class PipelineRasterizationLineStateCreateInfo(override val address: Long)
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var lineRasterizationMode: LineRasterizationMode
-		get()      = LineRasterizationMode.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _LineRasterizationMode(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var stippledLineEnable: Int

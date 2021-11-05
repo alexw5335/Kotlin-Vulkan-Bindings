@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class CommandBufferResetFlags(val value: Int) {
 	

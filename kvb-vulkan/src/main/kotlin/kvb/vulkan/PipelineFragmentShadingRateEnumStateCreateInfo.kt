@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectIntBuffer
 
 /**
  *     struct VkPipelineFragmentShadingRateEnumStateCreateInfoNV {
@@ -30,11 +28,11 @@ value class PipelineFragmentShadingRateEnumStateCreateInfo(override val address:
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var shadingRateType: FragmentShadingRateType
-		get()      = FragmentShadingRateType.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _FragmentShadingRateType(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var shadingRate: FragmentShadingRate
-		get()      = FragmentShadingRate.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _FragmentShadingRate(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var combinerOps: DirectIntBuffer

@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkPipelineRasterizationStateCreateInfo {
@@ -57,7 +54,7 @@ value class PipelineRasterizationStateCreateInfo(override val address: Long) : A
 		set(value) = Unsafe.setInt(address + 24, value)
 	
 	var polygonMode: PolygonMode
-		get()      = PolygonMode.values().first { it.value == Unsafe.getInt(address + 28) }
+		get()      = _PolygonMode(Unsafe.getInt(address + 28))
 		set(value) = Unsafe.setInt(address + 28, value.value)
 	
 	var cullMode: CullModeFlags
@@ -65,7 +62,7 @@ value class PipelineRasterizationStateCreateInfo(override val address: Long) : A
 		set(value) = Unsafe.setInt(address + 32, value.value)
 	
 	var frontFace: FrontFace
-		get()      = FrontFace.values().first { it.value == Unsafe.getInt(address + 36) }
+		get()      = _FrontFace(Unsafe.getInt(address + 36))
 		set(value) = Unsafe.setInt(address + 36, value.value)
 	
 	var depthBiasEnable: Int

@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_FENCE_CREATE_SIGNALED_BIT  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class FenceCreateFlags(val value: Int) {
 	

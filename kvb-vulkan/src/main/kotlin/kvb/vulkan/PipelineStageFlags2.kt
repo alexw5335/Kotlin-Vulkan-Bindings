@@ -46,7 +46,7 @@ package kvb.vulkan
  *         VK_PIPELINE_STAGE_2_MESH_SHADER_BIT_NV                        = 1048576
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class PipelineStageFlags2(val value: Long) {
 	

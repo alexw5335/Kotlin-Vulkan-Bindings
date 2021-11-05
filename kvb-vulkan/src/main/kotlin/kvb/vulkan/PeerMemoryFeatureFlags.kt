@@ -14,7 +14,7 @@ package kvb.vulkan
  *         VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT_KHR  = 8
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class PeerMemoryFeatureFlags(val value: Int) {
 	

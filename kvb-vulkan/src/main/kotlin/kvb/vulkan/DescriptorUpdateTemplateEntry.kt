@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkDescriptorUpdateTemplateEntry {
@@ -35,7 +33,7 @@ value class DescriptorUpdateTemplateEntry(override val address: Long) : Addressa
 		set(value) = Unsafe.setInt(address + 8, value)
 	
 	var descriptorType: DescriptorType
-		get()      = DescriptorType.values().first { it.value == Unsafe.getInt(address + 12) }
+		get()      = _DescriptorType(Unsafe.getInt(address + 12))
 		set(value) = Unsafe.setInt(address + 12, value.value)
 	
 	var offset: Long

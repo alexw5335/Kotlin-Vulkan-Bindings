@@ -9,7 +9,7 @@ package kvb.vulkan
  *         VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT  = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SparseImageFormatFlags(val value: Int) {
 	

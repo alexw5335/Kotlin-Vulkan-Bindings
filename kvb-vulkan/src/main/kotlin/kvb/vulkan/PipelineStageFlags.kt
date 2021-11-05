@@ -36,7 +36,7 @@ package kvb.vulkan
  *         VK_PIPELINE_STAGE_NONE_KHR                                  = 0
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class PipelineStageFlags(val value: Int) {
 	

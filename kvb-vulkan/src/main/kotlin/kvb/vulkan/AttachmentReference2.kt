@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkAttachmentReference2 {
@@ -37,7 +35,7 @@ value class AttachmentReference2(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 16, value)
 	
 	var layout: ImageLayout
-		get()      = ImageLayout.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _ImageLayout(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var aspectMask: ImageAspectFlags

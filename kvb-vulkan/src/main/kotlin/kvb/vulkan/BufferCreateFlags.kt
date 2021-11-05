@@ -14,7 +14,7 @@ package kvb.vulkan
  *         VK_BUFFER_CREATE_RESERVED_5_BIT_NV                      = 32
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class BufferCreateFlags(val value: Int) {
 	

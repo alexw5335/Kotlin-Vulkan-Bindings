@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectFloatBuffer
 
 /**
  *     struct VkPipelineColorBlendStateCreateInfo {
@@ -44,7 +42,7 @@ value class PipelineColorBlendStateCreateInfo(override val address: Long) : Addr
 		set(value) = Unsafe.setInt(address + 20, value)
 	
 	var logicOp: LogicOp
-		get()      = LogicOp.values().first { it.value == Unsafe.getInt(address + 24) }
+		get()      = _LogicOp(Unsafe.getInt(address + 24))
 		set(value) = Unsafe.setInt(address + 24, value.value)
 	
 	var attachmentCount: Int

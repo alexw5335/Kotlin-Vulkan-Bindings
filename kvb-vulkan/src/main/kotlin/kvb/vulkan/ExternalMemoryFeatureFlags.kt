@@ -12,7 +12,7 @@ package kvb.vulkan
  *         VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_KHR      = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ExternalMemoryFeatureFlags(val value: Int) {
 	

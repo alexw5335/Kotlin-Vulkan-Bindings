@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_EXTERNAL_FENCE_FEATURE_IMPORTABLE_BIT_KHR  = 2
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ExternalFenceFeatureFlags(val value: Int) {
 	

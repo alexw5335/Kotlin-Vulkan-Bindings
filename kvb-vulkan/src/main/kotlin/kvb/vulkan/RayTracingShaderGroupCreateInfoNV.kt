@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkRayTracingShaderGroupCreateInfoNV {
@@ -32,7 +30,7 @@ value class RayTracingShaderGroupCreateInfoNV(override val address: Long) : Addr
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var type: RayTracingShaderGroupType
-		get()      = RayTracingShaderGroupType.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _RayTracingShaderGroupType(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var generalShader: Int

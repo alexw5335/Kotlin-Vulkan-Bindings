@@ -7,16 +7,15 @@ object Commands {
 	
 	
 	private external fun init(): Boolean
-
-
-
+	
+	
+	
 	init { init() }
-
-
-
+	
+	
+	
 	external fun getInstanceProcAddr(instance: Long, pname: Long): Long
-
-
+	
 	
 	
 	/*

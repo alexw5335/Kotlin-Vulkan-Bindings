@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectIntBuffer
 
 /**
  *     struct VkImageCreateInfo {
@@ -55,7 +53,7 @@ value class ImageCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var imageType: ImageType
-		get()      = ImageType.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _ImageType(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var format: Format
@@ -79,7 +77,7 @@ value class ImageCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 48, value.value)
 	
 	var tiling: ImageTiling
-		get()      = ImageTiling.values().first { it.value == Unsafe.getInt(address + 52) }
+		get()      = _ImageTiling(Unsafe.getInt(address + 52))
 		set(value) = Unsafe.setInt(address + 52, value.value)
 	
 	var usage: ImageUsageFlags
@@ -87,7 +85,7 @@ value class ImageCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 56, value.value)
 	
 	var sharingMode: SharingMode
-		get()      = SharingMode.values().first { it.value == Unsafe.getInt(address + 60) }
+		get()      = _SharingMode(Unsafe.getInt(address + 60))
 		set(value) = Unsafe.setInt(address + 60, value.value)
 	
 	var queueFamilyIndexCount: Int
@@ -99,7 +97,7 @@ value class ImageCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setLong(address + 72, value)
 	
 	var initialLayout: ImageLayout
-		get()      = ImageLayout.values().first { it.value == Unsafe.getInt(address + 80) }
+		get()      = _ImageLayout(Unsafe.getInt(address + 80))
 		set(value) = Unsafe.setInt(address + 80, value.value)
 	
 	

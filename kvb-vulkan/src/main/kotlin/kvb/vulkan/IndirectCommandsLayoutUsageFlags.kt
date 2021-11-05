@@ -9,7 +9,7 @@ package kvb.vulkan
  *         VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV  = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class IndirectCommandsLayoutUsageFlags(val value: Int) {
 	

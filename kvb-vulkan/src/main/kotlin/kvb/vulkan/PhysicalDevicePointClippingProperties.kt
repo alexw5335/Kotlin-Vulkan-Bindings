@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkPhysicalDevicePointClippingProperties {
@@ -28,7 +25,7 @@ value class PhysicalDevicePointClippingProperties(override val address: Long) : 
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var pointClippingBehavior: PointClippingBehavior
-		get()      = PointClippingBehavior.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _PointClippingBehavior(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 
 

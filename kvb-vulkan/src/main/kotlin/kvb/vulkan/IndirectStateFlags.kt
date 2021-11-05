@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class IndirectStateFlags(val value: Int) {
 	

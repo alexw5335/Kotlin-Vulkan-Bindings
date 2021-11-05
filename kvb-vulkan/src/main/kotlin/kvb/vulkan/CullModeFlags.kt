@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_CULL_MODE_FRONT_AND_BACK  = 0x00000003
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class CullModeFlags(val value: Int) {
 	

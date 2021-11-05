@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_QUERY_RESULT_PARTIAL_BIT            = 8
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class QueryResultFlags(val value: Int) {
 	

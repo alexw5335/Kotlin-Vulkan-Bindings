@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkCommandBufferAllocateInfo {
@@ -34,7 +31,7 @@ value class CommandBufferAllocateInfo(override val address: Long) : Addressable 
 		set(value) = Unsafe.setLong(address + 16, value.address)
 	
 	var level: CommandBufferLevel
-		get()      = CommandBufferLevel.values().first { it.value == Unsafe.getInt(address + 24) }
+		get()      = _CommandBufferLevel(Unsafe.getInt(address + 24))
 		set(value) = Unsafe.setInt(address + 24, value.value)
 	
 	var commandBufferCount: Int

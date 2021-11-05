@@ -18,7 +18,7 @@ object VkHandleGenerator {
 		}
 
 		for(handle in handles) {
-			doc("implementation of ${handle.name}")
+			doc("Implementation of ${handle.name}")
 			declaration("open class ${handle.genName}(override val address: Long) : Addressable")
 		}
 	}

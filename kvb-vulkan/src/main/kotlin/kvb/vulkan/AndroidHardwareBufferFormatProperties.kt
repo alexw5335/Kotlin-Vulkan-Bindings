@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkAndroidHardwareBufferFormatPropertiesANDROID {
@@ -51,19 +48,19 @@ value class AndroidHardwareBufferFormatProperties(override val address: Long) : 
 		set(value) = Unsafe.copy(value.address, address + 36, 16)
 	
 	var suggestedYcbcrModel: SamplerYcbcrModelConversion
-		get()      = SamplerYcbcrModelConversion.values().first { it.value == Unsafe.getInt(address + 52) }
+		get()      = _SamplerYcbcrModelConversion(Unsafe.getInt(address + 52))
 		set(value) = Unsafe.setInt(address + 52, value.value)
 	
 	var suggestedYcbcrRange: SamplerYcbcrRange
-		get()      = SamplerYcbcrRange.values().first { it.value == Unsafe.getInt(address + 56) }
+		get()      = _SamplerYcbcrRange(Unsafe.getInt(address + 56))
 		set(value) = Unsafe.setInt(address + 56, value.value)
 	
 	var suggestedXChromaOffset: ChromaLocation
-		get()      = ChromaLocation.values().first { it.value == Unsafe.getInt(address + 60) }
+		get()      = _ChromaLocation(Unsafe.getInt(address + 60))
 		set(value) = Unsafe.setInt(address + 60, value.value)
 	
 	var suggestedYChromaOffset: ChromaLocation
-		get()      = ChromaLocation.values().first { it.value == Unsafe.getInt(address + 64) }
+		get()      = _ChromaLocation(Unsafe.getInt(address + 64))
 		set(value) = Unsafe.setInt(address + 64, value.value)
 
 

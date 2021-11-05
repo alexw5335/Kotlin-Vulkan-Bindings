@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkAccelerationStructureMemoryRequirementsInfoNV {
@@ -29,7 +26,7 @@ value class AccelerationStructureMemoryRequirementsInfo(override val address: Lo
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var type: AccelerationStructureMemoryRequirementsType
-		get()      = AccelerationStructureMemoryRequirementsType.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _AccelerationStructureMemoryRequirementsType(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var accelerationStructure: AccelerationStructureNVH

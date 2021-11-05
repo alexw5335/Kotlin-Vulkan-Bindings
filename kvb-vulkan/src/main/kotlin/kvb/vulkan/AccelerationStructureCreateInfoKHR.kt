@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkAccelerationStructureCreateInfoKHR {
@@ -49,7 +46,7 @@ value class AccelerationStructureCreateInfoKHR(override val address: Long) : Add
 		set(value) = Unsafe.setLong(address + 40, value)
 	
 	var type: AccelerationStructureType
-		get()      = AccelerationStructureType.values().first { it.value == Unsafe.getInt(address + 48) }
+		get()      = _AccelerationStructureType(Unsafe.getInt(address + 48))
 		set(value) = Unsafe.setInt(address + 48, value.value)
 	
 	var deviceAddress: Long

@@ -50,7 +50,7 @@ package kvb.vulkan
  *         VK_ERROR_PIPELINE_COMPILE_REQUIRED_EXT                 = 1000297000
  *     }
  */
-@Suppress("unused", "propertyName")
+@Suppress("unused")
 @JvmInline
 value class Result(val value: Int) {
 	

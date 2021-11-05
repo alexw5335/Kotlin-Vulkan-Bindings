@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkGeometryTrianglesNV {
@@ -70,7 +67,7 @@ value class GeometryTriangles(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 72, value)
 	
 	var indexType: IndexType
-		get()      = IndexType.values().first { it.value == Unsafe.getInt(address + 76) }
+		get()      = _IndexType(Unsafe.getInt(address + 76))
 		set(value) = Unsafe.setInt(address + 76, value.value)
 	
 	var transformData: BufferH

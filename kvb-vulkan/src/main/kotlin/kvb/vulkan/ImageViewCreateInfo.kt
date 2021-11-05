@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkImageViewCreateInfo {
@@ -46,7 +43,7 @@ value class ImageViewCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setLong(address + 24, value.address)
 	
 	var viewType: ImageViewType
-		get()      = ImageViewType.values().first { it.value == Unsafe.getInt(address + 32) }
+		get()      = _ImageViewType(Unsafe.getInt(address + 32))
 		set(value) = Unsafe.setInt(address + 32, value.value)
 	
 	var format: Format

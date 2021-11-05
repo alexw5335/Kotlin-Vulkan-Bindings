@@ -8,7 +8,7 @@ package kvb.vulkan
  *         VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT  = 2
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ImageViewCreateFlags(val value: Int) {
 	

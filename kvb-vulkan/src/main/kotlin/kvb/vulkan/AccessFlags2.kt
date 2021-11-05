@@ -45,7 +45,7 @@ package kvb.vulkan
  *         VK_ACCESS_2_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT      = 524288
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class AccessFlags2(val value: Long) {
 	

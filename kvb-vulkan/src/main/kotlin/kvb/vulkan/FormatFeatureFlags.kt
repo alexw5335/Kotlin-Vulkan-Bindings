@@ -48,7 +48,7 @@ package kvb.vulkan
  *         VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR                                         = 1073741824
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class FormatFeatureFlags(val value: Int) {
 	

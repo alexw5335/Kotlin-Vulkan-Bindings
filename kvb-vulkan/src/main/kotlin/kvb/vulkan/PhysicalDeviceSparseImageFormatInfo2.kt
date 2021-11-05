@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkPhysicalDeviceSparseImageFormatInfo2 {
@@ -36,7 +33,7 @@ value class PhysicalDeviceSparseImageFormatInfo2(override val address: Long) : A
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var type: ImageType
-		get()      = ImageType.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _ImageType(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var samples: SampleCountFlags
@@ -48,7 +45,7 @@ value class PhysicalDeviceSparseImageFormatInfo2(override val address: Long) : A
 		set(value) = Unsafe.setInt(address + 28, value.value)
 	
 	var tiling: ImageTiling
-		get()      = ImageTiling.values().first { it.value == Unsafe.getInt(address + 32) }
+		get()      = _ImageTiling(Unsafe.getInt(address + 32))
 		set(value) = Unsafe.setInt(address + 32, value.value)
 
 

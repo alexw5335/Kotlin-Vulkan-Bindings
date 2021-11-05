@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkSamplerCreateInfo {
@@ -52,27 +49,27 @@ value class SamplerCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var magFilter: Filter
-		get()      = Filter.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _Filter(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var minFilter: Filter
-		get()      = Filter.values().first { it.value == Unsafe.getInt(address + 24) }
+		get()      = _Filter(Unsafe.getInt(address + 24))
 		set(value) = Unsafe.setInt(address + 24, value.value)
 	
 	var mipmapMode: SamplerMipmapMode
-		get()      = SamplerMipmapMode.values().first { it.value == Unsafe.getInt(address + 28) }
+		get()      = _SamplerMipmapMode(Unsafe.getInt(address + 28))
 		set(value) = Unsafe.setInt(address + 28, value.value)
 	
 	var addressModeU: SamplerAddressMode
-		get()      = SamplerAddressMode.values().first { it.value == Unsafe.getInt(address + 32) }
+		get()      = _SamplerAddressMode(Unsafe.getInt(address + 32))
 		set(value) = Unsafe.setInt(address + 32, value.value)
 	
 	var addressModeV: SamplerAddressMode
-		get()      = SamplerAddressMode.values().first { it.value == Unsafe.getInt(address + 36) }
+		get()      = _SamplerAddressMode(Unsafe.getInt(address + 36))
 		set(value) = Unsafe.setInt(address + 36, value.value)
 	
 	var addressModeW: SamplerAddressMode
-		get()      = SamplerAddressMode.values().first { it.value == Unsafe.getInt(address + 40) }
+		get()      = _SamplerAddressMode(Unsafe.getInt(address + 40))
 		set(value) = Unsafe.setInt(address + 40, value.value)
 	
 	var mipLodBias: Float
@@ -92,7 +89,7 @@ value class SamplerCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 56, value)
 	
 	var compareOp: CompareOp
-		get()      = CompareOp.values().first { it.value == Unsafe.getInt(address + 60) }
+		get()      = _CompareOp(Unsafe.getInt(address + 60))
 		set(value) = Unsafe.setInt(address + 60, value.value)
 	
 	var minLod: Float
@@ -104,7 +101,7 @@ value class SamplerCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setFloat(address + 68, value)
 	
 	var borderColor: BorderColor
-		get()      = BorderColor.values().first { it.value == Unsafe.getInt(address + 72) }
+		get()      = _BorderColor(Unsafe.getInt(address + 72))
 		set(value) = Unsafe.setInt(address + 72, value.value)
 	
 	var unnormalizedCoordinates: Int

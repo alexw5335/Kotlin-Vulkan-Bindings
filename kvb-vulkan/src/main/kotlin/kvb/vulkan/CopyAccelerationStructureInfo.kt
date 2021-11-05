@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkCopyAccelerationStructureInfoKHR {
@@ -38,7 +35,7 @@ value class CopyAccelerationStructureInfo(override val address: Long) : Addressa
 		set(value) = Unsafe.setLong(address + 24, value.address)
 	
 	var mode: CopyAccelerationStructureMode
-		get()      = CopyAccelerationStructureMode.values().first { it.value == Unsafe.getInt(address + 32) }
+		get()      = _CopyAccelerationStructureMode(Unsafe.getInt(address + 32))
 		set(value) = Unsafe.setInt(address + 32, value.value)
 
 

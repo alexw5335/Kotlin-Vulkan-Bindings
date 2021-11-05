@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkImageMemoryBarrier2KHR {
@@ -56,11 +54,11 @@ value class ImageMemoryBarrier2(override val address: Long) : Addressable {
 		set(value) = Unsafe.setLong(address + 40, value.value)
 	
 	var oldLayout: ImageLayout
-		get()      = ImageLayout.values().first { it.value == Unsafe.getInt(address + 48) }
+		get()      = _ImageLayout(Unsafe.getInt(address + 48))
 		set(value) = Unsafe.setInt(address + 48, value.value)
 	
 	var newLayout: ImageLayout
-		get()      = ImageLayout.values().first { it.value == Unsafe.getInt(address + 52) }
+		get()      = _ImageLayout(Unsafe.getInt(address + 52))
 		set(value) = Unsafe.setInt(address + 52, value.value)
 	
 	var srcQueueFamilyIndex: Int

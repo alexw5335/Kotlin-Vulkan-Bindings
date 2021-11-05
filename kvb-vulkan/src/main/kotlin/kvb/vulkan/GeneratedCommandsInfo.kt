@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkGeneratedCommandsInfoNV {
@@ -40,7 +37,7 @@ value class GeneratedCommandsInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var pipelineBindPoint: PipelineBindPoint
-		get()      = PipelineBindPoint.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _PipelineBindPoint(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var pipeline: PipelineH

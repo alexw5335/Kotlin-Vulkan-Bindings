@@ -28,7 +28,7 @@ package kvb.vulkan
  *         VK_IMAGE_CREATE_RESERVED_15_BIT_NV                         = 32768
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ImageCreateFlags(val value: Int) {
 	

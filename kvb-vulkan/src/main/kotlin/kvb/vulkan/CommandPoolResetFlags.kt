@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class CommandPoolResetFlags(val value: Int) {
 	

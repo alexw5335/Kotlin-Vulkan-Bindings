@@ -25,7 +25,7 @@ package kvb.vulkan
  *         VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR  = 256
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ImageUsageFlags(val value: Int) {
 	

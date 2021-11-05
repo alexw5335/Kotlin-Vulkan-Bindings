@@ -13,7 +13,7 @@ package kvb.vulkan
  *         VK_SAMPLE_COUNT_64_BIT  = 64
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SampleCountFlags(val value: Int) {
 	

@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkAccelerationStructureGeometryTrianglesDataKHR {
@@ -50,7 +47,7 @@ value class AccelerationStructureGeometryTrianglesData(override val address: Lon
 		set(value) = Unsafe.setInt(address + 40, value)
 	
 	var indexType: IndexType
-		get()      = IndexType.values().first { it.value == Unsafe.getInt(address + 44) }
+		get()      = _IndexType(Unsafe.getInt(address + 44))
 		set(value) = Unsafe.setInt(address + 44, value.value)
 	
 	var indexData: DeviceOrHostAddressConst

@@ -2,11 +2,10 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectIntBuffer
 
 /**
  *     struct VkSwapchainCreateInfoKHR {
@@ -67,7 +66,7 @@ value class SwapchainCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 36, value.value)
 	
 	var imageColorSpace: ColorSpace
-		get()      = ColorSpace.values().first { it.value == Unsafe.getInt(address + 40) }
+		get()      = _ColorSpace(Unsafe.getInt(address + 40))
 		set(value) = Unsafe.setInt(address + 40, value.value)
 	
 	var imageExtent: Extent2D
@@ -83,7 +82,7 @@ value class SwapchainCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 56, value.value)
 	
 	var imageSharingMode: SharingMode
-		get()      = SharingMode.values().first { it.value == Unsafe.getInt(address + 60) }
+		get()      = _SharingMode(Unsafe.getInt(address + 60))
 		set(value) = Unsafe.setInt(address + 60, value.value)
 	
 	var queueFamilyIndexCount: Int
@@ -103,7 +102,7 @@ value class SwapchainCreateInfo(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 84, value.value)
 	
 	var presentMode: PresentMode
-		get()      = PresentMode.values().first { it.value == Unsafe.getInt(address + 88) }
+		get()      = _PresentMode(Unsafe.getInt(address + 88))
 		set(value) = Unsafe.setInt(address + 88, value.value)
 	
 	var clipped: Int

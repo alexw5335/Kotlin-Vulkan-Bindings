@@ -2,11 +2,10 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectIntBuffer
 
 /**
  *     struct VkSubpassDescription2 {
@@ -46,7 +45,7 @@ value class SubpassDescription2(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var pipelineBindPoint: PipelineBindPoint
-		get()      = PipelineBindPoint.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _PipelineBindPoint(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var viewMask: Int

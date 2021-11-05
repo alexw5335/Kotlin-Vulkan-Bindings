@@ -9,7 +9,7 @@ package kvb.vulkan
  *         VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT      = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class CommandBufferUsageFlags(val value: Int) {
 	

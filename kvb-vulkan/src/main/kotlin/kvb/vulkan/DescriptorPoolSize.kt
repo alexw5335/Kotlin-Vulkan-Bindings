@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkDescriptorPoolSize {
@@ -19,7 +17,7 @@ value class DescriptorPoolSize(override val address: Long) : Addressable {
 	
 	
 	var type: DescriptorType
-		get()      = DescriptorType.values().first { it.value == Unsafe.getInt(address + 0) }
+		get()      = _DescriptorType(Unsafe.getInt(address + 0))
 		set(value) = Unsafe.setInt(address + 0, value.value)
 	
 	var descriptorCount: Int

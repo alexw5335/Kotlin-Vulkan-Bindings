@@ -2,7 +2,7 @@
 
 // This file's name has been prefixed with '_' so that it appears at the top of the package.
 
-@file:Suppress("Unused", "file")
+@file:Suppress("Unused")
 
 package kvb.vulkan
 

@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectByteBuffer
 
 /**
  *     struct VkPhysicalDeviceProperties {
@@ -42,7 +40,7 @@ value class PhysicalDeviceProperties(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 12, value)
 	
 	var deviceType: PhysicalDeviceType
-		get()      = PhysicalDeviceType.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _PhysicalDeviceType(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var deviceName: DirectByteBuffer

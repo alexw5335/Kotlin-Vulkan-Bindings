@@ -2,11 +2,10 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectLongBuffer
 
 /**
  *     struct VkWriteDescriptorSet {
@@ -56,7 +55,7 @@ value class WriteDescriptorSet(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 32, value)
 	
 	var descriptorType: DescriptorType
-		get()      = DescriptorType.values().first { it.value == Unsafe.getInt(address + 36) }
+		get()      = _DescriptorType(Unsafe.getInt(address + 36))
 		set(value) = Unsafe.setInt(address + 36, value.value)
 	
 	var pImageInfo: Long

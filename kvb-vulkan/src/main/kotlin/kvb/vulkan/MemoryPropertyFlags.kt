@@ -14,7 +14,7 @@ package kvb.vulkan
  *         VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD  = 128
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class MemoryPropertyFlags(val value: Int) {
 	

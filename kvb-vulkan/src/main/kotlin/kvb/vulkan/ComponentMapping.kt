@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkComponentMapping {
@@ -21,19 +18,19 @@ value class ComponentMapping(override val address: Long) : Addressable {
 	
 	
 	var r: ComponentSwizzle
-		get()      = ComponentSwizzle.values().first { it.value == Unsafe.getInt(address + 0) }
+		get()      = _ComponentSwizzle(Unsafe.getInt(address + 0))
 		set(value) = Unsafe.setInt(address + 0, value.value)
 	
 	var g: ComponentSwizzle
-		get()      = ComponentSwizzle.values().first { it.value == Unsafe.getInt(address + 4) }
+		get()      = _ComponentSwizzle(Unsafe.getInt(address + 4))
 		set(value) = Unsafe.setInt(address + 4, value.value)
 	
 	var b: ComponentSwizzle
-		get()      = ComponentSwizzle.values().first { it.value == Unsafe.getInt(address + 8) }
+		get()      = _ComponentSwizzle(Unsafe.getInt(address + 8))
 		set(value) = Unsafe.setInt(address + 8, value.value)
 	
 	var a: ComponentSwizzle
-		get()      = ComponentSwizzle.values().first { it.value == Unsafe.getInt(address + 12) }
+		get()      = _ComponentSwizzle(Unsafe.getInt(address + 12))
 		set(value) = Unsafe.setInt(address + 12, value.value)
 
 

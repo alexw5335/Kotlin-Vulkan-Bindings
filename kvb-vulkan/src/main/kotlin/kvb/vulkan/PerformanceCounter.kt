@@ -2,11 +2,10 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectByteBuffer
 
 /**
  *     struct VkPerformanceCounterKHR {
@@ -31,15 +30,15 @@ value class PerformanceCounter(override val address: Long) : Addressable {
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var unit: PerformanceCounterUnit
-		get()      = PerformanceCounterUnit.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _PerformanceCounterUnit(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var scope: PerformanceCounterScope
-		get()      = PerformanceCounterScope.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _PerformanceCounterScope(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var storage: PerformanceCounterStorage
-		get()      = PerformanceCounterStorage.values().first { it.value == Unsafe.getInt(address + 24) }
+		get()      = _PerformanceCounterStorage(Unsafe.getInt(address + 24))
 		set(value) = Unsafe.setInt(address + 24, value.value)
 	
 	var uuid: DirectByteBuffer

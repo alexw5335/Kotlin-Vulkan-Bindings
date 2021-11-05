@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkPipelineColorBlendAttachmentState {
@@ -29,27 +27,27 @@ value class PipelineColorBlendAttachmentState(override val address: Long) : Addr
 		set(value) = Unsafe.setInt(address + 0, value)
 	
 	var srcColorBlendFactor: BlendFactor
-		get()      = BlendFactor.values().first { it.value == Unsafe.getInt(address + 4) }
+		get()      = _BlendFactor(Unsafe.getInt(address + 4))
 		set(value) = Unsafe.setInt(address + 4, value.value)
 	
 	var dstColorBlendFactor: BlendFactor
-		get()      = BlendFactor.values().first { it.value == Unsafe.getInt(address + 8) }
+		get()      = _BlendFactor(Unsafe.getInt(address + 8))
 		set(value) = Unsafe.setInt(address + 8, value.value)
 	
 	var colorBlendOp: BlendOp
-		get()      = BlendOp.values().first { it.value == Unsafe.getInt(address + 12) }
+		get()      = _BlendOp(Unsafe.getInt(address + 12))
 		set(value) = Unsafe.setInt(address + 12, value.value)
 	
 	var srcAlphaBlendFactor: BlendFactor
-		get()      = BlendFactor.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _BlendFactor(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var dstAlphaBlendFactor: BlendFactor
-		get()      = BlendFactor.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _BlendFactor(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var alphaBlendOp: BlendOp
-		get()      = BlendOp.values().first { it.value == Unsafe.getInt(address + 24) }
+		get()      = _BlendOp(Unsafe.getInt(address + 24))
 		set(value) = Unsafe.setInt(address + 24, value.value)
 	
 	var colorWriteMask: ColorComponentFlags

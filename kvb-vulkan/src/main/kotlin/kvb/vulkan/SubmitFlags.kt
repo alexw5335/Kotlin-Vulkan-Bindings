@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_SUBMIT_PROTECTED_BIT_KHR  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SubmitFlags(val value: Int) {
 	

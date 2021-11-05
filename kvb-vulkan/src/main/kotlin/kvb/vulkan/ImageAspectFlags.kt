@@ -20,7 +20,7 @@ package kvb.vulkan
  *         VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT  = 1024
  *     }
  */
-@Suppress("unused", "propertyName")
+@Suppress("unused")
 @JvmInline
 value class ImageAspectFlags(val value: Int) {
 	

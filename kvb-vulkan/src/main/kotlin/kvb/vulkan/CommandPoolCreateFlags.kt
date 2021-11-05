@@ -9,7 +9,7 @@ package kvb.vulkan
  *         VK_COMMAND_POOL_CREATE_PROTECTED_BIT             = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class CommandPoolCreateFlags(val value: Int) {
 	

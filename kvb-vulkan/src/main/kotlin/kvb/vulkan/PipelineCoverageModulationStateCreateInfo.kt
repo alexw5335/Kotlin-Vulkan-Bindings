@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectFloatBuffer
 
 /**
  *     struct VkPipelineCoverageModulationStateCreateInfoNV {
@@ -36,7 +34,7 @@ value class PipelineCoverageModulationStateCreateInfo(override val address: Long
 		set(value) = Unsafe.setInt(address + 16, value)
 	
 	var coverageModulationMode: CoverageModulationMode
-		get()      = CoverageModulationMode.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _CoverageModulationMode(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var coverageModulationTableEnable: Int

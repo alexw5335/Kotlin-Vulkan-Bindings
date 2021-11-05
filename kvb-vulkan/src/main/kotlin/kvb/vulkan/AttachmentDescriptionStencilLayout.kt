@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkAttachmentDescriptionStencilLayout {
@@ -29,11 +26,11 @@ value class AttachmentDescriptionStencilLayout(override val address: Long) : Add
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var stencilInitialLayout: ImageLayout
-		get()      = ImageLayout.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _ImageLayout(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var stencilFinalLayout: ImageLayout
-		get()      = ImageLayout.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _ImageLayout(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 
 

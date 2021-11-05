@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkPipelineDepthStencilStateCreateInfo {
@@ -49,7 +46,7 @@ value class PipelineDepthStencilStateCreateInfo(override val address: Long) : Ad
 		set(value) = Unsafe.setInt(address + 24, value)
 	
 	var depthCompareOp: CompareOp
-		get()      = CompareOp.values().first { it.value == Unsafe.getInt(address + 28) }
+		get()      = _CompareOp(Unsafe.getInt(address + 28))
 		set(value) = Unsafe.setInt(address + 28, value.value)
 	
 	var depthBoundsTestEnable: Int

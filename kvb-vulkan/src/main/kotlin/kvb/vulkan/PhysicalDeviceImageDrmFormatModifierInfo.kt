@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectIntBuffer
 
 /**
  *     struct VkPhysicalDeviceImageDrmFormatModifierInfoEXT {
@@ -35,7 +33,7 @@ value class PhysicalDeviceImageDrmFormatModifierInfo(override val address: Long)
 		set(value) = Unsafe.setLong(address + 16, value)
 	
 	var sharingMode: SharingMode
-		get()      = SharingMode.values().first { it.value == Unsafe.getInt(address + 24) }
+		get()      = _SharingMode(Unsafe.getInt(address + 24))
 		set(value) = Unsafe.setInt(address + 24, value.value)
 	
 	var queueFamilyIndexCount: Int

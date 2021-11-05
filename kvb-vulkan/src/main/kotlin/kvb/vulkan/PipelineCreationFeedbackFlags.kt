@@ -9,7 +9,7 @@ package kvb.vulkan
  *         VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT_EXT      = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class PipelineCreationFeedbackFlags(val value: Int) {
 	

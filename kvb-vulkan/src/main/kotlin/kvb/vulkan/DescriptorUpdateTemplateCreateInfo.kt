@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkDescriptorUpdateTemplateCreateInfo {
@@ -47,7 +44,7 @@ value class DescriptorUpdateTemplateCreateInfo(override val address: Long) : Add
 		set(value) = Unsafe.setLong(address + 24, value)
 	
 	var templateType: DescriptorUpdateTemplateType
-		get()      = DescriptorUpdateTemplateType.values().first { it.value == Unsafe.getInt(address + 32) }
+		get()      = _DescriptorUpdateTemplateType(Unsafe.getInt(address + 32))
 		set(value) = Unsafe.setInt(address + 32, value.value)
 	
 	var descriptorSetLayout: DescriptorSetLayoutH
@@ -55,7 +52,7 @@ value class DescriptorUpdateTemplateCreateInfo(override val address: Long) : Add
 		set(value) = Unsafe.setLong(address + 40, value.address)
 	
 	var pipelineBindPoint: PipelineBindPoint
-		get()      = PipelineBindPoint.values().first { it.value == Unsafe.getInt(address + 48) }
+		get()      = _PipelineBindPoint(Unsafe.getInt(address + 48))
 		set(value) = Unsafe.setInt(address + 48, value.value)
 	
 	var pipelineLayout: PipelineLayoutH

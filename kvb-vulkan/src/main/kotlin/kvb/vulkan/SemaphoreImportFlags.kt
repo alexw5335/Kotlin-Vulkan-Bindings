@@ -8,7 +8,7 @@ package kvb.vulkan
  *         VK_SEMAPHORE_IMPORT_TEMPORARY_BIT_KHR  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SemaphoreImportFlags(val value: Int) {
 	

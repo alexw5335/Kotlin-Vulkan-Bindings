@@ -9,7 +9,7 @@ package kvb.vulkan
  *         VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_AUTOMATIC_CHECKPOINTS_BIT_NV  = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class DeviceDiagnosticsConfigFlags(val value: Int) {
 	

@@ -17,7 +17,7 @@ package kvb.vulkan
  *         VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT                  = 1024
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class QueryPipelineStatisticFlags(val value: Int) {
 	

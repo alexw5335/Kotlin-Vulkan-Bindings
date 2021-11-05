@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_VALVE        = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class DescriptorPoolCreateFlags(val value: Int) {
 	

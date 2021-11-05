@@ -313,7 +313,7 @@ package kvb.vulkan
  *         VK_FORMAT_A4B4G4R4_UNORM_PACK16_EXT                       = 1000340001
  *     }
  */
-@Suppress("unused", "propertyName")
+@Suppress("unused")
 @JvmInline
 value class Format(val value: Int) {
 	

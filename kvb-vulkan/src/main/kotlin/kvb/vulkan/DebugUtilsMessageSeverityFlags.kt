@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT    = 4096
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class DebugUtilsMessageSeverityFlags(val value: Int) {
 	

@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkCooperativeMatrixPropertiesNV {
@@ -47,23 +45,23 @@ value class CooperativeMatrixProperties(override val address: Long) : Addressabl
 		set(value) = Unsafe.setInt(address + 24, value)
 	
 	var AType: ComponentType
-		get()      = ComponentType.values().first { it.value == Unsafe.getInt(address + 28) }
+		get()      = _ComponentType(Unsafe.getInt(address + 28))
 		set(value) = Unsafe.setInt(address + 28, value.value)
 	
 	var BType: ComponentType
-		get()      = ComponentType.values().first { it.value == Unsafe.getInt(address + 32) }
+		get()      = _ComponentType(Unsafe.getInt(address + 32))
 		set(value) = Unsafe.setInt(address + 32, value.value)
 	
 	var CType: ComponentType
-		get()      = ComponentType.values().first { it.value == Unsafe.getInt(address + 36) }
+		get()      = _ComponentType(Unsafe.getInt(address + 36))
 		set(value) = Unsafe.setInt(address + 36, value.value)
 	
 	var DType: ComponentType
-		get()      = ComponentType.values().first { it.value == Unsafe.getInt(address + 40) }
+		get()      = _ComponentType(Unsafe.getInt(address + 40))
 		set(value) = Unsafe.setInt(address + 40, value.value)
 	
 	var scope: Scope
-		get()      = Scope.values().first { it.value == Unsafe.getInt(address + 44) }
+		get()      = _Scope(Unsafe.getInt(address + 44))
 		set(value) = Unsafe.setInt(address + 44, value.value)
 	
 	

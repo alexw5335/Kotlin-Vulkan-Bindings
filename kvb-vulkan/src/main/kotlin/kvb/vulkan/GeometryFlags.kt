@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_NV   = 2
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class GeometryFlags(val value: Int) {
 	

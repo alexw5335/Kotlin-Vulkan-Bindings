@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class AttachmentDescriptionFlags(val value: Int) {
 	

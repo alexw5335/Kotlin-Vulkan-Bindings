@@ -17,7 +17,7 @@ package kvb.vulkan
  *         VK_BUILD_ACCELERATION_STRUCTURE_RESERVED_BIT_5_NV          = 32
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class BuildAccelerationStructureFlags(val value: Int) {
 	

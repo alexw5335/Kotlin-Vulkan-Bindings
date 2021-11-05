@@ -8,7 +8,7 @@ package kvb.vulkan
  *         VK_FENCE_IMPORT_TEMPORARY_BIT_KHR  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class FenceImportFlags(val value: Int) {
 	

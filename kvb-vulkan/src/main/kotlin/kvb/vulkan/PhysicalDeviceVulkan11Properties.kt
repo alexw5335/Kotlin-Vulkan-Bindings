@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectByteBuffer
 
 /**
  *     struct VkPhysicalDeviceVulkan11Properties {
@@ -78,7 +76,7 @@ value class PhysicalDeviceVulkan11Properties(override val address: Long) : Addre
 		set(value) = Unsafe.setInt(address + 76, value)
 	
 	var pointClippingBehavior: PointClippingBehavior
-		get()      = PointClippingBehavior.values().first { it.value == Unsafe.getInt(address + 80) }
+		get()      = _PointClippingBehavior(Unsafe.getInt(address + 80))
 		set(value) = Unsafe.setInt(address + 80, value.value)
 	
 	var maxMultiviewViewCount: Int

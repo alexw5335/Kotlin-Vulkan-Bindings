@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_SHADER_MODULE_CREATE_RESERVED_0_BIT_NV  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ShaderModuleCreateFlags(val value: Int) {
 	

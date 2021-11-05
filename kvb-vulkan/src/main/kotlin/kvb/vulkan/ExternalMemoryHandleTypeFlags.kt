@@ -25,7 +25,7 @@ package kvb.vulkan
  *         VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA               = 2048
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ExternalMemoryHandleTypeFlags(val value: Int) {
 	

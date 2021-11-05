@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkAttachmentDescription {
@@ -38,27 +36,27 @@ value class AttachmentDescription(override val address: Long) : Addressable {
 		set(value) = Unsafe.setInt(address + 8, value.value)
 	
 	var loadOp: AttachmentLoadOp
-		get()      = AttachmentLoadOp.values().first { it.value == Unsafe.getInt(address + 12) }
+		get()      = _AttachmentLoadOp(Unsafe.getInt(address + 12))
 		set(value) = Unsafe.setInt(address + 12, value.value)
 	
 	var storeOp: AttachmentStoreOp
-		get()      = AttachmentStoreOp.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _AttachmentStoreOp(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var stencilLoadOp: AttachmentLoadOp
-		get()      = AttachmentLoadOp.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _AttachmentLoadOp(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var stencilStoreOp: AttachmentStoreOp
-		get()      = AttachmentStoreOp.values().first { it.value == Unsafe.getInt(address + 24) }
+		get()      = _AttachmentStoreOp(Unsafe.getInt(address + 24))
 		set(value) = Unsafe.setInt(address + 24, value.value)
 	
 	var initialLayout: ImageLayout
-		get()      = ImageLayout.values().first { it.value == Unsafe.getInt(address + 28) }
+		get()      = _ImageLayout(Unsafe.getInt(address + 28))
 		set(value) = Unsafe.setInt(address + 28, value.value)
 	
 	var finalLayout: ImageLayout
-		get()      = ImageLayout.values().first { it.value == Unsafe.getInt(address + 32) }
+		get()      = _ImageLayout(Unsafe.getInt(address + 32))
 		set(value) = Unsafe.setInt(address + 32, value.value)
 	
 	

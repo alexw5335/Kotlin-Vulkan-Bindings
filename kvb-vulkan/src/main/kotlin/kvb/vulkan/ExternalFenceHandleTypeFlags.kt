@@ -16,7 +16,7 @@ package kvb.vulkan
  *         VK_EXTERNAL_FENCE_HANDLE_TYPE_RESERVED_5_BIT_NV         = 32
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ExternalFenceHandleTypeFlags(val value: Int) {
 	

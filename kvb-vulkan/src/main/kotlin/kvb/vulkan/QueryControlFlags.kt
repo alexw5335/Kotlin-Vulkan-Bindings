@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_QUERY_CONTROL_PRECISE_BIT  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class QueryControlFlags(val value: Int) {
 	

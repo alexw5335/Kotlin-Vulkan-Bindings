@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_MEMORY_HEAP_RESERVED_2_BIT_KHR      = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class MemoryHeapFlags(val value: Int) {
 	

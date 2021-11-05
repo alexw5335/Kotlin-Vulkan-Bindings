@@ -1,7 +1,6 @@
 package kvb.samples.sample0
 
 import kvb.core.memory.MemStacks
-import kvb.vkwrapper.VkVersion
 import kvb.vkwrapper.Vulkan
 import kvb.vkwrapper.handle.Buffer
 import kvb.vkwrapper.handle.CommandBuffer

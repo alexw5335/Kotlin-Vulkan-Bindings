@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM           = 8
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SubpassDescriptionFlags(val value: Int) {
 	

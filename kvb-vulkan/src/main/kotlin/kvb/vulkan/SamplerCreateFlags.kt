@@ -8,7 +8,7 @@ package kvb.vulkan
  *         VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT  = 2
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SamplerCreateFlags(val value: Int) {
 	

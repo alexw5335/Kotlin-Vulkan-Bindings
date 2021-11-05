@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkCopyImageToBufferInfo2KHR {
@@ -36,7 +33,7 @@ value class CopyImageToBufferInfo2(override val address: Long) : Addressable {
 		set(value) = Unsafe.setLong(address + 16, value.address)
 	
 	var srcImageLayout: ImageLayout
-		get()      = ImageLayout.values().first { it.value == Unsafe.getInt(address + 24) }
+		get()      = _ImageLayout(Unsafe.getInt(address + 24))
 		set(value) = Unsafe.setInt(address + 24, value.value)
 	
 	var dstBuffer: BufferH

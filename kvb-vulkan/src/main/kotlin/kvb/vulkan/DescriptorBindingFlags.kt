@@ -15,7 +15,7 @@ package kvb.vulkan
  *         VK_DESCRIPTOR_BINDING_RESERVED_4_BIT_QCOM                  = 16
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class DescriptorBindingFlags(val value: Int) {
 	

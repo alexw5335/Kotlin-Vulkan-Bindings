@@ -16,7 +16,7 @@ package kvb.vulkan
  *         VK_RESOLVE_MODE_MAX_BIT_KHR          = 8
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ResolveModeFlags(val value: Int) {
 	

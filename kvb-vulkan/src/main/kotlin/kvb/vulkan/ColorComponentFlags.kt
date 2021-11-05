@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_COLOR_COMPONENT_A_BIT  = 8
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ColorComponentFlags(val value: Int) {
 	

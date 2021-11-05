@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkPhysicalDeviceFloatControlsProperties {
@@ -44,11 +41,11 @@ value class PhysicalDeviceFloatControlsProperties(override val address: Long) : 
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var denormBehaviorIndependence: ShaderFloatControlsIndependence
-		get()      = ShaderFloatControlsIndependence.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _ShaderFloatControlsIndependence(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var roundingModeIndependence: ShaderFloatControlsIndependence
-		get()      = ShaderFloatControlsIndependence.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _ShaderFloatControlsIndependence(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var shaderSignedZeroInfNanPreserveFloat16: Int

@@ -9,7 +9,7 @@ package kvb.vulkan
  *         VK_PIPELINE_CACHE_CREATE_RESERVED_2_BIT_EXT               = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class PipelineCacheCreateFlags(val value: Int) {
 	

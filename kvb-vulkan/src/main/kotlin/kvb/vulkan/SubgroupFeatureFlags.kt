@@ -15,7 +15,7 @@ package kvb.vulkan
  *         VK_SUBGROUP_FEATURE_PARTITIONED_BIT_NV    = 256
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SubgroupFeatureFlags(val value: Int) {
 	

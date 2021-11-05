@@ -8,7 +8,7 @@ package kvb.vulkan
  *         VK_SURFACE_COUNTER_VBLANK_EXT      = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SurfaceCounterFlags(val value: Int) {
 	

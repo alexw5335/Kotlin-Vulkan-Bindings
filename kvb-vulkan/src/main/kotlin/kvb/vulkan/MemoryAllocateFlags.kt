@@ -12,7 +12,7 @@ package kvb.vulkan
  *         VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR  = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class MemoryAllocateFlags(val value: Int) {
 	

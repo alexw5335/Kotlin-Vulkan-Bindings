@@ -49,7 +49,7 @@ package kvb.vulkan
  *         VK_OBJECT_TYPE_PRIVATE_DATA_SLOT_EXT            = 1000295000
  *     }
  */
-@Suppress("unused", "propertyName")
+@Suppress("unused")
 @JvmInline
 value class ObjectType(val value: Int) {
 	

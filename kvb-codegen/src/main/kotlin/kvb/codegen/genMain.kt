@@ -62,13 +62,14 @@ private fun genUtils() = VkUtilsGenerator.generate()
 
 
 fun main() {
-	//genEnums()
+	genEnums()
 	//genBitmasks()
 	//genHandles()
 	//genStructs()
-	genCommands()
+	//genCommands()
 	//genAllocations()
 	//genConstants()
+	//genUtils()
 }
 
 

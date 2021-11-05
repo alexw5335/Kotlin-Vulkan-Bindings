@@ -29,7 +29,7 @@ package kvb.vulkan
  *         VK_PIPELINE_CREATE_RESERVED_BIT_20_NV                                      = 1048576
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class PipelineCreateFlags(val value: Int) {
 	

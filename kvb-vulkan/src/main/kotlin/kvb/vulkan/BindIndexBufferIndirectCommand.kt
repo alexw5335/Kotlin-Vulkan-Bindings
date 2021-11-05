@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkBindIndexBufferIndirectCommandNV {
@@ -28,7 +25,7 @@ value class BindIndexBufferIndirectCommand(override val address: Long) : Address
 		set(value) = Unsafe.setInt(address + 8, value)
 	
 	var indexType: IndexType
-		get()      = IndexType.values().first { it.value == Unsafe.getInt(address + 12) }
+		get()      = _IndexType(Unsafe.getInt(address + 12))
 		set(value) = Unsafe.setInt(address + 12, value.value)
 
 

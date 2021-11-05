@@ -20,7 +20,7 @@ package kvb.vulkan
  *         VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_RESERVED_6_BIT_NV         = 64
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ExternalSemaphoreHandleTypeFlags(val value: Int) {
 	

@@ -13,7 +13,7 @@ package kvb.vulkan
  *         VK_QUEUE_RESERVED_5_BIT_KHR  = 32
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class QueueFlags(val value: Int) {
 	

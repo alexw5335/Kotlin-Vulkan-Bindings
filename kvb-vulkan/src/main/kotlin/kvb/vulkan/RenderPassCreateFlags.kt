@@ -8,7 +8,7 @@ package kvb.vulkan
  *         VK_RENDER_PASS_CREATE_TRANSFORM_BIT_QCOM  = 2
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class RenderPassCreateFlags(val value: Int) {
 	

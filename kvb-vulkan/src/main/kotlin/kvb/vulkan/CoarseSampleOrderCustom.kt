@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkCoarseSampleOrderCustomNV {
@@ -21,7 +19,7 @@ value class CoarseSampleOrderCustom(override val address: Long) : Addressable {
 	
 	
 	var shadingRate: ShadingRatePaletteEntry
-		get()      = ShadingRatePaletteEntry.values().first { it.value == Unsafe.getInt(address + 0) }
+		get()      = _ShadingRatePaletteEntry(Unsafe.getInt(address + 0))
 		set(value) = Unsafe.setInt(address + 0, value.value)
 	
 	var sampleCount: Int

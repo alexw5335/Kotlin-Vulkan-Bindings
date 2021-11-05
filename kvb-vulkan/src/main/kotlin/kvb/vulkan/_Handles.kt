@@ -7,196 +7,196 @@ package kvb.vulkan
 import kvb.core.memory.Addressable
 
 /**
- * implementation of VkInstance
+ * Implementation of VkInstance
  */
 open class InstanceH(override val address: Long) : Addressable
 
 /**
- * implementation of VkPhysicalDevice
+ * Implementation of VkPhysicalDevice
  */
 open class PhysicalDeviceH(override val address: Long) : Addressable
 
 /**
- * implementation of VkDevice
+ * Implementation of VkDevice
  */
 open class DeviceH(override val address: Long) : Addressable
 
 /**
- * implementation of VkQueue
+ * Implementation of VkQueue
  */
 open class QueueH(override val address: Long) : Addressable
 
 /**
- * implementation of VkDeviceMemory
+ * Implementation of VkDeviceMemory
  */
 open class DeviceMemoryH(override val address: Long) : Addressable
 
 /**
- * implementation of VkFence
+ * Implementation of VkFence
  */
 open class FenceH(override val address: Long) : Addressable
 
 /**
- * implementation of VkSemaphore
+ * Implementation of VkSemaphore
  */
 open class SemaphoreH(override val address: Long) : Addressable
 
 /**
- * implementation of VkEvent
+ * Implementation of VkEvent
  */
 open class EventH(override val address: Long) : Addressable
 
 /**
- * implementation of VkQueryPool
+ * Implementation of VkQueryPool
  */
 open class QueryPoolH(override val address: Long) : Addressable
 
 /**
- * implementation of VkBuffer
+ * Implementation of VkBuffer
  */
 open class BufferH(override val address: Long) : Addressable
 
 /**
- * implementation of VkBufferView
+ * Implementation of VkBufferView
  */
 open class BufferViewH(override val address: Long) : Addressable
 
 /**
- * implementation of VkImage
+ * Implementation of VkImage
  */
 open class ImageH(override val address: Long) : Addressable
 
 /**
- * implementation of VkImageView
+ * Implementation of VkImageView
  */
 open class ImageViewH(override val address: Long) : Addressable
 
 /**
- * implementation of VkShaderModule
+ * Implementation of VkShaderModule
  */
 open class ShaderModuleH(override val address: Long) : Addressable
 
 /**
- * implementation of VkPipelineCache
+ * Implementation of VkPipelineCache
  */
 open class PipelineCacheH(override val address: Long) : Addressable
 
 /**
- * implementation of VkPipeline
+ * Implementation of VkPipeline
  */
 open class PipelineH(override val address: Long) : Addressable
 
 /**
- * implementation of VkPipelineLayout
+ * Implementation of VkPipelineLayout
  */
 open class PipelineLayoutH(override val address: Long) : Addressable
 
 /**
- * implementation of VkSampler
+ * Implementation of VkSampler
  */
 open class SamplerH(override val address: Long) : Addressable
 
 /**
- * implementation of VkDescriptorPool
+ * Implementation of VkDescriptorPool
  */
 open class DescriptorPoolH(override val address: Long) : Addressable
 
 /**
- * implementation of VkDescriptorSet
+ * Implementation of VkDescriptorSet
  */
 open class DescriptorSetH(override val address: Long) : Addressable
 
 /**
- * implementation of VkDescriptorSetLayout
+ * Implementation of VkDescriptorSetLayout
  */
 open class DescriptorSetLayoutH(override val address: Long) : Addressable
 
 /**
- * implementation of VkFramebuffer
+ * Implementation of VkFramebuffer
  */
 open class FramebufferH(override val address: Long) : Addressable
 
 /**
- * implementation of VkRenderPass
+ * Implementation of VkRenderPass
  */
 open class RenderPassH(override val address: Long) : Addressable
 
 /**
- * implementation of VkCommandPool
+ * Implementation of VkCommandPool
  */
 open class CommandPoolH(override val address: Long) : Addressable
 
 /**
- * implementation of VkCommandBuffer
+ * Implementation of VkCommandBuffer
  */
 open class CommandBufferH(override val address: Long) : Addressable
 
 /**
- * implementation of VkSamplerYcbcrConversion
+ * Implementation of VkSamplerYcbcrConversion
  */
 open class SamplerYcbcrConversionH(override val address: Long) : Addressable
 
 /**
- * implementation of VkDescriptorUpdateTemplate
+ * Implementation of VkDescriptorUpdateTemplate
  */
 open class DescriptorUpdateTemplateH(override val address: Long) : Addressable
 
 /**
- * implementation of VkSurfaceKHR
+ * Implementation of VkSurfaceKHR
  */
 open class SurfaceH(override val address: Long) : Addressable
 
 /**
- * implementation of VkSwapchainKHR
+ * Implementation of VkSwapchainKHR
  */
 open class SwapchainH(override val address: Long) : Addressable
 
 /**
- * implementation of VkDisplayKHR
+ * Implementation of VkDisplayKHR
  */
 open class DisplayH(override val address: Long) : Addressable
 
 /**
- * implementation of VkDisplayModeKHR
+ * Implementation of VkDisplayModeKHR
  */
 open class DisplayModeH(override val address: Long) : Addressable
 
 /**
- * implementation of VkDebugUtilsMessengerEXT
+ * Implementation of VkDebugUtilsMessengerEXT
  */
 open class DebugUtilsMessengerH(override val address: Long) : Addressable
 
 /**
- * implementation of VkAccelerationStructureKHR
+ * Implementation of VkAccelerationStructureKHR
  */
 open class AccelerationStructureKHRH(override val address: Long) : Addressable
 
 /**
- * implementation of VkValidationCacheEXT
+ * Implementation of VkValidationCacheEXT
  */
 open class ValidationCacheH(override val address: Long) : Addressable
 
 /**
- * implementation of VkAccelerationStructureNV
+ * Implementation of VkAccelerationStructureNV
  */
 open class AccelerationStructureNVH(override val address: Long) : Addressable
 
 /**
- * implementation of VkPerformanceConfigurationINTEL
+ * Implementation of VkPerformanceConfigurationINTEL
  */
 open class PerformanceConfigurationH(override val address: Long) : Addressable
 
 /**
- * implementation of VkDeferredOperationKHR
+ * Implementation of VkDeferredOperationKHR
  */
 open class DeferredOperationH(override val address: Long) : Addressable
 
 /**
- * implementation of VkIndirectCommandsLayoutNV
+ * Implementation of VkIndirectCommandsLayoutNV
  */
 open class IndirectCommandsLayoutH(override val address: Long) : Addressable
 
 /**
- * implementation of VkPrivateDataSlotEXT
+ * Implementation of VkPrivateDataSlotEXT
  */
 open class PrivateDataSlotH(override val address: Long) : Addressable

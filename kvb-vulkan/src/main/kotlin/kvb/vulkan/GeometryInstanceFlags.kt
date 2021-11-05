@@ -14,7 +14,7 @@ package kvb.vulkan
  *         VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_NV                   = 8
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class GeometryInstanceFlags(val value: Int) {
 	

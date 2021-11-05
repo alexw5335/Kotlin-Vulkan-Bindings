@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkPerformanceValueINTEL {
@@ -19,7 +16,7 @@ value class PerformanceValue(override val address: Long) : Addressable {
 	
 	
 	var type: PerformanceValueType
-		get()      = PerformanceValueType.values().first { it.value == Unsafe.getInt(address + 0) }
+		get()      = _PerformanceValueType(Unsafe.getInt(address + 0))
 		set(value) = Unsafe.setInt(address + 0, value.value)
 	
 	var data: PerformanceValueData

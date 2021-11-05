@@ -15,7 +15,7 @@ package kvb.vulkan
  *         VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR                       = 256
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class SurfaceTransformFlags(val value: Int) {
 	

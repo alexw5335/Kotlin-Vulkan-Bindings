@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkPipelineViewportCoarseSampleOrderStateCreateInfoNV {
@@ -30,7 +27,7 @@ value class PipelineViewportCoarseSampleOrderStateCreateInfo(override val addres
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var sampleOrderType: CoarseSampleOrderType
-		get()      = CoarseSampleOrderType.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _CoarseSampleOrderType(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var customSampleOrderCount: Int

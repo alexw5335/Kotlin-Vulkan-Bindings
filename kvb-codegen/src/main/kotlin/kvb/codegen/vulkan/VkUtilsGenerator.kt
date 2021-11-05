@@ -16,12 +16,12 @@ object VkUtilsGenerator {
 
 		doc("An abstraction of the macros VK_VERSION_MAJOR, VK_VERSION_MINOR, and VK_VERSION_PATCH.")
 		annotation("JvmInline")
-		class_("value class VkVersion(val value: Int") {
-			declaration("constructor(major: Int, minor: Int, patch: Int) : this((major shl 22) or (minor shl 12) or patch")
+		class_("value class VkVersion(val value: Int)") {
+			declaration("constructor(major: Int, minor: Int, patch: Int) : this((major shl 22) or (minor shl 12) or patch)")
 			declaration("val major get() = value shr 22")
 			declaration("val minor get() = value shr 12 and 0x3FF")
 			declaration("val patch get() = value and 0xFFF")
-			declaration("fun toString() = \"Version(\$major, \$minor, \$patch)\"")
+			declaration("override fun toString() = \"Version(\$major, \$minor, \$patch)\"")
 		}
 	}
 

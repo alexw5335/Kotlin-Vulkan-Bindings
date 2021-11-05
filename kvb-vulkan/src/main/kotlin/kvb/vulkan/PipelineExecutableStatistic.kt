@@ -2,11 +2,10 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectByteBuffer
 
 /**
  *     struct VkPipelineExecutableStatisticKHR {
@@ -39,7 +38,7 @@ value class PipelineExecutableStatistic(override val address: Long) : Addressabl
 		set(value) = Unsafe.copy(value.address, address + 272, value.byteSize)
 	
 	var format: PipelineExecutableStatisticFormat
-		get()      = PipelineExecutableStatisticFormat.values().first { it.value == Unsafe.getInt(address + 528) }
+		get()      = _PipelineExecutableStatisticFormat(Unsafe.getInt(address + 528))
 		set(value) = Unsafe.setInt(address + 528, value.value)
 	
 	var value: PipelineExecutableStatisticValue

@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkVertexInputBindingDescription {
@@ -28,7 +26,7 @@ value class VertexInputBindingDescription(override val address: Long) : Addressa
 		set(value) = Unsafe.setInt(address + 4, value)
 	
 	var inputRate: VertexInputRate
-		get()      = VertexInputRate.values().first { it.value == Unsafe.getInt(address + 8) }
+		get()      = _VertexInputRate(Unsafe.getInt(address + 8))
 		set(value) = Unsafe.setInt(address + 8, value.value)
 	
 	

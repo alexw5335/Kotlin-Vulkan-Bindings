@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkPipelineInputAssemblyStateCreateInfo {
@@ -34,7 +31,7 @@ value class PipelineInputAssemblyStateCreateInfo(override val address: Long) : A
 		set(value) = Unsafe.setInt(address + 16, value)
 	
 	var topology: PrimitiveTopology
-		get()      = PrimitiveTopology.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _PrimitiveTopology(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var primitiveRestartEnable: Int

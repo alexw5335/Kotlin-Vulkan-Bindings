@@ -8,7 +8,7 @@ package kvb.vulkan
  *         VK_ACCELERATION_STRUCTURE_CREATE_RESERVED_BIT_2_NV                      = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class AccelerationStructureCreateFlags(val value: Int) {
 	

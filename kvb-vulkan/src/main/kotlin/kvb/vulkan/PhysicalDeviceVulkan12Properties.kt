@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectByteBuffer
 
 /**
  *     struct VkPhysicalDeviceVulkan12Properties {
@@ -79,7 +77,7 @@ value class PhysicalDeviceVulkan12Properties(override val address: Long) : Addre
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var driverID: DriverId
-		get()      = DriverId.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _DriverId(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var driverName: DirectByteBuffer
@@ -95,11 +93,11 @@ value class PhysicalDeviceVulkan12Properties(override val address: Long) : Addre
 		set(value) = Unsafe.copy(value.address, address + 532, 4)
 	
 	var denormBehaviorIndependence: ShaderFloatControlsIndependence
-		get()      = ShaderFloatControlsIndependence.values().first { it.value == Unsafe.getInt(address + 536) }
+		get()      = _ShaderFloatControlsIndependence(Unsafe.getInt(address + 536))
 		set(value) = Unsafe.setInt(address + 536, value.value)
 	
 	var roundingModeIndependence: ShaderFloatControlsIndependence
-		get()      = ShaderFloatControlsIndependence.values().first { it.value == Unsafe.getInt(address + 540) }
+		get()      = _ShaderFloatControlsIndependence(Unsafe.getInt(address + 540))
 		set(value) = Unsafe.setInt(address + 540, value.value)
 	
 	var shaderSignedZeroInfNanPreserveFloat16: Int

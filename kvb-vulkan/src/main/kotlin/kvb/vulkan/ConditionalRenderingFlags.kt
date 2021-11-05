@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_CONDITIONAL_RENDERING_INVERTED_BIT_EXT  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ConditionalRenderingFlags(val value: Int) {
 	

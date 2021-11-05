@@ -7,7 +7,7 @@ package kvb.vulkan
  *         VK_DEVICE_QUEUE_CREATE_PROTECTED_BIT  = 1
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class DeviceQueueCreateFlags(val value: Int) {
 	

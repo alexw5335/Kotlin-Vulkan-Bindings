@@ -13,7 +13,7 @@ package kvb.vulkan
  *         VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT        = 64
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ToolPurposeFlags(val value: Int) {
 	

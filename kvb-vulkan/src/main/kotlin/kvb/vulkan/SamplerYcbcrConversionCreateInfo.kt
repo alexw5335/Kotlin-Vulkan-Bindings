@@ -2,11 +2,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
 
 /**
  *     struct VkSamplerYcbcrConversionCreateInfo {
@@ -42,11 +39,11 @@ value class SamplerYcbcrConversionCreateInfo(override val address: Long) : Addre
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var ycbcrModel: SamplerYcbcrModelConversion
-		get()      = SamplerYcbcrModelConversion.values().first { it.value == Unsafe.getInt(address + 20) }
+		get()      = _SamplerYcbcrModelConversion(Unsafe.getInt(address + 20))
 		set(value) = Unsafe.setInt(address + 20, value.value)
 	
 	var ycbcrRange: SamplerYcbcrRange
-		get()      = SamplerYcbcrRange.values().first { it.value == Unsafe.getInt(address + 24) }
+		get()      = _SamplerYcbcrRange(Unsafe.getInt(address + 24))
 		set(value) = Unsafe.setInt(address + 24, value.value)
 	
 	var components: ComponentMapping
@@ -54,15 +51,15 @@ value class SamplerYcbcrConversionCreateInfo(override val address: Long) : Addre
 		set(value) = Unsafe.copy(value.address, address + 28, 16)
 	
 	var xChromaOffset: ChromaLocation
-		get()      = ChromaLocation.values().first { it.value == Unsafe.getInt(address + 44) }
+		get()      = _ChromaLocation(Unsafe.getInt(address + 44))
 		set(value) = Unsafe.setInt(address + 44, value.value)
 	
 	var yChromaOffset: ChromaLocation
-		get()      = ChromaLocation.values().first { it.value == Unsafe.getInt(address + 48) }
+		get()      = _ChromaLocation(Unsafe.getInt(address + 48))
 		set(value) = Unsafe.setInt(address + 48, value.value)
 	
 	var chromaFilter: Filter
-		get()      = Filter.values().first { it.value == Unsafe.getInt(address + 52) }
+		get()      = _Filter(Unsafe.getInt(address + 52))
 		set(value) = Unsafe.setInt(address + 52, value.value)
 	
 	var forceExplicitReconstruction: Int

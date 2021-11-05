@@ -2,11 +2,9 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
-import kvb.core.memory.direct.*
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectByteBuffer
 
 /**
  *     struct VkPhysicalDeviceDriverProperties {
@@ -31,7 +29,7 @@ value class PhysicalDeviceDriverProperties(override val address: Long) : Address
 		set(value) = Unsafe.setLong(address + 8, value)
 	
 	var driverID: DriverId
-		get()      = DriverId.values().first { it.value == Unsafe.getInt(address + 16) }
+		get()      = _DriverId(Unsafe.getInt(address + 16))
 		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var driverName: DirectByteBuffer

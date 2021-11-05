@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT_KHR  = 2
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class ExternalSemaphoreFeatureFlags(val value: Int) {
 	

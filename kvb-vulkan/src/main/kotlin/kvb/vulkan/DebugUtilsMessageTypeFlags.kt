@@ -9,7 +9,7 @@ package kvb.vulkan
  *         VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT  = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class DebugUtilsMessageTypeFlags(val value: Int) {
 	

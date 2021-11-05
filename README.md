@@ -16,6 +16,9 @@ Specifically, from the registry/vk.xml file.
 
 For a detailed overview of the bindings themselves, see the [README](kvb-vulkan/README.md) in the bindings module.
 
+For a detailed overview of how the library handles native off-heap memory, see the [README](kvb-core/README.md) in 
+the core module.
+
 ## Modules
 The library is separated into gradle submodules:
 

@@ -38,7 +38,7 @@ package kvb.vulkan
  *         VK_ACCESS_NONE_KHR                                       = 0
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class AccessFlags(val value: Int) {
 	

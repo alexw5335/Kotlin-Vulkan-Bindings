@@ -11,7 +11,7 @@ package kvb.vulkan
  *         VK_DEPENDENCY_DEVICE_GROUP_BIT_KHR  = 4
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class DependencyFlags(val value: Int) {
 	

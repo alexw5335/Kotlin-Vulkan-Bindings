@@ -10,7 +10,7 @@ package kvb.vulkan
  *         VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR  = 8
  *     }
  */
-@Suppress("unused", "propertyName", "MemberVisibilityCanBePrivate")
+@Suppress("unused")
 @JvmInline
 value class DeviceGroupPresentModeFlags(val value: Int) {
 	
