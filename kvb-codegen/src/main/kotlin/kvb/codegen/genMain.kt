@@ -62,11 +62,11 @@ private fun genUtils() = VkUtilsGenerator.generate()
 
 
 fun main() {
-	genEnums()
+	//genEnums()
 	//genBitmasks()
 	//genHandles()
 	//genStructs()
-	//genCommands()
+	genCommands()
 	//genAllocations()
 	//genConstants()
 	//genUtils()
@@ -80,13 +80,23 @@ Packages
 
 
 
+const val genDir = "gen"
+
+
+
 const val rootPackage = "kvb"
 
 const val primitivePackage = "$rootPackage.core.memory.direct"
 
 const val vulkanPackage = "$rootPackage.vulkan"
 
-const val vkCommandPackage = "$vulkanPackage.command"
+
+
+val primitiveDir get() = primitivePackage.packageToPath
+
+val vulkanDir get() = vulkanPackage.packageToPath
+
+val cDir get() = "$genDir/c".toPath
 
 
 
@@ -94,22 +104,4 @@ private val String.toPath get() =
 	Paths.get(this).also(Files::createDirectories)
 
 private val String.packageToPath get() =
-	Paths.get("gen" + "/" + replace('.', '/')).also(Files::createDirectories)
-
-
-
-/*
-Directories
- */
-
-
-
-const val genDir = "gen"
-
-val primitiveDir get() = primitivePackage.packageToPath
-
-val vulkanDir get() = vulkanPackage.packageToPath
-
-val vkCommandDir get() = vkCommandPackage.packageToPath
-
-val cDir get() = "$genDir/c".toPath
+	Paths.get(genDir + "/" + replace('.', '/')).also(Files::createDirectories)

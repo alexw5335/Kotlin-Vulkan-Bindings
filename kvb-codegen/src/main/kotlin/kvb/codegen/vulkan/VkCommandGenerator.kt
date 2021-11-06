@@ -12,17 +12,15 @@ import kvb.codegen.writer.procedural.JniGeneration
 import kvb.codegen.writer.procedural.KFunction
 import kvb.codegen.writer.procedural.Primitive
 import kvb.core.memory.Addressable
+import kvb.core.memory.Allocator
 import kvb.core.memory.MemStacks
 
 object VkCommandGenerator {
 
 
 	fun generate(providers: Iterable<VkProvider>) {
-		writeCommandsK(providers)
-		writeCommandsC(providers)
-		writeInstanceCommands(providers)
-		writeDeviceCommands(providers)
-		writeStandaloneCommands(providers)
+		printCommandsK(providers)
+		printCommandsC(providers)
 	}
 
 
@@ -52,7 +50,7 @@ object VkCommandGenerator {
 		}
 
 		else -> when(type) {
-			is VkTypeStruct    -> throw RuntimeException("Non-pointer struct parameter") // should never happen.
+			is VkTypeStruct    -> throw RuntimeException("Non-pointer struct parameter")
 			is VkTypeHandle    -> typeName.makeOptional
 			else               -> typeName
 		}
@@ -135,7 +133,7 @@ object VkCommandGenerator {
 
 
 	private val VkCommand.asCFunction get() = JniGeneration.createCFunction(
-		packageName  = vkCommandPackage,
+		packageName  = vulkanPackage,
 		className    = "Commands",
 		functionName = genName,
 		returnType   = returnType?.primitive?.jniName,
@@ -151,8 +149,6 @@ object VkCommandGenerator {
 		params     = listOf("address" to "Long") + params.map { Pair(it.name, it.kType) },
 		modifiers  = listOf("external"),
 	)
-
-
 
 
 
@@ -248,33 +244,100 @@ object VkCommandGenerator {
 	 */
 
 
-
-	private fun writeCommandsK(providers: Iterable<VkProvider>) = KWriter.write(vkCommandDir, "Commands") {
+	private fun printCommandsK(providers: Iterable<VkProvider>) = KWriter.write(vulkanDir, "_Commands") {
 		start {
 			autogenComment()
-			package_(vkCommandPackage)
+			comment("This file's name has been prefixed with '_' so that it appears at the top of the package.")
+			suppressFile("Unused", "FunctionName")
+			package_(vulkanPackage)
+			imports(
+				MemStacks::class.qualifiedName + ".default",
+				Addressable::class.qualifiedName + ".Companion.addressOrNULL",
+				"$primitivePackage.*"
+			)
 		}
 
-		suppress("unused")
-		class_("object Commands") {
-			declaration("private external fun init(): Boolean")
-			declaration("init { init() }")
-			declaration("external fun getInstanceProcAddr(instance: Long, pname: Long): Long")
+		val commands = ArrayList<VkCommand>().apply {
+			for(p in providers)
+				for(c in p.commands)
+					if(c.shouldGen)
+						add(c)
+		}
 
-			for(p in providers) {
-				if(p.commands.isEmpty()) continue
-				group("Provided by ${p.name}", 1) {
-					for(c in p.commands)
-						if(c.shouldGen)
-							function(c.asKFunction)
-				}
+		val instanceCommands = commands.filter { it.type == VkCommand.Type.INSTANCE }
+		val deviceCommands = commands.filter { it.type == VkCommand.Type.DEVICE }
+		val standaloneCommands = commands.filter { it.type == VkCommand.Type.STANDALONE }
+
+		currentStyle = style(decSpacing = 3)
+
+		class_("object Commands") {
+			group(spacing = 1) {
+				declaration("private external fun init(): Boolean")
+				declaration("init { init() }")
+				declaration("external fun getInstanceProcAddr(instance: Long, pname: Long): Long")
+			}
+
+			group(spacing = 1) {
+				for(c in commands)
+					function(c.asKFunction)
+			}
+		}
+
+
+		class_("class InstanceCommands(private val instance: InstanceH)") {
+			declaration("private fun addr(name: String) = Commands.getInstanceProcAddr(instance.address, default.encodeUtf8NT(name).address)")
+
+			declaration(noStyle) {
+				writeln("private val stackPointer = default.push()")
+				for(c in instanceCommands)
+					writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
+				writeln("init { default.pop(stackPointer) }")
+			}
+
+			group(spacing = 1) {
+				for(c in instanceCommands)
+					function(c.asInstanceFunction)
+			}
+		}
+
+
+		class_("class DeviceCommands(private val device: DeviceH, private val instanceCommands: InstanceCommands)") {
+			declaration("private fun addr(name: String) = instanceCommands.getDeviceProcAddr(device, default.encodeUtf8NT(name))")
+
+			declaration(noStyle) {
+				writeln("private val stackPointer = default.push()")
+				for(c in deviceCommands)
+					writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
+				writeln("init { default.pop(stackPointer) }")
+			}
+
+			group(spacing = 1) {
+				for(c in deviceCommands)
+					function(c.asDeviceFunction)
+			}
+		}
+
+
+		class_("object StandaloneCommands") {
+			declaration("private fun addr(name: String) = Commands.getInstanceProcAddr(0L, default.encodeUtf8NT(name).address)")
+
+			declaration(noStyle) {
+				writeln("private val stackPointer = default.push()")
+				for(c in standaloneCommands)
+					writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
+				writeln("init { default.pop(stackPointer) }")
+			}
+
+			group(spacing = 1) {
+				for(c in standaloneCommands)
+					function(c.asStandaloneFunction)
 			}
 		}
 	}
 
 
 
-	private fun writeCommandsC(providers: Iterable<VkProvider>) = CWriter.write(cDir, "vk_commands") {
+	private fun printCommandsC(providers: Iterable<VkProvider>) = CWriter.write(cDir, "vk_commands") {
 		currentStyle = style(3, 0)
 
 		autogenComment()
@@ -324,7 +387,7 @@ object VkCommandGenerator {
 		// init function, gets the address of vkGetInstanceProcAddr. Must be called before using getInstanceProcAddr.
 		function(
 			JniGeneration.createCFunction(
-				packageName  = vkCommandPackage,
+				packageName  = vulkanPackage,
 				className    = "Commands",
 				functionName = "init",
 				returnType   = "jboolean",
@@ -336,7 +399,7 @@ object VkCommandGenerator {
 		// getInstanceProcAddr function, used to get the function addresses of all other Vulkan functions.
 		function(
 			JniGeneration.createCFunction(
-				packageName  = vkCommandPackage,
+				packageName  = vulkanPackage,
 				className    = "Commands",
 				functionName = "getInstanceProcAddr",
 				returnType   = "jlong",
@@ -344,56 +407,6 @@ object VkCommandGenerator {
 				contents     = "return (jlong) getInstanceProcAddr((VkInstance) instance, (const char*) pName);"
 			)
 		)
-
-/*		// InstanceCommands struct
-		declaration {
-			write("typedef struct")
-			braced {
-				writeln("VkInstance instance;")
-				for(p in providers) {
-					for(c in p.commands)
-						if(c.type == VkCommand.Type.INSTANCE)
-							writeln("PFN_${c.name} ${c.genName};")
-				}
-			}
-			writelnReset(" InstanceCommands;")
-		}
-
-		// DeviceCommands struct
-		declaration {
-			write("typedef struct")
-			braced {
-				writeln("VkDevice device;")
-				for(p in providers) {
-					for(c in p.commands)
-						if(c.type == VkCommand.Type.DEVICE)
-							writeln("PFN_${c.name} ${c.genName};")
-				}
-			}
-			writelnReset(" DeviceCommands;")
-		}
-
-		function(
-			JniGeneration.createCFunction(
-				packageName = vkCommandPackage,
-				className = "Commands",
-				functionName = "getInstanceCommandsSize",
-				returnType = "jlong",
-				params = emptyList(),
-				contents = "return (jlong) sizeof(InstanceCommands);"
-			)
-		)
-
-		function(
-			JniGeneration.createCFunction(
-				packageName = vkCommandPackage,
-				className = "Commands",
-				functionName = "getDeviceCommandsSize",
-				returnType = "jlong",
-				params = emptyList(),
-				contents = "return (jlong) sizeof(DeviceCommands);"
-			)
-		)*/
 
 		for(p in providers) {
 			if(p.commands.isEmpty()) continue
@@ -408,135 +421,6 @@ object VkCommandGenerator {
 				if(p is VkExtension && p.platform != null)
 					endif() // #endif
 			}
-		}
-	}
-
-
-
-	/*
-	Wrapper generation
-	 */
-
-
-
-	private fun writeInstanceCommands(providers: Iterable<VkProvider>) = KWriter.write(vkCommandDir, "InstanceCommands") {
-		start {
-			autogenComment()
-			package_(vkCommandPackage)
-			imports(
-				MemStacks::class,
-				Addressable::class.qualifiedName + ".Companion.addressOrNULL",
-				"$vulkanPackage.*",
-				"$primitivePackage.*"
-			)
-		}
-
-		suppress("unused")
-		class_("class InstanceCommands(private val instance: InstanceH)") {
-			declaration("private val stack = MemStacks.default")
-			declaration("private fun addr(name: String) = " +
-				"Commands.getInstanceProcAddr(instance.address, stack.encodeUtf8NT(name).address)")
-
-			multilineComment("Command addresses")
-			declaration(noStyle) {
-				writeln("private val stackPointer = stack.push()")
-
-				for(p in providers)
-					for(c in p.commands)
-						if(c.type == VkCommand.Type.INSTANCE && c.shouldGen)
-							writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
-
-				writeln("init { stack.pop(stackPointer) }")
-			}
-
-			multilineComment("Instance commands")
-
-			for(p in providers)
-				for(c in p.commands)
-					if(c.type == VkCommand.Type.INSTANCE && c.shouldGen)
-						function(c.asInstanceFunction)
-		}
-	}
-
-
-
-	private fun writeDeviceCommands(providers: Iterable<VkProvider>) = KWriter.write(vkCommandDir, "DeviceCommands") {
-		start {
-			autogenComment()
-			package_(vkCommandPackage)
-			imports(
-				MemStacks::class,
-				Addressable::class.qualifiedName + ".Companion.addressOrNULL",
-				"$vulkanPackage.*",
-				"$primitivePackage.*"
-			)
-		}
-
-		suppress("unused")
-		class_("class DeviceCommands(private val device: DeviceH, private val instanceCommands: InstanceCommands)") {
-			declaration("private val stack = MemStacks.default")
-			declaration("private fun addr(name: String) = " +
-				"instanceCommands.getDeviceProcAddr(device, stack.encodeUtf8NT(name))")
-
-			multilineComment("Command addresses")
-			declaration(noStyle) {
-				writeln("private val stackPointer = stack.push()")
-
-				for(p in providers)
-					for(c in p.commands)
-						if(c.type == VkCommand.Type.DEVICE && c.shouldGen)
-							writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
-
-				writeln("init { stack.pop(stackPointer) }")
-			}
-
-			multilineComment("Device commands")
-
-			for(p in providers)
-				for(c in p.commands)
-					if(c.type == VkCommand.Type.DEVICE && c.shouldGen)
-						function(c.asDeviceFunction)
-		}
-	}
-
-
-
-	private fun writeStandaloneCommands(providers: Iterable<VkProvider>) = KWriter.write(vkCommandDir, "StandaloneCommands") {
-		start {
-			autogenComment()
-			package_(vkCommandPackage)
-			imports(
-				MemStacks::class,
-				Addressable::class.qualifiedName + ".Companion.addressOrNULL",
-				"$vulkanPackage.*",
-				"$primitivePackage.*"
-			)
-		}
-
-		suppress("unused")
-		class_("object StandaloneCommands") {
-			declaration("private val stack = MemStacks.default")
-			declaration("private fun addr(name: String) = " +
-				"Commands.getInstanceProcAddr(0L, stack.encodeUtf8NT(name).address)")
-
-			multilineComment("Command addresses")
-			declaration(noStyle) {
-				writeln("private val stackPointer = stack.push()")
-
-				for(p in providers)
-					for(c in p.commands)
-						if(c.type == VkCommand.Type.STANDALONE && c.shouldGen)
-							writeln("private val ${c.genName}Addr = addr(\"${c.name}\")")
-
-				writeln("init { stack.pop(stackPointer) }")
-			}
-
-			multilineComment("Standalone commands")
-
-			for(p in providers)
-				for(c in p.commands)
-					if(c.type == VkCommand.Type.STANDALONE && c.shouldGen)
-						function(c.asStandaloneFunction)
 		}
 	}
 

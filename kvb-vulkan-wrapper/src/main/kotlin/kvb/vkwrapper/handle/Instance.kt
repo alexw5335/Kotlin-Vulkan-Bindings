@@ -4,7 +4,6 @@ import kvb.core.memory.MemStack
 import kvb.core.memory.MemStacks
 import kvb.vkwrapper.DebugUtils
 import kvb.vulkan.*
-import kvb.vulkan.command.InstanceCommands
 
 class Instance(address: Long) : InstanceH(address) {
 

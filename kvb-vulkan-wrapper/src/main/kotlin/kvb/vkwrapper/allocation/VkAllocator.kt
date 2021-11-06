@@ -13,6 +13,7 @@ interface VkAllocator {
 	class Allocation(val memory: DeviceMemory, val offset: Long)
 
 
+
 	/*
 	Abstract functions
 	 */

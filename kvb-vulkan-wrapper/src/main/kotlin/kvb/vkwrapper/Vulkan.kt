@@ -9,7 +9,6 @@ import kvb.vkwrapper.exception.VkCommandException
 import kvb.vkwrapper.persistent.ExtensionPropertiesP
 import kvb.vkwrapper.persistent.LayerPropertiesP
 import kvb.vulkan.*
-import kvb.vulkan.command.StandaloneCommands
 import kvb.vkwrapper.handle.Instance
 
 /**

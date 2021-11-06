@@ -88,7 +88,7 @@ class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 	 * Calls [push], then the [block], then [pop]. Any memory allocations made within the [block] are freed when exiting
 	 * the function. If an exception is thrown within the [block], then memory may not be freed. If the exception is
 	 * caught within another [with] or [get] block, then the memory will be freed. If the exception is caught at the
-	 * top level (outside of any [with] or [get] blocks), then the memory will not be freed, and [reset] should be
+	 * top level (outside any [with] or [get] blocks), then the memory will not be freed, and [reset] should be
 	 * called.
 	 */
 	inline fun with(block: MemStack.() -> Unit) {

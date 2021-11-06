@@ -2,7 +2,6 @@ package kvb.vkwrapper.handle
 
 import kvb.core.memory.MemStack
 import kvb.vulkan.*
-import kvb.vulkan.command.DeviceCommands
 import kvb.core.memory.MemStacks.default
 import kvb.core.memory.direct.DirectByteBuffer
 import kvb.vkwrapper.builder.GraphicsPipelineBuilder
