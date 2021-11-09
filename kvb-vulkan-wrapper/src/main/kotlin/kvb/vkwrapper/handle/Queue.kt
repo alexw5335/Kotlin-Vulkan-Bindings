@@ -21,6 +21,9 @@ class Queue(address: Long, val device: Device) : QueueH(address) {
 
 
 
+	/**
+	 * Implementation of vkQueueSubmit.
+	 */
 	fun submit(
 		infos: SubmitInfo.Buffer,
 		fence: Fence? = null
@@ -33,6 +36,9 @@ class Queue(address: Long, val device: Device) : QueueH(address) {
 
 
 
+	/**
+	 * Convenience implementation of vkQueueSubmit, uses a single submit info.
+	 */
 	fun submit(
 		commandBuffer: CommandBuffer,
 		fence: Fence? = null,
@@ -50,10 +56,32 @@ class Queue(address: Long, val device: Device) : QueueH(address) {
 
 
 
+	fun present(
+		waitSemaphore: Semaphore,
+		swapchain: Swapchain,
+		ii: IntArray,
+		stack: MemStack = default
+	) = stack.with {
+		commands.queuePresent(self, PresentInfo {
+
+		})
+	}
 	fun present(info: PresentInfo) = commands.queuePresent(this, info)
 
 
 
+	/*
+	struct VkPresentInfoKHR {
+    VkStructureType  sType
+    void*            pNext
+    uint32_t         waitSemaphoreCount
+    VkSemaphore*     pWaitSemaphores
+    uint32_t         swapchainCount
+    VkSwapchainKHR*  pSwapchains
+    uint32_t*        pImageIndices
+    VkResult*        pResults
+}
+	 */
 	fun waitIdle() = commands.queueWaitIdle(this)
 
 

@@ -148,6 +148,27 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 
 
 	/**
+	 * Convenience implementation of vkCmdBeginRenderPass. Uses the [framebuffer]'s render area.
+	 */
+	fun beginRenderPass(
+		renderPass  : RenderPass,
+		framebuffer : Framebuffer,
+		clearValues : ClearValue.Buffer,
+		contents    : SubpassContents    = SubpassContents.INLINE,
+		stack       : MemStack           = default
+	) = stack.with {
+		commands.cmdBeginRenderPass(self, RenderPassBeginInfo {
+			it.renderPass = renderPass
+			it.framebuffer = framebuffer
+			it.renderArea.extent.width = framebuffer.width
+			it.renderArea.extent.height = framebuffer.height
+			it.clearValues = clearValues
+		}, contents)
+	}
+
+
+
+	/**
 	 * Implementation of vkCmdEndRenderPass.
 	 */
 	fun endRenderPass() = commands.cmdEndRenderPass(this)

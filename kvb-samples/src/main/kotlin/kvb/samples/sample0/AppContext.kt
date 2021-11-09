@@ -207,17 +207,7 @@ class AppContext(window: WinApiWindow) {
 		commandBuffer.setViewport(surface.viewports)
 		commandBuffer.setScissor(surface.scissors)
 
-		MemStacks.with {
-			val info = RenderPassBeginInfo {
-				it.renderPass               = renderPass
-				it.framebuffer              = framebuffer
-				it.renderArea.extent.width  = surface.width
-				it.renderArea.extent.height = surface.height
-				it.clearValues              = surface.clearValues
-			}
-
-			commandBuffer.beginRenderPass(info, SubpassContents.INLINE)
-		}
+		commandBuffer.beginRenderPass(renderPass, framebuffer, surface.clearValues)
 
 		onRecord(commandBuffer)
 

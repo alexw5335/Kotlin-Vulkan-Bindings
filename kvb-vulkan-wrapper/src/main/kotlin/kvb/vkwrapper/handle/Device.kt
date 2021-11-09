@@ -272,7 +272,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	fun createFramebuffer(info: FramebufferCreateInfo, stack: MemStack = default) = stack.get {
 		val pointer = mallocPointer()
 		commands.createFramebuffer(info, null, pointer).check()
-		Framebuffer(pointer.value, self)
+		Framebuffer(pointer.value, self, info.width, info.height, info.layers)
 	}
 
 
@@ -371,41 +371,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 
 
 	/**
-	 * Convenience implementation of vkCreateImage for 2D images with exclusive sharing modes.
-	 */
-	fun createImage2D(
-		width         : Int,
-		height        : Int,
-		usage         : ImageUsageFlags,
-		format        : Format            = Format.R8G8B8A8_SRGB,
-		mipLevels     : Int               = 1,
-		arrayLayers   : Int               = 1,
-		samples       : SampleCountFlags  = SampleCountFlags._1,
-		initialLayout : ImageLayout       = ImageLayout.UNDEFINED,
-		flags         : ImageCreateFlags  = ImageCreateFlags(0),
-		stack         : MemStack          = default
-	) = stack.get {
-		createImage(ImageCreateInfo {
-			it.flags = flags
-			it.imageType = ImageType._2D
-			it.format = format
-			it.extent.width = width
-			it.extent.height = height
-			it.extent.depth = 1
-			it.mipLevels = mipLevels
-			it.arrayLayers = arrayLayers
-			it.samples = samples
-			it.tiling = ImageTiling.OPTIMAL
-			it.usage = usage
-			it.sharingMode = SharingMode.EXCLUSIVE
-			it.initialLayout = initialLayout
-		})
-	}
-
-
-
-	/**
-	 * Convenience implementation of vkCreateImage.
+	 * Convenience implementation of vkCreateImage. The sharing mode is inferred from the value of [queueFamilies].
 	 */
 	fun createImage(
 		type           : ImageType,
@@ -439,6 +405,40 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 			if(queueFamilies != null) it.queueFamilyIndices = this.wrapInts(queueFamilies)
 			it.initialLayout = initialLayout
 		}, stack)
+	}
+
+
+
+	/**
+	 * Convenience implementation of vkCreateImage for 2D images with exclusive sharing modes.
+	 */
+	fun createImage2D(
+		width         : Int,
+		height        : Int,
+		usage         : ImageUsageFlags,
+		format        : Format            = Format.R8G8B8A8_SRGB,
+		mipLevels     : Int               = 1,
+		arrayLayers   : Int               = 1,
+		samples       : SampleCountFlags  = SampleCountFlags._1,
+		initialLayout : ImageLayout       = ImageLayout.UNDEFINED,
+		flags         : ImageCreateFlags  = ImageCreateFlags(0),
+		stack         : MemStack          = default
+	) = stack.get {
+		createImage(ImageCreateInfo {
+			it.flags = flags
+			it.imageType = ImageType._2D
+			it.format = format
+			it.extent.width = width
+			it.extent.height = height
+			it.extent.depth = 1
+			it.mipLevels = mipLevels
+			it.arrayLayers = arrayLayers
+			it.samples = samples
+			it.tiling = ImageTiling.OPTIMAL
+			it.usage = usage
+			it.sharingMode = SharingMode.EXCLUSIVE
+			it.initialLayout = initialLayout
+		})
 	}
 
 

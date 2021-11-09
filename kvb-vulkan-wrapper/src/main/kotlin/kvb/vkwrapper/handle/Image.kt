@@ -8,13 +8,13 @@ import kvb.vkwrapper.persistent.MemoryRequirementsP
 import kvb.vulkan.*
 
 class Image(
-	address: Long,
-	val device: Device,
-	val type: ImageType,
-	val format: Format,
-	val mipLevels: Int,
-	val arrayLayers: Int,
-	val tiling: ImageTiling,
+	address         : Long,
+	val device      : Device,
+	val type        : ImageType,
+	val format      : Format,
+	val mipLevels   : Int,
+	val arrayLayers : Int,
+	val tiling      : ImageTiling,
 ) : ImageH(address) {
 
 

@@ -2,7 +2,13 @@ package kvb.vkwrapper.handle
 
 import kvb.vulkan.FramebufferH
 
-class Framebuffer(address: Long, val device: Device) : FramebufferH(address) {
+class Framebuffer(
+	address: Long,
+	val device: Device,
+	val width: Int,
+	val height: Int,
+	val layers: Int
+) : FramebufferH(address) {
 
 
 	/**
