@@ -8,7 +8,7 @@ utilities.
 This library does not use [LWJGL](https://github.com/LWJGL/lwjgl3). It is 
 instead intended to be an alternative to LWJGL's Vulkan bindings that takes 
 advantage of Kotlin-specific features. Due to the use of Kotlin's inline 
-classes and functions, this library is *cannot reasonably be used from Java*.
+classes and functions, this library *cannot reasonably be used from Java*.
 
 All Vulkan bindings are automatically generated from the 
 [Vulkan API registry](https://github.com/KhronosGroup/Vulkan-Headers/tree/master/registry). 
