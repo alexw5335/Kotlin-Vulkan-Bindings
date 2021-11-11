@@ -74,23 +74,15 @@ class Swapchain(address: Long, val device: Device, val format: Format) : Swapcha
 		timeout   : Long        = ULong.MAX_VALUE.toLong(),
 		semaphore : Semaphore?  = null,
 		fence     : Fence?      = null,
-		stack     : MemStack    = MemStacks.default
-	): Int {
-		var result: Result = Result.SUCCESS
-		var index = 0
+		stack     : MemStack    = default
+	): Int = stack.get {
+		val index = mallocInt()
 
-		stack.with {
-			val pIndex = mallocInt()
-			result = commands.acquireNextImage(self, timeout, semaphore, fence, pIndex)
-			index = pIndex.value
+		return when(val result = commands.acquireNextImage(self, timeout, semaphore, fence, index)) {
+			Result.ERROR_OUT_OF_DATE -> -1
+			Result.SUCCESS           -> index.value
+			else                     -> result.err()
 		}
-
-		if(result == Result.ERROR_OUT_OF_DATE)
-			return -1
-		else
-			result.check()
-
-		return index
 	}
 
 

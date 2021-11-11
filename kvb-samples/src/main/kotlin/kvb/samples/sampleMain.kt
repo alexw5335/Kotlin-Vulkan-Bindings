@@ -1,5 +1,9 @@
 package kvb.samples
 
+import kvb.core.Platform
+import kvb.samples.sample0.App
+
 fun main() {
-	println("working")
+	Platform.init()
+	App.run()
 }

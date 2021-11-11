@@ -33,6 +33,12 @@ class AppAllocator(
 
 
 
+	init {
+		bufferAllocator.memory.mapWhole()
+	}
+
+
+
 	fun destroy() {
 		dummyBuffer.destroy()
 		dummyImage.destroy()

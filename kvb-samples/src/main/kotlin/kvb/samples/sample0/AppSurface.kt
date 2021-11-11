@@ -41,7 +41,7 @@ class AppSurface(
 
 	val scissors = Vulkan.mem.Rect2D(1) { }
 
-	val clearValues = Vulkan.mem.ClearValue(1) { it[0].rgba(0F, 0.4F, 0.2F, 0F) }
+	val clearValues = Vulkan.mem.ClearValue(0F, 0.4F, 0.2F, 0F).asBuffer
 
 	val width get() = capabilities.currentExtent.width
 

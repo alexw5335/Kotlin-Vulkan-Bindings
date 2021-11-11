@@ -88,18 +88,6 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 
 
 	/**
-	 * Convenience implementation of vkCmdSetViewport. For a single viewport.
-	 */
-	fun setViewport(viewport: Viewport) = commands.cmdSetViewport(
-		commandBuffer = this,
-		firstViewport = 0,
-		pViewports    = viewport.asBuffer,
-		viewportCount = 1
-	)
-
-
-
-	/**
 	 * Implementation of vkCmdSetScissor.
 	 */
 	fun setScissor(
@@ -113,17 +101,6 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 		scissorCount 	= scissorCount
 	)
 
-
-
-	/**
-	 * Convenience implementation of vkCmdSetScissor. For a single scissor.
-	 */
-	fun setScissor(scissor: Rect2D) = commands.cmdSetScissor(
-		commandBuffer = this,
-		firstScissor = 0,
-		pScissors = scissor.asBuffer,
-		scissorCount = 1
-	)
 
 
 

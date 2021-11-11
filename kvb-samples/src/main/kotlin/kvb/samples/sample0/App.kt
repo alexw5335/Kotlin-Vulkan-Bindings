@@ -9,10 +9,12 @@ object App {
 
 	val context = AppContext(window)
 
+	val sampleShader = SampleShader
+
 
 
 	fun init() {
-		context.onRecord = {}
+		context.onRecord = sampleShader::record
 		context.record()
 		window.show()
 	}
@@ -21,13 +23,15 @@ object App {
 
 	fun update() {
 		while(true) {
+			val start = System.nanoTime()
 			WinApi.update()
-
 			if(WinApi.windows.isEmpty()) break
-
+			SampleShader.update()
 			context.present()
-
-			Thread.sleep(16)
+			println("${(System.nanoTime() - start) / 1000} us")
+			val toSleep = 16 - (System.nanoTime() - start) / 1000000
+			if(toSleep > 0)
+			Thread.sleep(toSleep)
 		}
 	}
 
@@ -40,7 +44,7 @@ object App {
 
 
 	fun run() {
-		//Runtime.getRuntime().exec("res/shader/compile.bat").waitFor()
+		Runtime.getRuntime().exec("res/shader/compile.bat").waitFor()
 		init()
 		update()
 		destroy()

@@ -72,7 +72,7 @@
 
 
 
-JNIEXPORT jlong JNICALL Java_memory_file_FileUtils_openFileForReading(
+JNIEXPORT jlong JNICALL Java_kvb_core_file_FileUtils_openFileForReading(
 	JNIEnv* env,
 	jobject obj,
 	jlong path
@@ -82,7 +82,7 @@ JNIEXPORT jlong JNICALL Java_memory_file_FileUtils_openFileForReading(
 
 
 
-JNIEXPORT jlong JNICALL Java_memory_file_FileUtils_getFileSize(
+JNIEXPORT jlong JNICALL Java_kvb_core_file_FileUtils_getFileSize(
 	JNIEnv* env,
 	jobject obj,
 	jlong file
@@ -92,7 +92,7 @@ JNIEXPORT jlong JNICALL Java_memory_file_FileUtils_getFileSize(
 
 
 
-JNIEXPORT void JNICALL Java_memory_file_FileUtils_readFile(
+JNIEXPORT void JNICALL Java_kvb_core_file_FileUtils_readFile(
 	JNIEnv* env,
 	jobject obj,
 	jlong file,

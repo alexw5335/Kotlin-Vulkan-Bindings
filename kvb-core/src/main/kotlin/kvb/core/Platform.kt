@@ -89,7 +89,7 @@ object Platform {
 
 
 
-	/** Triggers static initialisers. */
+	/** Triggers static initialisers. Subsequent calls will do nothing. */
 	fun init() { }
 
 

@@ -416,7 +416,8 @@ object VkCommandGenerator {
 					ifdef(p.platform.define) // #ifdef VK_USE_PLATFORM_...
 
 				for(c in p.commands)
-					function(c.asCFunction)
+					if(c.shouldGen)
+						function(c.asCFunction)
 
 				if(p is VkExtension && p.platform != null)
 					endif() // #endif

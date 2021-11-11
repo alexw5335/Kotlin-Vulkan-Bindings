@@ -250,7 +250,7 @@ inline fun Allocator.DescriptorSetAllocateInfo(block: (DescriptorSetAllocateInfo
 
 inline fun Allocator.DescriptorSetLayoutBinding(block: (DescriptorSetLayoutBinding) -> Unit) = DescriptorSetLayoutBinding(calloc(24)).apply(block)
 
-inline fun Allocator.DescriptorSetLayoutBinding(capacity: Int, block: (DescriptorSetLayoutBinding.Buffer) -> Unit) = DescriptorSetLayoutBinding.Buffer(calloc(capacity * 24), capacity).apply(block)
+inline fun Allocator.DescriptorSetLayoutBinding(capacity: Int, block: (DescriptorSetLayoutBinding.Buffer) -> Unit = {}) = DescriptorSetLayoutBinding.Buffer(calloc(capacity * 24), capacity).apply(block)
 
 inline fun Allocator.DescriptorSetLayoutCreateInfo(block: (DescriptorSetLayoutCreateInfo) -> Unit) = DescriptorSetLayoutCreateInfo(calloc(32)).apply(block).also { it.sType = 32 }
 

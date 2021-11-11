@@ -2,6 +2,7 @@ package kvb.samples.sample0
 
 import kvb.core.memory.MemStacks
 import kvb.vkwrapper.Vulkan
+import kvb.vkwrapper.exception.VkCommandException
 import kvb.vkwrapper.handle.Buffer
 import kvb.vkwrapper.handle.CommandBuffer
 import kvb.vkwrapper.handle.Framebuffer
@@ -179,6 +180,12 @@ class AppContext(window: WinApiWindow) {
 
 	fun allocateImage(image: Image) = allocator.imageAllocator.allocateImage(image)
 
+	fun createBuffer(size: Long, usage: BufferUsageFlags) = device.createBuffer(size, usage).also(::allocateBuffer)
+
+	fun createUniformBuffer(size: Long) = createBuffer(size, BufferUsageFlags.UNIFORM_BUFFER)
+
+	fun createVertexBuffer(size: Long) = createBuffer(size, BufferUsageFlags.VERTEX_BUFFER)
+
 
 
 	/*
@@ -220,6 +227,7 @@ class AppContext(window: WinApiWindow) {
 	fun present() {
 		val imageIndex = swapchain.acquireNextImage(semaphore = imageAvailableSemaphore)
 
+		// Resizing
 		if(imageIndex == -1) {
 			surface.updateDimensions()
 
@@ -232,25 +240,19 @@ class AppContext(window: WinApiWindow) {
 			return
 		}
 
-		MemStacks.with {
-			val submitInfo = SubmitInfo {
-				it.waitSemaphores   = wrapPointer(imageAvailableSemaphore)
-				it.waitDstStageMask = wrapInt(PipelineStageFlags.COLOR_ATTACHMENT_OUTPUT.value).asBuffer
-				it.commandBuffers   = wrapPointer(commandBuffers[imageIndex])
-				it.signalSemaphores = wrapPointer(renderFinishedSemaphore)
-			}
+		queue.submit(
+			waitSemaphore    = imageAvailableSemaphore,
+			waitDstStageMask = PipelineStageFlags.COLOR_ATTACHMENT_OUTPUT,
+			commandBuffer    = commandBuffers[imageIndex],
+			signalSemaphore  = renderFinishedSemaphore,
+			fence            = submitFence
+		)
 
-			// Command buffer in Pending state
-			queue.submit(submitInfo.asBuffer, fence = submitFence)
-
-			val presentInfo = PresentInfo {
-				it.waitSemaphores = wrapPointer(renderFinishedSemaphore)
-				it.swapchains     = wrapPointer(swapchain)
-				it.imageIndices   = wrapInt(imageIndex).asBuffer
-			}
-
-			queue.present(presentInfo)
-		}
+		queue.present(
+			waitSemaphore = renderFinishedSemaphore,
+			swapchain     = swapchain,
+			imageIndex    = imageIndex
+		)
 
 		// Wait for command buffer to return from pending --> executable.
 		submitFence.wait()
@@ -260,11 +262,13 @@ class AppContext(window: WinApiWindow) {
 
 
 	private fun onResize() {
+		val start = System.nanoTime()
 		commandPool.reset()
 		imageViews.forEach { it.destroy() }
 		framebuffers.forEach { it.destroy() }
 
-		// Recycle the swapchain's images when destroying it
+		// Recycle the swapchain's images when destroying it.
+		// Slightly faster (half a millisecond)
 		swapchain.let {
 			swapchain = createSwapchain(it)
 			it.destroy()
@@ -275,6 +279,8 @@ class AppContext(window: WinApiWindow) {
 		images = swapchain.getImages()
 		imageViews = createImageViews()
 		framebuffers = createFramebuffers()
+		val end = System.nanoTime()
+		println("${(end - start) / 1000} us to resize")
 	}
 
 

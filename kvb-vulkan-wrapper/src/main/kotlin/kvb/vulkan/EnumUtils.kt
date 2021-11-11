@@ -3,6 +3,12 @@ package kvb.vulkan
 import kvb.vkwrapper.exception.VkCommandException
 
 
+/**
+ * Throws a [VkCommandException] with this [Result].
+ */
+fun Result.err(): Nothing = throw VkCommandException(this)
+
+
 
 /**
  * Checks the return [Result] of a Vulkan command and throws a [VkCommandException] if the result is not

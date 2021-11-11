@@ -8,15 +8,15 @@ import java.nio.file.Paths
 class ShaderDirectory(val root: String, val device: Device, readImmediately: Boolean = true) {
 
 
-	init {
-		if(readImmediately) readShaders(device)
-	}
-
-
-
 	val shaders = HashMap<String, ArrayList<Shader>>()
 
 	val shaderCollections = ArrayList<ShaderCollection>()
+
+
+
+	init {
+		if(readImmediately) readShaders(device)
+	}
 
 
 
