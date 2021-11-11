@@ -4,7 +4,7 @@
 
 ### Native memory access
 All native memory accesses are done via sun.misc.Unsafe. Unsafe's functionality is exposed through a 
-[wrapper object](src/main/kotlin/kvb/core/memory/Unsafe.kt)of the same name. Unsafe is also used to allocate off-heap 
+[wrapper object](src/main/kotlin/kvb/core/memory/Unsafe.kt) of the same name. Unsafe is also used to allocate off-heap 
 memory.
 
 ### Native memory representation
