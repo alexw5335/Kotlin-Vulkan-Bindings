@@ -1,6 +1,7 @@
 package kvb.vkwrapper.builder
 
 import kvb.core.memory.Allocator
+import kvb.core.memory.DirectList
 import kvb.core.memory.Unsafe
 import kvb.vulkan.*
 
@@ -19,54 +20,11 @@ class RenderPassBuilder(private val allocator: Allocator) {
 
 
 
-	private var attachmentCount = 0
+	private var attachments = DirectList(allocator, 2) { AttachmentDescription(it) { } }
 
-	private var attachments = allocator.AttachmentDescription(5) { }
+	private var subpasses = DirectList(allocator, 2) { SubpassDescription(it) { } }
 
-
-
-	private var subpassCount = 0
-
-	private var subpasses = allocator.SubpassDescription(5) { }
-
-
-
-	private var dependencyCount = 0
-
-	private var dependencies = allocator.SubpassDependency(5) { }
-
-
-
-	/*
-	Struct buffer sizing
-	 */
-
-
-
-	private fun ensureAttachmentCapacity() {
-		if(attachmentCount == attachments.capacity) attachments.let { previous ->
-			attachments = allocator.AttachmentDescription(attachments.capacity * 2) { }
-			Unsafe.copy(previous, attachments)
-		}
-	}
-
-
-
-	private fun ensureSubpassCapacity() {
-		if(subpassCount == subpasses.capacity) subpasses.let { previous ->
-			subpasses = allocator.SubpassDescription(subpasses.capacity * 2) { }
-			Unsafe.copy(previous, subpasses)
-		}
-	}
-
-
-
-	private fun ensureDependencyCapacity() {
-		if(dependencyCount == dependencies.capacity) dependencies.let { previous ->
-			dependencies = allocator.SubpassDependency(dependencies.capacity * 2) { }
-			Unsafe.copy(previous, dependencies)
-		}
-	}
+	private var dependencies = DirectList(allocator, 2) { SubpassDependency(it) { } }
 
 
 
@@ -87,9 +45,7 @@ class RenderPassBuilder(private val allocator: Allocator) {
 		initialLayout  : ImageLayout                 = ImageLayout.UNDEFINED,
 		finalLayout    : ImageLayout
 	) {
-		ensureAttachmentCapacity()
-
-		attachments[attachmentCount++].let {
+		attachments.buffer[attachments.next].let {
 			it.flags = flags
 			it.format = format
 			it.samples = samples
@@ -108,9 +64,7 @@ class RenderPassBuilder(private val allocator: Allocator) {
 	 * Creates a [SubpassDescription] with a single colour attachment.
 	 */
 	fun colourSubpass(colourAttachment: Int, colourLayout: ImageLayout) {
-		ensureSubpassCapacity()
-
-		subpasses[subpassCount++].also {
+		subpasses.buffer[subpasses.next].also {
 			it.pipelineBindPoint = bindPoint
 			it.colorAttachmentCount = 1
 			it.colorAttachments = allocator.AttachmentReference { ref ->
@@ -130,9 +84,7 @@ class RenderPassBuilder(private val allocator: Allocator) {
 		preserveAttachments    : IntArray?                     = null,
 		flags                  : SubpassDescriptionFlags       = SubpassDescriptionFlags(0)
 	) {
-		ensureSubpassCapacity()
-
-		subpasses[subpassCount++].also {
+		subpasses.buffer[subpasses.next].also {
 			it.flags = flags
 			it.pipelineBindPoint = bindPoint
 
@@ -175,9 +127,7 @@ class RenderPassBuilder(private val allocator: Allocator) {
 		dstAccessMask   : AccessFlags,
 		dependencyFlags : DependencyFlags = DependencyFlags(0)
 	) {
-		ensureDependencyCapacity()
-
-		dependencies[dependencyCount++].also {
+		dependencies.buffer[dependencies.next].also {
 			it.srcSubpass = srcSubpass
 			it.dstSubpass = dstSubpass
 			it.srcStageMask = srcStageMask
@@ -203,12 +153,12 @@ class RenderPassBuilder(private val allocator: Allocator) {
 
 	fun build() = allocator.RenderPassCreateInfo {
 		it.flags = flags
+		it.attachmentCount = attachments.size
 		it.pAttachments    = attachments.address
-		it.attachmentCount = attachmentCount
+		it.subpassCount    = subpasses.size
 		it.pSubpasses      = subpasses.address
-		it.subpassCount    = subpassCount
+		it.dependencyCount = dependencies.size
 		it.pDependencies   = dependencies.address
-		it.dependencyCount = dependencyCount
 	}
 
 

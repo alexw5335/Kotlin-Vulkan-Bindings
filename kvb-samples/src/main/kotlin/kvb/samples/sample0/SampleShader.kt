@@ -108,7 +108,7 @@ object SampleShader : AppShader("sample") {
 		it.renderPass = context.renderPass
 		it.shaders(this)
 		it.topology = PrimitiveTopology.TRIANGLE_FAN
-		it.singleColourAttachment()
+		it.singleColourBlendAttachment()
 		it.dynamicViewportAndScissor()
 	}
 

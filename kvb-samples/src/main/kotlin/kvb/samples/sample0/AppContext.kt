@@ -190,6 +190,21 @@ class AppContext(window: WinApiWindow) {
 
 
 	/*
+	Uniform
+	 */
+
+
+
+	// Single DescriptorSet, single DescriptorSetLayout, multiple DescriptorSetBindings.
+	// 'Uniform' is an abstraction of DescriptorSetBinding.
+	//fun createUniforms()
+
+
+	//class Uniform(val set: DescriptorSet, val layout: DescriptorSetLayout)
+
+
+
+	/*
 	Update
 	 */
 
@@ -216,10 +231,9 @@ class AppContext(window: WinApiWindow) {
 		commandBuffer.setScissor(surface.scissors)
 
 		commandBuffer.beginRenderPass(renderPass, framebuffer, surface.clearValues)
-
 		onRecord(commandBuffer)
-
 		commandBuffer.endRenderPass()
+
 		commandBuffer.end() // CommandBuffer in executable state
 	}
 

@@ -1,35 +1,33 @@
-package kvb.samples
-
-import kvb.core.memory.Allocator
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Unsafe
+package kvb.core.memory
 
 class DirectList<T : DirectBuffer>(
 	private val allocator: Allocator,
-	initialCapacity: Int = 10,
+	initialCapacity: Int = 5,
 	private val create: Allocator.(Int) -> T
-) {
+) : Addressable {
 
 
-	var index = 0
+	var size = 0
 
 	var buffer = allocator.create(initialCapacity)
 
+	override val address get() = buffer.address
 
 
-	val next get() = index.also { ensureCapacity(); index++ }
+
+	val next get() = size.also { ensureCapacity(); size++ }
 
 
 
 	fun reset() {
-		index = 0
+		size = 0
 		Unsafe.set(buffer.address, buffer.byteSize, 0)
 	}
 
 
 
 	private fun ensureCapacity() {
-		if(index == buffer.capacity) buffer.let { previous ->
+		if(size == buffer.capacity) buffer.let { previous ->
 			buffer = allocator.create(buffer.capacity * 2)
 			Unsafe.copy(previous, buffer)
 		}

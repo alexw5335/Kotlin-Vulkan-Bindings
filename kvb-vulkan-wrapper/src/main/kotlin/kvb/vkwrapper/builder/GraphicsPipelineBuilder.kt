@@ -308,15 +308,17 @@ class GraphicsPipelineBuilder(private val allocator: Allocator) {
 		compareMask : Int       = UInt.MAX_VALUE.toInt(),
 		writeMask   : Int       = UInt.MAX_VALUE.toInt(),
 		reference   : Int       = 0
-	): Unit = depthStencilState.front.let {
+	) {
 		depthStencilState.stencilTestEnable = VK_TRUE
-		it.failOp = failOp
-		it.passOp = passOp
-		it.depthFailOp = depthFailOp
-		it.compareOp = compareOp
-		it.compareMask = compareMask
-		it.writeMask = writeMask
-		it.reference = reference
+		depthStencilState.front.let {
+			it.failOp = failOp
+			it.passOp = passOp
+			it.depthFailOp = depthFailOp
+			it.compareOp = compareOp
+			it.compareMask = compareMask
+			it.writeMask = writeMask
+			it.reference = reference
+		}
 	}
 
 
@@ -329,15 +331,17 @@ class GraphicsPipelineBuilder(private val allocator: Allocator) {
 		compareMask : Int       = UInt.MAX_VALUE.toInt(),
 		writeMask   : Int       = UInt.MAX_VALUE.toInt(),
 		reference   : Int       = 0
-	): Unit = depthStencilState.back.let {
+	) {
 		depthStencilState.stencilTestEnable = VK_TRUE
-		it.failOp = failOp
-		it.passOp = passOp
-		it.depthFailOp = depthFailOp
-		it.compareOp = compareOp
-		it.compareMask = compareMask
-		it.writeMask = writeMask
-		it.reference = reference
+		depthStencilState.back.let {
+			it.failOp = failOp
+			it.passOp = passOp
+			it.depthFailOp = depthFailOp
+			it.compareOp = compareOp
+			it.compareMask = compareMask
+			it.writeMask = writeMask
+			it.reference = reference
+		}
 	}
 
 
@@ -411,10 +415,11 @@ class GraphicsPipelineBuilder(private val allocator: Allocator) {
 
 
 
-	fun singleColourAttachment() {
-		colourBlendState.attachments = allocator.PipelineColorBlendAttachmentState {
+	fun singleColourBlendAttachment() {
+		colourBlendState.attachmentCount = 1
+		colourBlendState.pAttachments = allocator.PipelineColorBlendAttachmentState {
 			it.colorWriteMask = ColorComponentFlags { R + G + B + A }
-		}.asBuffer
+		}.address
 	}
 
 
