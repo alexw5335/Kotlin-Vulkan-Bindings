@@ -29,9 +29,8 @@ object App {
 			SampleShader.update()
 			context.present()
 			println("${(System.nanoTime() - start) / 1000} us")
-			val toSleep = 16 - (System.nanoTime() - start) / 1000000
-			if(toSleep > 0)
-			Thread.sleep(toSleep)
+		//	(16 - (System.nanoTime() - start) / 1000000).let { if(it > 0) Thread.sleep(it) }
+			Thread.sleep(1)
 		}
 	}
 

@@ -140,11 +140,11 @@ object SampleShader : AppShader("sample") {
 			it.setFloat(12, context.surface.height / 2F)
 		}
 
-		time += 0.1F
+		time += 0.001F
 
 		uniformBuffer2.flush {
-		//	it.setFloat(0, sin(time) * 200F)
-			//it.setFloat(4, sin(0.5F*time) * 200F)
+			it.setFloat(0, sin(time) * 200F)
+			it.setFloat(4, sin(0.5F*time) * 200F)
 		}
 	}
 

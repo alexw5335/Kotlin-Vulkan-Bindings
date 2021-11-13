@@ -252,10 +252,19 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 
 
 	/**
-	 * Convenience version of vkCreateFence.
+	 * Convenience implementation of vkCreateFence.
 	 */
 	fun createFence(stack: MemStack = default) = stack.get {
 		createFence(FenceCreateInfo { }, stack)
+	}
+
+
+
+	/**
+	 * Convenience implementation of vkCreateFence.
+	 */
+	fun createSignalledFence(stack: MemStack = default) = stack.get {
+		createFence(FenceCreateInfo { it.flags = FenceCreateFlags.SIGNALED }, stack)
 	}
 
 

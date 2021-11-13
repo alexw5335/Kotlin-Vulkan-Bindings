@@ -3,10 +3,7 @@ package kvb.samples.sample0
 import kvb.core.memory.MemStacks
 import kvb.vkwrapper.Vulkan
 import kvb.vkwrapper.exception.VkCommandException
-import kvb.vkwrapper.handle.Buffer
-import kvb.vkwrapper.handle.CommandBuffer
-import kvb.vkwrapper.handle.Framebuffer
-import kvb.vkwrapper.handle.Image
+import kvb.vkwrapper.handle.*
 import kvb.vkwrapper.shader.ShaderDirectory
 import kvb.vulkan.*
 import kvb.window.winapi.WinApiWindow
@@ -74,11 +71,15 @@ class AppContext(window: WinApiWindow) {
 
 
 
-	val imageAvailableSemaphore = device.createSemaphore()
+	val framesInFlight = 2
 
-	val renderFinishedSemaphore = device.createSemaphore()
+	val imageAvailableSemaphores = List(framesInFlight) { device.createSemaphore() }
 
-	val submitFence = device.createFence()
+	val renderFinishedSemaphores = List(framesInFlight) { device.createSemaphore() }
+
+	val inFlightFences = List(framesInFlight) { device.createSignalledFence() }
+
+	val imagesInFlight = arrayOfNulls<Fence>(images.size)
 
 
 
@@ -224,8 +225,14 @@ class AppContext(window: WinApiWindow) {
 
 
 
+	var currentFrame = 0
+
+
+
 	fun present() {
-		val imageIndex = swapchain.acquireNextImage(semaphore = imageAvailableSemaphore)
+		inFlightFences[currentFrame].wait()
+
+		val imageIndex = swapchain.acquireNextImage(semaphore = imageAvailableSemaphores[currentFrame])
 
 		// Resizing
 		if(imageIndex == -1) {
@@ -240,23 +247,25 @@ class AppContext(window: WinApiWindow) {
 			return
 		}
 
+		imagesInFlight[imageIndex]?.wait()
+		imagesInFlight[imageIndex] = inFlightFences[currentFrame]
+		inFlightFences[currentFrame].reset()
+
 		queue.submit(
-			waitSemaphore    = imageAvailableSemaphore,
+			waitSemaphore    = imageAvailableSemaphores[currentFrame],
 			waitDstStageMask = PipelineStageFlags.COLOR_ATTACHMENT_OUTPUT,
 			commandBuffer    = commandBuffers[imageIndex],
-			signalSemaphore  = renderFinishedSemaphore,
-			fence            = submitFence
+			signalSemaphore  = renderFinishedSemaphores[currentFrame],
+			fence            = inFlightFences[currentFrame]
 		)
 
 		queue.present(
-			waitSemaphore = renderFinishedSemaphore,
+			waitSemaphore = renderFinishedSemaphores[currentFrame],
 			swapchain     = swapchain,
 			imageIndex    = imageIndex
 		)
 
-		// Wait for command buffer to return from pending --> executable.
-		submitFence.wait()
-		submitFence.reset()
+		currentFrame = (currentFrame + 1) % framesInFlight
 	}
 
 
@@ -280,7 +289,7 @@ class AppContext(window: WinApiWindow) {
 		imageViews = createImageViews()
 		framebuffers = createFramebuffers()
 		val end = System.nanoTime()
-		println("${(end - start) / 1000} us to resize")
+		//println("${(end - start) / 1000} us to resize")
 	}
 
 
@@ -292,9 +301,10 @@ class AppContext(window: WinApiWindow) {
 
 
 	fun destroy() {
-		imageAvailableSemaphore.destroy()
-		renderFinishedSemaphore.destroy()
-		submitFence.destroy()
+		device.waitForFences(inFlightFences)
+		imageAvailableSemaphores.forEach { it.destroy() }
+		renderFinishedSemaphores.forEach { it.destroy() }
+		inFlightFences.forEach { it.destroy() }
 		allocator.destroy()
 		uniformPool.destroy()
 		shaderDirectory.destroy()

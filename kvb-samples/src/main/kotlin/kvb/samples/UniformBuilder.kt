@@ -3,22 +3,27 @@ package kvb.samples
 import kvb.core.memory.Allocator
 import kvb.core.memory.Unsafe
 import kvb.vkwrapper.handle.DescriptorPool
+import kvb.vkwrapper.handle.DescriptorSetLayout
 import kvb.vulkan.*
 
-class UniformBuilder(
-	private val pool: DescriptorPool,
-	private val allocator: Allocator
-) {
+class UniformBuilder(private val pool: DescriptorPool, private val allocator: Allocator) {
 
 
-	private var bindingCount = 0
+	val bindings = DirectList(allocator) { DescriptorSetLayoutBinding(it) }
 
-	private var bindings = allocator.DescriptorSetLayoutBinding(5)
 
-	private fun ensureBindingsCapacity() {
-		if(bindingCount == bindings.capacity) bindings.let { previous ->
-			bindings = allocator.DescriptorSetLayoutBinding(bindingCount * 2)
-			Unsafe.copy(previous, bindings)
+
+	fun binding(
+		binding : Int,
+		type    : DescriptorType,
+		count   : Int,
+		stages  : ShaderStageFlags
+	) {
+		bindings.buffer[bindings.next].let {
+			it.binding = binding
+			it.descriptorType = type
+			it.descriptorCount = count
+			it.stageFlags = stages
 		}
 	}
 
