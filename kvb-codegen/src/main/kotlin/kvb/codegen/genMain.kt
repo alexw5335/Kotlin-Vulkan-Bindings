@@ -62,11 +62,20 @@ private fun genUtils() = VkUtilsGenerator.generate()
 
 
 fun main() {
+	for(e in scraper.providers.extensions) {
+		if(e.promotedTo != null) {
+			println("promoted: ${e.name} ${e.promotedTo} ${e.types.enums.size} ${e.types.bitmasks.size} ${e.types.structs.size} ${e.commands.size} ${e.types.aliased.size}")
+		}
+
+		if(e.deprecatedBy != null) {
+			println("deprecated: ${e.name} ${e.deprecatedBy} ${e.types.enums.size} ${e.types.bitmasks.size} ${e.types.structs.size} ${e.commands.size} ${e.types.aliased.size}")
+		}
+	}
 	//genEnums()
 	//genBitmasks()
 	//genHandles()
 	//genStructs()
-	genCommands()
+	//genCommands()
 	//genAllocations()
 	//genConstants()
 	//genUtils()
@@ -80,28 +89,18 @@ Packages
 
 
 
-const val genDir = "gen"
+const val primitivePackage = "kvb.core.memory.direct"
+
+const val vulkanPackage = "kvb.vulkan"
 
 
 
-const val rootPackage = "kvb"
+val primitiveDir = "gen/kvb/core/memory/direct".toPath
 
-const val primitivePackage = "$rootPackage.core.memory.direct"
+val vulkanDir = "gen/kvb/vulkan".toPath
 
-const val vulkanPackage = "$rootPackage.vulkan"
-
-
-
-val primitiveDir get() = primitivePackage.packageToPath
-
-val vulkanDir get() = vulkanPackage.packageToPath
-
-val cDir get() = "$genDir/c".toPath
+val cDir = "gen/c".toPath
 
 
 
-private val String.toPath get() =
-	Paths.get(this).also(Files::createDirectories)
-
-private val String.packageToPath get() =
-	Paths.get(genDir + "/" + replace('.', '/')).also(Files::createDirectories)
+private val String.toPath get() = Paths.get(this).also(Files::createDirectories)

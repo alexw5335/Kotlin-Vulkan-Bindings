@@ -2,7 +2,7 @@ package kvb.codegen.vulkan.scraper.list
 
 import kvb.codegen.vulkan.scraper.type.*
 
-class VkTypeList(val all: VkElementList<VkType> = VkElementList()) : List<VkType> by all {
+class VkTypeList(private val all: VkElementList<VkType> = VkElementList()) : List<VkType> by all {
 
 
 	val enums = VkElementList<VkTypeEnum>()

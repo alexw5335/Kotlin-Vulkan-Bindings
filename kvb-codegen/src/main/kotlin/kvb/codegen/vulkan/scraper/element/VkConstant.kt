@@ -6,7 +6,7 @@ class VkConstant(
 	override val name : String,
 	val value         : String,
 	val isAliased     : Boolean = false
-) : VkGenElement {
+) : VkProvidedElement {
 
 
 	override val shouldGen = VkGenUtils.shouldGenConstant(this)

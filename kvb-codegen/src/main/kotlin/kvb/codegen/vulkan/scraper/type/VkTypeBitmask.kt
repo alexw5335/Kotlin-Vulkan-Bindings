@@ -1,6 +1,7 @@
 package kvb.codegen.vulkan.scraper.type
 
 import kvb.codegen.vulkan.VkGenUtils
+import kvb.codegen.vulkan.scraper.element.VkProvider
 import kvb.codegen.writer.procedural.Primitive
 
 class VkTypeBitmask(
@@ -10,21 +11,37 @@ class VkTypeBitmask(
 ): VkType {
 
 
-	val shortName = VkGenUtils.bitmaskShortName(name)
+	/*
+	Type implementation
+	 */
+
+
+
+	override val shortName = VkGenUtils.bitmaskShortName(name)
+
+	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
+
+	override lateinit var provider: VkProvider
+
+
+
+	/*
+	Properties
+	 */
 
 
 
 	/**
 	 * 64-bit bitmasks use [bitvalues] rather than [requires] to specify their [enum].
 	 */
-	val is64Bit = bitvalues != null
+	val is64Bit get() = bitvalues != null
 
 
 
 	/**
 	 * Some bitmasks are empty and reserved for future use or are simply not used.
 	 */
-	val implemented = requires != null || (is64Bit && bitvalues != null)
+	val implemented get() = requires != null || (is64Bit && bitvalues != null)
 
 
 
@@ -32,20 +49,6 @@ class VkTypeBitmask(
 	 * If extra functions should be generated for this bitmask.
 	 */
 	val isExtraGen get() = VkGenUtils.extraGenBitmasks.contains(name)
-
-
-
-	/*
-	Type implementation
-	 */
-
-
-
-	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
-
-	override val shouldGen get() = VkGenUtils.shouldGenBitmask(this)
-
-	override val genName get() = if(shouldGen) shortName else primitive.kName
 
 
 

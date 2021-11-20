@@ -10,7 +10,7 @@ class VkCommand(
 	val returnType    : VkType?,
 	val params        : VkElementList<VkVar>,
 	val isAliased     : Boolean
-) : VkGenElement {
+) : VkProvidedElement {
 
 
 	/*

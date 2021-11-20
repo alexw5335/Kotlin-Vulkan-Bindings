@@ -138,7 +138,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 				// Special cases for redefined platform-specific structs, treated as native types.
 				// 'ANativeWindow', 'AHardwareBuffer', and 'CAMetalLayer'.
-				// Thees are 'incomplete type definitions' that avoid unnecessary compile-time dependencies.
+				// These are 'incomplete type definitions' that avoid unnecessary compile-time dependencies.
 				// So, they do not have 'requires' tags, unlike the other platform-specific native types.
 				return VkTypeNative(name, VkScraperUtils.resolveNativeType(name))
 			}
@@ -380,7 +380,7 @@ class VkScraper(private val registry: VkXmlElement) {
 				return ((if(enum.is64Bit) 1L else 1) shl it.toInt()).toString()
 			}
 
-			// Extension enum, See scripts/generator.py file in the KhronosGroup/Vulkan-Docs registry for the formula.
+			// Extension enum, See scripts/generator.py file in the KhronosGroup/Vulkan-Docs repository for the formula.
 			element["offset"]?.let {
 				return (1000000000 + (extNumber!! - 1) * 1000 + it.toInt()).toString()
 			}

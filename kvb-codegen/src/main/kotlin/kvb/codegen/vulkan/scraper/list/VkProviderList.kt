@@ -4,8 +4,7 @@ import kvb.codegen.vulkan.scraper.element.VkExtension
 import kvb.codegen.vulkan.scraper.element.VkFeature
 import kvb.codegen.vulkan.scraper.element.VkProvider
 
-class VkProviderList(val providers: VkElementList<VkProvider> = VkElementList()) : List<VkProvider> by providers {
-
+class VkProviderList(private val all: VkElementList<VkProvider> = VkElementList()) : List<VkProvider> by all {
 
 
 	val features = VkElementList<VkFeature>()
@@ -15,7 +14,7 @@ class VkProviderList(val providers: VkElementList<VkProvider> = VkElementList())
 
 
 	fun add(provider: VkProvider) {
-		providers.add(provider)
+		all.add(provider)
 
 		when(provider) {
 			is VkFeature -> features.add(provider)

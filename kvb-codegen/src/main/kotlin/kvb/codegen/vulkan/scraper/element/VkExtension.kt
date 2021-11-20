@@ -17,5 +17,7 @@ class VkExtension(
 
 	override val commands = VkElementList<VkCommand>()
 
+	override val postfix = name.split('_')[1]
+
 
 }

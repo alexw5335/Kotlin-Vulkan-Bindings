@@ -10,5 +10,7 @@ sealed interface VkProvider : VkElement {
 
 	val commands: VkElementList<VkCommand>
 
+	val postfix: String
+
 
 }

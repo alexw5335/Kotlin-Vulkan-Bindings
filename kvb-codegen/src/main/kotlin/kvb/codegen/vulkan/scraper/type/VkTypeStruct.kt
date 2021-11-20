@@ -1,6 +1,7 @@
 package kvb.codegen.vulkan.scraper.type
 
 import kvb.codegen.vulkan.VkGenUtils
+import kvb.codegen.vulkan.scraper.element.VkProvider
 import kvb.codegen.vulkan.scraper.element.VkVar
 import kvb.codegen.writer.procedural.Primitive
 import kvb.core.struct.StructLayout
@@ -10,9 +11,6 @@ import kvb.codegen.vulkan.scraper.list.VkElementList
 class VkTypeStruct(override val name: String, val isUnion: Boolean) : VkType {
 
 
-	val shortName = VkGenUtils.structShortName(name)
-
-
 
 	/*
 	Type implementation
@@ -20,22 +18,11 @@ class VkTypeStruct(override val name: String, val isUnion: Boolean) : VkType {
 
 
 
-	/**
-	 * All structs are generated (Does not take into account extension deprecation, which is handled separately).
-	 */
-	override val shouldGen = true
+	override val shortName = VkGenUtils.structShortName(name)
 
-	/**
-	 * Edge-case for the getAccelerationStructureMemoryRequirementsNV command, which refers to vkMemoryRequirements2KHR
-	 * which is an alias for VkMemoryRequirements2. This is the only case where a struct alias is referred to in a
-	 * command.
-	 */
-	override val genName = if(name == "VkMemoryRequirements2KHR") "MemoryRequirements2" else shortName
-
-	/**
-	 * No structs are passed by value in Vulkan anyway. If any were, they would be passed by reference through jni.
-	 */
 	override val primitive = Primitive.LONG
+
+	override lateinit var provider: VkProvider
 
 
 

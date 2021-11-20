@@ -1,5 +1,6 @@
 package kvb.codegen.vulkan.scraper.type
 
+import kvb.codegen.vulkan.scraper.element.VkProvider
 import kvb.codegen.writer.procedural.Primitive
 
 /**
@@ -8,11 +9,11 @@ import kvb.codegen.writer.procedural.Primitive
 class VkTypeFuncPointer(override val name: String): VkType {
 
 
+	override val shortName = name
+
 	override val primitive = Primitive.LONG
 
-	override val shouldGen = true
-
-	override val genName = primitive.kName
+	override lateinit var provider: VkProvider
 
 
 }

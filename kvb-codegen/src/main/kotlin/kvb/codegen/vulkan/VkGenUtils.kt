@@ -16,15 +16,16 @@ object VkGenUtils {
 
 
 
-	fun shouldGenCommand(command: VkCommand)       = !command.isAliased && !nonGeneratedCommands.contains(command.name)
 
 	fun shouldGenEnum(enum: VkTypeEnum)            = enum.entries.isNotEmpty() && !nonGeneratedEnums.contains(enum.name) && (!enum.isFlagBits || enum.bitmask!!.shouldGen)
 
 	fun shouldGenBitmask(bitmask: VkTypeBitmask)   = bitmask.implemented && bitmask.enum!!.entries.isNotEmpty()
 
-	fun shouldGenExtension(extension: VkExtension) = extension.deprecatedBy == null && extension.promotedTo == null && !extension.disabled
+	fun shouldGenExtension(extension: VkExtension) = extension.deprecatedBy == null && !extension.disabled
 
 	fun shouldGenProvider(provider: VkProvider)    = provider !is VkExtension || shouldGenExtension(provider)
+
+	fun shouldGenCommand(command: VkCommand)       = !command.isAliased && !nonGeneratedCommands.contains(command.name)
 
 	fun shouldGenEnumEntry(entry: VkEnumEntry)     = !entry.isAliased && !(entry.provider is VkExtension && !shouldGenExtension(entry.provider as VkExtension) )
 
@@ -168,7 +169,8 @@ object VkGenUtils {
 
 	/**
 	 * Type names that should not have their extension postfixes removed due to naming conflicts. These conflicts are
-	 * not due to aliasing or extension promoting.
+	 * not due to aliasing or extension promoting. The conflicting types are unique but happen to share their name with
+	 * another type.
 	 */
 	val postfixedTypes = hashSetOf(
 		// Enum entries

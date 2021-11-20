@@ -28,13 +28,6 @@ class VkElementList<T : VkElement>(val elements: MutableList<T> = ArrayList()) :
 
 
 	/**
-	 * Calls [add] for all of the [elements].
-	 */
-	fun addAll(elements: Iterable<T>) = elements.forEach(::add)
-
-
-
-	/**
 	 * Gets the element in the list that has the specified [name] or throws a [NoSuchElementException].
 	 */
 	fun fromName(name: String) = elementsByName[name] ?: throw NoSuchElementException("No element of name '$name'")

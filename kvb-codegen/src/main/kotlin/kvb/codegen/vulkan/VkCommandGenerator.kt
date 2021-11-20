@@ -12,7 +12,6 @@ import kvb.codegen.writer.procedural.JniGeneration
 import kvb.codegen.writer.procedural.KFunction
 import kvb.codegen.writer.procedural.Primitive
 import kvb.core.memory.Addressable
-import kvb.core.memory.Allocator
 import kvb.core.memory.MemStacks
 
 object VkCommandGenerator {
