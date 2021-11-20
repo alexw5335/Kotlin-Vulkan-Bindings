@@ -437,7 +437,7 @@ class VkScraper(private val registry: VkXmlElement) {
 		// Populate the bit enums of the bitmasks and FlagBits enums.
 		for(bitmask in types.bitmasks) {
 			// 'requires' is used for 32-bit bitmasks. 'bitvalues' is used for 64-bit bitmasks.
-			(bitmask.requires ?: bitmask.bitvalues)?.let {
+			(bitmask.requires ?: bitmask.bitValues)?.let {
 				val enum = types.enums.fromName(it)
 				bitmask.enum = enum
 				enum.bitmask = bitmask

@@ -9,37 +9,24 @@ import kvb.codegen.vulkan.scraper.list.VkElementList
 class VkTypeEnum(override val name: String) : VkType {
 
 
-	/*
-	Type implementation
+	/**
+	 * If this enum represents the bit flags of a [bitmask][VkTypeBitmask]].
 	 */
+	val isFlagBits = name.contains("FlagBits")
 
 
 
-	override val shortName = VkGenUtils.enumShortName(name)
+	/**
+	 * If this enum represents the bit flags of a 64-bit [bitmask][VkTypeBitmask].
+	 */
+	val is64Bit = isFlagBits && name.contains("FlagBits2")
 
+
+
+	/**
+	 * 64=bit enums are represented by [Long] and 32-bit enums are represented by [Int].
+	 */
 	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
-
-	override lateinit var provider: VkProvider
-
-
-
-	/*
-	Properties
-	 */
-
-
-
-	/**
-	 * 64-bit enums are always flag bits and they have 'FlagBits2' before the extension postfix.
-	 */
-	val is64Bit get() = shortName.endsWith('2')
-
-
-
-	/**
-	 * If this enum represents the flag bits of a bitmask. These always end in 'FlagBits' or 'FlagBits2'.
-	 */
-	val isFlagBits get() = is64Bit || shortName.endsWith("FlagBits")
 
 
 

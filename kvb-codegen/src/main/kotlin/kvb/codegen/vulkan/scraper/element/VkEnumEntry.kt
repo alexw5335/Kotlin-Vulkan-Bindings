@@ -8,7 +8,7 @@ class VkEnumEntry(
 	val valueString   : String,
 	val enum          : VkTypeEnum,
 	val isAliased     : Boolean
-) : VkProvidedElement {
+) : VkElement {
 
 
 	val value = if(valueString.startsWith("0x"))
@@ -18,25 +18,9 @@ class VkEnumEntry(
 
 
 
-	/*
-	Generation implementation
-	 */
+	val shortName = VkGenUtils.enumEntryShortName(name, enum)
 
-
-
-	override val genName = VkGenUtils.enumEntryShortName(name, enum)
-
-	override val shouldGen get() = VkGenUtils.shouldGenEnumEntry(this)
-
-
-
-	/*
-	Lateinit
-	 */
-
-
-
-	var provider: VkProvider? = null
+	lateinit var provider: VkProvider
 
 
 }

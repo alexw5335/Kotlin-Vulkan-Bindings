@@ -6,12 +6,10 @@ class VkConstant(
 	override val name : String,
 	val value         : String,
 	val isAliased     : Boolean = false
-) : VkProvidedElement {
+) : VkElement {
 
 
-	override val shouldGen = VkGenUtils.shouldGenConstant(this)
-
-	override val genName = VkGenUtils.constantShortName(name)
+	val shortName = VkGenUtils.constantShortName(name)
 
 
 }

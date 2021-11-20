@@ -10,18 +10,10 @@ class VkCommand(
 	val returnType    : VkType?,
 	val params        : VkElementList<VkVar>,
 	val isAliased     : Boolean
-) : VkProvidedElement {
+) : VkElement {
 
 
-	/*
-	Gen implementation
-	 */
-
-
-
-	override val shouldGen = VkGenUtils.shouldGenCommand(this)
-
-	override val genName = VkGenUtils.commandShortName(name)
+	val shortName = VkGenUtils.commandShortName(name)
 
 
 
