@@ -13,10 +13,6 @@ class VkCommand(
 ) : VkElement {
 
 
-	val shortName = VkGenUtils.commandShortName(name)
-
-
-
 	enum class Type {
 		INSTANCE,
 		DEVICE,

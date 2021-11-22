@@ -17,9 +17,6 @@ class VkEnumEntry(
 		valueString.toLong()
 
 
-
-	val shortName = VkGenUtils.enumEntryShortName(name, enum)
-
 	lateinit var provider: VkProvider
 
 
