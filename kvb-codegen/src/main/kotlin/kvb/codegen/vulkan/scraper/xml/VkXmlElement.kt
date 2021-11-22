@@ -5,7 +5,7 @@ class VkXmlElement(
 	val attribs  : Map<String, String>,
 	val children : List<VkXmlElement>,
 	val text     : String?
-) {
+): Iterable<VkXmlElement> by children {
 
 
 	/*

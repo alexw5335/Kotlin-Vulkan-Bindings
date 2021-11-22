@@ -45,6 +45,8 @@ enum class VkPostfix(val id: String) {
 
 		fun postfixUnderscoreLength(string: String) = fromPostfix(string).let { if(it == null) 0 else it.id.length + 1 }
 
+		fun drop(string: String) = string.dropLast(postfixLength(string))
+
 	}
 
 

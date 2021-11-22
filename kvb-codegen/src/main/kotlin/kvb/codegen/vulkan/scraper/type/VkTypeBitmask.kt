@@ -4,16 +4,9 @@ import kvb.codegen.writer.procedural.Primitive
 
 class VkTypeBitmask(
 	override val name: String,
-	val requires: String?,
-	val bitValues: String?
+	val is64Bit: Boolean,
+	val enumName: String?
 ): VkType {
-
-
-	/**
-	 * 64-bit bitmasks use [bitValues] rather than [requires] to specify their [enum].
-	 */
-	val is64Bit = bitValues != null
-
 
 
 	/**
@@ -26,7 +19,7 @@ class VkTypeBitmask(
 	/**
 	 * Some bitmasks are empty and reserved for future use or are simply not used.
 	 */
-	val implemented get() = requires != null || bitValues != null
+	val implemented = enumName != null
 
 
 

@@ -19,6 +19,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 	fun scrape() {
+		scrapeShortNames()
 		scrapePlatforms()
 		scrapeConstants()
 		scrapeTypes()
@@ -32,7 +33,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 	/*
-	Variables
+	Elements
 	 */
 
 
@@ -46,6 +47,55 @@ class VkScraper(private val registry: VkXmlElement) {
 	val commands = VkElementList<VkCommand>()
 
 	val providers = VkProviderList()
+
+
+
+	/*
+	Naming
+	 */
+
+
+
+	private class ShortNameList {
+
+		private val postfixed = HashSet<String>()
+
+		private val nameMap = HashMap<String, String>()
+
+		fun add(name: String) {
+			nameMap[name]?.let {
+				postfixed.add(it)
+				postfixed.add(name)
+			}
+
+			nameMap[name] = name
+		}
+
+		fun contains(shortName: String) = postfixed.contains(shortName)
+
+	}
+
+
+
+	private val typeShortNames = ShortNameList()
+
+	private val commandShortNames = ShortNameList()
+
+
+
+	private fun scrapeShortNames() {
+		for(element in registry.child("types"))
+			if(element.type == "type")
+				typeShortNames.add(element.text ?: element.child("name").text!!)
+
+		for(element in registry.child("commands"))
+			if(element.type == "command")
+				commandShortNames.add(element["name"] ?: element.child("proto").child("name").text!!)
+	}
+
+
+
+	private val String.trimVkAndPostfix get() = VkPostfix.drop(drop(2))
 
 
 
@@ -116,8 +166,9 @@ class VkScraper(private val registry: VkXmlElement) {
 	 * types have been scraped.
 	 */
 	private fun scrapeTypeElement(element: VkXmlElement): VkType {
+		// Name is either an attribute or a child element.
 		val name = element["name"]
-			?: element.child("name").text // Flags
+			?: element.child("name").text
 			?: err(element)
 
 		element["alias"]?.let {
@@ -126,7 +177,12 @@ class VkScraper(private val registry: VkXmlElement) {
 
 		element["category"]?.let { category ->
 			if(category == "bitmask") {
-				return VkTypeBitmask(name, element["requires"], element["bitvalues"])
+				// 'bitvalues' is only present in 64-bit bitmasks.
+				return VkTypeBitmask(
+					name     = name,
+					is64Bit  = element["bitvalues"] != null,
+					enumName = element["requires"] ?: element["bitvalues"]
+				)
 			}
 
 			if(category == "basetype") {
