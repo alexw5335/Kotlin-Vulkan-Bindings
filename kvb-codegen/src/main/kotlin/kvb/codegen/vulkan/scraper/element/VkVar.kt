@@ -19,7 +19,7 @@ import kvb.codegen.vulkan.scraper.type.VkTypeStruct
  * - [index]: The index of the var in a struct or function (In the original structs/commands, not the generated ones).
  */
 class VkVar(
-	override val name: String,
+	val name: String,
 	val type: VkType,
 	val isOptional: Boolean,
 	val len: String?,
@@ -29,7 +29,7 @@ class VkVar(
 	val sType: VkEnumEntry?,
 	val modifier: VkModifier,
 	val index: Int
-) : VkElement {
+) {
 
 
 	/*

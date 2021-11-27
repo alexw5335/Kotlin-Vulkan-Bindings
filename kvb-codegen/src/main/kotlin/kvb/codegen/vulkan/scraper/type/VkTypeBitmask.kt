@@ -9,23 +9,26 @@ class VkTypeBitmask(
 ): VkType {
 
 
-	/**
-	 * 64-bit bitmasks are represented by [Long] and 32-bit bitmasks are represented by [Int].
+	/*
+	Type implementation
 	 */
+
+
+
+	override lateinit var genName: String
+
 	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
 
 
 
-	/**
-	 * Some bitmasks are empty and reserved for future use or are simply not used.
+	/*
+	Properties
 	 */
+
+
+
 	val implemented = enumName != null
 
-
-
-	/**
-	 * The enum type that represents the bit values.
-	 */
 	var enum: VkTypeEnum? = null
 
 

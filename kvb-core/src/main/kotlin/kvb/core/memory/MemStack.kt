@@ -5,7 +5,7 @@ package kvb.core.memory
  * [get] methods free any memory that is allocated within their blocks. These functions will not implicitly free memory
  * if an exception is thrown within their blocks. If an exception that was thrown within a block is caught outside of a
  * block, then a memory leak of one or more stack frames will occur. If the same exception is caught within a block,
- * then no memory is leaked. Exceptions caught outside of any block should result in the [resetting][reset] of the
+ * then no memory is leaked. Exceptions caught outside any block should result in the [resetting][reset] of the
  * MemStack. Using try-with-resources statements (or the equivalent 'use' function in Kotlin) is avoided in order to
  * improve performance as the block functions are used very frequently. None of these precautions are necessary if the
  * exceptions are never caught.
@@ -92,9 +92,9 @@ class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 	 * called.
 	 */
 	inline fun with(block: MemStack.() -> Unit) {
-		val pointer = this.pointer // push
+		val pointer = this.pointer
 		block(this)
-		this.pointer = pointer // pop
+		this.pointer = pointer
 	}
 
 
@@ -104,9 +104,9 @@ class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 	 * more details.
 	 */
 	inline fun<T> get(block: MemStack.() -> T): T {
-		val pointer = this.pointer // push
+		val pointer = this.pointer
 		val result = block(this)
-		this.pointer = pointer // pop
+		this.pointer = pointer
 		return result
 	}
 

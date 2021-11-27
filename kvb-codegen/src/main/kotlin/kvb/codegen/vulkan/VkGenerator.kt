@@ -14,8 +14,39 @@ import kotlin.collections.HashSet
 object VkGenerator {
 
 
+	private class ShortNameList {
+
+		/**
+		 * A set of full names that should keep their postfixes.
+		 */
+		private val postfixed = HashSet<String>()
+
+		/**
+		 * A map of short names to full names.
+		 */
+		private val nameMap = HashMap<String, String>()
+
+		fun add(name: String) {
+			val shortName = VkPostfix.drop(name)
+
+			nameMap[shortName]?.let {
+				postfixed.add(it)
+				postfixed.add(name)
+			}
+
+			nameMap[shortName] = name
+		}
+
+		fun contains(name: String) = postfixed.contains(name)
+
+		fun shortName(name: String) = if(postfixed.contains(name)) name else VkPostfix.drop(name)
+
+	}
+
+
+
 	/*
-	Should generate elements
+	If elements should be generated
 	 */
 
 
@@ -45,25 +76,10 @@ object VkGenerator {
 	 */
 
 
-	/**
-	 * A map of element short names to their full names. Used to identify elements that share the same short name so
-	 * that they are generated with their unique full names.
-	 */
-	private val elementsByShortName = HashMap<String, String>()
 
-	/**
-	 * Elements that should keep their extension postfix when being generated.
-	 */
-	private val postfixedElements = HashSet<String>()
+	private val typeShortNames = ShortNameList()
 
-	/**
-	 * Trims the starting 'Vk' or 'vk' prefix and the trailing extension postfix. If removing the postfix would cause
-	 * naming clashes with another element's short name, then the postfix is not removed.
-	 */
-	val String.trimVkAndPostfix get() = if(postfixedElements.contains(this))
-		drop(2)
-	else
-		substring(2, length - VkPostfix.postfixLength(this))
+	private val commandShortNames = ShortNameList()
 
 
 
@@ -71,7 +87,7 @@ object VkGenerator {
 		is VkTypeBitmask,
 		is VkTypeEnum,
 		is VkTypeHandle,
-		is VkTypeStruct  -> name.trimVkAndPostfix
+		is VkTypeStruct  -> if(typeShortNames.contains(name))
 		else             -> name
 	}
 
@@ -101,46 +117,22 @@ object VkGenerator {
 
 
 
-	private fun addCommand(command: VkCommand) {
-		elementsByShortName[command.shortName]?.let {
-			postfixedElements.add(it)
-			postfixedElements.add(command.name)
-		}
-
-		elementsByShortName[command.shortName] = command.name
-
-		commands.add(command)
-	}
-
-
-
-	private fun addType(type: VkType) {
-		elementsByShortName[type.shortName]?.let {
-			postfixedElements.add(it)
-			postfixedElements.add(type.name)
-		}
-
-		elementsByShortName[type.shortName] = type.name
-
-		types.add(type)
-	}
-
-
-
 	init {
-		for(p in scraper.providers)
-			if(p.shouldGen)
-				providers.add(p)
+		for(p in scraper.providers) {
+			if(!p.shouldGen) continue
 
-		for(p in providers)
-			for(c in p.commands)
-				if(c.shouldGen)
-					addCommand(c)
+			providers.add(p)
 
-		for(p in providers)
-			for(t in p.types)
-				if(t.shouldGen)
-					addType(t)
+			for(t in p.types) {
+				typeShortNames.add(VkPostfix.drop(t.name))
+				types.add(t)
+			}
+
+			for(c in p.commands) {
+				commandShortNames.add(VkPostfix.drop(c.name))
+				commands.add(c)
+			}
+		}
 	}
 
 

@@ -8,6 +8,9 @@ import kvb.codegen.vulkan.scraper.list.VkProviderList
 import kvb.codegen.vulkan.scraper.list.VkTypeList
 import kvb.codegen.vulkan.scraper.xml.VkXmlElement
 import kvb.codegen.vulkan.scraper.xml.VkXmlParser
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
 class VkScraper(private val registry: VkXmlElement) {
 
@@ -77,25 +80,32 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	private val typeShortNames = ShortNameList()
-
-	private val commandShortNames = ShortNameList()
+	private val shortNames = ShortNameList()
 
 
 
 	private fun scrapeShortNames() {
-		for(element in registry.child("types"))
-			if(element.type == "type")
-				typeShortNames.add(element.text ?: element.child("name").text!!)
+		for(element in registry.child("types")) {
+			if(element.type == "type") {
+				val name = element.text ?: element.child("name").text!!
+				shortNames.add(VkPostfix.drop(name))
+			}
+		}
 
-		for(element in registry.child("commands"))
-			if(element.type == "command")
-				commandShortNames.add(element["name"] ?: element.child("proto").child("name").text!!)
+		for(element in registry.child("commands")) {
+			if(element.type == "command") {
+				val name = element.text ?: element.child("proto").child("name").text!!
+				shortNames.add(VkPostfix.drop(name))
+			}
+		}
 	}
 
 
 
-	private val String.trimVkAndPostfix get() = VkPostfix.drop(drop(2))
+	private val String.withoutPostfix get() = if(shortNames.contains(this))
+		this
+	else
+		VkPostfix.drop(this)
 
 
 
@@ -202,7 +212,7 @@ class VkScraper(private val registry: VkXmlElement) {
 			when(category) {
 				"enum"        -> return VkTypeEnum(name)
 				"handle"      -> return VkTypeHandle(name, element["parent"])
-				"funcpointer" -> return VkTypeFuncPointer(name)
+				"funcpointer" -> return VkTypeUnimplemented(name)
 				"struct"      -> return VkTypeStruct(name, false)
 				"union"       -> return VkTypeStruct(name, true)
 			}
@@ -515,7 +525,7 @@ class VkScraper(private val registry: VkXmlElement) {
 		isOptional = element["optional"]?.equals("true") ?: false,
 		len        = element["len"],
 		constLen   = constArrayLength(element),
-		varLen     = variableArrayLength(element),
+		varLen     = variableArrayLength(element["len"]),
 		altLen     = element["altlen"],
 		sType      = element["values"]?.let { types.enums.fromName("VkStructureType").entries.fromName(it) },
 		modifier   = varModifier(element),
@@ -525,7 +535,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 	/**
-	 * Determines the type of a var element. If the type aliases another type, returns that type instead.
+	 * Determines the type of the [element]. The element is either a struct member or a command parameter.
 	 */
 	private fun varType(element: VkXmlElement): VkType {
 		val type = types.fromName(element.child("type").text!!)
@@ -581,34 +591,33 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 	/**
-	 * If the [element] is an array whose size is determined by another variable in a struct, then that variable's name
+	 * If the element is an array whose size is determined by another variable in a struct, then that variable's name
 	 * is returned. Otherwise, null is returned.
 	 */
-	private fun variableArrayLength(element: VkXmlElement): String? {
-		val len = element["len"] ?: return null
+	private fun variableArrayLength(len: String?): String? = when {
+		// No variable length
+		len == null -> null
 
-		return when {
-			// Of the form "variable,null-terminated. Only 3 instances where this occurs:
-			// ppEnabledLayerNames, ppEnabledExtensionNames, ppGeometries.
-			// Only the first part of the len string matters for these ones.
-			len.contains(',') 					-> len.split(',')[0]
+		// Of the form "variable,null-terminated". Only 3 instances where this occurs:
+		// ppEnabledLayerNames, ppEnabledExtensionNames, ppGeometries.
+		// Only the first part of the len string matters for these.
+		len.contains(',') 					-> len.split(',')[0]
 
-			// Only 2 cases, too complex to create convenience functions for these.
-			len.startsWith("latexmath") 		-> null
+		// Only 2 cases, too complex to create convenience functions for these.
+		len.startsWith("latexmath") 		-> null
 
-			// Handled as a constant array length (=32)
-			len == "2*ename:VK_UUID_SIZE"		-> null
+		// Handled as a constant array length (=32)
+		len == "2*ename:VK_UUID_SIZE"		-> null
 
-			// Only for char*. These are handled separately during generation.
-			len == "null-terminated"			-> null
+		// Only for char*. These are handled separately during generation.
+		len == "null-terminated"			-> null
 
-			// Edge-case - refers to a variable of a variable within the struct.
-			len == "pBuildInfo-geometryCount" 	-> null
+		// Edge-case - refers to a variable of a variable within the struct.
+		len == "pBuildInfo-geometryCount" 	-> null
 
-			// By this point, the length should refer to another variable in a struct.
-			// Warning: This will not catch new edge-cases.
-			else								-> len
-		}
+		// By this point, the length should refer to another variable in a struct.
+		// Warning: This will not catch new edge-cases.
+		else								-> len
 	}
 
 

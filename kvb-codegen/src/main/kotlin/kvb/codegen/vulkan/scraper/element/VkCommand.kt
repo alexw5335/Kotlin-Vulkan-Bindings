@@ -5,12 +5,11 @@ import kvb.codegen.vulkan.scraper.type.VkType
 
 class VkCommand(
 	override val name      : String,
-	override val shortName : String,
 	val type               : Type,
 	val returnType         : VkType?,
-	val params             : VkElementList<VkVar>,
+	val params             : List<VkVar>,
 	val isAliased          : Boolean
-) : VkElement {
+) : VkGenElement {
 
 
 	enum class Type {
@@ -18,6 +17,12 @@ class VkCommand(
 		DEVICE,
 		STANDALONE;
 	}
+
+
+
+	override lateinit var genName: String
+
+	override val shouldGen = !isAliased
 
 
 }

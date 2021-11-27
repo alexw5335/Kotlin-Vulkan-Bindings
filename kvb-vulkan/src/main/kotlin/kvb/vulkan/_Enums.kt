@@ -13,31 +13,31 @@ internal fun _VendorId(value: Int) = when(value) {
 	0x10004 -> VendorId.CODEPLAY
 	0x10005 -> VendorId.MESA
 	0x10006 -> VendorId.POCL
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PipelineCacheHeaderVersion(value: Int) = when(value) {
 	1 -> PipelineCacheHeaderVersion.ONE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ImageTiling(value: Int) = when(value) {
 	0 -> ImageTiling.OPTIMAL
 	1 -> ImageTiling.LINEAR
 	1000158000 -> ImageTiling.DRM_FORMAT_MODIFIER
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ImageType(value: Int) = when(value) {
 	0 -> ImageType._1D
 	1 -> ImageType._2D
 	2 -> ImageType._3D
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _InternalAllocationType(value: Int) = when(value) {
 	0 -> InternalAllocationType.EXECUTABLE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PhysicalDeviceType(value: Int) = when(value) {
@@ -46,7 +46,7 @@ internal fun _PhysicalDeviceType(value: Int) = when(value) {
 	2 -> PhysicalDeviceType.DISCRETE_GPU
 	3 -> PhysicalDeviceType.VIRTUAL_GPU
 	4 -> PhysicalDeviceType.CPU
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _SystemAllocationScope(value: Int) = when(value) {
@@ -55,7 +55,7 @@ internal fun _SystemAllocationScope(value: Int) = when(value) {
 	2 -> SystemAllocationScope.CACHE
 	3 -> SystemAllocationScope.DEVICE
 	4 -> SystemAllocationScope.INSTANCE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _QueryType(value: Int) = when(value) {
@@ -68,13 +68,13 @@ internal fun _QueryType(value: Int) = when(value) {
 	1000150001 -> QueryType.ACCELERATION_STRUCTURE_SERIALIZATION_SIZE
 	1000165000 -> QueryType.ACCELERATION_STRUCTURE_COMPACTED_SIZE_NV
 	1000210000 -> QueryType.PERFORMANCE_QUERY_INTEL
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _SharingMode(value: Int) = when(value) {
 	0 -> SharingMode.EXCLUSIVE
 	1 -> SharingMode.CONCURRENT
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ImageLayout(value: Int) = when(value) {
@@ -99,7 +99,7 @@ internal fun _ImageLayout(value: Int) = when(value) {
 	1000218000 -> ImageLayout.FRAGMENT_DENSITY_MAP_OPTIMAL
 	1000314000 -> ImageLayout.READ_ONLY_OPTIMAL
 	1000314001 -> ImageLayout.ATTACHMENT_OPTIMAL
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ComponentSwizzle(value: Int) = when(value) {
@@ -110,7 +110,7 @@ internal fun _ComponentSwizzle(value: Int) = when(value) {
 	4 -> ComponentSwizzle.G
 	5 -> ComponentSwizzle.B
 	6 -> ComponentSwizzle.A
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ImageViewType(value: Int) = when(value) {
@@ -121,7 +121,7 @@ internal fun _ImageViewType(value: Int) = when(value) {
 	4 -> ImageViewType._1D_ARRAY
 	5 -> ImageViewType._2D_ARRAY
 	6 -> ImageViewType.CUBE_ARRAY
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _BlendFactor(value: Int) = when(value) {
@@ -144,7 +144,7 @@ internal fun _BlendFactor(value: Int) = when(value) {
 	16 -> BlendFactor.ONE_MINUS_SRC1_COLOR
 	17 -> BlendFactor.SRC1_ALPHA
 	18 -> BlendFactor.ONE_MINUS_SRC1_ALPHA
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _BlendOp(value: Int) = when(value) {
@@ -199,7 +199,7 @@ internal fun _BlendOp(value: Int) = when(value) {
 	1000148043 -> BlendOp.RED
 	1000148044 -> BlendOp.GREEN
 	1000148045 -> BlendOp.BLUE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _CompareOp(value: Int) = when(value) {
@@ -211,7 +211,7 @@ internal fun _CompareOp(value: Int) = when(value) {
 	5 -> CompareOp.NOT_EQUAL
 	6 -> CompareOp.GREATER_OR_EQUAL
 	7 -> CompareOp.ALWAYS
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _DynamicState(value: Int) = when(value) {
@@ -245,13 +245,13 @@ internal fun _DynamicState(value: Int) = when(value) {
 	1000267009 -> DynamicState.DEPTH_BOUNDS_TEST_ENABLE
 	1000267010 -> DynamicState.STENCIL_TEST_ENABLE
 	1000267011 -> DynamicState.STENCIL_OP
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _FrontFace(value: Int) = when(value) {
 	0 -> FrontFace.COUNTER_CLOCKWISE
 	1 -> FrontFace.CLOCKWISE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _LogicOp(value: Int) = when(value) {
@@ -271,7 +271,7 @@ internal fun _LogicOp(value: Int) = when(value) {
 	13 -> LogicOp.OR_INVERTED
 	14 -> LogicOp.NAND
 	15 -> LogicOp.SET
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PolygonMode(value: Int) = when(value) {
@@ -279,7 +279,7 @@ internal fun _PolygonMode(value: Int) = when(value) {
 	1 -> PolygonMode.LINE
 	2 -> PolygonMode.POINT
 	1000153000 -> PolygonMode.FILL_RECTANGLE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PrimitiveTopology(value: Int) = when(value) {
@@ -294,7 +294,7 @@ internal fun _PrimitiveTopology(value: Int) = when(value) {
 	8 -> PrimitiveTopology.TRIANGLE_LIST_WITH_ADJACENCY
 	9 -> PrimitiveTopology.TRIANGLE_STRIP_WITH_ADJACENCY
 	10 -> PrimitiveTopology.PATCH_LIST
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _StencilOp(value: Int) = when(value) {
@@ -306,13 +306,13 @@ internal fun _StencilOp(value: Int) = when(value) {
 	5 -> StencilOp.INVERT
 	6 -> StencilOp.INCREMENT_AND_WRAP
 	7 -> StencilOp.DECREMENT_AND_WRAP
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _VertexInputRate(value: Int) = when(value) {
 	0 -> VertexInputRate.VERTEX
 	1 -> VertexInputRate.INSTANCE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _BorderColor(value: Int) = when(value) {
@@ -324,14 +324,14 @@ internal fun _BorderColor(value: Int) = when(value) {
 	5 -> BorderColor.INT_OPAQUE_WHITE
 	1000287003 -> BorderColor.FLOAT_CUSTOM
 	1000287004 -> BorderColor.INT_CUSTOM
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _Filter(value: Int) = when(value) {
 	0 -> Filter.NEAREST
 	1 -> Filter.LINEAR
 	1000015000 -> Filter.CUBIC
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _SamplerAddressMode(value: Int) = when(value) {
@@ -340,13 +340,13 @@ internal fun _SamplerAddressMode(value: Int) = when(value) {
 	2 -> SamplerAddressMode.CLAMP_TO_EDGE
 	3 -> SamplerAddressMode.CLAMP_TO_BORDER
 	4 -> SamplerAddressMode.MIRROR_CLAMP_TO_EDGE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _SamplerMipmapMode(value: Int) = when(value) {
 	0 -> SamplerMipmapMode.NEAREST
 	1 -> SamplerMipmapMode.LINEAR
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _DescriptorType(value: Int) = when(value) {
@@ -365,34 +365,34 @@ internal fun _DescriptorType(value: Int) = when(value) {
 	1000150000 -> DescriptorType.ACCELERATION_STRUCTURE_KHR
 	1000165000 -> DescriptorType.ACCELERATION_STRUCTURE_NV
 	1000351000 -> DescriptorType.MUTABLE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _AttachmentLoadOp(value: Int) = when(value) {
 	0 -> AttachmentLoadOp.LOAD
 	1 -> AttachmentLoadOp.CLEAR
 	2 -> AttachmentLoadOp.DONT_CARE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _AttachmentStoreOp(value: Int) = when(value) {
 	0 -> AttachmentStoreOp.STORE
 	1 -> AttachmentStoreOp.DONT_CARE
 	1000301000 -> AttachmentStoreOp.NONE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PipelineBindPoint(value: Int) = when(value) {
 	0 -> PipelineBindPoint.GRAPHICS
 	1 -> PipelineBindPoint.COMPUTE
 	1000165000 -> PipelineBindPoint.RAY_TRACING
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _CommandBufferLevel(value: Int) = when(value) {
 	0 -> CommandBufferLevel.PRIMARY
 	1 -> CommandBufferLevel.SECONDARY
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _IndexType(value: Int) = when(value) {
@@ -400,25 +400,25 @@ internal fun _IndexType(value: Int) = when(value) {
 	1 -> IndexType.UINT32
 	1000165000 -> IndexType.NONE
 	1000265000 -> IndexType.UINT8
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _SubpassContents(value: Int) = when(value) {
 	0 -> SubpassContents.INLINE
 	1 -> SubpassContents.SECONDARY_COMMAND_BUFFERS
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PointClippingBehavior(value: Int) = when(value) {
 	0 -> PointClippingBehavior.ALL_CLIP_PLANES
 	1 -> PointClippingBehavior.USER_CLIP_PLANES_ONLY
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _TessellationDomainOrigin(value: Int) = when(value) {
 	0 -> TessellationDomainOrigin.UPPER_LEFT
 	1 -> TessellationDomainOrigin.LOWER_LEFT
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _SamplerYcbcrModelConversion(value: Int) = when(value) {
@@ -427,25 +427,25 @@ internal fun _SamplerYcbcrModelConversion(value: Int) = when(value) {
 	2 -> SamplerYcbcrModelConversion.YCBCR_709
 	3 -> SamplerYcbcrModelConversion.YCBCR_601
 	4 -> SamplerYcbcrModelConversion.YCBCR_2020
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _SamplerYcbcrRange(value: Int) = when(value) {
 	0 -> SamplerYcbcrRange.ITU_FULL
 	1 -> SamplerYcbcrRange.ITU_NARROW
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ChromaLocation(value: Int) = when(value) {
 	0 -> ChromaLocation.COSITED_EVEN
 	1 -> ChromaLocation.MIDPOINT
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _DescriptorUpdateTemplateType(value: Int) = when(value) {
 	0 -> DescriptorUpdateTemplateType.DESCRIPTOR_SET
 	1 -> DescriptorUpdateTemplateType.PUSH_DESCRIPTORS
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _DriverId(value: Int) = when(value) {
@@ -463,27 +463,27 @@ internal fun _DriverId(value: Int) = when(value) {
 	12 -> DriverId.BROADCOM_PROPRIETARY
 	13 -> DriverId.MESA_LLVMPIPE
 	14 -> DriverId.MOLTENVK
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ShaderFloatControlsIndependence(value: Int) = when(value) {
 	0 -> ShaderFloatControlsIndependence._32_BIT_ONLY
 	1 -> ShaderFloatControlsIndependence.ALL
 	2 -> ShaderFloatControlsIndependence.NONE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _SamplerReductionMode(value: Int) = when(value) {
 	0 -> SamplerReductionMode.WEIGHTED_AVERAGE
 	1 -> SamplerReductionMode.MIN
 	2 -> SamplerReductionMode.MAX
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _SemaphoreType(value: Int) = when(value) {
 	0 -> SemaphoreType.BINARY
 	1 -> SemaphoreType.TIMELINE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PresentMode(value: Int) = when(value) {
@@ -493,7 +493,7 @@ internal fun _PresentMode(value: Int) = when(value) {
 	3 -> PresentMode.FIFO_RELAXED
 	1000111000 -> PresentMode.SHARED_DEMAND_REFRESH
 	1000111001 -> PresentMode.SHARED_CONTINUOUS_REFRESH
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ColorSpace(value: Int) = when(value) {
@@ -513,37 +513,37 @@ internal fun _ColorSpace(value: Int) = when(value) {
 	1000104013 -> ColorSpace.PASS_THROUGH
 	1000104014 -> ColorSpace.EXTENDED_SRGB_NONLINEAR
 	1000213000 -> ColorSpace.DISPLAY_NATIVE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _RasterizationOrder(value: Int) = when(value) {
 	0 -> RasterizationOrder.STRICT
 	1 -> RasterizationOrder.RELAXED
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ShaderInfoType(value: Int) = when(value) {
 	0 -> ShaderInfoType.STATISTICS
 	1 -> ShaderInfoType.BINARY
 	2 -> ShaderInfoType.DISASSEMBLY
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _DisplayPowerState(value: Int) = when(value) {
 	0 -> DisplayPowerState.OFF
 	1 -> DisplayPowerState.SUSPEND
 	2 -> DisplayPowerState.ON
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _DeviceEventType(value: Int) = when(value) {
 	0 -> DeviceEventType.DISPLAY_HOTPLUG
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _DisplayEventType(value: Int) = when(value) {
 	0 -> DisplayEventType.FIRST_PIXEL_OUT
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ViewportCoordinateSwizzle(value: Int) = when(value) {
@@ -555,27 +555,27 @@ internal fun _ViewportCoordinateSwizzle(value: Int) = when(value) {
 	5 -> ViewportCoordinateSwizzle.NEGATIVE_Z
 	6 -> ViewportCoordinateSwizzle.POSITIVE_W
 	7 -> ViewportCoordinateSwizzle.NEGATIVE_W
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _DiscardRectangleMode(value: Int) = when(value) {
 	0 -> DiscardRectangleMode.INCLUSIVE
 	1 -> DiscardRectangleMode.EXCLUSIVE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ConservativeRasterizationMode(value: Int) = when(value) {
 	0 -> ConservativeRasterizationMode.DISABLED
 	1 -> ConservativeRasterizationMode.OVERESTIMATE
 	2 -> ConservativeRasterizationMode.UNDERESTIMATE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PerformanceCounterScope(value: Int) = when(value) {
 	0 -> PerformanceCounterScope.COMMAND_BUFFER
 	1 -> PerformanceCounterScope.RENDER_PASS
 	2 -> PerformanceCounterScope.COMMAND
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PerformanceCounterStorage(value: Int) = when(value) {
@@ -585,7 +585,7 @@ internal fun _PerformanceCounterStorage(value: Int) = when(value) {
 	3 -> PerformanceCounterStorage.UINT64
 	4 -> PerformanceCounterStorage.FLOAT32
 	5 -> PerformanceCounterStorage.FLOAT64
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PerformanceCounterUnit(value: Int) = when(value) {
@@ -600,28 +600,28 @@ internal fun _PerformanceCounterUnit(value: Int) = when(value) {
 	8 -> PerformanceCounterUnit.AMPS
 	9 -> PerformanceCounterUnit.HERTZ
 	10 -> PerformanceCounterUnit.CYCLES
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _BlendOverlap(value: Int) = when(value) {
 	0 -> BlendOverlap.UNCORRELATED
 	1 -> BlendOverlap.DISJOINT
 	2 -> BlendOverlap.CONJOINT
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _AccelerationStructureType(value: Int) = when(value) {
 	0 -> AccelerationStructureType.TOP_LEVEL
 	1 -> AccelerationStructureType.BOTTOM_LEVEL
 	2 -> AccelerationStructureType.GENERIC
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _AccelerationStructureBuildType(value: Int) = when(value) {
 	0 -> AccelerationStructureBuildType.HOST
 	1 -> AccelerationStructureBuildType.DEVICE
 	2 -> AccelerationStructureBuildType.HOST_OR_DEVICE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _CopyAccelerationStructureMode(value: Int) = when(value) {
@@ -629,33 +629,33 @@ internal fun _CopyAccelerationStructureMode(value: Int) = when(value) {
 	1 -> CopyAccelerationStructureMode.COMPACT
 	2 -> CopyAccelerationStructureMode.SERIALIZE
 	3 -> CopyAccelerationStructureMode.DESERIALIZE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _GeometryType(value: Int) = when(value) {
 	0 -> GeometryType.TRIANGLES
 	1 -> GeometryType.AABBS
 	2 -> GeometryType.INSTANCES
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _AccelerationStructureCompatibility(value: Int) = when(value) {
 	0 -> AccelerationStructureCompatibility.COMPATIBLE
 	1 -> AccelerationStructureCompatibility.INCOMPATIBLE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _BuildAccelerationStructureMode(value: Int) = when(value) {
 	0 -> BuildAccelerationStructureMode.BUILD
 	1 -> BuildAccelerationStructureMode.UPDATE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _RayTracingShaderGroupType(value: Int) = when(value) {
 	0 -> RayTracingShaderGroupType.GENERAL
 	1 -> RayTracingShaderGroupType.TRIANGLES_HIT_GROUP
 	2 -> RayTracingShaderGroupType.PROCEDURAL_HIT_GROUP
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ShaderGroupShader(value: Int) = when(value) {
@@ -663,7 +663,7 @@ internal fun _ShaderGroupShader(value: Int) = when(value) {
 	1 -> ShaderGroupShader.CLOSEST_HIT
 	2 -> ShaderGroupShader.ANY_HIT
 	3 -> ShaderGroupShader.INTERSECTION
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _CoverageModulationMode(value: Int) = when(value) {
@@ -671,12 +671,12 @@ internal fun _CoverageModulationMode(value: Int) = when(value) {
 	1 -> CoverageModulationMode.RGB
 	2 -> CoverageModulationMode.ALPHA
 	3 -> CoverageModulationMode.RGBA
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ValidationCacheHeaderVersion(value: Int) = when(value) {
 	1 -> ValidationCacheHeaderVersion.ONE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ShadingRatePaletteEntry(value: Int) = when(value) {
@@ -692,7 +692,7 @@ internal fun _ShadingRatePaletteEntry(value: Int) = when(value) {
 	9 -> ShadingRatePaletteEntry._1_INVOCATION_PER_4X2_PIXELS
 	10 -> ShadingRatePaletteEntry._1_INVOCATION_PER_2X4_PIXELS
 	11 -> ShadingRatePaletteEntry._1_INVOCATION_PER_4X4_PIXELS
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _CoarseSampleOrderType(value: Int) = when(value) {
@@ -700,14 +700,14 @@ internal fun _CoarseSampleOrderType(value: Int) = when(value) {
 	1 -> CoarseSampleOrderType.CUSTOM
 	2 -> CoarseSampleOrderType.PIXEL_MAJOR
 	3 -> CoarseSampleOrderType.SAMPLE_MAJOR
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _AccelerationStructureMemoryRequirementsType(value: Int) = when(value) {
 	0 -> AccelerationStructureMemoryRequirementsType.OBJECT
 	1 -> AccelerationStructureMemoryRequirementsType.BUILD_SCRATCH
 	2 -> AccelerationStructureMemoryRequirementsType.UPDATE_SCRATCH
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _QueueGlobalPriority(value: Int) = when(value) {
@@ -715,7 +715,7 @@ internal fun _QueueGlobalPriority(value: Int) = when(value) {
 	256 -> QueueGlobalPriority.MEDIUM
 	512 -> QueueGlobalPriority.HIGH
 	1024 -> QueueGlobalPriority.REALTIME
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _TimeDomain(value: Int) = when(value) {
@@ -723,36 +723,36 @@ internal fun _TimeDomain(value: Int) = when(value) {
 	1 -> TimeDomain.CLOCK_MONOTONIC
 	2 -> TimeDomain.CLOCK_MONOTONIC_RAW
 	3 -> TimeDomain.QUERY_PERFORMANCE_COUNTER
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _MemoryOverallocationBehavior(value: Int) = when(value) {
 	0 -> MemoryOverallocationBehavior.DEFAULT
 	1 -> MemoryOverallocationBehavior.ALLOWED
 	2 -> MemoryOverallocationBehavior.DISALLOWED
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PerformanceConfigurationType(value: Int) = when(value) {
 	0 -> PerformanceConfigurationType.COMMAND_QUEUE_METRICS_DISCOVERY_ACTIVATED
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _QueryPoolSamplingMode(value: Int) = when(value) {
 	0 -> QueryPoolSamplingMode.MANUAL
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PerformanceOverrideType(value: Int) = when(value) {
 	0 -> PerformanceOverrideType.NULL_HARDWARE
 	1 -> PerformanceOverrideType.FLUSH_GPU_CACHES
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PerformanceParameterType(value: Int) = when(value) {
 	0 -> PerformanceParameterType.HW_COUNTERS_SUPPORTED
 	1 -> PerformanceParameterType.STREAM_MARKER_VALID_BITS
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PerformanceValueType(value: Int) = when(value) {
@@ -761,7 +761,7 @@ internal fun _PerformanceValueType(value: Int) = when(value) {
 	2 -> PerformanceValueType.FLOAT
 	3 -> PerformanceValueType.BOOL
 	4 -> PerformanceValueType.STRING
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _FragmentShadingRateCombinerOp(value: Int) = when(value) {
@@ -770,7 +770,7 @@ internal fun _FragmentShadingRateCombinerOp(value: Int) = when(value) {
 	2 -> FragmentShadingRateCombinerOp.MIN
 	3 -> FragmentShadingRateCombinerOp.MAX
 	4 -> FragmentShadingRateCombinerOp.MUL
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ValidationFeatureEnable(value: Int) = when(value) {
@@ -779,7 +779,7 @@ internal fun _ValidationFeatureEnable(value: Int) = when(value) {
 	2 -> ValidationFeatureEnable.BEST_PRACTICES
 	3 -> ValidationFeatureEnable.DEBUG_PRINTF
 	4 -> ValidationFeatureEnable.SYNCHRONIZATION_VALIDATION
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ValidationFeatureDisable(value: Int) = when(value) {
@@ -790,7 +790,7 @@ internal fun _ValidationFeatureDisable(value: Int) = when(value) {
 	4 -> ValidationFeatureDisable.OBJECT_LIFETIMES
 	5 -> ValidationFeatureDisable.CORE_CHECKS
 	6 -> ValidationFeatureDisable.UNIQUE_HANDLES
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _Scope(value: Int) = when(value) {
@@ -798,7 +798,7 @@ internal fun _Scope(value: Int) = when(value) {
 	2 -> Scope.WORKGROUP
 	3 -> Scope.SUBGROUP
 	5 -> Scope.QUEUE_FAMILY
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _ComponentType(value: Int) = when(value) {
@@ -813,13 +813,13 @@ internal fun _ComponentType(value: Int) = when(value) {
 	8 -> ComponentType.UINT16
 	9 -> ComponentType.UINT32
 	10 -> ComponentType.UINT64
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _CoverageReductionMode(value: Int) = when(value) {
 	0 -> CoverageReductionMode.MERGE
 	1 -> CoverageReductionMode.TRUNCATE
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _FullScreenExclusive(value: Int) = when(value) {
@@ -827,7 +827,7 @@ internal fun _FullScreenExclusive(value: Int) = when(value) {
 	1 -> FullScreenExclusive.ALLOWED
 	2 -> FullScreenExclusive.DISALLOWED
 	3 -> FullScreenExclusive.APPLICATION_CONTROLLED
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _LineRasterizationMode(value: Int) = when(value) {
@@ -835,7 +835,7 @@ internal fun _LineRasterizationMode(value: Int) = when(value) {
 	1 -> LineRasterizationMode.RECTANGULAR
 	2 -> LineRasterizationMode.BRESENHAM
 	3 -> LineRasterizationMode.RECTANGULAR_SMOOTH
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _PipelineExecutableStatisticFormat(value: Int) = when(value) {
@@ -843,7 +843,7 @@ internal fun _PipelineExecutableStatisticFormat(value: Int) = when(value) {
 	1 -> PipelineExecutableStatisticFormat.INT64
 	2 -> PipelineExecutableStatisticFormat.UINT64
 	3 -> PipelineExecutableStatisticFormat.FLOAT64
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _IndirectCommandsTokenType(value: Int) = when(value) {
@@ -855,7 +855,7 @@ internal fun _IndirectCommandsTokenType(value: Int) = when(value) {
 	5 -> IndirectCommandsTokenType.DRAW_INDEXED
 	6 -> IndirectCommandsTokenType.DRAW
 	7 -> IndirectCommandsTokenType.DRAW_TASKS
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _DeviceMemoryReportEventType(value: Int) = when(value) {
@@ -864,7 +864,7 @@ internal fun _DeviceMemoryReportEventType(value: Int) = when(value) {
 	2 -> DeviceMemoryReportEventType.IMPORT
 	3 -> DeviceMemoryReportEventType.UNIMPORT
 	4 -> DeviceMemoryReportEventType.ALLOCATION_FAILED
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _FragmentShadingRate(value: Int) = when(value) {
@@ -880,11 +880,11 @@ internal fun _FragmentShadingRate(value: Int) = when(value) {
 	13 -> FragmentShadingRate._8_INVOCATIONS_PER_PIXEL
 	14 -> FragmentShadingRate._16_INVOCATIONS_PER_PIXEL
 	15 -> FragmentShadingRate.NO_INVOCATIONS
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }
 
 internal fun _FragmentShadingRateType(value: Int) = when(value) {
 	0 -> FragmentShadingRateType.FRAGMENT_SIZE
 	1 -> FragmentShadingRateType.ENUMS
-	else -> throw RuntimeException("Invalid enum: $value")
+	else -> throw IllegalArgumentException("Invalid enum: $value")
 }

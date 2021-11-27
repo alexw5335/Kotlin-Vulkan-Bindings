@@ -1,12 +1,9 @@
 package kvb.codegen.vulkan.scraper.type
 
-import kvb.codegen.vulkan.VkGenUtils
-import kvb.codegen.vulkan.scraper.element.VkProvider
 import kvb.codegen.vulkan.scraper.element.VkVar
 import kvb.codegen.writer.procedural.Primitive
 import kvb.core.struct.StructLayout
 import kvb.core.struct.StructLayoutBuilder
-import kvb.codegen.vulkan.scraper.list.VkElementList
 
 class VkTypeStruct(override val name: String, val isUnion: Boolean) : VkType {
 
@@ -18,11 +15,9 @@ class VkTypeStruct(override val name: String, val isUnion: Boolean) : VkType {
 
 
 
-	override val shortName = VkGenUtils.structShortName(name)
+	override lateinit var genName: String
 
 	override val primitive = Primitive.LONG
-
-	override lateinit var provider: VkProvider
 
 
 
@@ -35,7 +30,7 @@ class VkTypeStruct(override val name: String, val isUnion: Boolean) : VkType {
 	/**
 	 * The struct members.
 	 */
-	val members = VkElementList<VkVar>()
+	val members = ArrayList<VkVar>()
 
 	/**
 	 * The valid structure type value (if any) of the sType member of this struct.

@@ -17,7 +17,9 @@ class VkExtension(
 
 	override val commands = VkElementList<VkCommand>()
 
-	val postfix = name.split('_')[1]
+	override var genName = name
+
+	override val shouldGen = deprecatedBy == null && !disabled
 
 
 }
