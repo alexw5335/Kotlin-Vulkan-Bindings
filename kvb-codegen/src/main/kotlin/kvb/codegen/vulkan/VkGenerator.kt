@@ -45,31 +45,6 @@ object VkGenerator {
 
 
 
-	/*
-	If elements should be generated
-	 */
-
-
-
-	val VkType.shouldGen: Boolean get() = when(this) {
-		is VkTypeBitmask  -> implemented && (enum?.entries?.isNotEmpty() ?: false)
-		is VkTypeEnum     -> entries.isNotEmpty() && name != "VkStructureType" && (!isFlagBits || bitmask!!.shouldGen)
-		is VkTypeStruct   -> true
-		is VkTypeHandle   -> true
-		else              -> false
-	}
-
-
-
-	val VkProvider.shouldGen   get() = this !is VkExtension || (deprecatedBy == null && !disabled)
-
-	val VkCommand.shouldGen    get() = !isAliased && name != "vkGetInstanceProcAddr"
-
-	val VkEnumEntry.shouldGen  get() = !isAliased && provider.shouldGen
-
-	val VkConstant.shouldGen   get() = !isAliased
-
-
 
 	/*
 	Element short names

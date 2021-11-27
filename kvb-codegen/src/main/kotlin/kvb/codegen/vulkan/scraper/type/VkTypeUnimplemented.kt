@@ -11,6 +11,8 @@ class VkTypeUnimplemented(override val name: String): VkType {
 
 	override var genName = name
 
+	override val shouldGen = false
+
 	override val primitive = Primitive.LONG
 
 

@@ -17,6 +17,8 @@ class VkTypeStruct(override val name: String, val isUnion: Boolean) : VkType {
 
 	override lateinit var genName: String
 
+	override val shouldGen = true
+
 	override val primitive = Primitive.LONG
 
 

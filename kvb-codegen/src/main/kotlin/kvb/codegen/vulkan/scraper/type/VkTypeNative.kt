@@ -10,5 +10,7 @@ class VkTypeNative(override val name: String, override val primitive: Primitive)
 
 	override var genName = name
 
+	override val shouldGen = false
+
 
 }

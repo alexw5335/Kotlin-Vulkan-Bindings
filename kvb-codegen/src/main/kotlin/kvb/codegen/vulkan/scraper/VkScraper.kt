@@ -22,7 +22,6 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 	fun scrape() {
-		scrapeShortNames()
 		scrapePlatforms()
 		scrapeConstants()
 		scrapeTypes()
@@ -50,62 +49,6 @@ class VkScraper(private val registry: VkXmlElement) {
 	val commands = VkElementList<VkCommand>()
 
 	val providers = VkProviderList()
-
-
-
-	/*
-	Naming
-	 */
-
-
-
-	private class ShortNameList {
-
-		private val postfixed = HashSet<String>()
-
-		private val nameMap = HashMap<String, String>()
-
-		fun add(name: String) {
-			nameMap[name]?.let {
-				postfixed.add(it)
-				postfixed.add(name)
-			}
-
-			nameMap[name] = name
-		}
-
-		fun contains(shortName: String) = postfixed.contains(shortName)
-
-	}
-
-
-
-	private val shortNames = ShortNameList()
-
-
-
-	private fun scrapeShortNames() {
-		for(element in registry.child("types")) {
-			if(element.type == "type") {
-				val name = element.text ?: element.child("name").text!!
-				shortNames.add(VkPostfix.drop(name))
-			}
-		}
-
-		for(element in registry.child("commands")) {
-			if(element.type == "command") {
-				val name = element.text ?: element.child("proto").child("name").text!!
-				shortNames.add(VkPostfix.drop(name))
-			}
-		}
-	}
-
-
-
-	private val String.withoutPostfix get() = if(shortNames.contains(this))
-		this
-	else
-		VkPostfix.drop(this)
 
 
 
@@ -211,7 +154,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 			when(category) {
 				"enum"        -> return VkTypeEnum(name)
-				"handle"      -> return VkTypeHandle(name, element["parent"])
+				"handle"      -> return VkTypeHandle(name)
 				"funcpointer" -> return VkTypeUnimplemented(name)
 				"struct"      -> return VkTypeStruct(name, false)
 				"union"       -> return VkTypeStruct(name, true)
@@ -270,7 +213,7 @@ class VkScraper(private val registry: VkXmlElement) {
 				m.type.requiresBuffer = true
 
 			if(m.varLen != null)
-				m.varLenVariable = struct.members.fromName(m.varLen)
+				m.varLenVariable = struct.members.first { it.name == m.varLen }
 		}
 
 		// Populating possible pNext values.
@@ -316,7 +259,7 @@ class VkScraper(private val registry: VkXmlElement) {
 		val typeText   = proto.child("type").text!!
 		val name       = proto.child("name").text!!
 		val returnType = if(typeText == "void") null else types.fromName(typeText)
-		val params     = VkElementList<VkVar>()
+		val params     = ArrayList<VkVar>()
 
 		params.addAll(element.children("param").mapIndexed(::scrapeVar))
 
@@ -502,8 +445,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 		// Populate the bit enums of the bitmasks and FlagBits enums.
 		for(bitmask in types.bitmasks) {
-			// 'requires' is used for 32-bit bitmasks. 'bitvalues' is used for 64-bit bitmasks.
-			(bitmask.requires ?: bitmask.bitValues)?.let {
+			bitmask.enumName?.let {
 				val enum = types.enums.fromName(it)
 				bitmask.enum = enum
 				enum.bitmask = bitmask

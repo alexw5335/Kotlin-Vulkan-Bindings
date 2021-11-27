@@ -20,11 +20,9 @@ class VkEnumEntry(
 
 	lateinit var provider: VkProvider
 
-
-
 	override lateinit var genName: String
 
-	override val shouldGen get() = provider.shouldGen && !isAliased
+	override val shouldGen get() = !isAliased && provider.shouldGen
 
 
 }

@@ -57,6 +57,8 @@ class VkTypeEnum(override val name: String) : VkType {
 
 	override lateinit var genName: String
 
+	override val shouldGen get() = entries.isNotEmpty() && name != "VkStructureType" && (!isFlagBits || bitmask!!.shouldGen)
+
 	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
 
 

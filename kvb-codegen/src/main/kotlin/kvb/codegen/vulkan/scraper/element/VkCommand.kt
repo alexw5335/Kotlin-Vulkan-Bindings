@@ -22,7 +22,7 @@ class VkCommand(
 
 	override lateinit var genName: String
 
-	override val shouldGen = !isAliased
+	override val shouldGen = !isAliased && name != "vkGetInstanceProcAddr"
 
 
 }

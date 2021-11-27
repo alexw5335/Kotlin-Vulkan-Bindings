@@ -12,6 +12,8 @@ object VkTypeVoid : VkType {
 
 	override var genName = name
 
+	override val shouldGen = false
+
 	override val primitive = Primitive.LONG
 
 

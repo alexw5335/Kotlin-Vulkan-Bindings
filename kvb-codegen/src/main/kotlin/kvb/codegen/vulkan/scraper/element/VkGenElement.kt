@@ -7,15 +7,15 @@ interface VkGenElement : VkElement {
 
 
 	/**
-	 * The name used to represent this element when generating bindings. This should be determined just before
-	 * generation, not during scraping.
+	 * The name used to represent this element when generating bindings. This should be set after scraping during
+	 * generation.
 	 */
 	var genName: String
 
 	/**
-	 * If this element should be generated when generating bindings. True by default.
+	 * If this element should be generated when generating bindings.
 	 */
-	val shouldGen: Boolean get() = true
+	val shouldGen: Boolean
 
 
 }
