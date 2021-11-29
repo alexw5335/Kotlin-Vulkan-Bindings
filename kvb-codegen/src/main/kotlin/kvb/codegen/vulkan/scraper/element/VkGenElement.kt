@@ -17,5 +17,7 @@ interface VkGenElement : VkElement {
 	 */
 	val shouldGen: Boolean
 
+	fun genName(shortName: String) : String
+
 
 }

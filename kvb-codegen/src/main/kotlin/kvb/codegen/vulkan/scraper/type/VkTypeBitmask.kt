@@ -27,12 +27,11 @@ class VkTypeBitmask(
 
 
 
-	override lateinit var genName: String
+	override fun genName(shortName: String) = if(shouldGen) shortName else primitive.kName
 
 	override val shouldGen get() = implemented && enum != null && enum!!.entries.isNotEmpty()
 
 	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
-
 
 
 

@@ -1,5 +1,6 @@
 package kvb.codegen.vulkan
 
+import kvb.codegen.vulkan.VkGenerator.shortName
 import kvb.codegen.vulkan.scraper.VkPostfix
 import kvb.codegen.vulkan.scraper.VkScraper
 import kvb.codegen.vulkan.scraper.element.*
@@ -58,23 +59,14 @@ object VkGenerator {
 
 
 
-	val VkType.shortName get() = when(this) {
-		is VkTypeBitmask,
-		is VkTypeEnum,
-		is VkTypeHandle,
-		is VkTypeStruct  -> if(typeShortNames.contains(name))
-		else             -> name
-	}
+	private val VkType.shortName get() = typeShortNames.shortName(name).drop(2)
 
+	private val VkCommand.shortName get() = commandShortNames.shortName(name).drop(2).replaceFirstChar { it.lowercase() }
 
-
-	val VkCommand.shortName get() = name.trimVkAndPostfix.replaceFirstChar { it.lowercase() }
-
-	val VkConstant.shortName get() = name.drop(3)
-
-	val VkEnumEntry.shortName get() = VkGenUtils.enumEntryShortName(name, enum)
+	private val VkEnumEntry.shortName get() = VkGenUtils.enumEntryShortName(name, enum)
 	
 
+	// TODO: Make genName and shouldGen top-level functions in VkGenerator?
 
 	/*
 	Scraping
@@ -99,15 +91,18 @@ object VkGenerator {
 			providers.add(p)
 
 			for(t in p.types) {
-				typeShortNames.add(VkPostfix.drop(t.name))
+				typeShortNames.add(t.name)
 				types.add(t)
 			}
 
 			for(c in p.commands) {
-				commandShortNames.add(VkPostfix.drop(c.name))
+				commandShortNames.add(c.name)
 				commands.add(c)
 			}
 		}
+
+		for(t in types) t.genName = t.genName(t.shortName)
+		for(c in commands) c.genName = c.genName(c.shortName)
 	}
 
 
