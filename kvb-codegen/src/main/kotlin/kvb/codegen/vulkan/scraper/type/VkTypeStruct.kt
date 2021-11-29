@@ -8,26 +8,10 @@ import kvb.core.struct.StructLayoutBuilder
 class VkTypeStruct(override val name: String, val isUnion: Boolean) : VkType {
 
 
-
-	/*
-	Type implementation
+	/**
+	 * All struct types are represented by pointers in the Vulkan specification.
 	 */
-
-
-
-	override lateinit var genName: String
-
-	override val shouldGen = true
-
 	override val primitive = Primitive.LONG
-
-
-
-	/*
-	Lateinit
-	 */
-
-
 
 	/**
 	 * The struct members.

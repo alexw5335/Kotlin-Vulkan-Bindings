@@ -94,11 +94,6 @@ class VkVar(
 		name
 
 	/**
-	 * Convenience variable for the name of the [type].
-	 */
-	val typeName get() = type.genName
-
-	/**
 	 * Convenience variable for the buffer name of the [type]'s primitive type.
 	 */
 	val primitiveBufferName get() = type.primitive.bufferName

@@ -15,7 +15,11 @@ import kotlin.collections.HashSet
 object VkGenerator {
 
 
+	/**
+	 * Used to identify conflicting short names.
+	 */
 	private class ShortNameList {
+
 
 		/**
 		 * A set of full names that should keep their postfixes.
@@ -27,6 +31,13 @@ object VkGenerator {
 		 */
 		private val nameMap = HashMap<String, String>()
 
+
+
+
+		/**
+		 * Adds a full [name] to the [nameMap], checking if the name's short version is already present. If it is, then
+		 * [name] is added to the [postfixed] set to signify that it should keep its postfix.
+		 */
 		fun add(name: String) {
 			val shortName = VkPostfix.drop(name)
 
@@ -38,18 +49,16 @@ object VkGenerator {
 			nameMap[shortName] = name
 		}
 
-		fun contains(name: String) = postfixed.contains(name)
 
+
+		/**
+		 * Returns the [name] without an extension postfix if the postfix-less version of the name has been determined
+		 * to not conflict with that of any other name in this list. Otherwise, returns the [name].
+		 */
 		fun shortName(name: String) = if(postfixed.contains(name)) name else VkPostfix.drop(name)
 
+
 	}
-
-
-
-
-	/*
-	Element short names
-	 */
 
 
 
@@ -59,14 +68,96 @@ object VkGenerator {
 
 
 
-	private val VkType.shortName get() = typeShortNames.shortName(name).drop(2)
+	/*
+	Should gen
+	 */
 
-	private val VkCommand.shortName get() = commandShortNames.shortName(name).drop(2).replaceFirstChar { it.lowercase() }
 
-	private val VkEnumEntry.shortName get() = VkGenUtils.enumEntryShortName(name, enum)
-	
 
-	// TODO: Make genName and shouldGen top-level functions in VkGenerator?
+	val VkProvider.shouldGen get() = this !is VkExtension || (!disabled && deprecatedBy == null)
+
+	val VkCommand.shouldGen get() = !isAliased && name != "vkGetInstanceProcAddr"
+
+	val VkType.shouldGen: Boolean get() = when(this) {
+		is VkTypeBitmask -> implemented && enum != null && enum!!.entries.isNotEmpty()
+		is VkTypeEnum    -> entries.isNotEmpty() && name != "VkStructureType" && (!isFlagBits || bitmask!!.shouldGen)
+		is VkTypeStruct  -> true
+		is VkTypeHandle  -> true
+		else             -> false
+	}
+
+	val VkEnumEntry.shouldGen get() = !isAliased && provider.shouldGen
+
+
+
+	/*
+	Gen names
+	 */
+
+
+
+	/**
+	 * The generated name of this command. Example: vkPresentQueueKHR -> presentQueue.
+	 */
+	val VkCommand.genName get() = commandShortNames
+		.shortName(name)
+		.drop(2)
+		.replaceFirstChar { it.lowercase() }
+
+
+
+	/**
+	 * The generated name of this enum entry. Example:  VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV -> PREPROCESS_WRITE.
+	 */
+	val VkEnumEntry.genName: String get() {
+		// There are about 4 exceptional entries in the registry that don't start with their enum's entry prefix.
+		// There is also the VkResult enum that is only prefixed by VK_.
+		// In these cases, remove the VK_. Otherwise, remove the whole prefix.
+		val prefixLength = if(!name.startsWith(enum.prefix)) 3 else enum.prefix.length
+
+		// Some types should not have their extensions removed due to naming conflicts.
+		var shortName = if(VkGenUtils.postfixedTypes.contains(name))
+			name.drop(prefixLength)
+		else
+			name.drop(prefixLength).dropLast(VkPostfix.postfixUnderscoreLength(name))
+
+		// Java enums cannot start with digits, prefix with '_'.
+		if(shortName[0].isDigit()) shortName = "_$shortName"
+
+		// Remove _BIT at the end of bitmask enums.
+		if(shortName.endsWith("_BIT")) shortName = shortName.dropLast(4)
+
+		return shortName
+	}
+
+
+
+	/**
+	 * The generated name of this type. Example: VkPresentInfoKHR -> PresentInfo.
+	 */
+	val VkType.genName: String get() {
+		val shortName = typeShortNames.shortName(name).drop(2)
+
+		return when(this) {
+			is VkTypeStruct  -> shortName
+			is VkTypeHandle  -> shortName + 'H'
+
+			is VkTypeEnum    -> when {
+				isFlagBits   -> bitmask!!.genName
+				!shouldGen   -> primitive.kName
+				else         -> shortName
+			}
+
+			is VkTypeBitmask -> when {
+				!shouldGen   -> primitive.kName
+				else         -> shortName
+			}
+
+			else             -> name
+		}
+	}
+
+
 
 	/*
 	Scraping
@@ -100,9 +191,6 @@ object VkGenerator {
 				commands.add(c)
 			}
 		}
-
-		for(t in types) t.genName = t.genName(t.shortName)
-		for(c in commands) c.genName = c.genName(c.shortName)
 	}
 
 

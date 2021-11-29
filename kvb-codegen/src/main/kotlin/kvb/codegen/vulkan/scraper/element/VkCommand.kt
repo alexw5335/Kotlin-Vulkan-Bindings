@@ -9,7 +9,7 @@ class VkCommand(
 	val returnType         : VkType?,
 	val params             : List<VkVar>,
 	val isAliased          : Boolean
-) : VkGenElement {
+) : VkElement {
 
 
 	enum class Type {
@@ -17,12 +17,6 @@ class VkCommand(
 		DEVICE,
 		STANDALONE;
 	}
-
-
-
-	override lateinit var genName: String
-
-	override val shouldGen = !isAliased && name != "vkGetInstanceProcAddr"
 
 
 }

@@ -5,10 +5,9 @@ import kvb.codegen.writer.procedural.Primitive
 class VkTypeHandle(override val name: String) : VkType {
 
 
-	override lateinit var genName: String
-
-	override val shouldGen = true
-
+	/**
+	 * All handles are opaque pointers.
+	 */
 	override val primitive = Primitive.LONG
 
 

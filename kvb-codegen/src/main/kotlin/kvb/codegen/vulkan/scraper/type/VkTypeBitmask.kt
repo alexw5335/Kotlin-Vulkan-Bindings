@@ -9,30 +9,11 @@ class VkTypeBitmask(
 ): VkType {
 
 
-	/*
-	Properties
-	 */
-
-
+	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
 
 	val implemented = enumName != null
 
 	var enum: VkTypeEnum? = null
-
-
-
-	/*
-	Type implementation
-	 */
-
-
-
-	override fun genName(shortName: String) = if(shouldGen) shortName else primitive.kName
-
-	override val shouldGen get() = implemented && enum != null && enum!!.entries.isNotEmpty()
-
-	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
-
 
 
 }

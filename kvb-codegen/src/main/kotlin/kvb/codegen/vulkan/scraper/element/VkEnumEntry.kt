@@ -1,6 +1,5 @@
 package kvb.codegen.vulkan.scraper.element
 
-import kvb.codegen.vulkan.VkGenUtils
 import kvb.codegen.vulkan.scraper.type.VkTypeEnum
 
 class VkEnumEntry(
@@ -8,7 +7,7 @@ class VkEnumEntry(
 	val valueString   : String,
 	val enum          : VkTypeEnum,
 	val isAliased     : Boolean
-) : VkGenElement {
+) : VkElement {
 
 
 	val value = if(valueString.startsWith("0x"))
@@ -19,10 +18,6 @@ class VkEnumEntry(
 
 
 	lateinit var provider: VkProvider
-
-	override lateinit var genName: String
-
-	override val shouldGen get() = !isAliased && provider.shouldGen
 
 
 }
