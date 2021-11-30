@@ -153,7 +153,7 @@ class VkScraper(private val registry: VkXmlElement) {
 			}
 
 			when(category) {
-				"enum"        -> return VkTypeEnum(name)
+				"enum"        -> return VkTypeEnum(name, name.contains("FlagBits"), name.contains("FlagBits2"))
 				"handle"      -> return VkTypeHandle(name)
 				"funcpointer" -> return VkTypeUnimplemented(name)
 				"struct"      -> return VkTypeStruct(name, false)

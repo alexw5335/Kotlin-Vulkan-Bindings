@@ -19,11 +19,6 @@ class VkTypeStruct(override val name: String, val isUnion: Boolean) : VkType {
 	val members = ArrayList<VkVar>()
 
 	/**
-	 * The valid structure type value (if any) of the sType member of this struct.
-	 */
-	val sType get() = members.firstOrNull()?.sType
-
-	/**
 	 * A list of struct types whose instances may be present in the pNext chain.
 	 */
 	val pNextValues = ArrayList<VkTypeStruct>()
@@ -32,6 +27,11 @@ class VkTypeStruct(override val name: String, val isUnion: Boolean) : VkType {
 	 * A list of struct types whose pNext chains can contain an instance of this struct type.
 	 */
 	val extends = ArrayList<VkTypeStruct>()
+
+	/**
+	 * The valid structure type value (if any) of the sType member of this struct.
+	 */
+	val sType get() = members.firstOrNull()?.sType
 
 	/**
 	 * If a Buffer subclass should be generated for this struct.

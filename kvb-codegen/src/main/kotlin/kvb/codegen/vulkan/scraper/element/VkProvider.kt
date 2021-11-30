@@ -3,8 +3,8 @@ package kvb.codegen.vulkan.scraper.element
 import kvb.codegen.vulkan.scraper.list.VkElementList
 import kvb.codegen.vulkan.scraper.list.VkTypeList
 
-sealed interface VkProvider : VkGenElement {
-
+sealed interface VkProvider : VkElement {
+	
 
 	val types: VkTypeList
 
