@@ -23,8 +23,4 @@ class VkProviderList(private val all: VkElementList<VkProvider> = VkElementList(
 	}
 
 
-
-	fun addAll(providers: Iterable<VkProvider>) = providers.forEach(::add)
-
-
 }

@@ -32,10 +32,6 @@ class VkTypeList(private val all: VkElementList<VkType> = VkElementList()) : Lis
 
 
 
-	fun addAll(elements: Iterable<VkType>) = elements.forEach(::add)
-
-
-
 	fun fromName(name: String) = all.fromName(name)
 
 
