@@ -10,5 +10,7 @@ class VkFeature(override val name: String) : VkProvider {
 
 	override val commands = VkElementList<VkCommand>()
 
+	override val shouldGen = true
+
 
 }

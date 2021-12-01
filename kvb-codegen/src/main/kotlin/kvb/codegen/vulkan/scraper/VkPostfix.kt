@@ -1,6 +1,10 @@
 package kvb.codegen.vulkan.scraper
 
-enum class VkPostfix(val id: String) {
+/**
+ * Extension provider postfixes. This class is used to remove opstfixes from type and command names where
+ * possible.
+ */
+enum class VkPostfix(val value: String) {
 
 
 	KHRONOS("KHR"),
@@ -39,11 +43,11 @@ enum class VkPostfix(val id: String) {
 
 	companion object {
 
-		fun fromPostfix(string: String) = values().firstOrNull { string.endsWith(it.id) }
+		fun fromPostfix(string: String) = values().firstOrNull { string.endsWith(it.value) }
 
-		fun postfixLength(string: String) = fromPostfix(string)?.id?.length ?: 0
+		fun postfixLength(string: String) = fromPostfix(string)?.value?.length ?: 0
 
-		fun postfixUnderscoreLength(string: String) = fromPostfix(string).let { if(it == null) 0 else it.id.length + 1 }
+		fun postfixUnderscoreLength(string: String) = fromPostfix(string).let { if(it == null) 0 else it.value.length + 1 }
 
 		fun drop(string: String) = string.dropLast(postfixLength(string))
 

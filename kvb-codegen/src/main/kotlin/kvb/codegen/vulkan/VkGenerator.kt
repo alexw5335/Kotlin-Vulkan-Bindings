@@ -1,6 +1,5 @@
 package kvb.codegen.vulkan
 
-import kvb.codegen.vulkan.VkGenerator.shortName
 import kvb.codegen.vulkan.scraper.VkPostfix
 import kvb.codegen.vulkan.scraper.VkScraper
 import kvb.codegen.vulkan.scraper.element.*
@@ -74,9 +73,15 @@ object VkGenerator {
 
 
 
-	val VkProvider.shouldGen get() = this !is VkExtension || (!disabled && deprecatedBy == null)
+	val VkProvider.shouldGen
+		get() = this !is VkExtension || (!disabled && deprecatedBy == null)
 
-	val VkCommand.shouldGen get() = !isAliased && name != "vkGetInstanceProcAddr"
+
+
+	val VkCommand.shouldGen
+		get() = !isAliased && name != "vkGetInstanceProcAddr"
+
+
 
 	val VkType.shouldGen: Boolean get() = when(this) {
 		is VkTypeBitmask -> implemented && enum != null && enum!!.entries.isNotEmpty()
@@ -86,7 +91,10 @@ object VkGenerator {
 		else             -> false
 	}
 
-	val VkEnumEntry.shouldGen get() = !isAliased && provider.shouldGen
+
+
+	val VkEnumEntry.shouldGen
+		get() = !isAliased && provider.shouldGen
 
 
 

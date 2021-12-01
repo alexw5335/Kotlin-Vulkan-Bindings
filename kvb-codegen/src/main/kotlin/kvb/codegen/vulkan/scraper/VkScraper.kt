@@ -1,6 +1,5 @@
 package kvb.codegen.vulkan.scraper
 
-import kvb.codegen.vulkan.scraper.VkScraperUtils.err
 import kvb.codegen.vulkan.scraper.element.*
 import kvb.codegen.vulkan.scraper.type.*
 import kvb.codegen.vulkan.scraper.list.VkElementList
@@ -8,11 +7,32 @@ import kvb.codegen.vulkan.scraper.list.VkProviderList
 import kvb.codegen.vulkan.scraper.list.VkTypeList
 import kvb.codegen.vulkan.scraper.xml.VkXmlElement
 import kvb.codegen.vulkan.scraper.xml.VkXmlParser
+import kvb.codegen.writer.procedural.Primitive
 import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 
 class VkScraper(private val registry: VkXmlElement) {
+
+
+	/*
+	Exceptions
+	 */
+
+
+
+	private class VkScrapeException(message: String) : RuntimeException(message)
+
+	private fun err(message: String): Nothing = throw VkScrapeException(message)
+
+	private fun err(message: String, element: VkXmlElement): Nothing = err("$message. element=$element")
+
+	private fun err(element: VkXmlElement): Nothing = err("invalid element: $element")
+
+
+
+	/*
+	Scraping
+	 */
+
 
 
 	companion object {
@@ -142,14 +162,14 @@ class VkScraper(private val registry: VkXmlElement) {
 				// VkSampleMash, VkBool32, VkFlags, VkFlags64, VkDeviceSize, VkDeviceAddress.
 				// All are typedefs of uint32_t or uint64_t.
 				element.childOrNull("type")?.text?.let {
-					return VkTypePrimitive(name, VkScraperUtils.resolvePrimitive(it))
+					return VkTypePrimitive(name, resolvePrimitive(it))
 				}
 
 				// Special cases for redefined platform-specific structs, treated as native types.
 				// 'ANativeWindow', 'AHardwareBuffer', and 'CAMetalLayer'.
 				// These are 'incomplete type definitions' that avoid unnecessary compile-time dependencies.
 				// So, they do not have 'requires' tags, unlike the other platform-specific native types.
-				return VkTypeNative(name, VkScraperUtils.resolveNativeType(name))
+				return VkTypeNative(name, resolveNative(name))
 			}
 
 			when(category) {
@@ -171,11 +191,11 @@ class VkScraper(private val registry: VkXmlElement) {
 				// Special case for void*
 				if(name == "void") return VkTypeVoid
 
-				return VkTypePrimitive(name, VkScraperUtils.resolvePrimitive(name))
+				return VkTypePrimitive(name, resolvePrimitive(name))
 			}
 
 			// Platform-specific native type.
-			return VkTypeNative(name, VkScraperUtils.resolveNativeType((name)))
+			return VkTypeNative(name, resolveNative((name)))
 		}
 	}
 
@@ -374,31 +394,31 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
+
 	private fun scrapeEnumValue(element: VkXmlElement, enum: VkTypeEnum, extNumber: Int?): String {
-		fun unsigned(): String {
-			element["value"]?.let {
-				return it
+		val unsigned = element["value"]
+
+			?: element["alias"]?.let {
+				enum.entries.fromName(it).valueString
 			}
 
-			element["alias"]?.let {
-				return enum.entries.fromName(it).valueString
-			}
-
-			// Part of a bitmask.
-			element["bitpos"]?.let {
-				return ((if(enum.is64Bit) 1L else 1) shl it.toInt()).toString()
+			?: element["bitpos"]?.let {
+				((if(enum.is64Bit) 1L else 1) shl it.toInt()).toString()
 			}
 
 			// Extension enum, See scripts/generator.py file in the KhronosGroup/Vulkan-Docs repository for the formula.
-			element["offset"]?.let {
-				return (1000000000 + (extNumber!! - 1) * 1000 + it.toInt()).toString()
+			?: element["offset"]?.let {
+				(1000000000 + (extNumber!! - 1) * 1000 + it.toInt()).toString()
 			}
 
-			err("Invalid enum value", element)
+			?: err("Invalid enum value", element)
+
+		element["dir"]?.let {
+			if(it != "-") err("Unrecognised dir attribute", element)
+			return "-$unsigned"
 		}
 
-		// Value may be negated.
-		return (element["dir"] ?: "") + unsigned()
+		return unsigned
 	}
 
 
@@ -407,10 +427,10 @@ class VkScraper(private val registry: VkXmlElement) {
 		val name = element.attrib("name")
 
 		return VkEnumEntry(
-			name       = name,
-			valueString  = scrapeEnumValue(element, enum, element["extnumber"]?.toInt() ?: extNumber),
-			enum       = enum,
-			isAliased  = element["alias"] != null
+			name        = name,
+			valueString = scrapeEnumValue(element, enum, element["extnumber"]?.toInt() ?: extNumber),
+			enum        = enum,
+			isAliased   = element["alias"] != null
 		)
 	}
 
@@ -561,6 +581,113 @@ class VkScraper(private val registry: VkXmlElement) {
 		// Warning: This will not catch new edge-cases.
 		else								-> len
 	}
+
+
+
+	/*
+	Primitives
+	 */
+
+
+
+	/**
+	 * A map of C primitive names to Java/JNI [Primitive]s.
+	 */
+	private val primitiveMap = mapOf(
+		"char" to Primitive.BYTE,
+		"signed char" to Primitive.BYTE,
+		"unsigned char" to Primitive.BYTE,
+
+		"short" to Primitive.SHORT,
+		"signed short" to Primitive.SHORT,
+		"unsigned short" to Primitive.SHORT,
+
+		"int" to Primitive.INT,
+		"signed int" to Primitive.INT,
+		"unsigned int" to Primitive.INT,
+
+		"float" to Primitive.FLOAT,
+		"double" to Primitive.DOUBLE,
+
+		"int8_t" to Primitive.BYTE,
+		"uint8_t" to Primitive.BYTE,
+		"int16_t" to Primitive.SHORT,
+		"uint16_t" to Primitive.SHORT,
+		"int32_t" to Primitive.INT,
+		"uint32_t" to Primitive.INT,
+		"int64_t" to Primitive.LONG,
+		"uint64_t" to Primitive.LONG,
+
+		"void*" to Primitive.LONG,
+
+		"size_t" to Primitive.LONG
+	)
+
+
+
+	/**
+	 * Resolves a C primitive type by its [name], returning a JVM [Primitive] representation.
+	 */
+	private fun resolvePrimitive(name: String) = primitiveMap[name] ?: err("Unrecognised primitive: $name")
+
+
+
+	/*
+	Native types
+	 */
+
+
+
+
+	/**
+	 * Maps the names of platform-specific types to the JVM [Primitive] that will be used to represent them. This is
+	 * currently an incomplete list. Most of these types are opaque pointers that are represented by [Primitive.LONG].
+	 */
+	private val nativeTypeMap = mapOf(
+		/* Windows */
+
+		// Pointer
+		"HWND" to Primitive.LONG,
+
+		// Pointer
+		"HINSTANCE" to Primitive.LONG,
+
+		// Long Pointer to Const Wide-Char String (UTF-16LE).
+		"LPCWSTR" to Primitive.LONG,
+
+		// Pointer
+		"HMONITOR" to Primitive.LONG,
+
+		// Pointer
+		"HANDLE" to Primitive.LONG,
+
+		// Struct of DWORD, LPVOID, and BOOL. Only used as a pointer.
+		"SECURITY_ATTRIBUTES" to Primitive.LONG,
+
+		// 32-bit unsigned int
+		"DWORD" to Primitive.INT,
+
+		/* Apple */
+
+		// Opaque type. Only used as a pointer.
+		"CAMetalLayer" to Primitive.LONG,
+
+		/* Android */
+
+		// Opaque type. Only used as a pointer.
+		"ANativeWindow" to Primitive.LONG,
+
+		// Opaque type. Only used as a pointer.
+		"AHardwareBuffer" to Primitive.LONG,
+	)
+
+
+
+	/**
+	 * Note: Currently returns [Primitive.LONG] by default for types that are not yet implemented in [nativeTypeMap].
+	 * This should throw an exception instead when all native types have been implemented.
+	 */
+	private fun resolveNative(name: String) = nativeTypeMap[name] ?: Primitive.LONG
 
 
 }

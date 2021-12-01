@@ -11,8 +11,6 @@ class VkTypeEnum(override val name: String, val isFlagBits: Boolean, val is64Bit
 
 	val entries = VkElementList<VkEnumEntry>()
 
-	val entryShortNames = HashMap<String, VkEnumEntry>()
-
 	var bitmask: VkTypeBitmask? = null
 
 
