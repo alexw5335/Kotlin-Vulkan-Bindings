@@ -10,5 +10,7 @@ class VkTypeHandle(override val name: String) : VkType {
 	 */
 	override val primitive = Primitive.LONG
 
+	override val shouldGen = true
+
 
 }

@@ -11,7 +11,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
-object VkGenerator {
+/*object VkGenerator {
 
 
 	/**
@@ -202,4 +202,4 @@ object VkGenerator {
 	}
 
 
-}
+}*/

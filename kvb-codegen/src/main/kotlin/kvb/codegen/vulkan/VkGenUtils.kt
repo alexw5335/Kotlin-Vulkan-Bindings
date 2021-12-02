@@ -93,7 +93,7 @@ object VkGenUtils {
 	/**
 	 * Determines an enum entry's short name.
 	 */
-	fun enumEntryShortName(name: String, enum: VkTypeEnum) : String {
+	/*fun enumEntryShortName(name: String, enum: VkTypeEnum) : String {
 		// There are about 4 exceptional entries in the registry that don't start with their enum's entry prefix.
 		// There is also the VkResult enum that is only prefixed by VK_.
 		// In these cases, remove the VK_. Otherwise, remove the whole prefix.
@@ -112,7 +112,7 @@ object VkGenUtils {
 		if(shortName.endsWith("_BIT")) shortName = shortName.dropLast(4)
 
 		return shortName
-	}
+	}*/
 
 
 

@@ -15,5 +15,7 @@ class VkTypeBitmask(
 
 	var enum: VkTypeEnum? = null
 
+	override val shouldGen get() = implemented && enum != null && enum!!.entries.isNotEmpty()
+
 
 }

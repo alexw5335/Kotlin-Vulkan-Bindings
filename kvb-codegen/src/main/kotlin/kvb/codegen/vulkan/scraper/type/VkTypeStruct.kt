@@ -13,6 +13,8 @@ class VkTypeStruct(override val name: String, val isUnion: Boolean) : VkType {
 	 */
 	override val primitive = Primitive.LONG
 
+	override val shouldGen = true
+
 	/**
 	 * The struct members.
 	 */

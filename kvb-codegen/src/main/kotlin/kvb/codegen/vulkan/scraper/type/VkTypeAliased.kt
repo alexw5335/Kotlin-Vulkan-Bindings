@@ -1,3 +1,9 @@
 package kvb.codegen.vulkan.scraper.type
 
-class VkTypeAliased(override val name: String, val alias: VkType): VkType by alias
+class VkTypeAliased(override val name: String, val alias: VkType): VkType {
+
+	override val primitive = alias.primitive
+
+	override val shouldGen = false
+
+}

@@ -41,36 +41,9 @@ val types = VkTypeList().apply {
 
 
 
-private fun genPrimitives() = PrimitiveGenerator.generate()
-
-private fun genEnums() = VkEnumGenerator.generate(types.enums)
-
-private fun genBitmasks() = VkBitmaskGenerator.generate(types.bitmasks)
-
-private fun genHandles() = VkHandleGenerator.generate(types.handles)
-
-private fun genStructs() = VkStructGenerator.generate(types.structs)
-
-private fun genCommands() = VkCommandGenerator.generate(providers)
-
-private fun genAllocations() = VkAllocationGenerator.generate(types.structs)
-
-private fun genConstants() = VkConstantGenerator.generate(scraper.constants)
-
-private fun genUtils() = VkUtilsGenerator.generate()
-
-
 
 fun main() {
-	for(e in scraper.providers.extensions) {
-		if(e.promotedTo != null) {
-			println("promoted: ${e.name} ${e.promotedTo} ${e.types.enums.size} ${e.types.bitmasks.size} ${e.types.structs.size} ${e.commands.size} ${e.types.aliased.size}")
-		}
-
-		if(e.deprecatedBy != null) {
-			println("deprecated: ${e.name} ${e.deprecatedBy} ${e.types.enums.size} ${e.types.bitmasks.size} ${e.types.structs.size} ${e.commands.size} ${e.types.aliased.size}")
-		}
-	}
+	VkNamingGenerator.generate(types)
 	//genEnums()
 	//genBitmasks()
 	//genHandles()
@@ -100,6 +73,8 @@ val primitiveDir = "gen/kvb/core/memory/direct".toPath
 val vulkanDir = "gen/kvb/vulkan".toPath
 
 val cDir = "gen/c".toPath
+
+val metaDir = "gen".toPath
 
 
 

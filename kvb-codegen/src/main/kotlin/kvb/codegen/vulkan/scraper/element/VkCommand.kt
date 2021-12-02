@@ -19,4 +19,8 @@ class VkCommand(
 	}
 
 
+
+	val shouldGen = !isAliased && name != "vkGetInstanceProcAddr"
+
+
 }

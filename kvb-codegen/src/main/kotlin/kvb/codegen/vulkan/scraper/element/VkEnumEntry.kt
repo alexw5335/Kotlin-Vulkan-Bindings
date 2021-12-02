@@ -17,7 +17,11 @@ class VkEnumEntry(
 
 
 
-	lateinit var provider: VkProvider
+	var provider: VkProvider? = null
+
+
+
+	val shouldGen get() = !isAliased && (provider == null || provider!!.shouldGen)
 
 
 }

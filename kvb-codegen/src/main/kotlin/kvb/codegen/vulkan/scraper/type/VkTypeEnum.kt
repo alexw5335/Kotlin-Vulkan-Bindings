@@ -13,5 +13,7 @@ class VkTypeEnum(override val name: String, val isFlagBits: Boolean, val is64Bit
 
 	var bitmask: VkTypeBitmask? = null
 
+	override val shouldGen get() = entries.isNotEmpty() && name != "VkStructureType" && (!isFlagBits || bitmask!!.shouldGen)
+
 
 }
