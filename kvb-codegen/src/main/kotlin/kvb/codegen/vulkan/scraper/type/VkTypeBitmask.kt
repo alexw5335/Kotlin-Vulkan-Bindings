@@ -1,5 +1,6 @@
 package kvb.codegen.vulkan.scraper.type
 
+import kvb.codegen.vulkan.scraper.dropVkAndPostfix
 import kvb.codegen.writer.procedural.Primitive
 
 class VkTypeBitmask(
@@ -9,13 +10,29 @@ class VkTypeBitmask(
 ): VkType {
 
 
+	/*
+	Type implementation
+	 */
+
+
+
 	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
+
+	override val shouldGen get() = enumName != null && enum != null && enum!!.entries.isNotEmpty()
+
+	//override val genName = if(shouldGen) name.dropVkAndPostfix else
+
+
+
+	/*
+	Properties
+	 */
+
+
 
 	val implemented = enumName != null
 
 	var enum: VkTypeEnum? = null
-
-	override val shouldGen get() = implemented && enum != null && enum!!.entries.isNotEmpty()
 
 
 }

@@ -1,5 +1,6 @@
 package kvb.codegen.vulkan.scraper.type
 
+import kvb.codegen.vulkan.scraper.dropVkAndPostfix
 import kvb.codegen.vulkan.scraper.element.VkVar
 import kvb.codegen.writer.procedural.Primitive
 import kvb.core.struct.StructLayout
@@ -8,12 +9,28 @@ import kvb.core.struct.StructLayoutBuilder
 class VkTypeStruct(override val name: String, val isUnion: Boolean) : VkType {
 
 
+	/*
+	Type implementation
+	 */
+
+
+
 	/**
 	 * All struct types are represented by pointers in the Vulkan specification.
 	 */
 	override val primitive = Primitive.LONG
 
 	override val shouldGen = true
+
+	override val genName = name.dropVkAndPostfix
+
+
+
+	/*
+	Properties
+	 */
+
+
 
 	/**
 	 * The struct members.

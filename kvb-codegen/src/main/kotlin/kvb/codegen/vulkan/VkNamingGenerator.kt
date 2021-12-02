@@ -4,6 +4,7 @@ import kvb.codegen.metaDir
 import kvb.codegen.vulkan.scraper.VkPostfix
 import kvb.codegen.vulkan.scraper.element.VkCommand
 import kvb.codegen.vulkan.scraper.element.VkElement
+import kvb.codegen.vulkan.scraper.element.VkProvider
 import kvb.codegen.vulkan.scraper.type.VkType
 import kvb.codegen.vulkan.scraper.type.VkTypeEnum
 import kvb.codegen.vulkanDir
@@ -12,7 +13,7 @@ import kvb.codegen.writer.KWriter
 object VkNamingGenerator {
 
 
-	fun generate(elements: Iterable<VkElement>) {
+	fun generate(types: Iterable<VkType>, providers: Iterable<VkProvider>) {
 		val postfixed = HashSet<String>()
 		val nameMap = HashMap<String, String>()
 
@@ -27,14 +28,19 @@ object VkNamingGenerator {
 			nameMap[shortName] = name
 		}
 
-		for(element in elements) {
-			addName(element.name)
+		for(type in types) {
+			addName(type.name)
 
-			if(element is VkTypeEnum)
-				for(entry in element.entries)
+			if(type is VkTypeEnum)
+				for(entry in type.entries)
 					if(entry.shouldGen)
 						addName(entry.name)
 		}
+
+		for(provider in providers)
+			for(command in provider.commands)
+				if(!command.shouldGen)
+					addName(command.name)
 
 		writeNames(postfixed)
 	}

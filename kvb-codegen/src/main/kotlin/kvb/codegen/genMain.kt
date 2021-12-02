@@ -41,9 +41,8 @@ val types = VkTypeList().apply {
 
 
 
-
 fun main() {
-	VkNamingGenerator.generate(types)
+	VkNamingGenerator.generate(types, providers)
 	//genEnums()
 	//genBitmasks()
 	//genHandles()
