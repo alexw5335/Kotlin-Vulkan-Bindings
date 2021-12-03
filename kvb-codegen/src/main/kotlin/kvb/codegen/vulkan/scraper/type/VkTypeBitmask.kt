@@ -18,9 +18,9 @@ class VkTypeBitmask(
 
 	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
 
-	override val shouldGen get() = enumName != null && enum != null && enum!!.entries.isNotEmpty()
+	override val shouldGen by lazy { enumName != null && enum != null && enum!!.entries.isNotEmpty() }
 
-	//override val genName = if(shouldGen) name.dropVkAndPostfix else
+	override val genName by lazy { if(shouldGen) name.dropVkAndPostfix else primitive.kName }
 
 
 

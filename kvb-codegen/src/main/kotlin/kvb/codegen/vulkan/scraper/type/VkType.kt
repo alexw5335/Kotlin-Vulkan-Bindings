@@ -20,14 +20,14 @@ sealed interface VkType : VkElement {
 	 * If this type should be generated when generating bindings. If false, then the type (if used) will be represented
 	 * by a primitive.
 	 */
-	val shouldGen: Boolean get() = false
+	val shouldGen: Boolean
 
 
 
 	/**
 	 * The name that represents this type when generating bindings.
 	 */
-	val genName: String get() = name
+	val genName: String
 
 
 }

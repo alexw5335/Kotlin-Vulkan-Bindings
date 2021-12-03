@@ -12,5 +12,9 @@ object VkTypeVoid : VkType {
 
 	override val primitive = Primitive.LONG
 
+	override val shouldGen = false
+
+	override val genName = "Long"
+
 
 }
