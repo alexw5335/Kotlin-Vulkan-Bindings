@@ -394,7 +394,6 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-
 	private fun scrapeEnumValue(element: VkXmlElement, enum: VkTypeEnum, extNumber: Int?): String {
 		val unsigned = element["value"]
 
@@ -423,13 +422,14 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	private fun scrapeEnumElement(element: VkXmlElement, enum: VkTypeEnum, extNumber: Int): VkEnumEntry {
+	private fun scrapeEnumElement(element: VkXmlElement, enum: VkTypeEnum, extension: VkExtension?): VkEnumEntry {
 		val name = element.attrib("name")
 
 		return VkEnumEntry(
 			name        = name,
-			valueString = scrapeEnumValue(element, enum, element["extnumber"]?.toInt() ?: extNumber),
+			valueString = scrapeEnumValue(element, enum, element["extnumber"]?.toInt() ?: extension?.number),
 			enum        = enum,
+			extension   = extension,
 			isAliased   = element["alias"] != null
 		)
 	}
@@ -440,9 +440,7 @@ class VkScraper(private val registry: VkXmlElement) {
 		// Extensions can add enum entries to enums, denoted by the 'extends' attribute.
 		// If it lacks an 'extends', then it denotes a constant.
 		val enum = types.enums.fromName(element["extends"] ?: return)
-		val entry = scrapeEnumElement(element, enum, if(provider is VkExtension) provider.number else 0)
-
-		entry.provider = provider
+		val entry = scrapeEnumElement(element, enum, provider as? VkExtension)
 
 		// Some extensions redefine core enums, skip these.
 		if(enum.entries.elementsByName[entry.name] != null) return
@@ -460,7 +458,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 			for(e in element.children)
 				if(e.type == "enum")
-					enum.entries.add(scrapeEnumElement(e, enum, 0))
+					enum.entries.add(scrapeEnumElement(e, enum, null))
 		}
 
 		// Populate the bit enums of the bitmasks and FlagBits enums.

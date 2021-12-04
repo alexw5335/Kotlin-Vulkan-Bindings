@@ -6,6 +6,7 @@ class VkEnumEntry(
 	override val name : String,
 	val valueString   : String,
 	val enum          : VkTypeEnum,
+	val extension     : VkExtension?,
 	val isAliased     : Boolean
 ) : VkElement {
 
@@ -17,11 +18,7 @@ class VkEnumEntry(
 
 
 
-	var provider: VkProvider? = null
-
-
-
-	val shouldGen get() = !isAliased && (provider == null || provider!!.shouldGen)
+	val shouldGen = !isAliased && (extension == null || extension.shouldGen)
 
 
 }

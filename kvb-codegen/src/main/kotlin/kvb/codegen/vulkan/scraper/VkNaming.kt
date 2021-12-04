@@ -20,33 +20,36 @@ else
 
 
 
+/**
+ * Names that should keep their extension postfixes due to naming conflicts. This list is automatically generated.
+ */
 val postfixed = hashSetOf(
-	"VkAccelerationStructureCreateInfoNV",
-	"VkWriteDescriptorSetAccelerationStructureKHR",
-	"VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR",
-	"VkAccelerationStructureNV",
-	"vkCmdDrawIndirectCountKHR",
-	"VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR",
 	"VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR",
-	"VkSurfaceCapabilities2KHR",
+	"VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV",
+	"VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR",
 	"VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV",
-	"VK_QUERY_TYPE_PERFORMANCE_QUERY_KHR",
-	"vkCmdDrawIndexedIndirectCountAMD",
-	"VkWin32KeyedMutexAcquireReleaseInfoKHR",
-	"vkCmdDrawIndexedIndirectCountKHR",
-	"VkRayTracingPipelineCreateInfoNV",
+	"VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR",
 	"VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_NV",
 	"VK_QUERY_TYPE_PERFORMANCE_QUERY_INTEL",
-	"VkWin32KeyedMutexAcquireReleaseInfoNV",
-	"VkRayTracingShaderGroupCreateInfoKHR",
+	"VK_QUERY_TYPE_PERFORMANCE_QUERY_KHR",
 	"VkAccelerationStructureCreateInfoKHR",
-	"VkWriteDescriptorSetAccelerationStructureNV",
+	"VkAccelerationStructureCreateInfoNV",
 	"VkAccelerationStructureKHR",
-	"VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV",
-	"vkCmdDrawIndirectCountAMD",
-	"VkSurfaceCapabilities2EXT",
-	"VkRayTracingShaderGroupCreateInfoNV",
+	"VkAccelerationStructureNV",
 	"VkRayTracingPipelineCreateInfoKHR",
+	"VkRayTracingPipelineCreateInfoNV",
+	"VkRayTracingShaderGroupCreateInfoKHR",
+	"VkRayTracingShaderGroupCreateInfoNV",
+	"VkSurfaceCapabilities2EXT",
+	"VkSurfaceCapabilities2KHR",
+	"VkWin32KeyedMutexAcquireReleaseInfoKHR",
+	"VkWin32KeyedMutexAcquireReleaseInfoNV",
+	"VkWriteDescriptorSetAccelerationStructureKHR",
+	"VkWriteDescriptorSetAccelerationStructureNV",
+	"vkCmdDrawIndexedIndirectCountAMD",
+	"vkCmdDrawIndexedIndirectCountKHR",
+	"vkCmdDrawIndirectCountAMD",
+	"vkCmdDrawIndirectCountKHR",
 )
 
 

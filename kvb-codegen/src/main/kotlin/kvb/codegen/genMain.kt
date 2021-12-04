@@ -26,7 +26,7 @@ val scraper = VkScraper.scrape("vk.xml")
 
 val providers = VkProviderList().apply {
 	for(provider in scraper.providers)
-		if(VkGenUtils.shouldGenProvider(provider))
+		if(provider.shouldGen)
 			add(provider)
 }
 

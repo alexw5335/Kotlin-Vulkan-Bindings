@@ -5,11 +5,16 @@ import kvb.codegen.vulkan.scraper.element.VkEnumEntry
 import kvb.codegen.vulkan.scraper.list.VkElementList
 import kvb.codegen.writer.procedural.Primitive
 
-class VkTypeEnum(override val name: String, val isFlagBits: Boolean, val is64Bit: Boolean) : VkType {
+class VkTypeEnum(
+	override val name: String,
+	val isFlagBits: Boolean,
+	val is64Bit: Boolean
+) : VkType {
 
 
 	/*
 	Type implementation
+	Lazy delegates are used since [entries] and [bitmask] are updated after construction.
 	 */
 
 

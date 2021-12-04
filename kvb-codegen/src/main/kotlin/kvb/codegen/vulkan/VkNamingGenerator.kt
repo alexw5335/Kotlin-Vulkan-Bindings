@@ -42,12 +42,13 @@ object VkNamingGenerator {
 				if(!command.shouldGen)
 					addName(command.name)
 
-		writeNames(postfixed)
+		for(name in postfixed.sorted())
+			println("\"$name\",")
 	}
 
 
 
-	private fun writeNames(names: Iterable<String>) = KWriter.write(metaDir, "VkPostfixed") {
+	/*private fun writeNames(names: Iterable<String>) = KWriter.write(metaDir, "VkPostfixed") {
 		start {
 			autogenComment()
 			package_("kvb.codegen.vulkan.scraper")
@@ -61,7 +62,7 @@ object VkNamingGenerator {
 			}
 			writeln(')')
 		}
-	}
+	}*/
 
 
 }
