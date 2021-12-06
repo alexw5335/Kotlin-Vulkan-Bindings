@@ -467,12 +467,10 @@ class VkScraper(private val registry: VkXmlElement) {
 					enum.entries.add(scrapeEnumElement(e, enum, null))
 		}
 
-		// Populate the bit enums of the bitmasks and FlagBits enums.
 		for(bitmask in types.bitmasks) {
 			bitmask.enumName?.let {
 				val enum = types.enums.fromName(it)
 				bitmask.enum = enum
-				enum.bitmask = bitmask
 			}
 		}
 	}

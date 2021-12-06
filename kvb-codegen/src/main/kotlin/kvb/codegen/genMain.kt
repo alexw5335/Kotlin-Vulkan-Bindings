@@ -38,11 +38,15 @@ val types = VkTypeList().apply {
 
 
 
+fun genEnums() = VkEnumGenerator.generate(types.enums)
+
+fun genBitmasks() =  VkBitmaskGenerator.generate(types.bitmasks)
+
+
+
 fun main() {
-	for(p in providers)
-		for(t in p.types.bitmasks)
-			if(t.enumName != null && t.enum == null)
-				println(t)
+	genEnums()
+	genBitmasks()
 }
 
 

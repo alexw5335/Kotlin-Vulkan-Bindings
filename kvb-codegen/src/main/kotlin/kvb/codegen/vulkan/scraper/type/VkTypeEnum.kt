@@ -1,6 +1,7 @@
 package kvb.codegen.vulkan.scraper.type
 
-import kvb.codegen.vulkan.scraper.VkGenUtils.dropVkAndPostfix
+import kvb.codegen.vulkan.scraper.VkNamingUtils
+import kvb.codegen.vulkan.scraper.VkNamingUtils.dropVkAndPostfix
 import kvb.codegen.vulkan.scraper.element.VkEnumEntry
 import kvb.codegen.vulkan.scraper.list.VkElementList
 import kvb.codegen.writer.procedural.Primitive
@@ -30,6 +31,7 @@ class VkTypeEnum(
 
 
 
+
 	/*
 	Properties
 	 */
@@ -38,7 +40,9 @@ class VkTypeEnum(
 
 	val entries = VkElementList<VkEnumEntry>()
 
-	var bitmask: VkTypeBitmask? = null
+	val prefix = VkNamingUtils.enumPrefix(this)
+
+	val isValue = name == "VkResult" || name == "VkObjectType" || name == "VkFormat"
 
 
 }

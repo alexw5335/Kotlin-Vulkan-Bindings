@@ -5,9 +5,8 @@ import kvb.codegen.vulkan.scraper.element.VkProvider
 import kvb.codegen.vulkan.scraper.type.VkType
 import kvb.codegen.vulkan.scraper.type.VkTypeEnum
 
-object VkGenUtilsGenerator {
+object VkPostfixedGenerator {
 
-	// TODO: Rework scraper to improve encapsulation. Avoid lazy, var, and lateinit.
 
 	fun printPostfixedNames(types: Iterable<VkType>, providers: Iterable<VkProvider>) {
 		val postfixed = HashSet<String>()
