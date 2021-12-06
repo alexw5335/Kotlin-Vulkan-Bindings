@@ -14,6 +14,12 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 	/*
+	Turn the parsed vk.xml into a better format.
+	 */
+
+
+
+	/*
 	Exceptions
 	 */
 
