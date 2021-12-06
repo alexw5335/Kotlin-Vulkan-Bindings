@@ -1,6 +1,5 @@
-package kvb.codegen.vulkan
+package kvb.codegen.vulkan.scraper
 
-import kvb.codegen.vulkan.scraper.VkPostfix
 import java.util.*
 import java.util.regex.Pattern
 

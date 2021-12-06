@@ -1,19 +1,15 @@
 package kvb.codegen.vulkan
 
-import kvb.codegen.metaDir
 import kvb.codegen.vulkan.scraper.VkPostfix
-import kvb.codegen.vulkan.scraper.element.VkCommand
-import kvb.codegen.vulkan.scraper.element.VkElement
 import kvb.codegen.vulkan.scraper.element.VkProvider
 import kvb.codegen.vulkan.scraper.type.VkType
 import kvb.codegen.vulkan.scraper.type.VkTypeEnum
-import kvb.codegen.vulkanDir
-import kvb.codegen.writer.KWriter
 
-object VkNamingGenerator {
+object VkGenUtilsGenerator {
 
+	// TODO: Rework scraper to improve encapsulation. Avoid lazy, var, and lateinit.
 
-	fun generate(types: Iterable<VkType>, providers: Iterable<VkProvider>) {
+	fun printPostfixedNames(types: Iterable<VkType>, providers: Iterable<VkProvider>) {
 		val postfixed = HashSet<String>()
 		val nameMap = HashMap<String, String>()
 
@@ -45,24 +41,6 @@ object VkNamingGenerator {
 		for(name in postfixed.sorted())
 			println("\"$name\",")
 	}
-
-
-
-	/*private fun writeNames(names: Iterable<String>) = KWriter.write(metaDir, "VkPostfixed") {
-		start {
-			autogenComment()
-			package_("kvb.codegen.vulkan.scraper")
-		}
-
-		declaration {
-			writeln("val postfixed = hashSetOf(")
-			indented {
-				for(name in names)
-					writeln("\"$name\",")
-			}
-			writeln(')')
-		}
-	}*/
 
 
 }

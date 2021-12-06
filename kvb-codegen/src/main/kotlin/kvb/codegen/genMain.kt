@@ -2,11 +2,8 @@
 
 package kvb.codegen
 
-import kvb.codegen.memory.PrimitiveGenerator
 import kvb.codegen.vulkan.*
 import kvb.codegen.vulkan.scraper.VkScraper
-import kvb.codegen.vulkan.scraper.element.VkCommand
-import kvb.codegen.vulkan.scraper.list.VkElementList
 import kvb.codegen.vulkan.scraper.list.VkProviderList
 import kvb.codegen.vulkan.scraper.list.VkTypeList
 import java.nio.file.Files
@@ -42,15 +39,10 @@ val types = VkTypeList().apply {
 
 
 fun main() {
-	VkNamingGenerator.generate(types, providers)
-	//genEnums()
-	//genBitmasks()
-	//genHandles()
-	//genStructs()
-	//genCommands()
-	//genAllocations()
-	//genConstants()
-	//genUtils()
+	for(p in providers)
+		for(t in p.types.bitmasks)
+			if(t.enumName != null && t.enum == null)
+				println(t)
 }
 
 

@@ -55,11 +55,9 @@ class VkXmlParser(private val chars: CharArray) {
 		while(chars[pos].isWhitespace()) pos++
 
 		// Read until the next tag opening
-		if(chars[pos] != '<') {
-			while(chars[pos] != '<') {
+		//if(chars[pos] != '<')
+			while(chars[pos] != '<')
 				builder.append(chars[pos++])
-			}
-		}
 
 		// Skip comments, continue reading between and after comments
 		if(chars[pos + 1] == '!') {

@@ -1,4 +1,4 @@
-package kvb.codegen.memory
+package kvb.codegen.core
 
 import kvb.codegen.primitiveDir
 import kvb.codegen.primitivePackage
@@ -8,7 +8,6 @@ import kvb.core.memory.Unsafe
 import kvb.core.memory.Addressable
 import kvb.core.memory.DirectBuffer
 import java.nio.charset.Charset
-import java.nio.file.Path
 
 object PrimitiveGenerator {
 
