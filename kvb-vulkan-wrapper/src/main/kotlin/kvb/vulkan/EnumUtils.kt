@@ -24,6 +24,9 @@ fun Result.check() {
 
 
 
+/**
+ * Transforms this [ImageType] into its corresponding [ImageViewType].
+ */
 val ImageType.asImageViewType get() = when(this) {
 	ImageType._1D -> ImageViewType._1D
 	ImageType._2D -> ImageViewType._2D

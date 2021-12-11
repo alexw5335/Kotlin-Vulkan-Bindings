@@ -1,6 +1,6 @@
 package kvb.codegen.vulkan.scraper.type
 
-import kvb.codegen.vulkan.scraper.VkNamingUtils.dropVkAndPostfix
+import kvb.codegen.vulkan.scraper.VkGenUtils.dropVkAndPostfix
 import kvb.codegen.vulkan.scraper.element.VkVar
 import kvb.codegen.writer.procedural.Primitive
 import kvb.core.struct.StructLayout

@@ -17,7 +17,7 @@ class VkExtension(
 
 	override val commands = VkElementList<VkCommand>()
 
-	override val shouldGen = deprecatedBy == null && !disabled
+	override val shouldGen = deprecatedBy == null && !disabled && promotedTo != "VK_VERSION_1_1"
 
 
 }

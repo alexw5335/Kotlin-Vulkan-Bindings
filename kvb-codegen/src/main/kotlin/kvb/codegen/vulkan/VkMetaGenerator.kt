@@ -5,7 +5,7 @@ import kvb.codegen.vulkan.scraper.element.VkProvider
 import kvb.codegen.vulkan.scraper.type.VkType
 import kvb.codegen.vulkan.scraper.type.VkTypeEnum
 
-object VkPostfixedGenerator {
+object VkMetaGenerator {
 
 
 	fun printPostfixedNames(types: Iterable<VkType>, providers: Iterable<VkProvider>) {
@@ -34,11 +34,23 @@ object VkPostfixedGenerator {
 
 		for(provider in providers)
 			for(command in provider.commands)
-				if(!command.shouldGen)
+				if(command.shouldGen)
 					addName(command.name)
+
+		println("Postfixed Names")
 
 		for(name in postfixed.sorted())
 			println("\"$name\",")
+	}
+
+
+
+	fun printEmptyEnums(enums: Iterable<VkTypeEnum>) {
+		println("\nEmpty Types")
+
+		for(e in enums)
+			if(e.entries.isEmpty())
+				println("\"${e.name}\",")
 	}
 
 

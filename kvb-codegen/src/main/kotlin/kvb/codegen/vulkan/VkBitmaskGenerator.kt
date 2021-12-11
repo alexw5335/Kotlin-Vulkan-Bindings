@@ -61,17 +61,6 @@ object VkBitmaskGenerator {
 				declaration("operator fun plus(mask: $name) = $name(value or mask.value)")
 				declaration("operator fun contains(mask: $name) = value and mask.value == mask.value")
 			}
-
-			/*if(bitmask.isExtraGen) {
-				val zero = if(bitmask.is64Bit) "0L" else "0"
-				function("override fun toString() = buildString") {
-					writeln("append(\"{ \")")
-					for(entry in entries)
-						writeln("if(value and ${entry.valueString} != $zero) append(\"${entry.genName}, \")")
-					writeln("if(length == 2) append(\"*EMPTY*\") else setLength(length - 2)")
-					writeln("append(\" }\")")
-				}
-			}*/
 		}
 	}
 

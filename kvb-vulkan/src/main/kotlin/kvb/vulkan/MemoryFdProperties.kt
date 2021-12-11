@@ -2,8 +2,11 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.Addressable
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Allocator
 import kvb.core.memory.Unsafe
+import kvb.core.memory.Addressable
+import kvb.core.memory.direct.*
 
 /**
  *     struct VkMemoryFdPropertiesKHR {

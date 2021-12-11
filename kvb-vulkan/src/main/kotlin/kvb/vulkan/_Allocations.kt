@@ -648,6 +648,12 @@ inline fun Allocator.Win32SurfaceCreateInfo(block: (Win32SurfaceCreateInfo) -> U
 
 inline fun Allocator.PipelineRasterizationStateRasterizationOrder(block: (PipelineRasterizationStateRasterizationOrder) -> Unit) = PipelineRasterizationStateRasterizationOrder(calloc(24)).apply(block).also { it.sType = 1000018000 }
 
+inline fun Allocator.DebugMarkerObjectNameInfo(block: (DebugMarkerObjectNameInfo) -> Unit) = DebugMarkerObjectNameInfo(calloc(40)).apply(block).also { it.sType = 1000022000 }
+
+inline fun Allocator.DebugMarkerObjectTagInfo(block: (DebugMarkerObjectTagInfo) -> Unit) = DebugMarkerObjectTagInfo(calloc(56)).apply(block).also { it.sType = 1000022001 }
+
+inline fun Allocator.DebugMarkerMarkerInfo(block: (DebugMarkerMarkerInfo) -> Unit) = DebugMarkerMarkerInfo(calloc(40)).apply(block).also { it.sType = 1000022002 }
+
 inline fun Allocator.PhysicalDeviceTransformFeedbackFeatures(block: (PhysicalDeviceTransformFeedbackFeatures) -> Unit) = PhysicalDeviceTransformFeedbackFeatures(calloc(24)).apply(block).also { it.sType = 1000028000 }
 
 inline fun Allocator.PhysicalDeviceTransformFeedbackProperties(block: (PhysicalDeviceTransformFeedbackProperties) -> Unit) = PhysicalDeviceTransformFeedbackProperties(calloc(64)).apply(block).also { it.sType = 1000028001 }
@@ -667,6 +673,8 @@ inline fun Allocator.ShaderStatisticsInfo(block: (ShaderStatisticsInfo) -> Unit)
 inline fun Allocator.StreamDescriptorSurfaceCreateInfo(block: (StreamDescriptorSurfaceCreateInfo) -> Unit) = StreamDescriptorSurfaceCreateInfo(calloc(32)).apply(block).also { it.sType = 1000049000 }
 
 inline fun Allocator.PhysicalDeviceCornerSampledImageFeatures(block: (PhysicalDeviceCornerSampledImageFeatures) -> Unit) = PhysicalDeviceCornerSampledImageFeatures(calloc(24)).apply(block).also { it.sType = 1000050000 }
+
+inline fun Allocator.Win32KeyedMutexAcquireReleaseInfoNV(block: (Win32KeyedMutexAcquireReleaseInfoNV) -> Unit) = Win32KeyedMutexAcquireReleaseInfoNV(calloc(72)).apply(block).also { it.sType = 1000058000 }
 
 inline fun Allocator.ViSurfaceCreateInfo(block: (ViSurfaceCreateInfo) -> Unit) = ViSurfaceCreateInfo(calloc(32)).apply(block).also { it.sType = 1000062000 }
 
@@ -690,7 +698,7 @@ inline fun Allocator.MemoryFdProperties(block: (MemoryFdProperties) -> Unit) = M
 
 inline fun Allocator.MemoryGetFdInfo(block: (MemoryGetFdInfo) -> Unit) = MemoryGetFdInfo(calloc(32)).apply(block).also { it.sType = 1000074002 }
 
-inline fun Allocator.Win32KeyedMutexAcquireReleaseInfo(block: (Win32KeyedMutexAcquireReleaseInfo) -> Unit) = Win32KeyedMutexAcquireReleaseInfo(calloc(72)).apply(block).also { it.sType = 1000075000 }
+inline fun Allocator.Win32KeyedMutexAcquireReleaseInfoKHR(block: (Win32KeyedMutexAcquireReleaseInfoKHR) -> Unit) = Win32KeyedMutexAcquireReleaseInfoKHR(calloc(72)).apply(block).also { it.sType = 1000075000 }
 
 inline fun Allocator.ImportSemaphoreWin32HandleInfo(block: (ImportSemaphoreWin32HandleInfo) -> Unit) = ImportSemaphoreWin32HandleInfo(calloc(48)).apply(block).also { it.sType = 1000078000 }
 

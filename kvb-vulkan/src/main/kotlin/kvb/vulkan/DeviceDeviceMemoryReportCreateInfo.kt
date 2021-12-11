@@ -2,8 +2,11 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.Addressable
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Allocator
 import kvb.core.memory.Unsafe
+import kvb.core.memory.Addressable
+import kvb.core.memory.direct.*
 
 /**
  *     struct VkDeviceDeviceMemoryReportCreateInfoEXT {
@@ -30,7 +33,7 @@ value class DeviceDeviceMemoryReportCreateInfo(override val address: Long) : Add
 		get() = Unsafe.getInt(address + 16)
 		set(value) = Unsafe.setInt(address + 16, value)
 	
-	var pfnUserCallback: Long
+	var pfnUserCallback: PFN_vkDeviceMemoryReportCallbackEXT
 		get()      = Unsafe.getLong(address + 24)
 		set(value) = Unsafe.setLong(address + 24, value)
 	

@@ -2,8 +2,11 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.Addressable
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Allocator
 import kvb.core.memory.Unsafe
+import kvb.core.memory.Addressable
+import kvb.core.memory.direct.*
 
 /**
  *     struct VkDebugUtilsMessengerCreateInfoEXT {
@@ -40,7 +43,7 @@ value class DebugUtilsMessengerCreateInfo(override val address: Long) : Addressa
 		get()      = DebugUtilsMessageTypeFlags(Unsafe.getInt(address + 24))
 		set(value) = Unsafe.setInt(address + 24, value.value)
 	
-	var pfnUserCallback: Long
+	var pfnUserCallback: PFN_vkDebugUtilsMessengerCallbackEXT
 		get()      = Unsafe.getLong(address + 32)
 		set(value) = Unsafe.setLong(address + 32, value)
 	

@@ -1,7 +1,8 @@
-@file:Suppress("HasPlatformType")
+@file:Suppress("HasPlatformType", "unused")
 
 package kvb.codegen
 
+import kvb.codegen.core.PrimitiveGenerator
 import kvb.codegen.vulkan.*
 import kvb.codegen.vulkan.scraper.VkScraper
 import kvb.codegen.vulkan.scraper.list.VkProviderList
@@ -12,7 +13,7 @@ import java.nio.file.Paths
 
 
 /*
-Generation
+Scraping
  */
 
 
@@ -38,15 +39,60 @@ val types = VkTypeList().apply {
 
 
 
+/*
+Generation
+ */
+
+
+
 fun genEnums() = VkEnumGenerator.generate(types.enums)
 
-fun genBitmasks() =  VkBitmaskGenerator.generate(types.bitmasks)
+fun genBitmasks() = VkBitmaskGenerator.generate(types.bitmasks)
+
+fun genHandles() = VkHandleGenerator.generate(types.handles)
+
+fun genStructs() = VkStructGenerator.generate(types.structs)
+
+fun genAllocation() = VkAllocationGenerator.generate(types.structs)
+
+fun genCommands() = VkCommandGenerator.generate(providers)
+
+fun genUtils() = VkUtilsGenerator.generate()
+
+fun genConstants() = VkConstantGenerator.generate(scraper.constants)
+
+fun genPrimitives() = PrimitiveGenerator.generate()
+
+
+
+fun genCore() {
+	genPrimitives()
+}
+
+
+
+fun genVulkan() {
+	genEnums()
+	genBitmasks()
+	genHandles()
+	genStructs()
+	genAllocation()
+	genCommands()
+	genUtils()
+	genConstants()
+}
+
+
+
+fun printMeta() {
+	VkMetaGenerator.printEmptyEnums(types.enums)
+	VkMetaGenerator.printPostfixedNames(types, providers)
+}
 
 
 
 fun main() {
-	genEnums()
-	genBitmasks()
+	genVulkan()
 }
 
 
@@ -63,13 +109,11 @@ const val vulkanPackage = "kvb.vulkan"
 
 
 
-val primitiveDir = "gen/kvb/core/memory/direct".toPath
-
 val vulkanDir = "gen/kvb/vulkan".toPath
 
 val cDir = "gen/c".toPath
 
-val metaDir = "gen".toPath
+val primitiveDir = "gen/kvb/core/memory/direct".toPath
 
 
 

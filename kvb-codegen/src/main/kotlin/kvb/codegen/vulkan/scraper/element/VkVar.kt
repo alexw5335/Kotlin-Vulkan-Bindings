@@ -68,7 +68,7 @@ class VkVar(
 
 
 	/*
-	Name
+	Naming
 	 */
 
 
@@ -92,6 +92,11 @@ class VkVar(
 		name.drop(1).replaceFirstChar { it.lowercase() }
 	else
 		name
+
+	/**
+	 * Convenience variable for the generated name of the [type].
+	 */
+	val typeName get() = type.genName
 
 	/**
 	 * Convenience variable for the buffer name of the [type]'s primitive type.

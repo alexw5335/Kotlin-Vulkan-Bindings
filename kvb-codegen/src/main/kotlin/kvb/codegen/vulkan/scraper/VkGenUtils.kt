@@ -4,7 +4,7 @@ import kvb.codegen.vulkan.scraper.type.VkTypeEnum
 import java.util.*
 import java.util.regex.Pattern
 
-object VkNamingUtils {
+object VkGenUtils {
 
 
 	/** Regex for splitting camel case into words. */
@@ -63,10 +63,32 @@ object VkNamingUtils {
 		"VkWin32KeyedMutexAcquireReleaseInfoNV",
 		"VkWriteDescriptorSetAccelerationStructureKHR",
 		"VkWriteDescriptorSetAccelerationStructureNV",
-		"vkCmdDrawIndexedIndirectCountAMD",
-		"vkCmdDrawIndexedIndirectCountKHR",
-		"vkCmdDrawIndirectCountAMD",
-		"vkCmdDrawIndirectCountKHR",
+		"vkCmdCopyAccelerationStructureKHR",
+		"vkCmdCopyAccelerationStructureNV",
+		"vkCmdTraceRaysKHR",
+		"vkCmdTraceRaysNV",
+		"vkCmdWriteAccelerationStructuresPropertiesKHR",
+		"vkCmdWriteAccelerationStructuresPropertiesNV",
+		"vkCreateAccelerationStructureKHR",
+		"vkCreateAccelerationStructureNV",
+		"vkCreateRayTracingPipelinesKHR",
+		"vkCreateRayTracingPipelinesNV",
+		"vkDestroyAccelerationStructureKHR",
+		"vkDestroyAccelerationStructureNV",
+		"vkGetPhysicalDeviceSurfaceCapabilities2EXT",
+		"vkGetPhysicalDeviceSurfaceCapabilities2KHR"
+	)
+
+
+
+	/**
+	 * The names of enums  that are empty and thus should not be generated.
+	 */
+	val emptyEnums = hashSetOf(
+		"VkAcquireProfilingLockFlagBitsKHR",
+		"VkPipelineCompilerControlFlagBitsAMD",
+		"VkShaderCorePropertiesFlagBitsAMD",
+		"VkPrivateDataSlotCreateFlagBitsEXT",
 	)
 
 

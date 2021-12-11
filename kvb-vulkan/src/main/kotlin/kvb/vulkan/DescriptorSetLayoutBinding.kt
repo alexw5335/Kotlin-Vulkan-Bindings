@@ -2,11 +2,11 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.Addressable
-import kvb.core.memory.Allocator
 import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Allocator
 import kvb.core.memory.Unsafe
-import kvb.core.memory.direct.DirectLongBuffer
+import kvb.core.memory.Addressable
+import kvb.core.memory.direct.*
 
 /**
  *     struct VkDescriptorSetLayoutBinding {
@@ -66,9 +66,7 @@ value class DescriptorSetLayoutBinding(override val address: Long) : Addressable
 		inline fun<R> map(block: (DescriptorSetLayoutBinding) -> R) = List(capacity) { block(get(it)) }
 		
 		inline fun<R> mapIndexed(block: (Int, DescriptorSetLayoutBinding) -> R) = List(capacity) { block(it, get(it)) }
-
-		fun ofCapacity(allocator: Allocator, capacity: Int = this.capacity * 2) = allocator.DescriptorSetLayoutBinding(capacity) { Unsafe.copy(address, it.address, it.byteSize) }
-
+	
 	}
 	
 	

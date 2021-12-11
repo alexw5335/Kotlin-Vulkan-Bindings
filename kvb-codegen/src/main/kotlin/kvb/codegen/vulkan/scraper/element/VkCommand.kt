@@ -1,6 +1,6 @@
 package kvb.codegen.vulkan.scraper.element
 
-import kvb.codegen.vulkan.scraper.list.VkElementList
+import kvb.codegen.vulkan.scraper.VkGenUtils.dropVkAndPostfix
 import kvb.codegen.vulkan.scraper.type.VkType
 
 class VkCommand(
@@ -21,6 +21,8 @@ class VkCommand(
 
 
 	val shouldGen = !isAliased && name != "vkGetInstanceProcAddr"
+
+	val genName = name.dropVkAndPostfix.replaceFirstChar { it.lowercase() }
 
 
 }

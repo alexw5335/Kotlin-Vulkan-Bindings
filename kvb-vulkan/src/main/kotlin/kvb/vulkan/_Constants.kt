@@ -12,8 +12,6 @@ const val VK_UUID_SIZE = 16
 
 const val VK_LUID_SIZE = 8
 
-const val VK_LUID_SIZE_KHR = 8
-
 const val VK_MAX_EXTENSION_NAME_SIZE = 256
 
 const val VK_MAX_DESCRIPTION_SIZE = 256
@@ -40,24 +38,14 @@ const val VK_QUEUE_FAMILY_IGNORED = -1
 
 const val VK_QUEUE_FAMILY_EXTERNAL = -2
 
-const val VK_QUEUE_FAMILY_EXTERNAL_KHR = -2
-
-const val VK_QUEUE_FAMILY_FOREIGN_EXT = -3
+const val VK_QUEUE_FAMILY_FOREIGN = -3
 
 const val VK_SUBPASS_EXTERNAL = -1
 
 const val VK_MAX_DEVICE_GROUP_SIZE = 32
 
-const val VK_MAX_DEVICE_GROUP_SIZE_KHR = 32
-
 const val VK_MAX_DRIVER_NAME_SIZE = 256
-
-const val VK_MAX_DRIVER_NAME_SIZE_KHR = 256
 
 const val VK_MAX_DRIVER_INFO_SIZE = 256
 
-const val VK_MAX_DRIVER_INFO_SIZE_KHR = 256
-
-const val VK_SHADER_UNUSED_KHR = -1
-
-const val VK_SHADER_UNUSED_NV = -1
+const val VK_SHADER_UNUSED = -1

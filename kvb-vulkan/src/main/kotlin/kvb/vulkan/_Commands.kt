@@ -14,9 +14,9 @@ object Commands {
 	
 	
 	private external fun init(): Boolean
-
+	
 	init { init() }
-
+	
 	external fun getInstanceProcAddr(instance: Long, pname: Long): Long
 	
 	
@@ -437,6 +437,16 @@ object Commands {
 	
 	external fun getPhysicalDeviceWin32PresentationSupport(address: Long, physicalDevice: Long, queueFamilyIndex: Int): Int
 	
+	external fun debugMarkerSetObjectTag(address: Long, device: Long, pTagInfo: Long): Int
+	
+	external fun debugMarkerSetObjectName(address: Long, device: Long, pNameInfo: Long): Int
+	
+	external fun cmdDebugMarkerBegin(address: Long, commandBuffer: Long, pMarkerInfo: Long)
+	
+	external fun cmdDebugMarkerEnd(address: Long, commandBuffer: Long)
+	
+	external fun cmdDebugMarkerInsert(address: Long, commandBuffer: Long, pMarkerInfo: Long)
+	
 	external fun cmdBindTransformFeedbackBuffers(address: Long, commandBuffer: Long, firstBinding: Int, bindingCount: Int, pBuffers: Long, pOffsets: Long, pSizes: Long)
 	
 	external fun cmdBeginTransformFeedback(address: Long, commandBuffer: Long, firstCounterBuffer: Int, counterBufferCount: Int, pCounterBuffers: Long, pCounterBufferOffsets: Long)
@@ -605,7 +615,7 @@ object Commands {
 	
 	external fun createRayTracingPipelinesKHR(address: Long, device: Long, deferredOperation: Long, pipelineCache: Long, createInfoCount: Int, pCreateInfos: Long, pAllocator: Long, pPipelines: Long): Int
 	
-	external fun getRayTracingShaderGroupHandlesKHR(address: Long, device: Long, pipeline: Long, firstGroup: Int, groupCount: Int, dataSize: Long, pData: Long): Int
+	external fun getRayTracingShaderGroupHandles(address: Long, device: Long, pipeline: Long, firstGroup: Int, groupCount: Int, dataSize: Long, pData: Long): Int
 	
 	external fun getRayTracingCaptureReplayShaderGroupHandles(address: Long, device: Long, pipeline: Long, firstGroup: Int, groupCount: Int, dataSize: Long, pData: Long): Int
 	
@@ -1412,6 +1422,11 @@ class DeviceCommands(private val device: DeviceH, private val instanceCommands: 
 	private val getDeviceGroupSurfacePresentModesAddr = addr("vkGetDeviceGroupSurfacePresentModesKHR")
 	private val acquireNextImage2Addr = addr("vkAcquireNextImage2KHR")
 	private val createSharedSwapchainsAddr = addr("vkCreateSharedSwapchainsKHR")
+	private val debugMarkerSetObjectTagAddr = addr("vkDebugMarkerSetObjectTagEXT")
+	private val debugMarkerSetObjectNameAddr = addr("vkDebugMarkerSetObjectNameEXT")
+	private val cmdDebugMarkerBeginAddr = addr("vkCmdDebugMarkerBeginEXT")
+	private val cmdDebugMarkerEndAddr = addr("vkCmdDebugMarkerEndEXT")
+	private val cmdDebugMarkerInsertAddr = addr("vkCmdDebugMarkerInsertEXT")
 	private val cmdBindTransformFeedbackBuffersAddr = addr("vkCmdBindTransformFeedbackBuffersEXT")
 	private val cmdBeginTransformFeedbackAddr = addr("vkCmdBeginTransformFeedbackEXT")
 	private val cmdEndTransformFeedbackAddr = addr("vkCmdEndTransformFeedbackEXT")
@@ -1478,7 +1493,7 @@ class DeviceCommands(private val device: DeviceH, private val instanceCommands: 
 	private val getAccelerationStructureBuildSizesAddr = addr("vkGetAccelerationStructureBuildSizesKHR")
 	private val cmdTraceRaysKHRAddr = addr("vkCmdTraceRaysKHR")
 	private val createRayTracingPipelinesKHRAddr = addr("vkCreateRayTracingPipelinesKHR")
-	private val getRayTracingShaderGroupHandlesKHRAddr = addr("vkGetRayTracingShaderGroupHandlesKHR")
+	private val getRayTracingShaderGroupHandlesAddr = addr("vkGetRayTracingShaderGroupHandlesKHR")
 	private val getRayTracingCaptureReplayShaderGroupHandlesAddr = addr("vkGetRayTracingCaptureReplayShaderGroupHandlesKHR")
 	private val cmdTraceRaysIndirectAddr = addr("vkCmdTraceRaysIndirectKHR")
 	private val getRayTracingShaderGroupStackSizeAddr = addr("vkGetRayTracingShaderGroupStackSizeKHR")
@@ -2211,6 +2226,26 @@ class DeviceCommands(private val device: DeviceH, private val instanceCommands: 
 		return Result(Commands.createSharedSwapchains(createSharedSwapchainsAddr, device.address, swapchainCount, pCreateInfos.address, pAllocator.addressOrNULL, pSwapchains.address))
 	}
 	
+	fun debugMarkerSetObjectTag(pTagInfo: DebugMarkerObjectTagInfo): Result {
+		return Result(Commands.debugMarkerSetObjectTag(debugMarkerSetObjectTagAddr, device.address, pTagInfo.address))
+	}
+	
+	fun debugMarkerSetObjectName(pNameInfo: DebugMarkerObjectNameInfo): Result {
+		return Result(Commands.debugMarkerSetObjectName(debugMarkerSetObjectNameAddr, device.address, pNameInfo.address))
+	}
+	
+	fun cmdDebugMarkerBegin(commandBuffer: CommandBufferH, pMarkerInfo: DebugMarkerMarkerInfo) {
+		Commands.cmdDebugMarkerBegin(cmdDebugMarkerBeginAddr, commandBuffer.address, pMarkerInfo.address)
+	}
+	
+	fun cmdDebugMarkerEnd(commandBuffer: CommandBufferH) {
+		Commands.cmdDebugMarkerEnd(cmdDebugMarkerEndAddr, commandBuffer.address)
+	}
+	
+	fun cmdDebugMarkerInsert(commandBuffer: CommandBufferH, pMarkerInfo: DebugMarkerMarkerInfo) {
+		Commands.cmdDebugMarkerInsert(cmdDebugMarkerInsertAddr, commandBuffer.address, pMarkerInfo.address)
+	}
+	
 	fun cmdBindTransformFeedbackBuffers(commandBuffer: CommandBufferH, firstBinding: Int, bindingCount: Int, pBuffers: DirectLongBuffer, pOffsets: DirectLongBuffer, pSizes: DirectLongBuffer?) {
 		Commands.cmdBindTransformFeedbackBuffers(cmdBindTransformFeedbackBuffersAddr, commandBuffer.address, firstBinding, bindingCount, pBuffers.address, pOffsets.address, pSizes.addressOrNULL)
 	}
@@ -2475,8 +2510,8 @@ class DeviceCommands(private val device: DeviceH, private val instanceCommands: 
 		return Result(Commands.createRayTracingPipelinesKHR(createRayTracingPipelinesKHRAddr, device.address, deferredOperation.addressOrNULL, pipelineCache.addressOrNULL, createInfoCount, pCreateInfos.address, pAllocator.addressOrNULL, pPipelines.address))
 	}
 	
-	fun getRayTracingShaderGroupHandlesKHR(pipeline: PipelineH, firstGroup: Int, groupCount: Int, dataSize: Long, pData: DirectLong): Result {
-		return Result(Commands.getRayTracingShaderGroupHandlesKHR(getRayTracingShaderGroupHandlesKHRAddr, device.address, pipeline.address, firstGroup, groupCount, dataSize, pData.address))
+	fun getRayTracingShaderGroupHandles(pipeline: PipelineH, firstGroup: Int, groupCount: Int, dataSize: Long, pData: DirectLong): Result {
+		return Result(Commands.getRayTracingShaderGroupHandles(getRayTracingShaderGroupHandlesAddr, device.address, pipeline.address, firstGroup, groupCount, dataSize, pData.address))
 	}
 	
 	fun getRayTracingCaptureReplayShaderGroupHandles(pipeline: PipelineH, firstGroup: Int, groupCount: Int, dataSize: Long, pData: DirectLong): Result {

@@ -2,10 +2,11 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.Addressable
+import kvb.core.memory.DirectBuffer
+import kvb.core.memory.Allocator
 import kvb.core.memory.Unsafe
-import kvb.core.memory.direct.DirectIntBuffer
-import kvb.core.memory.direct.DirectLongBuffer
+import kvb.core.memory.Addressable
+import kvb.core.memory.direct.*
 
 /**
  *     struct VkWin32KeyedMutexAcquireReleaseInfoKHR {
@@ -21,7 +22,7 @@ import kvb.core.memory.direct.DirectLongBuffer
  *     }
  */
 @JvmInline
-value class Win32KeyedMutexAcquireReleaseInfo(override val address: Long) : Addressable {
+value class Win32KeyedMutexAcquireReleaseInfoKHR(override val address: Long) : Addressable {
 	
 	
 	var sType: Int

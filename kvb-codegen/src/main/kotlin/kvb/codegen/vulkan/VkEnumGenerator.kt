@@ -1,7 +1,6 @@
 package kvb.codegen.vulkan
 
 import kvb.codegen.vulkan.VkDocUtils.docStrings
-import kvb.codegen.vulkan.scraper.VkNamingUtils
 import kvb.codegen.vulkan.scraper.type.VkTypeEnum
 import kvb.codegen.vulkanDir
 import kvb.codegen.vulkanPackage

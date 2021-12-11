@@ -1,0 +1,122 @@
+// This file has been automatically generated.
+
+package kvb.vulkan
+
+/**
+ *     enum VkDebugReportObjectTypeEXT {
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT                         = 0
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT                        = 1
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT                 = 2
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT                          = 3
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT                           = 4
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT                       = 5
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT                  = 6
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT                           = 7
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT                   = 8
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT                          = 9
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT                           = 10
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT                           = 11
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT                      = 12
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT                     = 13
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT                      = 14
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT                   = 15
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT                  = 16
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT                 = 17
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT                     = 18
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT                        = 19
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT           = 20
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT                         = 21
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT                 = 22
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT                  = 23
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT                     = 24
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT                    = 25
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT                     = 26
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT                   = 27
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT       = 28
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT                    = 28
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT                     = 29
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT                = 30
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT            = 33
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT                = 33
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT        = 1000156000
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT      = 1000085000
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_KHR_EXT  = 1000085000
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR_EXT      = 1000150000
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_KHR_EXT    = 1000156000
+ *         VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV_EXT       = 1000165000
+ *     }
+ */
+@Suppress("unused")
+enum class DebugReportObjectType(val value: Int) {
+	
+	
+	UNKNOWN(0),
+	
+	INSTANCE(1),
+	
+	PHYSICAL_DEVICE(2),
+	
+	DEVICE(3),
+	
+	QUEUE(4),
+	
+	SEMAPHORE(5),
+	
+	COMMAND_BUFFER(6),
+	
+	FENCE(7),
+	
+	DEVICE_MEMORY(8),
+	
+	BUFFER(9),
+	
+	IMAGE(10),
+	
+	EVENT(11),
+	
+	QUERY_POOL(12),
+	
+	BUFFER_VIEW(13),
+	
+	IMAGE_VIEW(14),
+	
+	SHADER_MODULE(15),
+	
+	PIPELINE_CACHE(16),
+	
+	PIPELINE_LAYOUT(17),
+	
+	RENDER_PASS(18),
+	
+	PIPELINE(19),
+	
+	DESCRIPTOR_SET_LAYOUT(20),
+	
+	SAMPLER(21),
+	
+	DESCRIPTOR_POOL(22),
+	
+	DESCRIPTOR_SET(23),
+	
+	FRAMEBUFFER(24),
+	
+	COMMAND_POOL(25),
+	
+	SURFACE_KHR(26),
+	
+	SWAPCHAIN_KHR(27),
+	
+	DEBUG_REPORT_CALLBACK_EXT(28),
+	
+	DISPLAY_KHR(29),
+	
+	DISPLAY_MODE_KHR(30),
+	
+	VALIDATION_CACHE_EXT(33),
+	
+	ACCELERATION_STRUCTURE_KHR(1000150000),
+	
+	ACCELERATION_STRUCTURE_NV(1000165000);
+
+
+}
