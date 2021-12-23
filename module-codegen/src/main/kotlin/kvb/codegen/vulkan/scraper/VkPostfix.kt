@@ -5,39 +5,42 @@ package kvb.codegen.vulkan.scraper
  */
 enum class VkPostfix {
 
-	IMG,
-	AMD,
-	AMDX,
-	ARM,
-	FSL,
-	BRCM,
-	NXP,
-	NV,
-	NVX,
-	VIV,
-	VSI,
-	KDAB,
-	ANDROID,
-	CHROMIUM,
-	FUCHSIA,
-	GGP,
-	GOOGLE,
-	QCOM,
-	LUNARG,
-	SAMSUNG,
-	SEC,
-	TIZEN,
-	RENDERDOC,
-	NN,
-	MVK,
-	KHR,
-	KHX,
-	EXT,
-	MESA,
-	INTEL,
-	HUAWEI,
+
 	VALVE,
-	QNX;
+
+	QNX,
+
+	QCOM,
+
+	NVX,
+
+	NV,
+
+	NN,
+
+	MVK,
+
+	INTEL,
+
+	IMG,
+
+	HUAWEI,
+
+	GOOGLE,
+
+	GGP,
+
+	FUCHSIA,
+
+	ARM,
+
+	ANDROID,
+
+	AMD,
+
+	EXT,
+
+	KHR;
 
 
 

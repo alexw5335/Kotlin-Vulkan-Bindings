@@ -82,7 +82,7 @@ object VkGenUtils {
 
 
 	/**
-	 * The names of enums  that are empty and thus should not be generated.
+	 * The names of enums that are empty and thus should not be generated.
 	 */
 	val emptyEnums = hashSetOf(
 		"VkAcquireProfilingLockFlagBitsKHR",
@@ -114,20 +114,20 @@ object VkGenUtils {
 	 */
 	fun enumEntryShortName(name: String, enum: VkTypeEnum) : String {
 		// There are about 4 exceptional entries in the registry that don't start with their enum's entry prefix.
-		// There is also the VkResult enum that is only prefixed by VK_.
-		// In these cases, remove the VK_. Otherwise, remove the whole prefix.
+		// There is also the VkResult enum that is only prefixed by VK_
+		// In these cases, remove the VK_. Otherwise, remove the whole prefix
 		val prefixLength = if(!name.startsWith(enum.prefix)) 3 else enum.prefix.length
 
-		// Some types should not have their extensions removed due to naming conflicts.
+		// Some types should not have their extensions removed due to naming conflicts
 		var shortName = if(postfixed.contains(name))
 			name.drop(prefixLength)
 		else
 			name.drop(prefixLength).dropLast(VkPostfix.postfixUnderscoreLength(name))
 
-		// Enum naming cannot start with digits, prefix with underscore.
+		// Enum names cannot start with digits, prefix with underscore
 		if(shortName[0].isDigit()) shortName = "_$shortName"
 
-		// Remove _BIT at the end of bitmask enums.
+		// Remove _BIT at the end of bitmask enums (occurs before extension postfix)
 		if(shortName.endsWith("_BIT")) shortName = shortName.dropLast(4)
 
 		return shortName

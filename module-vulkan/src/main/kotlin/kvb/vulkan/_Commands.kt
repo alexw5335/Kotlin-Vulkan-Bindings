@@ -835,9 +835,9 @@ object Commands {
 	
 	external fun getSemaphoreZirconHandle(address: Long, device: Long, pGetZirconHandleInfo: Long, pZirconHandle: Long): Int
 	
-	external fun createScreenSurfaceQ(address: Long, instance: Long, pCreateInfo: Long, pAllocator: Long, pSurface: Long): Int
+	external fun createScreenSurface(address: Long, instance: Long, pCreateInfo: Long, pAllocator: Long, pSurface: Long): Int
 	
-	external fun getPhysicalDeviceScreenPresentationSupportQ(address: Long, physicalDevice: Long, queueFamilyIndex: Int, window: Long): Int
+	external fun getPhysicalDeviceScreenPresentationSupport(address: Long, physicalDevice: Long, queueFamilyIndex: Int, window: Long): Int
 
 
 }
@@ -929,8 +929,8 @@ class InstanceCommands(private val instance: InstanceH) {
 	private val getWinrtDisplayAddr = addr("vkGetWinrtDisplayNV")
 	private val createDirectFBSurfaceAddr = addr("vkCreateDirectFBSurfaceEXT")
 	private val getPhysicalDeviceDirectFBPresentationSupportAddr = addr("vkGetPhysicalDeviceDirectFBPresentationSupportEXT")
-	private val createScreenSurfaceQAddr = addr("vkCreateScreenSurfaceQNX")
-	private val getPhysicalDeviceScreenPresentationSupportQAddr = addr("vkGetPhysicalDeviceScreenPresentationSupportQNX")
+	private val createScreenSurfaceAddr = addr("vkCreateScreenSurfaceQNX")
+	private val getPhysicalDeviceScreenPresentationSupportAddr = addr("vkGetPhysicalDeviceScreenPresentationSupportQNX")
 	init { default.pop(stackPointer) }
 	
 	
@@ -1243,12 +1243,12 @@ class InstanceCommands(private val instance: InstanceH) {
 		return Commands.getPhysicalDeviceDirectFBPresentationSupport(getPhysicalDeviceDirectFBPresentationSupportAddr, physicalDevice.address, queueFamilyIndex, dfb.address)
 	}
 	
-	fun createScreenSurfaceQ(pCreateInfo: ScreenSurfaceCreateInfoQ, pAllocator: AllocationCallbacks?, pSurface: DirectLong): Result {
-		return Result(Commands.createScreenSurfaceQ(createScreenSurfaceQAddr, instance.address, pCreateInfo.address, pAllocator.addressOrNULL, pSurface.address))
+	fun createScreenSurface(pCreateInfo: ScreenSurfaceCreateInfo, pAllocator: AllocationCallbacks?, pSurface: DirectLong): Result {
+		return Result(Commands.createScreenSurface(createScreenSurfaceAddr, instance.address, pCreateInfo.address, pAllocator.addressOrNULL, pSurface.address))
 	}
 	
-	fun getPhysicalDeviceScreenPresentationSupportQ(physicalDevice: PhysicalDeviceH, queueFamilyIndex: Int, window: DirectLong): Int {
-		return Commands.getPhysicalDeviceScreenPresentationSupportQ(getPhysicalDeviceScreenPresentationSupportQAddr, physicalDevice.address, queueFamilyIndex, window.address)
+	fun getPhysicalDeviceScreenPresentationSupport(physicalDevice: PhysicalDeviceH, queueFamilyIndex: Int, window: DirectLong): Int {
+		return Commands.getPhysicalDeviceScreenPresentationSupport(getPhysicalDeviceScreenPresentationSupportAddr, physicalDevice.address, queueFamilyIndex, window.address)
 	}
 
 

@@ -1438,4 +1438,4 @@ inline fun Allocator.ImportSemaphoreZirconHandleInfo(block: (ImportSemaphoreZirc
 
 inline fun Allocator.SemaphoreGetZirconHandleInfo(block: (SemaphoreGetZirconHandleInfo) -> Unit) = SemaphoreGetZirconHandleInfo(calloc(32)).apply(block).also { it.sType = 1000365001 }
 
-inline fun Allocator.ScreenSurfaceCreateInfoQ(block: (ScreenSurfaceCreateInfoQ) -> Unit) = ScreenSurfaceCreateInfoQ(calloc(40)).apply(block).also { it.sType = 1000378000 }
+inline fun Allocator.ScreenSurfaceCreateInfo(block: (ScreenSurfaceCreateInfo) -> Unit) = ScreenSurfaceCreateInfo(calloc(40)).apply(block).also { it.sType = 1000378000 }

@@ -115,11 +115,14 @@ class VkScraper(private val registry: VkXmlElement) {
 
 		// Hardcoded, may need to be updated in the future.
 		return when(value) {
-			"(~0ULL)" 	-> VkConstant(name, "${ULong.MAX_VALUE.toLong()}L")
-			"(~0U)" 	-> VkConstant(name, "${UInt.MAX_VALUE.toInt()}")
-			"(~0U-1)" 	-> VkConstant(name, "${UInt.MAX_VALUE.toInt() - 1}")
-			"(~0U-2)" 	-> VkConstant(name, "${UInt.MAX_VALUE.toInt() - 2}")
-			"1000.0f"	-> VkConstant(name, value)
+			"(~0ULL)" 	-> VkConstant(name, "-1L")
+			"(~0U)" 	-> VkConstant(name, "-1")
+			"(~0U-1)" 	-> VkConstant(name, "-2")
+			"(~0U-2)" 	-> VkConstant(name, "-3")
+			"(~1U)"     -> VkConstant(name, "-2")
+			"(~2U)"     -> VkConstant(name, "-3")
+			"1000.0f"	-> VkConstant(name, "1000.0f")
+			"1000.0F"   -> VkConstant(name, "1000.0f")
 			else		-> err("invalid api constant value: $value", element)
 		}
 	}
@@ -166,7 +169,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 			if(category == "basetype") {
 				// VkSampleMash, VkBool32, VkFlags, VkFlags64, VkDeviceSize, VkDeviceAddress.
-				// All are typedefs of uint32_t or uint64_t.
+				// All are typedefs of uint32_t, uint64_t, or void*.
 				element.childOrNull("type")?.text?.let {
 					return VkTypePrimitive(name, resolvePrimitive(it))
 				}
@@ -621,6 +624,7 @@ class VkScraper(private val registry: VkXmlElement) {
 		"uint64_t" to Primitive.LONG,
 
 		"void*" to Primitive.LONG,
+		"void" to Primitive.LONG,
 
 		"size_t" to Primitive.LONG
 	)
