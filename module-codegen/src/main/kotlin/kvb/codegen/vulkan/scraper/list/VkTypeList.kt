@@ -2,18 +2,18 @@ package kvb.codegen.vulkan.scraper.list
 
 import kvb.codegen.vulkan.scraper.type.*
 
-class VkTypeList(private val all: VkElementList<VkType> = VkElementList()) : List<VkType> by all {
+class VkTypeList(private val all: VkNamedList<VkType> = VkNamedList()) : Iterable<VkType> by all {
 
 
-	val enums = VkElementList<VkTypeEnum>()
+	val enums = VkNamedList<VkTypeEnum>()
 
-	val bitmasks = VkElementList<VkTypeBitmask>()
+	val bitmasks = VkNamedList<VkTypeBitmask>()
 
-	val structs = VkElementList<VkTypeStruct>()
+	val structs = VkNamedList<VkTypeStruct>()
 
-	val handles = VkElementList<VkTypeHandle>()
+	val handles = VkNamedList<VkTypeHandle>()
 
-	val aliased = VkElementList<VkTypeAliased>()
+	val aliased = VkNamedList<VkTypeAliased>()
 
 
 

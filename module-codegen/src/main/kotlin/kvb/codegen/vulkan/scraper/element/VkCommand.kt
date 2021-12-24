@@ -9,7 +9,7 @@ class VkCommand(
 	val returnType         : VkType?,
 	val params             : List<VkVar>,
 	val isAliased          : Boolean
-) : VkElement {
+) : VkNamed {
 
 
 	enum class Type {

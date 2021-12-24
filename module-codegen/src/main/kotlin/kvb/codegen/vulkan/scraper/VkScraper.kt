@@ -2,13 +2,14 @@ package kvb.codegen.vulkan.scraper
 
 import kvb.codegen.vulkan.scraper.element.*
 import kvb.codegen.vulkan.scraper.type.*
-import kvb.codegen.vulkan.scraper.list.VkElementList
+import kvb.codegen.vulkan.scraper.list.VkNamedList
 import kvb.codegen.vulkan.scraper.list.VkProviderList
 import kvb.codegen.vulkan.scraper.list.VkTypeList
 import kvb.codegen.vulkan.scraper.xml.VkXmlElement
 import kvb.codegen.vulkan.scraper.xml.VkXmlParser
 import kvb.codegen.writer.procedural.Primitive
 import java.util.*
+import kotlin.collections.ArrayList
 
 class VkScraper(private val registry: VkXmlElement) {
 
@@ -66,13 +67,13 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	val constants = VkElementList<VkConstant>()
+	val constants = VkNamedList<VkConstant>()
 
-	val platforms = VkElementList<VkPlatform>()
+	val platforms = VkNamedList<VkPlatform>()
 
 	val types = VkTypeList()
 
-	val commands = VkElementList<VkCommand>()
+	val commands = VkNamedList<VkCommand>()
 
 	val providers = VkProviderList()
 
@@ -468,6 +469,35 @@ class VkScraper(private val registry: VkXmlElement) {
 			for(e in element.children)
 				if(e.type == "enum")
 					enum.entries.add(scrapeEnumElement(e, enum, null))
+		}
+
+		val extensionEntryElements = ArrayList<VkXmlElement>()
+		val aliasedEntryElements = ArrayList<VkXmlElement>()
+
+		for(element in registry.children) {
+			if(element.type == "feature" || element.type == "extension") {
+				for(require in element.children) {
+					if(require.type != "require") continue
+
+					for(element2 in require.children) {
+						if(element2.type == "enum") {
+							if(element2["alias"] != null) {
+								aliasedEntryElements.add(element2)
+							} else {
+								scrapeExtensionEnumElement(element)
+							}
+						}
+					}
+						if(element2.type == "enum") {
+
+						}
+							extensionEntryElements.add(element2)
+				}
+			}
+		}
+
+		for(element in extensionEntryElements) {
+			if(element.)
 		}
 
 		for(bitmask in types.bitmasks) {

@@ -109,12 +109,11 @@ const val vulkanPackage = "kvb.vulkan"
 
 
 
-val vulkanDir = "gen/kvb/vulkan".toPath
+val vulkanDir     by lazy { "gen/kvb/vulkan".toPath }
 
-val cDir = "gen/c".toPath
+val cDir          by lazy { "gen/c".toPath }
 
-val primitiveDir = "gen/kvb/core/memory/direct".toPath
-
+val primitiveDir  by lazy { "gen/kvb/core/memory/direct".toPath }
 
 
 private val String.toPath get() = Paths.get(this).also(Files::createDirectories)

@@ -9,7 +9,7 @@ class VkEnumEntry(
 	val enum          : VkTypeEnum,
 	val extension     : VkExtension?,
 	val isAliased     : Boolean
-) : VkElement {
+) : VkNamed {
 
 
 	val value = if(valueString.startsWith("0x"))

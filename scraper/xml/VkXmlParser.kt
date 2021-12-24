@@ -1,4 +1,4 @@
-package kvb.scraper
+package scraper.xml
 
 import java.nio.file.Files
 import java.nio.file.Paths

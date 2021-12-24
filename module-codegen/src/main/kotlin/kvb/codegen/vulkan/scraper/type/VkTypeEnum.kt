@@ -3,7 +3,7 @@ package kvb.codegen.vulkan.scraper.type
 import kvb.codegen.vulkan.scraper.VkGenUtils
 import kvb.codegen.vulkan.scraper.VkGenUtils.dropVkAndPostfix
 import kvb.codegen.vulkan.scraper.element.VkEnumEntry
-import kvb.codegen.vulkan.scraper.list.VkElementList
+import kvb.codegen.vulkan.scraper.list.VkNamedList
 import kvb.codegen.writer.procedural.Primitive
 
 class VkTypeEnum(
@@ -38,7 +38,7 @@ class VkTypeEnum(
 
 
 
-	val entries = VkElementList<VkEnumEntry>()
+	val entries = VkNamedList<VkEnumEntry>()
 
 	val prefix = VkGenUtils.enumPrefix(this)
 

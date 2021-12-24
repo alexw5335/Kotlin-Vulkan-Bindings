@@ -1,4 +1,4 @@
-package kvb.scraper
+package scraper.xml
 
 class VkXmlElement(
 	val type     : String,
