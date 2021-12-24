@@ -1,1 +1,0 @@
-Only used internally. Should not be used as a dependency by any other modules or projects.
