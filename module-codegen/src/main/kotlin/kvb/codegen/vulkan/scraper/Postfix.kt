@@ -3,7 +3,7 @@ package kvb.codegen.vulkan.scraper
 /**
  * Extension provider postfixes. This enum is used to remove postfixes from type and command names where possible.
  */
-enum class VkPostfix {
+enum class Postfix {
 
 
 	VALVE,

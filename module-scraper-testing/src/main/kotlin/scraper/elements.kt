@@ -2,15 +2,36 @@ package scraper
 
 
 
+class ExtensionElement
+
+
+
+class FeatureElement
+
+
+
+class EnumElement(
+	override val name: String,
+	val entries: List<EnumEntryElement>
+) : Named
+
+
+
+class EnumEntryElement(
+	override val name: String,
+	val value: String?,
+	val alias: String?
+) : Named
+
+
+
 class VarElement(
 	override val name : String,
 	val type          : String,
-	val modifier      : Modifier,
 	val optional      : Boolean,
+	val modifier      : Modifier,
 	val index         : Int,
 	val len           : String?,
-	val constLen      : String?,
-	val varLen        : String?,
 	val altLen        : String?,
 	val sType         : String?,
 ) : Named
@@ -19,10 +40,7 @@ class VarElement(
 
 class StructElement(
 	override val name : String,
-	val members       : List<VarElement>,
-	val pNextValues   : List<String>,
-	val extends       : List<String>,
-	val sType         : String?
+	val members       : List<VarElement>
 ) : Named
 
 

@@ -1,6 +1,6 @@
 package kvb.codegen.vulkan.scraper.element
 
-import kvb.codegen.vulkan.scraper.VkModifier
+import kvb.codegen.vulkan.scraper.Modifier
 import kvb.codegen.vulkan.scraper.type.VkType
 import kvb.codegen.vulkan.scraper.type.VkTypeBitmask
 import kvb.codegen.vulkan.scraper.type.VkTypeStruct
@@ -27,7 +27,7 @@ class VkVar(
 	val varLen: String?,
 	val altLen: String?,
 	val sType: VkEnumEntry?,
-	val modifier: VkModifier,
+	val modifier: Modifier,
 	val index: Int
 ) {
 
@@ -58,7 +58,7 @@ class VkVar(
 	 * are only five struct members with this modifier, found in: VkDeviceCreateInfo, VkInstanceCreateInfo, and
 	 * VkAccelerationStructureBuildGeometryInfoKHR.
 	 */
-	val isPointerToPointerArray = modifier == VkModifier.C2_POINTER2
+	val isPointerToPointerArray = modifier == Modifier.C2_POINTER2
 
 	/**
 	 * If this is a null-terminated UTF-8 char* (not an array).

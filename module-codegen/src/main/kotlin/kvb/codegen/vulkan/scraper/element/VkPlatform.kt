@@ -1,3 +1,5 @@
 package kvb.codegen.vulkan.scraper.element
 
-class VkPlatform(override val name: String, val define: String) : VkNamed
+import kvb.codegen.vulkan.scraper.Named
+
+class VkPlatform(override val name: String, val define: String) : Named

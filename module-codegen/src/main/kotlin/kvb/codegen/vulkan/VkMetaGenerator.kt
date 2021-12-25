@@ -1,6 +1,6 @@
 package kvb.codegen.vulkan
 
-import kvb.codegen.vulkan.scraper.VkPostfix
+import kvb.codegen.vulkan.scraper.Postfix
 import kvb.codegen.vulkan.scraper.element.VkProvider
 import kvb.codegen.vulkan.scraper.type.VkType
 import kvb.codegen.vulkan.scraper.type.VkTypeEnum
@@ -13,7 +13,7 @@ object VkMetaGenerator {
 		val nameMap = HashMap<String, String>()
 
 		fun addName(name: String) {
-			val shortName = VkPostfix.drop(name)
+			val shortName = Postfix.drop(name)
 
 			nameMap[shortName]?.let {
 				postfixed.add(it)

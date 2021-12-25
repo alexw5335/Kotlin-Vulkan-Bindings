@@ -1,9 +1,9 @@
-package kvb.codegen.vulkan.scraper.element
+package kvb.codegen.vulkan.scraper
 
 /**
  * Represents anything specified by Vulkan that can be identified by a unique [name].
  */
-interface VkNamed {
+interface Named {
 
 
 	/**

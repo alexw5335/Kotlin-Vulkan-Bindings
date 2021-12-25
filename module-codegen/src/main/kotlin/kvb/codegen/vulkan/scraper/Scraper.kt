@@ -2,16 +2,16 @@ package kvb.codegen.vulkan.scraper
 
 import kvb.codegen.vulkan.scraper.element.*
 import kvb.codegen.vulkan.scraper.type.*
-import kvb.codegen.vulkan.scraper.list.VkNamedList
-import kvb.codegen.vulkan.scraper.list.VkProviderList
-import kvb.codegen.vulkan.scraper.list.VkTypeList
-import kvb.codegen.vulkan.scraper.xml.VkXmlElement
-import kvb.codegen.vulkan.scraper.xml.VkXmlParser
+import kvb.codegen.vulkan.scraper.list.NamedList
+import kvb.codegen.vulkan.scraper.list.ProviderList
+import kvb.codegen.vulkan.scraper.list.TypeList
+import kvb.codegen.vulkan.scraper.xml.XmlElement
+import kvb.codegen.vulkan.scraper.xml.XmlParser
 import kvb.codegen.writer.procedural.Primitive
 import java.util.*
 import kotlin.collections.ArrayList
 
-class VkScraper(private val registry: VkXmlElement) {
+class Scraper(private val registry: XmlElement) {
 
 
 	/*
@@ -30,9 +30,9 @@ class VkScraper(private val registry: VkXmlElement) {
 
 	private fun err(message: String): Nothing = throw VkScrapeException(message)
 
-	private fun err(message: String, element: VkXmlElement): Nothing = err("$message. element=$element")
+	private fun err(message: String, element: XmlElement): Nothing = err("$message. element=$element")
 
-	private fun err(element: VkXmlElement): Nothing = err("invalid element: $element")
+	private fun err(element: XmlElement): Nothing = err("invalid element: $element")
 
 
 
@@ -43,7 +43,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 	companion object {
-		fun scrape(path: String) = VkScraper(VkXmlParser.parse(path)).also { it.scrape() }
+		fun scrape(path: String) = Scraper(XmlParser.parse(path)).also { it.scrape() }
 	}
 
 
@@ -67,15 +67,15 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	val constants = VkNamedList<VkConstant>()
+	val constants = NamedList<VkConstant>()
 
-	val platforms = VkNamedList<VkPlatform>()
+	val platforms = NamedList<VkPlatform>()
 
-	val types = VkTypeList()
+	val types = TypeList()
 
-	val commands = VkNamedList<VkCommand>()
+	val commands = NamedList<VkCommand>()
 
-	val providers = VkProviderList()
+	val providers = ProviderList()
 
 
 
@@ -99,7 +99,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	private fun scrapeConstantElement(element: VkXmlElement): VkConstant {
+	private fun scrapeConstantElement(element: XmlElement): VkConstant {
 		val name = element.attrib("name")
 
 		// Keep aliases, may be referenced as an array length
@@ -148,7 +148,7 @@ class VkScraper(private val registry: VkXmlElement) {
 	 * Scrapes a 'type' element. Does not fill in struct members nor enum entries. These will be populated after all
 	 * types have been scraped.
 	 */
-	private fun scrapeTypeElement(element: VkXmlElement): VkType {
+	private fun scrapeTypeElement(element: XmlElement): VkType {
 		// Name is either an attribute or a child element.
 		val name = element["name"]
 			?: element.child("name").text
@@ -229,9 +229,9 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	private fun scrapeStructElement(element: VkXmlElement) {
+	private fun scrapeStructElement(element: XmlElement) {
 		// Aliased structs are skipped.
-		val struct = types.structs.elementsByName[element.attrib("name")] ?: return
+		val struct = types.structs.fromNameOrNull(element.attrib("name")) ?: return
 
 		struct.members.addAll(element.children("member").mapIndexed(::scrapeVar))
 
@@ -272,7 +272,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	private fun scrapeCommandElement(element: VkXmlElement): VkCommand {
+	private fun scrapeCommandElement(element: XmlElement): VkCommand {
 		element["alias"]?.let {
 			val aliased = commands.fromName(it)
 
@@ -329,7 +329,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	private fun scrapeFeatureElement(element: VkXmlElement): VkFeature {
+	private fun scrapeFeatureElement(element: XmlElement): VkFeature {
 		val feature = VkFeature(element.attrib("name"))
 
 		for(require in element.children) {
@@ -363,7 +363,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	private fun scrapeExtensionElement(element: VkXmlElement): VkExtension {
+	private fun scrapeExtensionElement(element: XmlElement): VkExtension {
 		val extension = VkExtension(
 			name         = element.attrib("name"),
 			platform     = element["platform"]?.let(platforms::fromName),
@@ -404,7 +404,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	private fun scrapeEnumValue(element: VkXmlElement, enum: VkTypeEnum, extNumber: Int?): String {
+	private fun scrapeEnumValue(element: XmlElement, enum: VkTypeEnum, extNumber: Int?): String {
 		val unsigned = element["value"]
 
 			?: element["alias"]?.let {
@@ -432,30 +432,42 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	private fun scrapeEnumElement(element: VkXmlElement, enum: VkTypeEnum, extension: VkExtension?): VkEnumEntry {
+	private fun scrapeEnumElement(element: XmlElement, enum: VkTypeEnum, extension: VkExtension?) {
 		val name = element.attrib("name")
 
-		return VkEnumEntry(
-			name        = name,
-			valueString = scrapeEnumValue(element, enum, element["extnumber"]?.toInt() ?: extension?.number),
-			enum        = enum,
-			extension   = extension,
-			isAliased   = element["alias"] != null
-		)
+		element["alias"]?.let {
+			enum.aliasedEntries.add(VkTypeEnum.AliasedEntry(name, it))
+			return
+		}
+
+		val extNumber = element["extnumber"]?.toInt() ?: extension?.number ?: 0
+
+		var value = element["value"]
+
+			?: element["bitpos"]?.let {
+				((if(enum.is64Bit) 1L else 1) shl it.toInt()).toString()
+			}
+
+			// Extension enum, See scripts/generator.py file in the KhronosGroup/Vulkan-Docs repository for the formula.
+			?: element["offset"]?.let {
+				(1000000000 + (extNumber - 1) * 1000 + it.toInt()).toString()
+			}
+
+			?: err("Invalid enum value", element)
+
+		if(element["dir"] == "-")
+			value = "-$value"
+
+		enum.entries.add(VkEnumEntry(name, value, enum, extension))
 	}
 
 
 
-	private fun scrapeExtensionEnumElement(element: VkXmlElement, provider: VkProvider) {
+	private fun scrapeExtensionEnumElement(element: XmlElement, provider: VkProvider) {
 		// Extensions can add enum entries to enums, denoted by the 'extends' attribute.
 		// If it lacks an 'extends', then it denotes a constant.
 		val enum = types.enums.fromName(element["extends"] ?: return)
-		val entry = scrapeEnumElement(element, enum, provider as? VkExtension)
-
-		// Some extensions redefine core enums, skip these.
-		if(enum.entries.elementsByName[entry.name] != null) return
-
-		enum.entries.add(entry)
+		scrapeEnumElement(element, enum, provider as? VkExtension)
 	}
 
 
@@ -468,36 +480,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 			for(e in element.children)
 				if(e.type == "enum")
-					enum.entries.add(scrapeEnumElement(e, enum, null))
-		}
-
-		val extensionEntryElements = ArrayList<VkXmlElement>()
-		val aliasedEntryElements = ArrayList<VkXmlElement>()
-
-		for(element in registry.children) {
-			if(element.type == "feature" || element.type == "extension") {
-				for(require in element.children) {
-					if(require.type != "require") continue
-
-					for(element2 in require.children) {
-						if(element2.type == "enum") {
-							if(element2["alias"] != null) {
-								aliasedEntryElements.add(element2)
-							} else {
-								scrapeExtensionEnumElement(element)
-							}
-						}
-					}
-						if(element2.type == "enum") {
-
-						}
-							extensionEntryElements.add(element2)
-				}
-			}
-		}
-
-		for(element in extensionEntryElements) {
-			if(element.)
+					scrapeEnumElement(e, enum, null)
 		}
 
 		for(bitmask in types.bitmasks) {
@@ -516,7 +499,7 @@ class VkScraper(private val registry: VkXmlElement) {
 
 
 
-	private fun scrapeVar(index: Int, element: VkXmlElement) = VkVar(
+	private fun scrapeVar(index: Int, element: XmlElement) = VkVar(
 		name       = element.child("name").text!!,
 		type       = varType(element),
 		isOptional = element["optional"]?.equals("true") ?: false,
@@ -534,7 +517,7 @@ class VkScraper(private val registry: VkXmlElement) {
 	/**
 	 * Determines the type of the [element]. The element is either a struct member or a command parameter.
 	 */
-	private fun varType(element: VkXmlElement): VkType {
+	private fun varType(element: XmlElement): VkType {
 		val type = types.fromName(element.child("type").text!!)
 
 		return if(type is VkTypeAliased)
@@ -548,19 +531,19 @@ class VkScraper(private val registry: VkXmlElement) {
 	/**
 	 * Determines the modifier of a C parameter or struct member.
 	 */
-	private fun varModifier(element: VkXmlElement): VkModifier {
+	private fun varModifier(element: XmlElement): Modifier {
 		// Modifiers are given as the VkXmlElement's text. They are not specified as separate elements/attributes.
-		val text = element.text ?: return VkModifier.NONE
+		val text = element.text ?: return Modifier.NONE
 
 		// Edge case for VkAccelerationStructureInstanceKHR.
-		if(text.startsWith(':')) return VkModifier.NONE
+		if(text.startsWith(':')) return Modifier.NONE
 
 		// Arrays are handled separately.
-		if(text.contains('[')) return VkModifier.ARRAY
+		if(text.contains('[')) return Modifier.ARRAY
 
 		// Matching the text with a modifier relies on text being condensed in the XML parser.
 		// e.g. 'const <type>void</type>*' becomes 'const*'.
-		return VkModifier.values().first { it.identifier == text }
+		return Modifier.values().firstOrNull { it.identifier == text } ?: err("Invalid modifier", element)
 	}
 
 
@@ -568,7 +551,7 @@ class VkScraper(private val registry: VkXmlElement) {
 	/**
 	 * Used for struct members or array lengths with [] array identifiers.
 	 */
-	private fun constArrayLength(element: VkXmlElement): Int? {
+	private fun constArrayLength(element: XmlElement): Int? {
 		// Edge case for VkAccelerationStructureVersionInfoKHR.
 		if(element["len"] == "2*ename:VK_UUID_SIZE") return 32
 

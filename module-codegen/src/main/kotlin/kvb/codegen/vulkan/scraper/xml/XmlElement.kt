@@ -1,11 +1,11 @@
 package kvb.codegen.vulkan.scraper.xml
 
-class VkXmlElement(
+class XmlElement(
 	val type     : String,
 	val attribs  : Map<String, String>,
-	val children : List<VkXmlElement>,
+	val children : List<XmlElement>,
 	val text     : String?
-): Iterable<VkXmlElement> by children {
+): Iterable<XmlElement> by children {
 
 
 	/*

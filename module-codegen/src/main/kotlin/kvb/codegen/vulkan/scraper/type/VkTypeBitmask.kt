@@ -1,7 +1,7 @@
 package kvb.codegen.vulkan.scraper.type
 
-import kvb.codegen.vulkan.scraper.VkGenUtils
-import kvb.codegen.vulkan.scraper.VkGenUtils.dropVkAndPostfix
+import kvb.codegen.vulkan.scraper.GenUtils
+import kvb.codegen.vulkan.scraper.GenUtils.dropVkAndPostfix
 import kvb.codegen.writer.procedural.Primitive
 
 class VkTypeBitmask(
@@ -19,7 +19,7 @@ class VkTypeBitmask(
 
 	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
 
-	override val shouldGen = enumName != null && !VkGenUtils.emptyEnums.contains(enumName)
+	override val shouldGen = enumName != null && !GenUtils.emptyEnums.contains(enumName)
 
 	override val genName = if(shouldGen) name.dropVkAndPostfix else primitive.kName
 

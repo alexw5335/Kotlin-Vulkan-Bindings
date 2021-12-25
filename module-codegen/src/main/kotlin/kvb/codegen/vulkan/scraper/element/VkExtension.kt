@@ -1,7 +1,7 @@
 package kvb.codegen.vulkan.scraper.element
 
-import kvb.codegen.vulkan.scraper.list.VkNamedList
-import kvb.codegen.vulkan.scraper.list.VkTypeList
+import kvb.codegen.vulkan.scraper.list.NamedList
+import kvb.codegen.vulkan.scraper.list.TypeList
 
 class VkExtension(
 	override val name : String,
@@ -13,9 +13,9 @@ class VkExtension(
 ) : VkProvider {
 
 
-	override val types = VkTypeList()
+	override val types = TypeList()
 
-	override val commands = VkNamedList<VkCommand>()
+	override val commands = NamedList<VkCommand>()
 
 	override val shouldGen = deprecatedBy == null && !disabled && promotedTo != "VK_VERSION_1_1"
 

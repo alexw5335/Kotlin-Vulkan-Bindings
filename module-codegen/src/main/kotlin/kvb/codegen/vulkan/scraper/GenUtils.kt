@@ -4,7 +4,7 @@ import kvb.codegen.vulkan.scraper.type.VkTypeEnum
 import java.util.*
 import java.util.regex.Pattern
 
-object VkGenUtils {
+object GenUtils {
 
 
 	/** Regex for splitting camel case into words. */
@@ -22,7 +22,7 @@ object VkGenUtils {
 	val String.dropVkAndPostfix get() = if(postfixed.contains(this))
 		drop(2)
 	else
-		VkPostfix.drop(this).drop(2)
+		Postfix.drop(this).drop(2)
 
 
 
@@ -33,7 +33,7 @@ object VkGenUtils {
 	val String.dropPostfix get() = if(postfixed.contains(this))
 		this
 	else
-		VkPostfix.drop(this)
+		Postfix.drop(this)
 
 
 
@@ -122,7 +122,7 @@ object VkGenUtils {
 		var shortName = if(postfixed.contains(name))
 			name.drop(prefixLength)
 		else
-			name.drop(prefixLength).dropLast(VkPostfix.postfixUnderscoreLength(name))
+			name.drop(prefixLength).dropLast(Postfix.postfixUnderscoreLength(name))
 
 		// Enum names cannot start with digits, prefix with underscore
 		if(shortName[0].isDigit()) shortName = "_$shortName"

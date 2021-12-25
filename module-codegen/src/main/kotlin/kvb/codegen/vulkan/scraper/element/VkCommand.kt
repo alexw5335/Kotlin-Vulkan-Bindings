@@ -1,6 +1,7 @@
 package kvb.codegen.vulkan.scraper.element
 
-import kvb.codegen.vulkan.scraper.VkGenUtils.dropVkAndPostfix
+import kvb.codegen.vulkan.scraper.Named
+import kvb.codegen.vulkan.scraper.GenUtils.dropVkAndPostfix
 import kvb.codegen.vulkan.scraper.type.VkType
 
 class VkCommand(
@@ -9,7 +10,7 @@ class VkCommand(
 	val returnType         : VkType?,
 	val params             : List<VkVar>,
 	val isAliased          : Boolean
-) : VkNamed {
+) : Named {
 
 
 	enum class Type {

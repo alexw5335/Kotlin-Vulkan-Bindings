@@ -4,9 +4,9 @@ package kvb.codegen
 
 import kvb.codegen.core.PrimitiveGenerator
 import kvb.codegen.vulkan.*
-import kvb.codegen.vulkan.scraper.VkScraper
-import kvb.codegen.vulkan.scraper.list.VkProviderList
-import kvb.codegen.vulkan.scraper.list.VkTypeList
+import kvb.codegen.vulkan.scraper.Scraper
+import kvb.codegen.vulkan.scraper.list.ProviderList
+import kvb.codegen.vulkan.scraper.list.TypeList
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -18,11 +18,11 @@ Scraping
 
 
 
-val scraper = VkScraper.scrape("vk.xml")
+val scraper = Scraper.scrape("vk.xml")
 
 
 
-val providers = VkProviderList().apply {
+val providers = ProviderList().apply {
 	for(provider in scraper.providers)
 		if(provider.shouldGen)
 			add(provider)
@@ -30,7 +30,7 @@ val providers = VkProviderList().apply {
 
 
 
-val types = VkTypeList().apply {
+val types = TypeList().apply {
 	for(provider in providers)
 		for(type in provider.types)
 			if(type.shouldGen)
@@ -92,7 +92,8 @@ fun printMeta() {
 
 
 fun main() {
-	genVulkan()
+	printMeta()
+	//genVulkan()
 }
 
 

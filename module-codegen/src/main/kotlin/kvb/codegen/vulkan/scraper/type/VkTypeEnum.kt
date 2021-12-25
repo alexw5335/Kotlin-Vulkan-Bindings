@@ -1,9 +1,10 @@
 package kvb.codegen.vulkan.scraper.type
 
-import kvb.codegen.vulkan.scraper.VkGenUtils
-import kvb.codegen.vulkan.scraper.VkGenUtils.dropVkAndPostfix
+import kvb.codegen.vulkan.scraper.GenUtils
+import kvb.codegen.vulkan.scraper.GenUtils.dropVkAndPostfix
+import kvb.codegen.vulkan.scraper.Named
 import kvb.codegen.vulkan.scraper.element.VkEnumEntry
-import kvb.codegen.vulkan.scraper.list.VkNamedList
+import kvb.codegen.vulkan.scraper.list.NamedList
 import kvb.codegen.writer.procedural.Primitive
 
 class VkTypeEnum(
@@ -21,7 +22,7 @@ class VkTypeEnum(
 
 	override val primitive = if(is64Bit) Primitive.LONG else Primitive.INT
 
-	override val shouldGen = name != "VkStructureType" && !VkGenUtils.emptyEnums.contains(name)
+	override val shouldGen = name != "VkStructureType" && !GenUtils.emptyEnums.contains(name)
 
 	override val genName = when {
 		!shouldGen -> primitive.kName
@@ -38,11 +39,17 @@ class VkTypeEnum(
 
 
 
-	val entries = VkNamedList<VkEnumEntry>()
+	val entries = NamedList<VkEnumEntry>()
 
-	val prefix = VkGenUtils.enumPrefix(this)
+	val aliasedEntries = NamedList<AliasedEntry>()
+
+	val prefix = GenUtils.enumPrefix(this)
 
 	val isValue = name == "VkResult" || name == "VkObjectType" || name == "VkFormat"
+
+
+
+	class AliasedEntry(override val name: String, val alias: String) : Named
 
 
 }
