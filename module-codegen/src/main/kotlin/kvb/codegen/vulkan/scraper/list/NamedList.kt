@@ -8,7 +8,7 @@ import kvb.codegen.vulkan.scraper.Named
 class NamedList<T : Named>(private val map: MutableMap<String, T>) : Collection<T> by map.values {
 
 
-	constructor() : this(HashMap())
+	constructor() : this(LinkedHashMap())
 
 
 

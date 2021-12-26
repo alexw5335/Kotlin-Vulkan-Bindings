@@ -10,6 +10,8 @@ object GenUtils {
 	/** Regex for splitting camel case into words. */
 	private val camelCaseRegex = Pattern.compile("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])").toRegex()
 
+
+
 	/** converts camelCase to UPPER_SNAKE_CASE. */
 	private val String.camelToSnakeCase get() = replace(camelCaseRegex, "_").uppercase(Locale.getDefault())
 
@@ -76,7 +78,7 @@ object GenUtils {
 		"vkDestroyAccelerationStructureKHR",
 		"vkDestroyAccelerationStructureNV",
 		"vkGetPhysicalDeviceSurfaceCapabilities2EXT",
-		"vkGetPhysicalDeviceSurfaceCapabilities2KHR"
+		"vkGetPhysicalDeviceSurfaceCapabilities2KHR",
 	)
 
 
@@ -84,7 +86,7 @@ object GenUtils {
 	/**
 	 * The names of enums that are empty and thus should not be generated.
 	 */
-	val emptyEnums = hashSetOf(
+	val emptyEnums = hashSetOf<String>(
 		"VkAcquireProfilingLockFlagBitsKHR",
 		"VkPipelineCompilerControlFlagBitsAMD",
 		"VkShaderCorePropertiesFlagBitsAMD",

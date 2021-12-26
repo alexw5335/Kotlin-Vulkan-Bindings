@@ -9,6 +9,28 @@ import kotlin.random.Random
 object SampleShader : AppShader("sample") {
 
 
+	/*
+
+	Can split layout bindings among multiple sets
+
+	DescriptorSet
+		DescriptorSetLayout[]
+			DescriptorSetLayoutBinding[]
+
+	layout(binding = 0) uniform UBO {
+		vec2 windowSize;
+		vec2 offset;
+	};
+
+	layout(binding = 1) uniform UBO2 {
+		float xOffset2;
+		float yOffset2;
+	};
+
+	 */
+
+
+
 	override val attributes = listOf(
 		vec2Attrib(location = 0, binding = 0, offset = 0),
 		vec3Attrib(location = 1, binding = 0, offset = 4 * 2)

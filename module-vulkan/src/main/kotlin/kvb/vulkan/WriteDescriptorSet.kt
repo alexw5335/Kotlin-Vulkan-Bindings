@@ -8,6 +8,7 @@ import kvb.core.memory.Addressable
 import kvb.core.memory.direct.*
 
 /**
+ *
  *     struct VkWriteDescriptorSet {
  *         VkStructureType          sType
  *         void*                    pNext

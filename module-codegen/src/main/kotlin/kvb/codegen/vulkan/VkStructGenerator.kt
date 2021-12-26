@@ -140,8 +140,7 @@ object VkStructGenerator {
 	private val VkVar.setterLengthString: String get() = when {
 		varLen == null                                -> ""
 		varLenVariable.type.primitive.kName == "Long" -> "; $varLen = value.capacity.toLong()"
-		varLenVariable.type.primitive.kName == "Int"  -> "; $varLen = value.capacity"
-		else                                          -> throw RuntimeException("Invalid variable array length.")
+		else                                          -> "; $varLen = value.capacity"
 	}
 
 
@@ -150,8 +149,7 @@ object VkStructGenerator {
 		constLen != null                              -> constLen.toString()
 		varLen == null                                -> throw RuntimeException("No array length specified: $this")
 		varLenVariable.type.primitive.kName == "Long" -> "$varLen.toInt()"
-		varLenVariable.type.primitive.kName == "Int"  -> "$varLen"
-		else                                          -> throw RuntimeException("Invalid variable array length.")
+		else                                          -> "$varLen"
 	}
 
 
@@ -202,7 +200,19 @@ object VkStructGenerator {
 					set(value) { ppEnabledExtensionNames = value.address; enabledExtensionCount = value.capacity }
 			"""
 
-			else -> throw RuntimeException("Unaccounted-for pointer to array of pointers variable: $name")
+			"pParams" -> """
+				var params: $pointerBuffer
+					get()      = $pointerBuffer($pointerGetter($memString), paramCount)
+					set(value) { pParams = value.address; paramCount = value.capacity }
+			"""
+
+			"pExtras" -> """
+				var params: $pointerBuffer
+					get()      = $pointerBuffer($pointerGetter($memString), extraCount)
+					set(value) { pExtras = value.address; extraCount = value.capacity }
+			"""
+
+			else -> throw RuntimeException("Unaccounted-for pointer to array of pointers variable: ${struct!!.name}::$name")
 		}
 
 		isPointerToArray -> when(type) {

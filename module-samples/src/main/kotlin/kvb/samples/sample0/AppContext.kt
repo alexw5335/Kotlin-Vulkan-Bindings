@@ -153,6 +153,7 @@ class AppContext(window: WinApiWindow) {
 	}
 
 
+
 	private fun getSwapchainImages() = swapchain.getImages()
 
 	private fun createImageViews() = images.map(device::createImageView)

@@ -2,11 +2,14 @@ package scraper
 
 
 
-class ExtensionElement
-
-
-
-class FeatureElement
+class ExtensionElement(
+	override val name: String,
+	val platform: String,
+	val deprecatedBy: String?,
+	val promotedTo: String?,
+	val disabled: Boolean,
+	val number: Int
+) : Named
 
 
 
@@ -34,13 +37,6 @@ class VarElement(
 	val len           : String?,
 	val altLen        : String?,
 	val sType         : String?,
-) : Named
-
-
-
-class StructElement(
-	override val name : String,
-	val members       : List<VarElement>
 ) : Named
 
 
@@ -76,7 +72,8 @@ class BitmaskTypeElement(
 
 class StructTypeElement(
 	override val name: String,
-	val isUnion: Boolean
+	val isUnion: Boolean,
+	val members: List<VarElement>
 ) : TypeElement
 
 

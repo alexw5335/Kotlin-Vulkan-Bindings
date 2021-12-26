@@ -47,15 +47,15 @@ class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(addres
 
 
 	/**
-	 * Convenience version of vkAllocateDescriptorSets.
+	 * Convenience implementation of vkAllocateDescriptorSets.
 	 */
-	fun allocateDescriptorSets(setLayouts: List<DescriptorSetLayout>, stack: MemStack = default) = stack.get {
+	fun allocateDescriptorSet(setLayouts: List<DescriptorSetLayout>, stack: MemStack = default) = stack.get {
 		val info = DescriptorSetAllocateInfo {
 			it.descriptorPool = self
 			it.setLayouts = wrapPointers(setLayouts)
 		}
 
-		allocateDescriptorSets(info)
+		allocateDescriptorSets(info)[0]
 	}
 
 

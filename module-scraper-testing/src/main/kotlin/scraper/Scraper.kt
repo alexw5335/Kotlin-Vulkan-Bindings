@@ -100,9 +100,19 @@ class Scraper(private val registry: VkXmlElement) {
 				return NativeTypeElement(name)
 			}
 
-			"handle"       -> return HandleTypeElement(name)
-			"struct"       -> return StructTypeElement(name, false)
-			"union"        -> return StructTypeElement(name, true)
+			"struct" -> return StructTypeElement(
+				name = name,
+				isUnion = false,
+				members = element.children("member").mapIndexed(::scrapeVarElement)
+			)
+
+			"union" -> return StructTypeElement(
+				name = name,
+				isUnion = true,
+				members = element.children("member").mapIndexed(::scrapeVarElement)
+			)
+
+			"handle" -> return HandleTypeElement(name)
 
 			// Unimportant types, e.g. defines, includes, function pointers.
 			else -> return MiscTypeElement(name)
@@ -175,50 +185,9 @@ class Scraper(private val registry: VkXmlElement) {
 
 
 	/*
-	Struct elements
+	Var elements
 	 */
 
-
-
-	fun scrapeStructElement(element: VkXmlElement): StructElement {
-		val name = element["name"] ?: err(element)
-		val members = element.children("member").mapIndexed(::scrapeVarElement)
-
-		return StructElement(name, members)
-	}
-
-	fun scrapeStructElements() {
-		for(element in registry.child("structs"))
-	}
-
-
-	/*
-	private fun scrapeStructElement(element: VkXmlElement) {
-		// Aliased structs are skipped.
-		val struct = types.structs.elementsByName[element.attrib("name")] ?: return
-
-		struct.members.addAll(element.children("member").mapIndexed(::scrapeVar))
-
-		// Populating some lateinit variables.
-		for(m in struct.members) {
-			m.struct = struct
-
-			if(m.isArray && m.type is VkTypeStruct)
-				m.type.requiresBuffer = true
-
-			if(m.varLen != null)
-				m.varLenVariable = struct.members.first { it.name == m.varLen }
-		}
-
-		// Populating possible pNext values.
-		element["structextends"]?.let {
-			it.split(',').map(types.structs::fromName).forEach { extends ->
-				extends.pNextValues.add(struct)
-				struct.extends.add(extends)
-			}
-		}
-	}
-	 */
 
 
 	fun scrapeVarElement(index: Int, element: VkXmlElement) = VarElement(

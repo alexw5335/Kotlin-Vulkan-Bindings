@@ -58,7 +58,7 @@ class VkVar(
 	 * are only five struct members with this modifier, found in: VkDeviceCreateInfo, VkInstanceCreateInfo, and
 	 * VkAccelerationStructureBuildGeometryInfoKHR.
 	 */
-	val isPointerToPointerArray = modifier == Modifier.C2_POINTER2
+	val isPointerToPointerArray = modifier == Modifier.POINTER7 || modifier == Modifier.POINTER8
 
 	/**
 	 * If this is a null-terminated UTF-8 char* (not an array).

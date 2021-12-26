@@ -5,6 +5,7 @@ package kvb.codegen
 import kvb.codegen.core.PrimitiveGenerator
 import kvb.codegen.vulkan.*
 import kvb.codegen.vulkan.scraper.Scraper
+import kvb.codegen.vulkan.scraper.element.VkFeature
 import kvb.codegen.vulkan.scraper.list.ProviderList
 import kvb.codegen.vulkan.scraper.list.TypeList
 import java.nio.file.Files
@@ -92,8 +93,8 @@ fun printMeta() {
 
 
 fun main() {
-	printMeta()
-	//genVulkan()
+	//printMeta()
+	genVulkan()
 }
 
 

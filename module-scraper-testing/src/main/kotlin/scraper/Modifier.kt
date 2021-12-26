@@ -8,23 +8,25 @@ package scraper
 enum class Modifier(val isPointer: Boolean, val identifier: String?, val castName: (String) -> String) {
 
 
-	POINTER(     true,  "*",              { "$it*" }),
+	POINTER(  true,  "*",               { "$it*" }),
 
-	POINTER2(    true,  "**",             { "$it**" }),
+	POINTER2( true,  "**",              { "$it**" }),
 
-	C_POINTER(   true,  "const *",        { "const $it*" }),
+	POINTER3( true,  "const *",         { "const $it*" }),
 
-	S_POINTER(   true,  "struct *",       { "struct $it*" }),
+	POINTER4( true,  "struct *",        { "struct $it*" }),
 
-	S_POINTER2(  true,  "struct **",      { "struct $it**" }),
+	POINTER5( true,  "struct **",       { "struct $it**" }),
 
-	C_S_POINTER( true,  "const struct *", { "const struct $it*" }),
+	POINTER6( true,  "const struct *",  { "const struct $it*" }),
 
-	C2_POINTER2( true,  "const * const*", { "const $it* const*" }),
+	POINTER7( true,  "const * const*",  { "const $it* const*" }),
 
-	ARRAY(       false, null,             { "$it*" }),
+	POINTER8( true,  "const * const *", { "const $it* const*" }),
 
-	NONE(        false, null,             { it });
+	ARRAY(    false, null,              { "$it*" }),
+
+	NONE(     false, null,              { it });
 
 
 }
