@@ -18,9 +18,9 @@ class ConstantElement(
 
 
 class FeatureElement(
-	override val name: String,
-	val types: List<String>,
-	val commands: List<String>
+	override val name : String,
+	val types         : NamedList<TypeElement>,
+	val commands      : NamedList<CommandElement>
 ) : Named
 
 
@@ -32,16 +32,16 @@ class ExtensionElement(
 	val deprecatedBy  : String?,
 	val promotedTo    : String?,
 	val disabled      : Boolean,
-	val types         : List<String>,
-	val commands      : List<String>
+	val types         : NamedList<TypeElement>,
+	val commands      : NamedList<CommandElement>
 ) : Named
 
 
 
 class EnumsElement(
-	override val name: String,
-	val entries: List<EnumEntryElement>,
-	val extensionEntries: MutableMap<String, EnumEntryElement>
+	override val name : String,
+	val entries       : List<EnumEntryElement>,
+	val extEntries    : MutableMap<String, EnumEntryElement>
 ) : Named
 
 

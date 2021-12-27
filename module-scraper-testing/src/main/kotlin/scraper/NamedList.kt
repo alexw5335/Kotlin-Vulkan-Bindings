@@ -2,7 +2,7 @@ package scraper
 
 class NamedList<T : Named>(
 	private val map: HashMap<String, T>
-) : Iterable<T> by map.values {
+) : Collection<T> by map.values {
 
 
 	constructor() : this(HashMap())
