@@ -7,28 +7,3 @@ fun main() {
 	Platform.init()
 	App.run()
 }
-
-
-
-/*
-
-void
-filter
-fuzzy void
-fuzzy filter
-lapis
-null
-bin
-crafting
-
-arrow
-revival
-furnace
-anvil
-grindstone
-auto-planting (only when using hoes)
-fireproofing
-returning
-offhand
-
- */

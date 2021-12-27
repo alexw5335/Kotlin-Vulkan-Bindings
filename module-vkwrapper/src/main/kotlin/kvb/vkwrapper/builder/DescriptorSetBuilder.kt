@@ -1,6 +1,5 @@
 package kvb.vkwrapper.builder
 
-import kvb.core.memory.Allocator
 import kvb.core.memory.DirectList
 import kvb.core.memory.MemStack
 import kvb.vkwrapper.handle.DescriptorPool
@@ -93,7 +92,7 @@ class DescriptorSetBuilder(
 
 
 
-	fun write() {
+	fun uniformBufferWrite(dstArrayElement: Int, descriptorCount: Int, type: DescriptorType) {
 
 	}
 

@@ -2,28 +2,54 @@ package scraper
 
 
 
-class ExtensionElement(
+class PlatformElement(
 	override val name: String,
-	val platform: String,
-	val deprecatedBy: String?,
-	val promotedTo: String?,
-	val disabled: Boolean,
-	val number: Int
+	val define: String
 ) : Named
 
 
 
-class EnumElement(
+class ConstantElement(
+	override val name : String,
+	val value         : String,
+	val aliased       : Boolean = false
+) : Named
+
+
+
+class FeatureElement(
 	override val name: String,
-	val entries: List<EnumEntryElement>
+	val types: List<String>,
+	val commands: List<String>
+) : Named
+
+
+
+class ExtensionElement(
+	override val name : String,
+	val number        : Int,
+	val platform      : String?,
+	val deprecatedBy  : String?,
+	val promotedTo    : String?,
+	val disabled      : Boolean,
+	val types         : List<String>,
+	val commands      : List<String>
+) : Named
+
+
+
+class EnumsElement(
+	override val name: String,
+	val entries: List<EnumEntryElement>,
+	val extensionEntries: MutableMap<String, EnumEntryElement>
 ) : Named
 
 
 
 class EnumEntryElement(
-	override val name: String,
-	val value: String?,
-	val alias: String?
+	override val name : String,
+	val value         : String?,
+	val alias         : String?
 ) : Named
 
 
@@ -43,9 +69,9 @@ class VarElement(
 
 class CommandElement(
 	override val name : String,
-	val returnType    : String,
+	val returnType    : String?,
 	val params        : List<VarElement>,
-	val alias         : String? = null
+	val alias         : String?
 ) : Named
 
 
@@ -99,7 +125,7 @@ class NativeTypeElement(
 
 class AliasTypeElement(
 	override val name: String,
-	val aliasedName: String
+	val alias: String
 ) : TypeElement
 
 

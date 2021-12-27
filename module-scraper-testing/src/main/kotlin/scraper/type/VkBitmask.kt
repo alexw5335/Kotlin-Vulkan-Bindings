@@ -13,4 +13,5 @@ class VkBitmask(
 	else
 		Primitive.INT
 
+
 }

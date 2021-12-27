@@ -1,9 +1,9 @@
 package scraper
 
-import scraper.xml.VkXmlElement
-import scraper.xml.VkXmlParser
+import scraper.xml.XmlElement
+import scraper.xml.XmlParser
 
-class Scraper(private val registry: VkXmlElement) {
+class Scraper(private val registry: XmlElement) {
 
 
 	/*
@@ -16,9 +16,9 @@ class Scraper(private val registry: VkXmlElement) {
 
 	private fun err(message: String): Nothing = throw VkScrapeException(message)
 
-	private fun err(message: String, element: VkXmlElement): Nothing = err("$message. element=$element")
+	private fun err(message: String, element: XmlElement): Nothing = err("$message. element=$element")
 
-	private fun err(element: VkXmlElement): Nothing = err("invalid element: $element")
+	private fun err(element: XmlElement): Nothing = err("invalid element: $element")
 
 
 
@@ -30,15 +30,59 @@ class Scraper(private val registry: VkXmlElement) {
 
 	companion object {
 
-		fun scrape(path: String) = Scraper(VkXmlParser.parse(path)).also { it.scrape() }
+		fun scrape(path: String) = Scraper(XmlParser.parse(path)).also { it.scrape() }
 
 	}
 
 
 
+	private fun scrapeElements() {
+		for(element in registry) {
+			when (element.type) {
+				"platforms" ->
+					for(child in element)
+						if(child.type == "platform")
+							platformElements.add(PlatformElement(child.attrib("name"), child.attrib("protect")))
+
+				"commands" ->
+					for(child in element)
+						if(child.type == "command")
+							commandElements.add(scrapeCommandElement(child))
+
+				"types" ->
+					for(child in element)
+						if(child.type == "type")
+							typeElements.add(scrapeTypeElement(child))
+
+				"enums"     -> scrapeEnumsElement(element)
+				"feature"   -> featureElements.add(scrapeFeatureElement(element))
+				"extension" -> extensionElements.add(scrapeExtensionElement(element))
+			}
+		}
+	}
+
+
+
 	fun scrape() {
-		scrapeTypeElements()
-		scrapeEnumElements()
+		scrapeElements()
+	}
+
+
+
+	val ExtensionElement.shouldGen get() = deprecatedBy == null && !disabled && promotedTo != "VK_VERSION_1_1"
+
+
+
+	val CommandElement.shouldGen get() = alias != null && name != "vkGetInstanceProcAddr"
+
+
+
+	val TypeElement.shouldGen get() = when(this) {
+		is BitmaskTypeElement -> enumName != null && enumsElements.fromName(enumName).entries.isNotEmpty()
+		is EnumTypeElement    -> name != "VkStructureType" && enumsElements.fromName(name).entries.isNotEmpty()
+		is StructTypeElement  -> true
+		is HandleTypeElement  -> true
+		else                  -> false
 	}
 
 
@@ -49,9 +93,55 @@ class Scraper(private val registry: VkXmlElement) {
 
 
 
+	val commandElements = NamedList<CommandElement>()
+
+	val platformElements = NamedList<PlatformElement>()
+
+	val constantElements = NamedList<ConstantElement>()
+
 	val typeElements = NamedList<TypeElement>()
 
-	val enumElements = NamedList<EnumElement>()
+	val enumsElements = NamedList<EnumsElement>()
+
+	val featureElements = NamedList<FeatureElement>()
+
+	val extensionElements = NamedList<ExtensionElement>()
+
+
+
+	/*
+	Constant elements
+	 */
+
+
+
+	private fun scrapeConstantElement(element: XmlElement): ConstantElement {
+		val name = element["name"] ?: err(element)
+
+		element["alias"]?.let {
+			return ConstantElement(name, "", true)
+		}
+
+		val value = element.attrib("value")
+
+		// Int literal
+		value.toIntOrNull()?.let {
+			return ConstantElement(name, value)
+		}
+
+		// Hardcoded, may need to be updated in the future.
+		return when(value) {
+			"(~0ULL)" 	-> ConstantElement(name, "-1L")
+			"(~0U)" 	-> ConstantElement(name, "-1")
+			"(~0U-1)" 	-> ConstantElement(name, "-2")
+			"(~0U-2)" 	-> ConstantElement(name, "-3")
+			"(~1U)"     -> ConstantElement(name, "-2")
+			"(~2U)"     -> ConstantElement(name, "-3")
+			"1000.0f"	-> ConstantElement(name, "1000.0f")
+			"1000.0F"   -> ConstantElement(name, "1000.0f")
+			else		-> err("invalid api constant value: $value", element)
+		}
+	}
 
 
 
@@ -61,15 +151,7 @@ class Scraper(private val registry: VkXmlElement) {
 
 
 
-	private fun scrapeTypeElements() {
-		for(element in registry.child("types"))
-			if(element.type == "type")
-				typeElements.add(scrapeTypeElement(element))
-	}
-
-
-
-	private fun scrapeTypeElement(element: VkXmlElement): TypeElement {
+	private fun scrapeTypeElement(element: XmlElement): TypeElement {
 		val name = element["name"] ?: element.child("name").text ?: err(element)
 
 		element["alias"]?.let {
@@ -134,7 +216,7 @@ class Scraper(private val registry: VkXmlElement) {
 
 
 
-	fun scrapeEnumEntryElement(element: VkXmlElement, extNumber: Int): EnumEntryElement {
+	private fun scrapeEnumEntryElement(element: XmlElement, extNumber: Int): EnumEntryElement {
 		val name = element["name"] ?: err(element)
 
 		element["alias"]?.let {
@@ -150,7 +232,7 @@ class Scraper(private val registry: VkXmlElement) {
 
 			// See scripts/generator.py file in the KhronosGroup/Vulkan-Docs repository for the formula.
 			?: element["offset"]?.let {
-				(1000000000 + (extNumber!! - 1) * 1000 + it.toInt()).toString()
+				(1000000000 + ((element["extnumber"]?.toInt() ?: extNumber) - 1) * 1000 + it.toInt()).toString()
 			}
 
 			?: err("Invalid enum value", element)
@@ -163,23 +245,119 @@ class Scraper(private val registry: VkXmlElement) {
 
 
 
-	fun scrapeEnumElement(element: VkXmlElement): EnumElement {
+	private fun scrapeEnumsElement(element: XmlElement) {
 		val name = element["name"] ?: err(element)
+
+		if(name == "API Constants") {
+			for(child in element)
+				if(child.type == "enum")
+					constantElements.add(scrapeConstantElement(child))
+			return
+		}
+
 		val entries = ArrayList<EnumEntryElement>()
 
 		for(child in element)
 			if(child.type == "enum")
 				entries.add(scrapeEnumEntryElement(child, 0))
 
-		return EnumElement(name, entries)
+		enumsElements.add(EnumsElement(name, entries, HashMap()))
 	}
 
 
 
-	fun scrapeEnumElements() {
-		for(element in registry)
-			if(element.type == "enums")
-				enumElements.add(scrapeEnumElement(element))
+	/*
+	Feature and extension elements
+	 */
+
+
+
+	private fun scrapeFeatureElement(element: XmlElement): FeatureElement {
+		val name = element["name"] ?: err(element)
+		val types = ArrayList<String>()
+		val commands = ArrayList<String>()
+
+		for(require in element.children) {
+			if(require.type != "require") continue
+
+			for(element2 in require.children) {
+				when(element2.type) {
+					"type"    -> types.add(element2["name"]!!)
+					"command" -> commands.add(element2["name"]!!)
+					"enum"    -> {
+						val enum = enumsElements.fromName(element2["extends"] ?: continue)
+						enum.extensionEntries[name] = scrapeEnumEntryElement(element2, 0)
+					}
+				}
+			}
+		}
+
+		return FeatureElement(name, types, commands)
+	}
+
+
+
+	private fun scrapeExtensionElement(element: XmlElement): ExtensionElement {
+		val name = element["name"] ?: err(element)
+		val number = element["number"]?.toInt() ?: err(element)
+		val types = ArrayList<String>()
+		val commands = ArrayList<String>()
+
+		for(require in element.children) {
+			if(require.type != "require") continue
+
+			for(element2 in require.children) {
+				when(element2.type) {
+					"type"    -> types.add(element2["name"]!!)
+					"command" -> commands.add(element2["name"]!!)
+					"enum"    -> {
+						val enum = enumsElements.fromName(element2["extends"] ?: continue)
+						enum.extensionEntries[name] = scrapeEnumEntryElement(element2, number)
+					}
+				}
+			}
+		}
+
+		return ExtensionElement(
+			name,
+			number,
+			element["platform"],
+			element["deprecatedby"],
+			element["promotedTo"],
+			element["disabled"] == "true",
+			types,
+			commands
+		)
+	}
+
+
+
+	/*
+	Command elements
+	 */
+
+
+
+	private fun scrapeCommandElement(element: XmlElement): CommandElement {
+		element["alias"]?.let {
+			val aliased = commandElements.fromName(it)
+			return CommandElement(element.attrib("name"), aliased.returnType, aliased.params, it)
+		}
+
+		val proto      = element.child("proto")
+		val name       = proto.child("name").text!!
+		val returnType = proto.child("type").text!!.takeUnless { it == "void" }
+		val params     = element.children("param").mapIndexed(::scrapeVarElement)
+
+		return CommandElement(name, returnType, params, null)
+	}
+
+
+
+	private fun scrapeCommandsElement(element: XmlElement) {
+		for(child in element)
+			if(child.type == "command")
+				commandElements.add(scrapeCommandElement(element))
 	}
 
 
@@ -190,7 +368,7 @@ class Scraper(private val registry: VkXmlElement) {
 
 
 
-	fun scrapeVarElement(index: Int, element: VkXmlElement) = VarElement(
+	private fun scrapeVarElement(index: Int, element: XmlElement) = VarElement(
 		name     = element.child("name").text ?: err(element),
 		type     = element.child("type").text ?: err(element),
 		optional = element["optional"]?.equals("true") ?: false,
@@ -206,7 +384,7 @@ class Scraper(private val registry: VkXmlElement) {
 	/**
 	 * Determines the modifier of a C parameter or struct member.
 	 */
-	private fun varModifier(element: VkXmlElement): Modifier {
+	private fun varModifier(element: XmlElement): Modifier {
 		// Modifiers are given as the VkXmlElement's text. They are not specified as separate elements/attributes.
 		val text = element.text ?: return Modifier.NONE
 

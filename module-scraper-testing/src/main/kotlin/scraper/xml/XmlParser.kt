@@ -6,12 +6,12 @@ import java.nio.file.Paths
 /**
  * A simple XML parser for parsing the vk.xml registry file.
  */
-class VkXmlParser(private val chars: CharArray) {
+class XmlParser(private val chars: CharArray) {
 
 
 	companion object {
 
-		fun parse(file: String) = VkXmlParser(Files.readString(Paths.get(file), Charsets.UTF_8).toCharArray()).parse()
+		fun parse(file: String) = XmlParser(Files.readString(Paths.get(file), Charsets.UTF_8).toCharArray()).parse()
 
 	}
 
@@ -21,7 +21,7 @@ class VkXmlParser(private val chars: CharArray) {
 
 
 
-	fun parse(): VkXmlElement {
+	fun parse(): XmlElement {
 		pos = 0
 
 		// Skip to the prolog or root element
@@ -43,9 +43,7 @@ class VkXmlParser(private val chars: CharArray) {
 	private inline fun readUntil(predicate: (Char) -> Boolean): String {
 		val startPos = pos
 		while(!predicate(chars[pos])) pos++
-		val chars = CharArray(pos - startPos)
-		System.arraycopy(this.chars, startPos, chars, 0, chars.size)
-		return String(chars)
+		return String(chars, startPos, pos - startPos)
 	}
 
 
@@ -55,9 +53,8 @@ class VkXmlParser(private val chars: CharArray) {
 		while(chars[pos].isWhitespace()) pos++
 
 		// Read until the next tag opening
-		//if(chars[pos] != '<')
-			while(chars[pos] != '<')
-				builder.append(chars[pos++])
+		while(chars[pos] != '<')
+			builder.append(chars[pos++])
 
 		// Skip comments, continue reading between and after comments
 		if(chars[pos + 1] == '!') {
@@ -70,13 +67,13 @@ class VkXmlParser(private val chars: CharArray) {
 
 
 
-	private fun readElement(): VkXmlElement {
+	private fun readElement(): XmlElement {
 		while(chars[pos++] != '<') Unit
 
 		val type = readUntil { it.isWhitespace() || it == '>' || it == '/' }
 
 		var attributes: MutableMap<String, String>? = null
-		var children: MutableList<VkXmlElement>? = null
+		var children: MutableList<XmlElement>? = null
 
 		while(true) {
 			val char = chars[pos++]
@@ -88,7 +85,7 @@ class VkXmlParser(private val chars: CharArray) {
 				// End of opening tag, no closing tag
 				char == '/' -> {
 					pos++ // skip '>'
-					return VkXmlElement(type, attributes ?: emptyMap(), emptyList(), null)
+					return XmlElement(type, attributes ?: emptyMap(), emptyList(), null)
 				}
 
 				// Ignore whitespace between attributes.
@@ -118,7 +115,7 @@ class VkXmlParser(private val chars: CharArray) {
 				pos++
 				while(chars[pos++] != '>') Unit
 				val text = if(builder.isEmpty()) null else builder.toString().trimEnd()
-				return VkXmlElement(type, attributes ?: emptyMap(), children ?: emptyList(), text)
+				return XmlElement(type, attributes ?: emptyMap(), children ?: emptyList(), text)
 			} else {
 				if(children == null) children = ArrayList()
 				children.add(readElement())

@@ -9,7 +9,7 @@ class VkTypeUnimplemented(override val name: String): VkType {
 
 	override val shouldGen = false
 
-	override val genName = name
+	override val genName = primitive.kName
 
 
 }
