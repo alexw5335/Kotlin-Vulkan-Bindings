@@ -1,6 +1,7 @@
 package scraper.xml
 
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
@@ -10,9 +11,7 @@ class XmlParser(private val chars: CharArray) {
 
 
 	companion object {
-
-		fun parse(file: String) = XmlParser(Files.readString(Paths.get(file), Charsets.UTF_8).toCharArray()).parse()
-
+		fun parse(file: Path) = XmlParser(Files.readString(file, Charsets.UTF_8).toCharArray()).parse()
 	}
 
 

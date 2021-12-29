@@ -7,11 +7,12 @@ import scraper.writer.procedural.Primitive
 import scraper.scraper.GenUtils
 import scraper.scraper.GenUtils.camelToSnakeCase
 import scraper.type.*
+import java.nio.file.Path
 
 class VulkanScraper(private val parser: VulkanParser) {
 
 
-	constructor(path: String) : this(VulkanParser(path))
+	constructor(path: Path) : this(VulkanParser(path))
 
 
 
@@ -333,7 +334,7 @@ class VulkanScraper(private val parser: VulkanParser) {
 
 
 
-	fun populateGeneration() {
+	private fun populateGeneration() {
 		for(provider in parser.providerElements) {
 			if(!provider.shouldGen) continue
 

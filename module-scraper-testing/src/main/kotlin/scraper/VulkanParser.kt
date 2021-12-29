@@ -4,11 +4,12 @@ import scraper.naming.NamedList
 import scraper.properties.Modifier
 import scraper.xml.XmlElement
 import scraper.xml.XmlParser
+import java.nio.file.Path
 
 class VulkanParser(private val registry: XmlElement) {
 
 
-	constructor(path: String) : this(XmlParser.parse(path))
+	constructor(path: Path) : this(XmlParser.parse(path))
 
 
 
