@@ -21,24 +21,34 @@ class ConstantElement(
 
 
 
+sealed interface ProviderElement : Named {
+
+	val types: NamedList<TypeElement>
+
+	val commands: NamedList<CommandElement>
+
+}
+
+
+
 class FeatureElement(
-	override val name : String,
-	val types         : NamedList<TypeElement>,
-	val commands      : NamedList<CommandElement>
-) : Named
+	override val name     : String,
+	override val types    : NamedList<TypeElement>,
+	override val commands : NamedList<CommandElement>
+) : ProviderElement
 
 
 
 class ExtensionElement(
-	override val name : String,
-	val number        : Int,
-	val platform      : PlatformElement?,
-	val deprecatedBy  : String?,
-	val promotedTo    : String?,
-	val disabled      : Boolean,
-	val types         : NamedList<TypeElement>,
-	val commands      : NamedList<CommandElement>
-) : Named
+	override val name     : String,
+	override val types    : NamedList<TypeElement>,
+	override val commands : NamedList<CommandElement>,
+	val number            : Int,
+	val platform          : PlatformElement?,
+	val deprecatedBy      : String?,
+	val promotedTo        : String?,
+	val disabled          : Boolean,
+) : ProviderElement
 
 
 
@@ -121,6 +131,12 @@ class PrimitiveElement(
 class NativeElement(
 	override val name: String
 ): TypeElement
+
+
+
+class FuncPointerElement(
+	override val name: String
+) : TypeElement
 
 
 

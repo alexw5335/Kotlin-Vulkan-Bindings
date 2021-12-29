@@ -1,6 +1,6 @@
 package scraper.type
 
-import scraper.properties.Primitive
+import scraper.writer.procedural.Primitive
 
 class VkStruct(
 	override val name: String,

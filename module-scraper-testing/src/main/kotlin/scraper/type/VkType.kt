@@ -1,7 +1,7 @@
 package scraper.type
 
 import scraper.naming.Named
-import scraper.properties.Primitive
+import scraper.writer.procedural.Primitive
 
 sealed interface VkType : Named {
 

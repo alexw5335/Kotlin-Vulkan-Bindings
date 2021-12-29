@@ -1,7 +1,7 @@
 package scraper.scraper
 
 import scraper.err
-import scraper.properties.Primitive
+import scraper.writer.procedural.Primitive
 import java.util.regex.Pattern
 
 object GenUtils {

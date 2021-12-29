@@ -1,7 +1,6 @@
 package scraper.type
 
-import scraper.properties.Primitive
-import scraper.type.VkType
+import scraper.writer.procedural.Primitive
 
 class VkNativeType(
 	override val name: String,

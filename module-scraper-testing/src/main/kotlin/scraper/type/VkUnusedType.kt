@@ -1,6 +1,6 @@
 package scraper.type
 
-import scraper.properties.Primitive
+import scraper.writer.procedural.Primitive
 
 class VkUnusedType(override val name: String): VkType {
 

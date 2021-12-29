@@ -1,5 +1,5 @@
 package scraper
 
 fun main() {
-	VulkanGenerator("vk.xml")
+	VulkanScraper("vk.xml")
 }

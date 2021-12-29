@@ -1,7 +1,7 @@
 package scraper.type
 
 import scraper.naming.NamedList
-import scraper.properties.Primitive
+import scraper.writer.procedural.Primitive
 
 class VkEnum(
 	override val name      : String,

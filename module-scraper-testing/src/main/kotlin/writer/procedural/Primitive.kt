@@ -1,4 +1,4 @@
-package scraper.properties
+package scraper.writer.procedural
 
 enum class Primitive(val kName: String, val size: Int) {
 
