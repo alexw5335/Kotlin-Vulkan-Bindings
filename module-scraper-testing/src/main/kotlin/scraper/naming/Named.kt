@@ -1,4 +1,4 @@
-package scraper
+package scraper.naming
 
 interface Named {
 

@@ -1,12 +1,16 @@
 package scraper.type
 
-import scraper.Named
-import scraper.Primitive
+import scraper.naming.Named
+import scraper.properties.Primitive
 
 sealed interface VkType : Named {
 
 
-	val primitive: Primitive get() = Primitive.LONG
+	val genName: String
+
+	val shouldGen: Boolean
+
+	val primitive: Primitive
 
 
 }

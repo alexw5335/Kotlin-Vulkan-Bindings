@@ -1,17 +1,12 @@
 package scraper.type
 
-import scraper.Primitive
+import scraper.properties.Primitive
 
 class VkBitmask(
-	override val name: String,
-	val is64Bit: Boolean
-) : VkType {
-
-	
-	override val primitive = if(is64Bit)
-		Primitive.LONG
-	else
-		Primitive.INT
-
-
-}
+	override val name      : String,
+	override val genName   : String,
+	override val shouldGen : Boolean,
+	override val primitive : Primitive,
+	val is64Bit            : Boolean,
+	val enumName           : String?
+) : VkType

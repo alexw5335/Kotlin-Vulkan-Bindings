@@ -1,5 +1,9 @@
 package scraper
 
+import scraper.naming.NamedList
+import scraper.properties.Modifier
+import scraper.naming.Named
+
 
 
 class PlatformElement(
@@ -28,7 +32,7 @@ class FeatureElement(
 class ExtensionElement(
 	override val name : String,
 	val number        : Int,
-	val platform      : String?,
+	val platform      : PlatformElement?,
 	val deprecatedBy  : String?,
 	val promotedTo    : String?,
 	val disabled      : Boolean,
@@ -38,18 +42,11 @@ class ExtensionElement(
 
 
 
-class EnumsElement(
-	override val name : String,
-	val entries       : List<EnumEntryElement>,
-	val extEntries    : MutableMap<String, EnumEntryElement>
-) : Named
-
-
-
 class EnumEntryElement(
 	override val name : String,
 	val value         : String?,
-	val alias         : String?
+	val alias         : String?,
+	val extension     : String?
 ) : Named
 
 
@@ -62,6 +59,8 @@ class VarElement(
 	val index         : Int,
 	val len           : String?,
 	val altLen        : String?,
+	val varLen        : String?,
+	val constLen      : Int?,
 	val sType         : String?,
 ) : Named
 
@@ -80,15 +79,16 @@ sealed interface TypeElement : Named
 
 
 
-class EnumTypeElement(
-	override val name: String,
-	val is64Bit: Boolean,
-	val isFlagBits: Boolean,
+class EnumElement(
+	override val name : String,
+	val is64Bit       : Boolean,
+	val isFlagBits    : Boolean,
+	val entries       : ArrayList<EnumEntryElement> = ArrayList()
 ) : TypeElement
 
 
 
-class BitmaskTypeElement(
+class BitmaskElement(
 	override val name: String,
 	val is64Bit: Boolean,
 	val enumName: String?
@@ -96,34 +96,35 @@ class BitmaskTypeElement(
 
 
 
-class StructTypeElement(
+class StructElement(
 	override val name: String,
 	val isUnion: Boolean,
-	val members: List<VarElement>
+	val members: List<VarElement>,
+	val extends: List<String>
 ) : TypeElement
 
 
 
-class HandleTypeElement(
+class HandleElement(
 	override val name: String
 ) : TypeElement
 
 
 
-class PrimitiveTypeElement(
+class PrimitiveElement(
 	override val name: String,
 	val primitiveName: String
 ) : TypeElement
 
 
 
-class NativeTypeElement(
+class NativeElement(
 	override val name: String
 ): TypeElement
 
 
 
-class AliasTypeElement(
+class TypeAliasElement(
 	override val name: String,
 	val alias: String
 ) : TypeElement

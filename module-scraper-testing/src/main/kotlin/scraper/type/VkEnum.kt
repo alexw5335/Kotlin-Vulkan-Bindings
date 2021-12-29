@@ -1,18 +1,13 @@
 package scraper.type
 
-import scraper.Primitive
+import scraper.naming.NamedList
+import scraper.properties.Primitive
 
 class VkEnum(
-	override val name : String,
-	val is64Bit       : Boolean,
-	val isFlagBits    : Boolean
-) : VkType {
-
-
-	override val primitive = if(is64Bit)
-		Primitive.LONG
-	else
-		Primitive.INT
-
-
-}
+	override val name      : String,
+	override val genName   : String,
+	override val shouldGen : Boolean,
+	override val primitive : Primitive,
+	val is64Bit            : Boolean,
+	val entries            : NamedList<VkEnumEntry>
+) : VkType

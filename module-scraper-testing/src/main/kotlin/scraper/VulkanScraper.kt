@@ -1,24 +1,34 @@
 package scraper
 
+import scraper.naming.NamedList
+import scraper.properties.Modifier
 import scraper.xml.XmlElement
 import scraper.xml.XmlParser
 
-class Scraper(private val registry: XmlElement) {
+class VulkanScraper(private val registry: XmlElement) {
 
 
-	/*
-	Exceptions
-	 */
+	constructor(path: String) : this(XmlParser.parse(path))
 
 
 
-	private class VkScrapeException(message: String) : RuntimeException(message)
+	val commandElements = NamedList<CommandElement>()
 
-	private fun err(message: String): Nothing = throw VkScrapeException(message)
+	val platformElements = NamedList<PlatformElement>()
 
-	private fun err(message: String, element: XmlElement): Nothing = err("$message. element=$element")
+	val constantElements = NamedList<ConstantElement>()
 
-	private fun err(element: XmlElement): Nothing = err("invalid element: $element")
+	val typeElements = NamedList<TypeElement>()
+
+	val featureElements = NamedList<FeatureElement>()
+
+	val extensionElements = NamedList<ExtensionElement>()
+
+
+
+	init {
+		scrape()
+	}
 
 
 
@@ -28,15 +38,10 @@ class Scraper(private val registry: XmlElement) {
 
 
 
-	companion object {
-
-		fun scrape(path: String) = Scraper(XmlParser.parse(path)).also { it.scrape() }
-
-	}
-
-
-
 	private fun scrape() {
+		for(child in registry.child("enums"))
+			constantElements.add(scrapeConstantElement(child))
+
 		for(element in registry) {
 			when (element.type) {
 				"platforms" ->
@@ -54,105 +59,16 @@ class Scraper(private val registry: XmlElement) {
 						if(child.type == "type")
 							typeElements.add(scrapeTypeElement(child))
 
-				"enums"     -> scrapeEnumsElement(element)
-				"feature"   -> featureElements.add(scrapeFeatureElement(element))
 				"extensions" ->
 					for(child in element)
 						if(child.type == "extension")
 							extensionElements.add(scrapeExtensionElement(child))
+
+				"enums"     -> scrapeEnumsElement(element)
+
+				"feature"   -> featureElements.add(scrapeFeatureElement(element))
 			}
 		}
-
-		val shortNames = ShortNameList()
-
-		val types = ArrayList<TypeElement>()
-
-		for(feature in featureElements)
-			for(type in feature.types)
-				if(type.shouldGen)
-					types.add(type)
-
-		for(extension in extensionElements)
-			if(extension.shouldGen)
-				for(type in extension.types)
-					if(type.shouldGen)
-						types.add(type)
-
-		for(type in types) {
-			shortNames.add(type.name.drop(2))
-		}
-	}
-
-
-
-	/*
-	Variables
-	 */
-
-
-
-	private val commandElements = NamedList<CommandElement>()
-
-	private val platformElements = NamedList<PlatformElement>()
-
-	private val constantElements = NamedList<ConstantElement>()
-
-	private val typeElements = NamedList<TypeElement>()
-
-	private val enumsElements = NamedList<EnumsElement>()
-
-	private val featureElements = NamedList<FeatureElement>()
-
-	private val extensionElements = NamedList<ExtensionElement>()
-
-
-
-	/*
-	Test
-	 */
-
-
-
-	val ExtensionElement.shouldGen get() = deprecatedBy == null && !disabled && promotedTo != "VK_VERSION_1_1"
-
-
-
-	val CommandElement.shouldGen get() = alias != null && name != "vkGetInstanceProcAddr"
-
-
-
-	val TypeElement.shouldGen get() = when(this) {
-		is BitmaskTypeElement -> enumName != null && enumsElements.fromName(enumName).entries.isNotEmpty()
-		is EnumTypeElement    -> name != "VkStructureType" && enumsElements.fromName(name).entries.isNotEmpty()
-		is StructTypeElement  -> true
-		is HandleTypeElement  -> true
-		else                  -> false
-	}
-
-
-
-	private class ShortNameList {
-
-		private val shortToFullNames = HashMap<String, String>()
-
-		private val fullToShortNames = HashMap<String, String>()
-
-		fun add(fullName: String) {
-			var shortName = Postfix.drop(fullName)
-
-			shortToFullNames[shortName]?.let {
-				fullToShortNames[it] = it
-				shortName = fullName
-				println(it)
-				println(fullName)
-			}
-
-			fullToShortNames[fullName] = shortName
-			shortToFullNames[shortName] = fullName
-		}
-
-		fun get(fullName: String) = fullToShortNames[fullName]
-
 	}
 
 
@@ -167,19 +83,20 @@ class Scraper(private val registry: XmlElement) {
 		val name = element["name"] ?: element.child("name").text ?: err(element)
 
 		element["alias"]?.let {
-			return AliasTypeElement(name, it)
+			return TypeAliasElement(name, it)
 		}
 
-		when(element["category"]) {
+		when(val category = element["category"]) {
 			null -> { }
 
-			"enum" -> return EnumTypeElement(
+			"enum" -> return EnumElement(
 				name        = name,
 				is64Bit     = name.contains("FlagBits2"),
 				isFlagBits  = name.contains("FlagBits")
 			)
 
-			"bitmask" -> return BitmaskTypeElement(
+
+			"bitmask" -> return BitmaskElement(
 				name     = name,
 				is64Bit  = element["bitvalues"] != null,
 				enumName = element["requires"] ?: element["bitvalues"]
@@ -187,26 +104,21 @@ class Scraper(private val registry: XmlElement) {
 
 			"basetype" -> {
 				element.childOrNull("type")?.text?.let {
-					return PrimitiveTypeElement(name, it)
+					return PrimitiveElement(name, it)
 				}
 
 				// Redefined native types (ANativeWindow, CAMetalLayer, AHardwareBuffer)
-				return NativeTypeElement(name)
+				return NativeElement(name)
 			}
 
-			"struct" -> return StructTypeElement(
-				name = name,
-				isUnion = false,
-				members = element.children("member").mapIndexed(::scrapeVarElement)
+			"struct", "union" -> return StructElement(
+				name    = name,
+				isUnion = category == "union",
+				members = element.children("member").mapIndexed(::scrapeVarElement),
+				extends = element["structextends"]?.split(',') ?: emptyList()
 			)
 
-			"union" -> return StructTypeElement(
-				name = name,
-				isUnion = true,
-				members = element.children("member").mapIndexed(::scrapeVarElement)
-			)
-
-			"handle" -> return HandleTypeElement(name)
+			"handle" -> return HandleElement(name)
 
 			// Unimportant types, e.g. defines, includes, function pointers.
 			else -> return MiscTypeElement(name)
@@ -215,9 +127,9 @@ class Scraper(private val registry: XmlElement) {
 		val requires = element["requires"]
 
 		if(requires == "vk_platform" || name == "int")
-			return PrimitiveTypeElement(name, name)
+			return PrimitiveElement(name, name)
 
-		return NativeTypeElement(name)
+		return NativeElement(name)
 	}
 
 
@@ -228,11 +140,11 @@ class Scraper(private val registry: XmlElement) {
 
 
 
-	private fun scrapeEnumEntryElement(element: XmlElement, extNumber: Int): EnumEntryElement {
+	private fun scrapeEnumEntryElement(element: XmlElement, extNumber: Int, extension: String?): EnumEntryElement {
 		val name = element["name"] ?: err(element)
 
 		element["alias"]?.let {
-			return EnumEntryElement(name, null, it)
+			return EnumEntryElement(name, null, it, extension)
 		}
 
 		var value =
@@ -252,28 +164,19 @@ class Scraper(private val registry: XmlElement) {
 		if(element["dir"] == "-")
 			value = "-$value"
 
-		return EnumEntryElement(name, value, null)
+		return EnumEntryElement(name, value, null, extension)
 	}
 
 
 
 	private fun scrapeEnumsElement(element: XmlElement) {
-		val name = element["name"] ?: err(element)
+		if(element["name"] == "API Constants") return
 
-		if(name == "API Constants") {
-			for(child in element)
-				if(child.type == "enum")
-					constantElements.add(scrapeConstantElement(child))
-			return
-		}
-
-		val entries = ArrayList<EnumEntryElement>()
+		val enum = typeElements.fromName(element["name"] ?: err(element)) as EnumElement
 
 		for(child in element)
 			if(child.type == "enum")
-				entries.add(scrapeEnumEntryElement(child, 0))
-
-		enumsElements.add(EnumsElement(name, entries, HashMap()))
+				enum.entries.add(scrapeEnumEntryElement(child, 0, null))
 	}
 
 
@@ -302,7 +205,7 @@ class Scraper(private val registry: XmlElement) {
 			"(~2U)"     -> ConstantElement(name, "-3")
 			"1000.0f"	-> ConstantElement(name, "1000.0f")
 			"1000.0F"   -> ConstantElement(name, "1000.0f")
-			else		-> err("invalid api constant value: $value", element)
+			else		-> err("Unrecognised api constant value: $value", element)
 		}
 	}
 
@@ -327,8 +230,8 @@ class Scraper(private val registry: XmlElement) {
 					"type"    -> types.add(typeElements.fromName(element2.attrib("name")))
 					"command" -> commands.add(commandElements.fromName(element2.attrib("name")))
 					"enum"    -> {
-						val enum = enumsElements.fromName(element2["extends"] ?: continue)
-						enum.extEntries[name] = scrapeEnumEntryElement(element2, 0)
+						val enum = typeElements.fromName(element2["extends"] ?: continue) as EnumElement
+						enum.entries.add(scrapeEnumEntryElement(element2, 0, null))
 					}
 				}
 			}
@@ -353,22 +256,22 @@ class Scraper(private val registry: XmlElement) {
 					"type"    -> types.add(typeElements.fromName(element2.attrib("name")))
 					"command" -> commands.add(commandElements.fromName(element2.attrib("name")))
 					"enum"    -> {
-						val enum = enumsElements.fromName(element2["extends"] ?: continue)
-						enum.extEntries[name] = scrapeEnumEntryElement(element2, number)
+						val enum = typeElements.fromName(element2["extends"] ?: continue) as EnumElement
+						enum.entries.add(scrapeEnumEntryElement(element2, number, name))
 					}
 				}
 			}
 		}
 
 		return ExtensionElement(
-			name,
-			number,
-			element["platform"],
-			element["deprecatedby"],
-			element["promotedTo"],
-			element["supported"] == "disabled",
-			types,
-			commands
+			name         = name,
+			number       = number,
+			platform     = element["platform"]?.let(platformElements::fromName),
+			deprecatedBy = element["deprecatedby"],
+			promotedTo   = element["promotedTo"],
+			disabled     = element["supported"] == "disabled",
+			types        = types,
+			commands     = commands
 		)
 	}
 
@@ -406,10 +309,12 @@ class Scraper(private val registry: XmlElement) {
 		name     = element.child("name").text ?: err(element),
 		type     = element.child("type").text ?: err(element),
 		optional = element["optional"]?.equals("true") ?: false,
-		modifier = varModifier(element),
+		modifier = varModifier(element.text),
 		index    = index,
 		len      = element["len"],
 		altLen   = element["altlen"],
+		varLen   = variableArrayLength(element["len"]),
+		constLen = constArrayLength(element),
 		sType    = element["values"],
 	)
 
@@ -418,17 +323,71 @@ class Scraper(private val registry: XmlElement) {
 	/**
 	 * Determines the modifier of a C parameter or struct member.
 	 */
-	private fun varModifier(element: XmlElement): Modifier {
-		val text = element.text ?: return Modifier.NONE
+	private fun varModifier(modifier: String?): Modifier {
+		if(modifier == null) return Modifier.NONE
 
 		// Edge case for VkAccelerationStructureInstanceKHR.
-		if(text.startsWith(':')) return Modifier.NONE
+		if(modifier.startsWith(':')) return Modifier.NONE
 
-		if(text.contains('[')) return Modifier.ARRAY
+		if(modifier.contains('[')) return Modifier.ARRAY
 
 		// Matching the text with a modifier relies on text being condensed in the XML parser.
 		// e.g. 'const <type>void</type>*' becomes 'const*'.
-		return Modifier.values().first { it.identifier == text }
+		return Modifier.values().first { it.identifier == modifier }
+	}
+
+
+
+	/**
+	 * Used for struct members or array lengths with [] array identifiers.
+	 */
+	private fun constArrayLength(element: XmlElement): Int? {
+		// Edge case for VkAccelerationStructureVersionInfoKHR.
+		if(element["len"] == "2*ename:VK_UUID_SIZE") return 32
+
+		// No const array length.
+		if(element.text == null || !element.text.contains('[')) return null
+
+		// If [] with no specified array length, then the array length is given as an attribute named 'enum'.
+		// The attribute refers to an API constant.
+		return element.text.split('[').last().substringBefore(']').let {
+			if(it.isEmpty())
+				constantElements.fromName(element.child("enum").text!!).value.toInt()
+			else
+				it.toInt()
+		}
+	}
+
+
+
+	/**
+	 * If the element is an array whose size is determined by another variable in a struct, then that variable's name
+	 * is returned. Otherwise, null is returned.
+	 */
+	private fun variableArrayLength(len: String?): String? = when {
+		// No variable length
+		len == null -> null
+
+		// Of the form "variable,null-terminated". Only 3 instances where this occurs:
+		// ppEnabledLayerNames, ppEnabledExtensionNames, ppGeometries.
+		// Only the first part of the len string matters for these.
+		len.contains(',') 					-> len.split(',')[0]
+
+		// Only 2 cases, too complex to create convenience functions for these.
+		len.startsWith("latexmath") 		-> null
+
+		// Handled as a constant array length (=32)
+		len == "2*ename:VK_UUID_SIZE"		-> null
+
+		// Only for char*. These are handled separately during generation.
+		len == "null-terminated"			-> null
+
+		// Edge-case - refers to a variable of a variable within the struct.
+		len == "pBuildInfo-geometryCount" 	-> null
+
+		// By this point, the length should refer to another variable in a struct.
+		// Warning: This will not catch new edge-cases.
+		else								-> len
 	}
 
 

@@ -1,4 +1,4 @@
-package scraper
+package scraper.properties
 
 /**
  * A hack to identify modifiers in front of Vulkan parameters. If the Vulkan spec is updated with new combinations of
