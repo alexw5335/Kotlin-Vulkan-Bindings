@@ -1,8 +1,4 @@
-package scraper.kvb.codegen.vulkan
-
-import scraper.kvb.codegen.vulkan.type.VkCommand
-import scraper.kvb.codegen.vulkan.type.VkConstant
-import scraper.kvb.codegen.vulkan.type.VkType
+package kvb.codegen.vulkan
 
 class ScrapedRegistry(
 	val types     : List<VkType>,

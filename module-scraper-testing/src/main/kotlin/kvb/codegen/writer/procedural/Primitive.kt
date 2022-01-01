@@ -1,4 +1,4 @@
-package scraper.writer.procedural
+package kvb.codegen.writer.procedural
 
 enum class Primitive(val kName: String, val size: Int) {
 

@@ -1,5 +1,6 @@
-package scraper.kvb.codegen.vulkan
+package kvb.codegen.vulkan
 
+import kvb.codegen.vulkan.*
 import scraper.kvb.codegen.vulkan.naming.NamedList
 import scraper.kvb.codegen.vulkan.xml.XmlElement
 

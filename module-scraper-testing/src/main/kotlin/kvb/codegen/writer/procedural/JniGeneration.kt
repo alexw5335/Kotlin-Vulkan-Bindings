@@ -1,4 +1,4 @@
-package writer.procedural
+package kvb.codegen.writer.procedural
 
 object JniGeneration {
 

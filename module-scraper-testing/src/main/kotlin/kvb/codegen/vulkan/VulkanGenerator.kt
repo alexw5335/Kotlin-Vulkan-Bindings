@@ -1,6 +1,5 @@
-package scraper.kvb.codegen.vulkan
+package kvb.codegen.vulkan
 
-import scraper.VulkanScraper
 import java.nio.file.Path
 
 class VulkanGenerator(

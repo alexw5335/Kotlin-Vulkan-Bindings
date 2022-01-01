@@ -1,4 +1,4 @@
-package scraper.kvb.codegen.vulkan
+package kvb.codegen.vulkan
 
 import scraper.kvb.codegen.vulkan.xml.XmlElement
 

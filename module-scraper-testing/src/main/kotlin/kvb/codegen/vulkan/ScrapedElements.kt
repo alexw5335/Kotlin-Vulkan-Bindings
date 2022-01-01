@@ -1,6 +1,149 @@
-package scraper.kvb.codegen.vulkan.type
+package kvb.codegen.vulkan
 
-import scraper.kvb.codegen.vulkan.Modifier
+import kvb.codegen.writer.procedural.Primitive
+import scraper.kvb.codegen.vulkan.naming.Named
+import scraper.kvb.codegen.vulkan.naming.NamedList
+
+
+
+enum class CommandType {
+	INSTANCE, DEVICE, STANDALONE;
+}
+
+
+
+class VkCommand(
+	override val name : String,
+	val genName       : String,
+	val shouldGen     : Boolean,
+	val type          : CommandType,
+	val returnType    : VkType?,
+	val params        : List<VkVar>
+) : Named
+
+
+
+class VkConstant(
+	override val name : String,
+	val genName       : String,
+	val shouldGen     : Boolean,
+	val value         : String,
+	val aliased       : Boolean
+) : Named
+
+
+
+/*
+Type
+ */
+
+
+
+sealed interface VkType : Named {
+
+	val genName: String
+
+	val shouldGen: Boolean
+
+	val primitive: Primitive
+
+}
+
+
+
+class VkEnumEntry(
+	override val name : String,
+	val genName       : String,
+	val value         : String,
+	val shouldGen     : Boolean
+) : Named
+
+
+
+class VkEnum(
+	override val name      : String,
+	override val genName   : String,
+	override val shouldGen : Boolean,
+	override val primitive : Primitive,
+	val is64Bit            : Boolean,
+	val entries            : NamedList<VkEnumEntry>
+) : VkType
+
+
+
+class VkBitmask(
+	override val name      : String,
+	override val genName   : String,
+	override val shouldGen : Boolean,
+	override val primitive : Primitive,
+	val is64Bit            : Boolean,
+	val enumName           : String?
+) : VkType
+
+
+
+class VkHandle(
+	override val name: String,
+	override val genName: String,
+	override val shouldGen: Boolean,
+	override val primitive: Primitive
+) : VkType
+
+
+
+class VkNativeType(
+	override val name: String,
+	override val shouldGen: Boolean,
+	override val genName: String,
+	override val primitive: Primitive
+) : VkType
+
+
+
+class VkPrimitiveType(
+	override val name: String,
+	override val genName: String,
+	override val shouldGen: Boolean,
+	override val primitive: Primitive
+) : VkType
+
+
+
+class VkStruct(
+	override val name: String,
+	override val genName: String,
+	override val shouldGen: Boolean,
+	override val primitive: Primitive
+) : VkType {
+
+
+	val members = ArrayList<VkVar>()
+
+	val pNext = ArrayList<VkStruct>()
+
+	val extends = ArrayList<VkStruct>()
+
+	val sType get() = members.first().sType
+
+	var requiresBuffer = false
+
+}
+
+
+
+class VkUnusedType(override val name: String): VkType {
+
+
+	override val genName = name
+
+	override val shouldGen = false
+
+	override val primitive = Primitive.LONG
+
+
+}
+
+
 
 class VkVar(
 	val name       : String,

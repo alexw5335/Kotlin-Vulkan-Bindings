@@ -1,4 +1,4 @@
-package scraper.kvb.codegen.vulkan.xml
+package kvb.codegen.vulkan.xml
 
 import java.nio.file.Files
 import java.nio.file.Path

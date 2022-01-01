@@ -1,6 +1,6 @@
-package scraper.kvb.codegen.vulkan
+package kvb.codegen.vulkan
 
-import scraper.writer.procedural.Primitive
+import scraper.kvb.codegen.writer.procedural.Primitive
 import java.util.regex.Pattern
 
 object GenUtils {

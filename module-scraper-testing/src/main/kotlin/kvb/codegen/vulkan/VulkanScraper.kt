@@ -1,12 +1,12 @@
-package scraper.kvb.codegen.vulkan
+package kvb.codegen.vulkan
 
-import scraper.writer.procedural.Primitive
+import kvb.codegen.vulkan.*
+import scraper.kvb.codegen.writer.procedural.Primitive
 import scraper.kvb.codegen.vulkan.GenUtils.camelToSnakeCase
 import scraper.kvb.codegen.vulkan.naming.NamedList
 import scraper.kvb.codegen.vulkan.naming.Postfix
 import scraper.kvb.codegen.vulkan.naming.ShortNameList
 import scraper.kvb.codegen.vulkan.type.*
-import java.nio.file.Path
 
 class VulkanScraper(private val registry: ParsedRegistry) {
 
