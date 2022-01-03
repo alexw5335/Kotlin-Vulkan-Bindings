@@ -1,10 +1,28 @@
-package kvb.codegen.vulkan
+package codegen.vulkan.parse
 
-import kvb.codegen.vulkan.*
-import scraper.kvb.codegen.vulkan.naming.NamedList
-import scraper.kvb.codegen.vulkan.xml.XmlElement
+import codegen.vulkan.name.NamedList
+import codegen.vulkan.xml.XmlElement
+import codegen.vulkan.xml.XmlParser
+import java.nio.file.Path
 
-class VulkanParser(private val registry: XmlElement) {
+class VulkanParser private constructor(private val registry: XmlElement) {
+
+
+	companion object {
+		fun parse(registry: XmlElement) = VulkanParser(registry).parse()
+		fun parse(vkxmlPath: Path) = parse(XmlParser.parse(vkxmlPath))
+	}
+
+
+
+	private class ScrapeException(message: String) : RuntimeException(message)
+
+	private fun err(message: String): Nothing = throw ScrapeException(message)
+
+	private fun err(message: String, element: XmlElement): Nothing = err("$message. element=$element")
+
+	private fun err(element: XmlElement): Nothing = err("invalid element: $element")
+
 
 
 	/*

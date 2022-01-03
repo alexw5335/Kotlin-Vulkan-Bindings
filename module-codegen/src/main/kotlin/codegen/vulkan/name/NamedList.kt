@@ -1,4 +1,4 @@
-package scraper.kvb.codegen.vulkan.naming
+package codegen.vulkan.name
 
 class NamedList<T : Named>(
 	private val map: MutableMap<String, T>

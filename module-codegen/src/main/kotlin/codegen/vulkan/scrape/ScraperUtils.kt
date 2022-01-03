@@ -1,9 +1,10 @@
-package kvb.codegen.vulkan
+package codegen.vulkan.scrape
 
-import scraper.kvb.codegen.writer.procedural.Primitive
+import codegen.vulkan.err
+import codegen.writer.Primitive
 import java.util.regex.Pattern
 
-object GenUtils {
+object ScraperUtils {
 
 
 	/*

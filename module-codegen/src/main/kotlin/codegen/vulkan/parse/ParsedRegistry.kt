@@ -1,7 +1,6 @@
-package kvb.codegen.vulkan
+package codegen.vulkan.parse
 
-import kvb.codegen.vulkan.*
-import scraper.kvb.codegen.vulkan.naming.NamedList
+import codegen.vulkan.name.NamedList
 
 class ParsedRegistry(
 	val providerElements : NamedList<ProviderElement>,

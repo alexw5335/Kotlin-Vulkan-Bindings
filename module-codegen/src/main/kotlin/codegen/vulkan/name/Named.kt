@@ -1,4 +1,4 @@
-package scraper.kvb.codegen.vulkan.naming
+package codegen.vulkan.name
 
 interface Named {
 

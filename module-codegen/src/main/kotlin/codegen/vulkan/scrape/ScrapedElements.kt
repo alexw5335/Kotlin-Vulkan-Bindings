@@ -1,29 +1,56 @@
-package kvb.codegen.vulkan
+package codegen.vulkan.scrape
 
-import kvb.codegen.writer.procedural.Primitive
-import scraper.kvb.codegen.vulkan.naming.Named
-import scraper.kvb.codegen.vulkan.naming.NamedList
+import codegen.vulkan.parse.Modifier
+import codegen.writer.Primitive
+import codegen.vulkan.name.Named
+import codegen.vulkan.name.NamedList
+import codegen.vulkan.parse.PlatformElement
 
 
 
-enum class CommandType {
-	INSTANCE, DEVICE, STANDALONE;
+sealed interface Provider {
+	val name      : String
+	val shouldGen : Boolean
+	val types     : NamedList<VkType>
+	val commands  : NamedList<Command>
 }
 
 
 
-class VkCommand(
+class Feature(
+	override val name      : String,
+	override val shouldGen : Boolean,
+	override val types     : NamedList<VkType>,
+	override val commands  : NamedList<Command>
+) : Provider
+
+
+
+class Extension(
+	override val name      : String,
+	override val shouldGen : Boolean,
+	override val types     : NamedList<VkType>,
+	override val commands  : NamedList<Command>,
+	val number             : Int,
+	val platform           : PlatformElement?,
+	val deprecatedBy       : String?,
+	val promotedTo         : String?,
+	val disabled           : Boolean,
+) : Provider
+
+
+
+class Command(
 	override val name : String,
 	val genName       : String,
 	val shouldGen     : Boolean,
-	val type          : CommandType,
 	val returnType    : VkType?,
-	val params        : List<VkVar>
+	val params        : List<Var>
 ) : Named
 
 
 
-class VkConstant(
+class Constant(
 	override val name : String,
 	val genName       : String,
 	val shouldGen     : Boolean,
@@ -60,7 +87,7 @@ class VkEnumEntry(
 
 
 
-class VkEnum(
+class EnumType(
 	override val name      : String,
 	override val genName   : String,
 	override val shouldGen : Boolean,
@@ -71,7 +98,7 @@ class VkEnum(
 
 
 
-class VkBitmask(
+class BitmaskType(
 	override val name      : String,
 	override val genName   : String,
 	override val shouldGen : Boolean,
@@ -82,7 +109,7 @@ class VkBitmask(
 
 
 
-class VkHandle(
+class HandleType(
 	override val name: String,
 	override val genName: String,
 	override val shouldGen: Boolean,
@@ -91,7 +118,7 @@ class VkHandle(
 
 
 
-class VkNativeType(
+class NativeType(
 	override val name: String,
 	override val shouldGen: Boolean,
 	override val genName: String,
@@ -100,7 +127,7 @@ class VkNativeType(
 
 
 
-class VkPrimitiveType(
+class PrimitiveType(
 	override val name: String,
 	override val genName: String,
 	override val shouldGen: Boolean,
@@ -109,7 +136,7 @@ class VkPrimitiveType(
 
 
 
-class VkStruct(
+class StructType(
 	override val name: String,
 	override val genName: String,
 	override val shouldGen: Boolean,
@@ -117,11 +144,11 @@ class VkStruct(
 ) : VkType {
 
 
-	val members = ArrayList<VkVar>()
+	val members = ArrayList<Var>()
 
-	val pNext = ArrayList<VkStruct>()
+	val pNext = ArrayList<StructType>()
 
-	val extends = ArrayList<VkStruct>()
+	val extends = ArrayList<StructType>()
 
 	val sType get() = members.first().sType
 
@@ -131,7 +158,7 @@ class VkStruct(
 
 
 
-class VkUnusedType(override val name: String): VkType {
+class UnusedType(override val name: String): VkType {
 
 
 	override val genName = name
@@ -145,7 +172,7 @@ class VkUnusedType(override val name: String): VkType {
 
 
 
-class VkVar(
+class Var(
 	val name       : String,
 	val type       : VkType,
 	val optional   : Boolean,
@@ -241,14 +268,14 @@ class VkVar(
 	/**
 	 * The struct type that contains this variable.
 	 */
-	var struct: VkStruct? = null
+	var struct: StructType? = null
 
 	/**
 	 * If this variable should be null or zero. This is mainly used for unused pNext values and reserved flags.
 	 */
 	val mustBeNull get() = when {
 		// Reserved or empty flags
-		type is VkBitmask && type.enumName == null -> true
+		type is BitmaskType && type.enumName == null -> true
 
 		// pNext variables with no valid values
 		// Some pNext vars don't rely on the 'values' attribute, e.g. VkBaseOutStructure andVkBaseInStructure.
@@ -263,7 +290,7 @@ class VkVar(
 	/**
 	 * The variable that [varLen] refers to. Will only be initialised if [varLen] is not null and if this is a struct.
 	 */
-	lateinit var varLenVariable: VkVar
+	lateinit var varLenVariable: Var
 
 
 }

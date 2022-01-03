@@ -1,7 +1,7 @@
-package kvb.codegen.vulkan
+package codegen.vulkan.parse
 
-import scraper.kvb.codegen.vulkan.naming.Named
-import scraper.kvb.codegen.vulkan.naming.NamedList
+import codegen.vulkan.name.Named
+import codegen.vulkan.name.NamedList
 
 
 

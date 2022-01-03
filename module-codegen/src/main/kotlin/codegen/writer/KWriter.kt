@@ -1,6 +1,5 @@
-package kvb.codegen.writer
+package codegen.writer
 
-import scraper.kvb.codegen.writer.procedural.KFunction
 import java.io.Writer
 import java.nio.file.Files
 import java.nio.file.Path

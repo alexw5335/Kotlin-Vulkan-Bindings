@@ -1,23 +1,30 @@
-package kvb.codegen.vulkan
+package codegen.vulkan.scrape
 
-import kvb.codegen.vulkan.*
-import scraper.kvb.codegen.writer.procedural.Primitive
-import scraper.kvb.codegen.vulkan.GenUtils.camelToSnakeCase
-import scraper.kvb.codegen.vulkan.naming.NamedList
-import scraper.kvb.codegen.vulkan.naming.Postfix
-import scraper.kvb.codegen.vulkan.naming.ShortNameList
-import scraper.kvb.codegen.vulkan.type.*
+import codegen.vulkan.scrape.ScraperUtils.camelToSnakeCase
+import codegen.writer.Primitive
+import codegen.vulkan.name.NamedList
+import codegen.vulkan.name.Postfix
+import codegen.vulkan.name.ShortNameList
+import codegen.vulkan.parse.*
+import java.nio.file.Path
 
-class VulkanScraper(private val registry: ParsedRegistry) {
+class VulkanScraper private constructor(private val registry: ParsedRegistry) {
+
+
+	companion object {
+		fun scrape(registry: ParsedRegistry) = VulkanScraper(registry).scrape()
+		fun scrape(vkxmlPath: Path) = scrape(VulkanParser.parse(vkxmlPath))
+	}
+
 
 
 	private val shortNames = ShortNameList()
 
 	private val types = NamedList<VkType>()
 
-	private val commands = NamedList<VkCommand>()
+	private val commands = NamedList<Command>()
 
-	private val constants = NamedList<VkConstant>()
+	private val constants = NamedList<Constant>()
 
 
 
@@ -26,8 +33,8 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 		convertElements()
 
 		val genTypes = ArrayList<VkType>()
-		val genCommands = ArrayList<VkCommand>()
-		val genConstants = ArrayList<VkConstant>()
+		val genCommands = ArrayList<Command>()
+		val genConstants = ArrayList<Constant>()
 
 		for(provider in registry.providerElements) {
 			if(!provider.shouldGen) continue
@@ -40,6 +47,10 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 				if(commandElement.shouldGen)
 					genCommands.add(commands.fromName(commandElement.name))
 		}
+
+		for(constant in constants)
+			if(constant.shouldGen)
+				genConstants.add(constant)
 
 		return ScrapedRegistry(genTypes, genCommands, genConstants)
 	}
@@ -195,7 +206,8 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 
 
 
-	private val EnumElement.convertEnum: VkType get() {
+	private val EnumElement.convertEnum: VkType
+		get() {
 		val prefix = prefix
 
 		val entries = NamedList<VkEnumEntry>()
@@ -205,15 +217,17 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 			value(this.entries.first { it.name == entry.alias })
 
 		for(entry in this.entries) {
-			entries.add(VkEnumEntry(
+			entries.add(
+				VkEnumEntry(
 				entry.name,
 				enumEntryGenName(entry.name, prefix),
 				value(entry),
 				entry.shouldGen
-			))
+			)
+			)
 		}
 
-		return VkEnum(
+		return EnumType(
 			name,
 			genName,
 			shouldGen,
@@ -225,10 +239,11 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 
 
 
-	private val TypeElement.convert: VkType get() = when(this) {
+	private val TypeElement.convert: VkType
+		get() = when(this) {
 		is EnumElement -> convertEnum
 
-		is BitmaskElement -> VkBitmask(
+		is BitmaskElement -> BitmaskType(
 			name,
 			genName,
 			shouldGen,
@@ -237,46 +252,47 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 			enumName
 		)
 
-		is StructElement -> VkStruct(
+		is StructElement -> StructType(
 			name,
 			genName,
 			shouldGen,
 			Primitive.LONG
 		)
 
-		is HandleElement -> VkHandle(
+		is HandleElement -> HandleType(
 			name,
 			genName,
 			shouldGen,
 			Primitive.LONG
 		)
 
-		is PrimitiveElement -> VkPrimitiveType(
+		is PrimitiveElement -> PrimitiveType(
 			name,
 			name,
 			shouldGen,
-			GenUtils.resolvePrimitive(primitiveName)
+			ScraperUtils.resolvePrimitive(primitiveName)
 		)
 
-		is NativeElement -> VkNativeType(
+		is NativeElement -> NativeType(
 			name,
 			shouldGen,
-			GenUtils.resolveNative(name)
+			ScraperUtils.resolveNative(name).kName,
+			ScraperUtils.resolveNative(name)
 		)
 
-		is FuncPointerElement -> VkPrimitiveType(
+		is FuncPointerElement -> PrimitiveType(
 			name,
 			"Long",
 			shouldGen,
 			Primitive.LONG
 		)
 
-		else -> VkUnusedType(name)
+		else -> UnusedType(name)
 	}
 
 
 
-	private val VarElement.convert get() = VkVar(
+	private val VarElement.convert get() = Var(
 		name     = name,
 		type     = types.fromName(type),
 		optional = optional,
@@ -286,12 +302,12 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 		altLen   = altLen,
 		varLen   = varLen,
 		constLen = constLen,
-		sType    = sType?.let { (types.fromName(type) as VkEnum).entries.fromName(it).value }
+		sType    = sType?.let { (types.fromName(type) as EnumType).entries.fromName(it).value }
 	)
 
 
 
-	private val CommandElement.convert get() = VkCommand(
+	private val CommandElement.convert get() = Command(
 		name       = name,
 		genName    = shortNames.get(name),
 		shouldGen  = alias == null,
@@ -301,7 +317,7 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 
 
 
-	private val ConstantElement.convert get() = VkConstant(
+	private val ConstantElement.convert get() = Constant(
 		name      = name,
 		genName   = name,
 		shouldGen = !aliased,
@@ -317,7 +333,7 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 
 		// Populate late-init variables
 		for(type in types) {
-			if(type is VkStruct) {
+			if(type is StructType) {
 				val structElement = registry.typeElements.fromName(type.name) as StructElement
 
 				for(varElement in structElement.members) {
@@ -325,7 +341,7 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 				}
 
 				for(extendsName in structElement.extends) {
-					val extends = types.fromName(extendsName) as VkStruct
+					val extends = types.fromName(extendsName) as StructType
 					extends.pNext.add(type)
 					type.extends.add(extends)
 				}
@@ -333,7 +349,7 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 				for(m in type.members) {
 					m.struct = type
 
-					if(m.isArray && m.type is VkStruct)
+					if(m.isArray && m.type is StructType)
 						m.type.requiresBuffer = true
 
 					if(m.varLen != null)
@@ -348,8 +364,11 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 		// Populate late-init variables
 		for(command in commands)
 			for(p in command.params)
-				if(p.isArray && p.type is VkStruct)
+				if(p.isArray && p.type is StructType)
 					p.type.requiresBuffer = true
+
+		for(constant in registry.constantElements)
+			constants.add(constant.convert)
 	}
 
 

@@ -44,6 +44,8 @@ package kvb.core.memory
  *     } catch(e: Exception) {
  *         stack.reset()
  *     }
+ *
+ *     // TODO: Add memory-safe block functions
  */
 class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 

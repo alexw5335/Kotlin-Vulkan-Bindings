@@ -1,4 +1,4 @@
-package kvb.codegen.vulkan.xml
+package codegen.vulkan.xml
 
 import java.nio.file.Files
 import java.nio.file.Path

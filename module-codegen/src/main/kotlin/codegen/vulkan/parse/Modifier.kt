@@ -1,4 +1,4 @@
-package kvb.codegen.vulkan
+package codegen.vulkan.parse
 
 /**
  * A hack to identify modifiers in front of Vulkan parameters. If the Vulkan spec is updated with new combinations of

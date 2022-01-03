@@ -1,4 +1,4 @@
-package kvb.codegen.vulkan.xml
+package codegen.vulkan.xml
 
 class XmlElement(
 	val type     : String,
