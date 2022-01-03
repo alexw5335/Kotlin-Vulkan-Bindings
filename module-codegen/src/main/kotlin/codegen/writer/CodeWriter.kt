@@ -1,4 +1,4 @@
-package kvb.codegen.writer
+package codegen.writer
 
 import java.io.Writer
 import java.nio.file.Files
