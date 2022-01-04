@@ -96,7 +96,7 @@ class VulkanParser private constructor(private val registry: XmlElement) {
 		val name = element["name"] ?: element.child("name").text ?: err(element)
 
 		element["alias"]?.let {
-			return TypeAliasElement(name, it)
+			return AliasedTypeElement(name, it)
 		}
 
 		when(val category = element["category"]) {
@@ -139,6 +139,9 @@ class VulkanParser private constructor(private val registry: XmlElement) {
 		}
 
 		val requires = element["requires"]
+
+		if(name == "void")
+			return VoidTypeElement
 
 		if(requires == "vk_platform" || name == "int")
 			return PrimitiveElement(name, name)
@@ -282,7 +285,7 @@ class VulkanParser private constructor(private val registry: XmlElement) {
 			number       = number,
 			platform     = element["platform"]?.let(platformElements::fromName),
 			deprecatedBy = element["deprecatedby"],
-			promotedTo   = element["promotedTo"],
+			promotedTo   = element["promotedto"],
 			disabled     = element["supported"] == "disabled",
 			types        = types,
 			commands     = commands

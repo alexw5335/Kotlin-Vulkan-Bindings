@@ -1,11 +1,11 @@
 package codegen.vulkan.scrape
 
-import codegen.vulkan.scrape.ScraperUtils.camelToSnakeCase
-import codegen.writer.Primitive
 import codegen.vulkan.name.NamedList
 import codegen.vulkan.name.Postfix
 import codegen.vulkan.name.ShortNameList
 import codegen.vulkan.parse.*
+import codegen.vulkan.scrape.ScraperUtils.camelToSnakeCase
+import codegen.writer.Primitive
 import java.nio.file.Path
 
 class VulkanScraper private constructor(private val registry: ParsedRegistry) {
@@ -26,15 +26,18 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 
 	private val constants = NamedList<Constant>()
 
+	private val providers = NamedList<Provider>()
+
 
 
 	fun scrape() : ScrapedRegistry {
 		populateShortNames()
 		convertElements()
 
-		val genTypes = ArrayList<VkType>()
-		val genCommands = ArrayList<Command>()
-		val genConstants = ArrayList<Constant>()
+		val genTypes     = NamedList<VkType>()
+		val genCommands  = NamedList<Command>()
+		val genConstants = NamedList<Constant>()
+		val genProviders = NamedList<Provider>()
 
 		for(provider in registry.providerElements) {
 			if(!provider.shouldGen) continue
@@ -52,7 +55,11 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 			if(constant.shouldGen)
 				genConstants.add(constant)
 
-		return ScrapedRegistry(genTypes, genCommands, genConstants)
+		for(provider in providers)
+			if(provider.shouldGen)
+				genProviders.add(provider)
+
+		return ScrapedRegistry(genTypes, genCommands, genConstants, genProviders)
 	}
 
 
@@ -103,12 +110,13 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 
 
 	private val ProviderElement.shouldGen get() =
-		this !is ExtensionElement || (deprecatedBy == null && !disabled && promotedTo != "VK_VERSION_1_1")
+		this !is ExtensionElement ||
+			(deprecatedBy == null && !disabled && (promotedTo == null || promotedTo == "VK_VERSION_1_2"))
 
 
 
 	private val CommandElement.shouldGen get() =
-		alias != null && name != "vkGetInstanceProcAddr"
+		alias == null && name != "vkGetInstanceProcAddr"
 
 
 
@@ -119,9 +127,9 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 
 	private val TypeElement.shouldGen get() = when(this) {
 		is BitmaskElement -> enumName != null && enumNotEmpty(enumName)
-		is EnumElement -> name != "VkStructureType" && enumNotEmpty(name)
-		is StructElement -> true
-		is HandleElement -> true
+		is EnumElement    -> name != "VkStructureType" && enumNotEmpty(name)
+		is StructElement  -> true
+		is HandleElement  -> true
 		else              -> false
 	}
 
@@ -206,25 +214,21 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 
 
 
-	private val EnumElement.convertEnum: VkType
-		get() {
+	private val EnumElement.convertEnum: VkType get() {
 		val prefix = prefix
-
-		val entries = NamedList<VkEnumEntry>()
+		val entries = NamedList<EnumEntry>()
 
 		fun value(entry: EnumEntryElement): String =
 			entry.value ?:
 			value(this.entries.first { it.name == entry.alias })
 
 		for(entry in this.entries) {
-			entries.add(
-				VkEnumEntry(
-				entry.name,
-				enumEntryGenName(entry.name, prefix),
-				value(entry),
-				entry.shouldGen
-			)
-			)
+			entries.add(EnumEntry(
+				name      = entry.name,
+				genName   = enumEntryGenName(entry.name, prefix),
+				value     = value(entry),
+				shouldGen = entry.shouldGen
+			))
 		}
 
 		return EnumType(
@@ -233,14 +237,14 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 			shouldGen,
 			Primitive.integer(is64Bit),
 			is64Bit,
+			isFlagBits,
 			entries
 		)
 	}
 
 
 
-	private val TypeElement.convert: VkType
-		get() = when(this) {
+	private val TypeElement.convert: VkType get() = when(this) {
 		is EnumElement -> convertEnum
 
 		is BitmaskElement -> BitmaskType(
@@ -256,7 +260,8 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 			name,
 			genName,
 			shouldGen,
-			Primitive.LONG
+			Primitive.LONG,
+			isUnion
 		)
 
 		is HandleElement -> HandleType(
@@ -268,15 +273,15 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 
 		is PrimitiveElement -> PrimitiveType(
 			name,
-			name,
+			ScraperUtils.resolvePrimitive(primitiveName).kName,
 			shouldGen,
 			ScraperUtils.resolvePrimitive(primitiveName)
 		)
 
 		is NativeElement -> NativeType(
 			name,
-			shouldGen,
 			ScraperUtils.resolveNative(name).kName,
+			shouldGen,
 			ScraperUtils.resolveNative(name)
 		)
 
@@ -287,6 +292,10 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 			Primitive.LONG
 		)
 
+		is VoidTypeElement -> VoidType
+
+		is AliasedTypeElement -> AliasedType(name, alias)
+
 		else -> UnusedType(name)
 	}
 
@@ -294,7 +303,7 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 
 	private val VarElement.convert get() = Var(
 		name     = name,
-		type     = types.fromName(type),
+		type     = types.fromName(type).resolveAlias,
 		optional = optional,
 		modifier = modifier,
 		index    = index,
@@ -304,6 +313,13 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 		constLen = constLen,
 		sType    = sType?.let { (types.fromName(type) as EnumType).entries.fromName(it).value }
 	)
+
+
+
+	private val VkType.resolveAlias: VkType get() = if(this is AliasedType)
+		types.fromName(alias).resolveAlias
+	else
+		this
 
 
 
@@ -323,6 +339,45 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 		shouldGen = !aliased,
 		value     = value,
 		aliased   = aliased
+	)
+
+
+
+	private val NamedList<TypeElement>.convertTypes get() = NamedList<VkType>().also {
+		for(element in this)
+			if(element.shouldGen)
+				it.add(types.fromName(element.name))
+	}
+
+
+
+	private val NamedList<CommandElement>.convertCommands get() = NamedList<Command>().also {
+		for(element in this)
+			if(element.shouldGen)
+				it.add(commands.fromName(element.name))
+	}
+
+
+
+	private val FeatureElement.convert get() = Feature(
+		name      = name,
+		shouldGen = true,
+		types     = types.convertTypes,
+		commands  = commands.convertCommands
+	)
+
+
+
+	private val ExtensionElement.convert get() = Extension(
+		name         = name,
+		shouldGen    = shouldGen,
+		types        = types.convertTypes,
+		commands     = commands.convertCommands,
+		number       = number,
+		platform     = platform,
+		deprecatedBy = deprecatedBy,
+		promotedTo   = promotedTo,
+		disabled     = disabled
 	)
 
 
@@ -369,6 +424,11 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 
 		for(constant in registry.constantElements)
 			constants.add(constant.convert)
+
+		for(provider in registry.providerElements) when(provider) {
+			is FeatureElement   -> providers.add(provider.convert)
+			is ExtensionElement -> providers.add(provider.convert)
+		}
 	}
 
 

@@ -839,19 +839,19 @@ JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_queuePresent(JNIEnv* env, jobjec
 	return (jint) ((PFN_vkQueuePresentKHR) address) ((VkQueue) queue, (const VkPresentInfoKHR*) pPresentInfo);
 }
 
-JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_vkGetDeviceGroupPresentCapabilitiesKHR(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pDeviceGroupPresentCapabilities) {
+JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_getDeviceGroupPresentCapabilities(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pDeviceGroupPresentCapabilities) {
 	return (jint) ((PFN_vkGetDeviceGroupPresentCapabilitiesKHR) address) ((VkDevice) device, (VkDeviceGroupPresentCapabilitiesKHR*) pDeviceGroupPresentCapabilities);
 }
 
-JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_vkGetDeviceGroupSurfacePresentModesKHR(JNIEnv* env, jobject obj, jlong address, jlong device, jlong surface, jlong pModes) {
+JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_getDeviceGroupSurfacePresentModes(JNIEnv* env, jobject obj, jlong address, jlong device, jlong surface, jlong pModes) {
 	return (jint) ((PFN_vkGetDeviceGroupSurfacePresentModesKHR) address) ((VkDevice) device, (VkSurfaceKHR) surface, (VkDeviceGroupPresentModeFlagsKHR*) pModes);
 }
 
-JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_vkGetPhysicalDevicePresentRectanglesKHR(JNIEnv* env, jobject obj, jlong address, jlong physicalDevice, jlong surface, jlong pRectCount, jlong pRects) {
+JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_getPhysicalDevicePresentRectangles(JNIEnv* env, jobject obj, jlong address, jlong physicalDevice, jlong surface, jlong pRectCount, jlong pRects) {
 	return (jint) ((PFN_vkGetPhysicalDevicePresentRectanglesKHR) address) ((VkPhysicalDevice) physicalDevice, (VkSurfaceKHR) surface, (uint32_t*) pRectCount, (VkRect2D*) pRects);
 }
 
-JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_vkAcquireNextImage2KHR(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pAcquireInfo, jlong pImageIndex) {
+JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_acquireNextImage2(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pAcquireInfo, jlong pImageIndex) {
 	return (jint) ((PFN_vkAcquireNextImage2KHR) address) ((VkDevice) device, (const VkAcquireNextImageInfoKHR*) pAcquireInfo, (uint32_t*) pImageIndex);
 }
 
@@ -984,32 +984,6 @@ JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_getPhysicalDeviceWin32Presentati
 }
 
 #endif
-
-
-
-// Provided by VK_EXT_debug_marker
-
-
-
-JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_debugMarkerSetObjectTag(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pTagInfo) {
-	return (jint) ((PFN_vkDebugMarkerSetObjectTagEXT) address) ((VkDevice) device, (const VkDebugMarkerObjectTagInfoEXT*) pTagInfo);
-}
-
-JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_debugMarkerSetObjectName(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pNameInfo) {
-	return (jint) ((PFN_vkDebugMarkerSetObjectNameEXT) address) ((VkDevice) device, (const VkDebugMarkerObjectNameInfoEXT*) pNameInfo);
-}
-
-JNIEXPORT void JNICALL Java_kvb_vulkan_Commands_cmdDebugMarkerBegin(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong pMarkerInfo) {
-	((PFN_vkCmdDebugMarkerBeginEXT) address) ((VkCommandBuffer) commandBuffer, (const VkDebugMarkerMarkerInfoEXT*) pMarkerInfo);
-}
-
-JNIEXPORT void JNICALL Java_kvb_vulkan_Commands_cmdDebugMarkerEnd(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer) {
-	((PFN_vkCmdDebugMarkerEndEXT) address) ((VkCommandBuffer) commandBuffer);
-}
-
-JNIEXPORT void JNICALL Java_kvb_vulkan_Commands_cmdDebugMarkerInsert(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong pMarkerInfo) {
-	((PFN_vkCmdDebugMarkerInsertEXT) address) ((VkCommandBuffer) commandBuffer, (const VkDebugMarkerMarkerInfoEXT*) pMarkerInfo);
-}
 
 
 
@@ -1193,28 +1167,6 @@ JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_createStreamDescriptorSurface(JN
 
 
 
-// Provided by VK_KHR_device_group
-
-
-
-JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_vkGetDeviceGroupPresentCapabilitiesKHR(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pDeviceGroupPresentCapabilities) {
-	return (jint) ((PFN_vkGetDeviceGroupPresentCapabilitiesKHR) address) ((VkDevice) device, (VkDeviceGroupPresentCapabilitiesKHR*) pDeviceGroupPresentCapabilities);
-}
-
-JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_vkGetDeviceGroupSurfacePresentModesKHR(JNIEnv* env, jobject obj, jlong address, jlong device, jlong surface, jlong pModes) {
-	return (jint) ((PFN_vkGetDeviceGroupSurfacePresentModesKHR) address) ((VkDevice) device, (VkSurfaceKHR) surface, (VkDeviceGroupPresentModeFlagsKHR*) pModes);
-}
-
-JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_vkGetPhysicalDevicePresentRectanglesKHR(JNIEnv* env, jobject obj, jlong address, jlong physicalDevice, jlong surface, jlong pRectCount, jlong pRects) {
-	return (jint) ((PFN_vkGetPhysicalDevicePresentRectanglesKHR) address) ((VkPhysicalDevice) physicalDevice, (VkSurfaceKHR) surface, (uint32_t*) pRectCount, (VkRect2D*) pRects);
-}
-
-JNIEXPORT jint JNICALL Java_kvb_vulkan_Commands_vkAcquireNextImage2KHR(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pAcquireInfo, jlong pImageIndex) {
-	return (jint) ((PFN_vkAcquireNextImage2KHR) address) ((VkDevice) device, (const VkAcquireNextImageInfoKHR*) pAcquireInfo, (uint32_t*) pImageIndex);
-}
-
-
-
 // Provided by VK_NN_vi_surface
 
 
@@ -1301,7 +1253,7 @@ JNIEXPORT void JNICALL Java_kvb_vulkan_Commands_cmdPushDescriptorSet(JNIEnv* env
 	((PFN_vkCmdPushDescriptorSetKHR) address) ((VkCommandBuffer) commandBuffer, (VkPipelineBindPoint) pipelineBindPoint, (VkPipelineLayout) layout, (uint32_t) set, (uint32_t) descriptorWriteCount, (const VkWriteDescriptorSet*) pDescriptorWrites);
 }
 
-JNIEXPORT void JNICALL Java_kvb_vulkan_Commands_vkCmdPushDescriptorSetWithTemplateKHR(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong descriptorUpdateTemplate, jlong layout, jint set, jlong pData) {
+JNIEXPORT void JNICALL Java_kvb_vulkan_Commands_cmdPushDescriptorSetWithTemplate(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong descriptorUpdateTemplate, jlong layout, jint set, jlong pData) {
 	((PFN_vkCmdPushDescriptorSetWithTemplateKHR) address) ((VkCommandBuffer) commandBuffer, (VkDescriptorUpdateTemplate) descriptorUpdateTemplate, (VkPipelineLayout) layout, (uint32_t) set, (const void*) pData);
 }
 
@@ -1317,16 +1269,6 @@ JNIEXPORT void JNICALL Java_kvb_vulkan_Commands_cmdBeginConditionalRendering(JNI
 
 JNIEXPORT void JNICALL Java_kvb_vulkan_Commands_cmdEndConditionalRendering(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer) {
 	((PFN_vkCmdEndConditionalRenderingEXT) address) ((VkCommandBuffer) commandBuffer);
-}
-
-
-
-// Provided by VK_KHR_descriptor_update_template
-
-
-
-JNIEXPORT void JNICALL Java_kvb_vulkan_Commands_vkCmdPushDescriptorSetWithTemplateKHR(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong descriptorUpdateTemplate, jlong layout, jint set, jlong pData) {
-	((PFN_vkCmdPushDescriptorSetWithTemplateKHR) address) ((VkCommandBuffer) commandBuffer, (VkDescriptorUpdateTemplate) descriptorUpdateTemplate, (VkPipelineLayout) layout, (uint32_t) set, (const void*) pData);
 }
 
 

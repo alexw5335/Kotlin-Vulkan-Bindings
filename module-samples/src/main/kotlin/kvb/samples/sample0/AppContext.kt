@@ -91,10 +91,10 @@ class AppContext(window: WinApiWindow) {
 
 	private fun createInstance() = Vulkan.createInstance(
 		appName       = "My app",
-		appVersion    = VkVersion(1, 0, 0),
+		appVersion    = Version(1, 0, 0),
 		engineName    = "My engine",
-		engineVersion = VkVersion(1, 0, 0),
-		apiVersion    = VkVersion(1, 2, 0),
+		engineVersion = Version(1, 0, 0),
+		apiVersion    = Version(1, 2, 0),
 		layers        = layers,
 		extensions    = extensions
 	)

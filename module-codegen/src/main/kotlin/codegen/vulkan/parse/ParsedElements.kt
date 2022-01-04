@@ -151,10 +151,16 @@ class FuncPointerElement(
 
 
 
-class TypeAliasElement(
+class AliasedTypeElement(
 	override val name: String,
 	val alias: String
 ) : TypeElement
+
+
+
+object VoidTypeElement : TypeElement {
+	override val name = "void"
+}
 
 
 

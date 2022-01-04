@@ -5,11 +5,12 @@ import codegen.writer.Primitive
 import codegen.vulkan.name.Named
 import codegen.vulkan.name.NamedList
 import codegen.vulkan.parse.PlatformElement
+import kvb.core.struct.StructLayout
+import kvb.core.struct.StructLayoutBuilder
 
 
 
-sealed interface Provider {
-	val name      : String
+sealed interface Provider : Named {
 	val shouldGen : Boolean
 	val types     : NamedList<VkType>
 	val commands  : NamedList<Command>
@@ -78,7 +79,7 @@ sealed interface VkType : Named {
 
 
 
-class VkEnumEntry(
+class EnumEntry(
 	override val name : String,
 	val genName       : String,
 	val value         : String,
@@ -93,7 +94,8 @@ class EnumType(
 	override val shouldGen : Boolean,
 	override val primitive : Primitive,
 	val is64Bit            : Boolean,
-	val entries            : NamedList<VkEnumEntry>
+	val isFlagBits         : Boolean,
+	val entries            : NamedList<EnumEntry>
 ) : VkType
 
 
@@ -120,8 +122,8 @@ class HandleType(
 
 class NativeType(
 	override val name: String,
-	override val shouldGen: Boolean,
 	override val genName: String,
+	override val shouldGen: Boolean,
 	override val primitive: Primitive
 ) : VkType
 
@@ -140,7 +142,8 @@ class StructType(
 	override val name: String,
 	override val genName: String,
 	override val shouldGen: Boolean,
-	override val primitive: Primitive
+	override val primitive: Primitive,
+	val isUnion: Boolean
 ) : VkType {
 
 
@@ -154,12 +157,42 @@ class StructType(
 
 	var requiresBuffer = false
 
+	val layout64: StructLayout by lazy {
+		StructLayoutBuilder().build(isUnion) {
+			for(m in members) {
+				when {
+					m.isPointer                        -> member(8)
+					m.isArray && m.type is StructType  -> array(m.type.layout64, m.constLen!!)
+					m.isArray                          -> array(m.type.primitive.size, m.constLen!!)
+					m.type is StructType               -> member(m.type.layout64)
+					else                               -> member(m.type.primitive.size)
+				}
+			}
+		}
+	}
+
+	val size64: Int by lazy { layout64.size }
+
+
 }
 
 
 
-class UnusedType(override val name: String): VkType {
+object VoidType : VkType {
 
+	override val name = "void"
+
+	override val genName = "Long"
+
+	override val shouldGen = false
+
+	override val primitive = Primitive.LONG
+
+}
+
+
+
+class AliasedType(override val name: String, val alias: String) : VkType {
 
 	override val genName = name
 
@@ -167,6 +200,17 @@ class UnusedType(override val name: String): VkType {
 
 	override val primitive = Primitive.LONG
 
+}
+
+
+
+class UnusedType(override val name: String) : VkType {
+
+	override val genName = name
+
+	override val shouldGen = false
+
+	override val primitive = Primitive.LONG
 
 }
 

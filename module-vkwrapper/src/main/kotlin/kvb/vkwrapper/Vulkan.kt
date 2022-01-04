@@ -46,14 +46,14 @@ object Vulkan {
 	 * Convenience implementation of vkCreateInstance.
 	 */
 	fun createInstance(
-		appName       : String         = "app",
-		appVersion    : VkVersion      = VkVersion(1, 0, 0),
-		engineName    : String         = "engine",
-		engineVersion : VkVersion      = VkVersion(1, 0, 0),
-		apiVersion    : VkVersion      = instanceVersion,
-		layers        : List<String>   = emptyList(),
-		extensions    : List<String>   = emptyList(),
-		stack         : MemStack       = MemStacks.default
+		appName       : String       = "app",
+		appVersion    : Version      = Version(1, 0, 0),
+		engineName    : String       = "engine",
+		engineVersion : Version      = Version(1, 0, 0),
+		apiVersion    : Version      = instanceVersion,
+		layers        : List<String> = emptyList(),
+		extensions    : List<String> = emptyList(),
+		stack         : MemStack     = MemStacks.default
 	) = stack.get {
 		val appInfo = ApplicationInfo {
 			it.applicationName 		= encodeUtf8NT(appName)
@@ -93,7 +93,7 @@ object Vulkan {
 	fun instanceVersion(stack: MemStack = MemStacks.default) = stack.get {
 		val version = mallocInt()
 		StandaloneCommands.enumerateInstanceVersion(version).check()
-		VkVersion(version.value)
+		Version(version.value)
 	}
 
 

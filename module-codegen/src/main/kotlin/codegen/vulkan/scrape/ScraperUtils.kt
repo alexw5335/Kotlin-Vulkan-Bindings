@@ -1,6 +1,5 @@
 package codegen.vulkan.scrape
 
-import codegen.vulkan.err
 import codegen.writer.Primitive
 import java.util.regex.Pattern
 
@@ -64,7 +63,8 @@ object ScraperUtils {
 	/**
 	 * Resolves a C primitive type by its [name], returning a JVM [Primitive] representation.
 	 */
-	fun resolvePrimitive(name: String) = primitiveMap[name] ?: err("Unrecognised primitive: $name")
+	fun resolvePrimitive(name: String) = primitiveMap[name]
+		?: throw NoSuchElementException("Unrecognised primitive: $name")
 
 
 
