@@ -13,15 +13,44 @@ class DescriptorSetBuilder(
 ) {
 
 	/*
-	vkCmdBindDescriptorSets
-	    - DescriptorSet[]
-	        - DescriptorSetLayout[]
-	            - DescriptorSetLayoutBinding[]
 
-	 Descriptor sets
+	Descriptor sets can be bound/updated in bulk for potentially better perfomance.
+
+	- PipelineLayoutCreateInfo
+	    - DescriptorSetLayout[]
+
+	- cmdBindDescriptorSets / updateDescriptorSets
+	    - DescriptorSet[]
+	        - DescriptorSetLayout
+	            - DescriptorSetLayoutBinding[]
+			- WriteDescriptorSet
+				- DescriptorBufferInfo
+				- DescriptorImageInfo
+			- CopyDescriptorSet
+
+	- DescriptorSet is a 'set' of descriptors.
+	- A descriptor describes a resource that a shader can access.
+	- A DescriptorSet is bound to an index. Frequently used sets should
+	occupy specific indices so that they don't have to be swapped out often.
+	- The index of a descriptor set can be explicated in a shader using
+	layout(binding = a, set = b). If the set index is not given, then it defaults
+	to 0.
+	- The 'count' member of DescriptorSetLayoutBinding is used for array descriptors.
+
+
+	layout(set=0, binding=0) uniform myUniform {
+		vec2 pos;
+		vec2 rotation;
+	};
+
+	layout(set=0, binding=1) texture2D myTexture;
+
+	layout(set=1, binding=0) texture2D myTexture2;
+
+	Each DescriptorSet has a SINGLE DescriptorSetLayout.
 	 */
 
-	val layouts = ArrayList<DescriptorSetLayout>()
+
 
 	val bindings = DirectList(stack) { DescriptorSetLayoutBinding(it) { } }
 
@@ -60,23 +89,8 @@ class DescriptorSetBuilder(
 
 
 
-	fun layout(block: () -> Unit): DescriptorSetLayout {
-		bindings.reset()
-		block()
-
-		val layout = pool.device.createDescriptorSetLayout(stack.DescriptorSetLayoutCreateInfo {
-			it.pBindings = bindings.address
-			it.bindingCount = bindings.size
-		}, stack = stack)
-
-		bindings.reset()
-		layouts.add(layout)
-		return layout
-	}
-
-
-
 	fun build(): DescriptorSet {
+
 		val set = pool.allocateDescriptorSet(layouts)
 
 		if(writes.size > 0 || copies.size > 0) {

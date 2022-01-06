@@ -2,7 +2,6 @@ package kvb.vkwrapper.handle
 
 import kvb.core.memory.MemStack
 import kvb.core.memory.MemStacks
-import kvb.vkwrapper.DebugUtils
 import kvb.vulkan.*
 
 class Instance(address: Long) : InstanceH(address) {
@@ -60,7 +59,7 @@ class Instance(address: Long) : InstanceH(address) {
 	/**
 	 * Implementation of vkCreateDebugUtilsMessengerEXT.
 	 */
-	fun createMessenger(info: DebugUtilsMessengerCreateInfo, stack: MemStack = MemStacks.default) = stack.get {
+	fun createDebugMessenger(info: DebugUtilsMessengerCreateInfo, stack: MemStack = MemStacks.default) = stack.get {
 		val messenger = mallocPointer()
 		commands.createDebugUtilsMessenger(info, null, messenger).check()
 		DebugUtilsMessenger(messenger.value, self)
@@ -69,15 +68,15 @@ class Instance(address: Long) : InstanceH(address) {
 
 
 	/**
-	 * Convenience version of vkCrateDebugUtilsMessengerEXT.
+	 * Convenience implementation of vkCrateDebugUtilsMessengerEXT.
 	 */
-	fun createMessenger(
-		callback	: Long 								= DebugUtils.defaultCallbackAddress(),
-		severities	: DebugUtilsMessageSeverityFlags 	= DebugUtilsMessageSeverityFlags { ERROR + WARNING },
-		types		: DebugUtilsMessageTypeFlags 		= DebugUtilsMessageTypeFlags { GENERAL + VALIDATION + PERFORMANCE },
+	fun createDebugMessenger(
+		callback	: Long,
+		severities	: DebugUtilsMessageSeverityFlags,
+		types		: DebugUtilsMessageTypeFlags,
 		stack       : MemStack = MemStacks.default
 	) = stack.get {
-		createMessenger(DebugUtilsMessengerCreateInfo {
+		createDebugMessenger(DebugUtilsMessengerCreateInfo {
 			it.messageSeverity = severities
 			it.messageType     = types
 			it.pfnUserCallback = callback

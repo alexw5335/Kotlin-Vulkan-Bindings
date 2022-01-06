@@ -86,6 +86,9 @@ object SampleShader : AppShader("sample") {
 
 	init {
 		MemStacks.with {
+			descriptorSet.updateUniformWrite(uniformBuffer, 0, 16L, binding = 0)
+			descriptorSet.updateUniformWrite(uniformBuffer2, 0L, 8L, binding = 1)
+
 			val writes = WriteDescriptorSet(2) { writes ->
 				writes[0].let { write ->
 					write.dstSet = descriptorSet

@@ -1,8 +1,7 @@
 package kvb.samples.sample0
 
-import kvb.core.memory.MemStacks
+import kvb.vkwrapper.DebugUtils
 import kvb.vkwrapper.Vulkan
-import kvb.vkwrapper.exception.VkCommandException
 import kvb.vkwrapper.handle.*
 import kvb.vkwrapper.shader.ShaderDirectory
 import kvb.vulkan.*
@@ -101,8 +100,13 @@ class AppContext(window: WinApiWindow) {
 
 
 
+	private fun createDebugMessenger() = instance.createDebugMessenger(
+		callback   = DebugUtils.defaultCallbackAddress(),
+		severities = DebugUtilsMessageSeverityFlags { WARNING + ERROR },
+		types      = DebugUtilsMessageTypeFlags { GENERAL + VALIDATION + PERFORMANCE }
+	)
 
-	private fun createDebugMessenger() = instance.createMessenger()
+
 
 	private fun choosePhysicalDevice() = instance.physicalDevices[0]
 
