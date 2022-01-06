@@ -15,14 +15,15 @@ private fun genVulkan() {
 		packageName = "kvb.vulkan"
 	)
 
-	generator.genConstants()
-	generator.genEnums()
-	generator.genStructs()
-	generator.genUtilClasses()
-	generator.genHandles()
-	generator.genStructAllocations()
-	generator.genCommandsKotlin()
-	generator.genCommandsC()
+	//generator.genConstants()
+	//generator.genEnums()
+	//generator.genStructs()
+	//generator.genUtilClasses()
+	//generator.genHandles()
+	//generator.genStructAllocations()
+	//generator.genCommandsKotlin()
+	//generator.genCommandsC()
+	generator.genCWrapper()
 }
 
 

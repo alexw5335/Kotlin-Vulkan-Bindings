@@ -35,7 +35,6 @@ class AppAllocator(
 
 	init {
 		bufferAllocator.memory.mapWhole()
-		imageAllocator.memory.mapWhole()
 	}
 
 

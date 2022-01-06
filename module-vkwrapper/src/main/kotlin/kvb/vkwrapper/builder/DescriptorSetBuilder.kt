@@ -12,6 +12,14 @@ class DescriptorSetBuilder(
 	private val stack: MemStack
 ) {
 
+	/*
+	vkCmdBindDescriptorSets
+	    - DescriptorSet[]
+	        - DescriptorSetLayout[]
+	            - DescriptorSetLayoutBinding[]
+
+	 Descriptor sets
+	 */
 
 	val layouts = ArrayList<DescriptorSetLayout>()
 

@@ -323,10 +323,26 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 
 
 
+	private val CommandElement.determineType: CommandType get() {
+		if(name == "vkGetDeviceProcAddr") return CommandType.INSTANCE
+
+		return when(params.first().type) {
+			"VkInstance"       -> CommandType.INSTANCE
+			"VkPhysicalDevice" -> CommandType.INSTANCE
+			"VkDevice"         -> CommandType.DEVICE
+			"VkQueue"          -> CommandType.DEVICE
+			"VkCommandBuffer"  -> CommandType.DEVICE
+			else               -> CommandType.STANDALONE
+		}
+	}
+
+
+
 	private val CommandElement.convert get() = Command(
 		name       = name,
 		genName    = shortNames.get(name),
 		shouldGen  = alias == null,
+		type       = determineType,
 		returnType = returnType?.let(types::fromName),
 		params     = params.map { it.convert }
 	)

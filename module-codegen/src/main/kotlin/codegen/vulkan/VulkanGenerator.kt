@@ -1113,4 +1113,163 @@ class VulkanGenerator(
 
 
 
+	/*
+	C wrapper generation (not part of bindings)
+	 */
+
+
+
+	private val Command.pfnName get() = "PFN_$name"
+
+	private val Command.wrapperName get() = "vk${genName.replaceFirstChar { it.uppercase() }}"
+
+	private val Command.addressName get() = "${wrapperName}_"
+
+
+
+	fun genCWrapper() = CWriter.writeHeader(cDirectory, "vkload") {
+		currentStyle = style(3)
+
+		multilineDeclaration("""
+			#pragma clang diagnostic push
+			#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+
+			#pragma once
+			
+			#define VK_NO_PROTOTYPES
+			
+			
+			
+			// Dynamic loading headers
+			#ifdef WIN32
+				#include <windef.h>
+				#include <winbase.h>
+			#else
+				#include <dlfcn.h>
+			#endif
+			
+			
+			
+			// Vulkan headers
+			#ifdef VK_USE_PLATFORM_WIN32_KHR
+				#include <vk_platform.h>
+				#include <vulkan_core.h>
+				#include <vulkan_win32.h>
+			#else
+				#include <vulkan.h>
+			#endif
+		
+			
+			
+			PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
+			PFN_vkCreateInstance vkCreateInstance;
+			PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
+			PFN_vkEnumerateInstanceLayerProperties vkEnumerateInstanceLayerProperties;
+			PFN_vkEnumerateInstanceVersion vkEnumerateInstanceVersion;
+			
+			
+			int loadVulkan() {
+			#ifdef WIN32
+				HMODULE module = LoadLibrary("vulkan-1.dll");
+				vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr) GetProcAddress(module, "vkGetInstanceProcAddr");
+			#elif defined(__APPLE__)
+				void* module = dlopen("libMoltenVK.dylib", RTLD_NOW | RTLD_LOCAL);
+				vkGetInstanceProcAddr = dlsym(module, "vkGetInstanceProcAddr");
+			#else
+				void* module = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+				vkGetInstanceProcAddr = dlsym(module, "vkGetInstanceProcAddr");
+			#endif
+				
+				if(vkGetInstanceProcAddr == NULL) return 0;
+				
+				vkCreateInstance = (PFN_vkCreateInstance) vkGetInstanceProcAddr(NULL, "vkCreateInstance");
+				vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties) vkGetInstanceProcAddr(NULL, "vkEnumerateInstanceExtensionProperties");
+				vkEnumerateInstanceLayerProperties = (PFN_vkEnumerateInstanceLayerProperties) vkGetInstanceProcAddr(NULL, "vkEnumerateInstanceLayerProperties");
+				vkEnumerateInstanceVersion = (PFN_vkEnumerateInstanceVersion) vkGetInstanceProcAddr(NULL, "vkEnumerateInstanceVersion");
+				
+				return 1;
+			}
+
+
+			
+			VkInstance gInstance;
+			VkPhysicalDevice gPhysicalDevice;
+			VkDevice gDevice;
+		""")
+
+
+		fun forEachCommand(spacing: Int = 0, block: Command.() -> Unit) {
+			for(p in registry.providers) {
+				if(p.commands.isEmpty()) continue
+
+				group("Provided by ${p.name}", spacing) {
+					if(p is Extension && p.platform != null)
+						ifdef(p.platform.define)
+
+					for(c in p.commands)
+						if(c.type != CommandType.STANDALONE)
+							block(c)
+
+					if(p is Extension && p.platform != null)
+						endif()
+				}
+			}
+		}
+
+		group("Global commands", 1) {
+			forEachCommand {
+				declaration("$pfnName $addressName;")
+			}
+		}
+
+		function("void loadInstanceCommands()") {
+			newline()
+			forEachCommand {
+				writeln("$addressName = ($pfnName) vkGetInstanceProcAddr(gInstance, \"$name\");")
+			}
+		}
+
+		function("void loadDeviceCommands()") {
+			newline()
+			forEachCommand {
+				writeln("$addressName = ($pfnName) vkGetDeviceProcAddr_(gDevice, \"$name\");")
+			}
+		}
+
+		forEachCommand(spacing = 1) {
+			var params = params.map { Pair(it.modifier.castName(it.type.name), it.name) }
+
+			val first = params[0].first
+
+			if(first == "VkInstance" || first == "VkDevice" || first == "VkPhysicalDevice") params = params.drop(1)
+
+			val cFunction = CFunction(
+				name       = wrapperName,
+				returnType = returnType?.name,
+				params     = params,
+				contents   = buildString {
+					if(returnType != null) append("return ")
+					append(addressName)
+					append('(')
+
+					when(first) {
+						"VkInstance"       -> { append("gInstance");       if (params.isNotEmpty()) append(", ") }
+						"VkPhysicalDevice" -> { append("gPhysicalDevice"); if (params.isNotEmpty()) append(", ") }
+						"VkDevice"         -> { append("gDevice");         if (params.isNotEmpty()) append(", ") }
+					}
+
+					for(i in params.indices) {
+						append(params[i].second)
+						if(i != params.lastIndex) append(", ")
+					}
+
+					append(");")
+				}
+			)
+
+			function(cFunction)
+		}
+	}
+
+
 }

@@ -41,10 +41,17 @@ class Extension(
 
 
 
+enum class CommandType {
+	INSTANCE, DEVICE, STANDALONE;
+}
+
+
+
 class Command(
 	override val name : String,
 	val genName       : String,
 	val shouldGen     : Boolean,
+	val type          : CommandType,
 	val returnType    : VkType?,
 	val params        : List<Var>
 ) : Named

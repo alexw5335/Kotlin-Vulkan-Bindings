@@ -71,6 +71,12 @@ class CWriter(writer: Writer) : CodeWriter(writer) {
 
 
 
+	fun pragmaOnce() {
+		declaration("#pragma once")
+	}
+
+
+
 	/*
 	Comments
 	 */
@@ -114,6 +120,13 @@ class CWriter(writer: Writer) : CodeWriter(writer) {
 	fun function(signature: String, multilineContents: String) = declaration {
 		writeln(signature)
 		braced { writeMultiline(multilineContents) }
+	}
+
+
+
+	inline fun function(signature: String, block: () -> Unit) = declaration(noStyle) {
+		write(signature)
+		braced(block)
 	}
 
 
