@@ -3,7 +3,12 @@ package kvb.vkwrapper.handle
 import kvb.vulkan.PipelineBindPoint
 import kvb.vulkan.PipelineH
 
-class Pipeline(address: Long, val device: Device, val bindPoint: PipelineBindPoint) : PipelineH(address) {
+class Pipeline(
+	address       : Long,
+	val device    : Device,
+	val bindPoint : PipelineBindPoint,
+	val layout    : PipelineLayout,
+) : PipelineH(address) {
 
 
 	/*
@@ -21,7 +26,9 @@ class Pipeline(address: Long, val device: Device, val bindPoint: PipelineBindPoi
 	 * Implementation of vkDestroyPipeline. Calls after the first will have no effect.
 	 */
 	fun destroy() {
-		if(!isDestroyed) device.commands.destroyPipeline(this, null)
+		if(isDestroyed) return
+		device.commands.destroyPipeline(this, null)
+		layout.destroy()
 		isDestroyed = true
 	}
 

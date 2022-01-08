@@ -15,7 +15,8 @@ class PipelineLayout(address: Long, val device: Device) : PipelineLayoutH(addres
 	 * Implementation of vkDestroyPipelineLayout.
 	 */
 	fun destroy() {
-		if(!isDestroyed) device.commands.destroyPipelineLayout(this, null)
+		if(isDestroyed) return
+		device.commands.destroyPipelineLayout(this, null)
 		isDestroyed = true
 	}
 

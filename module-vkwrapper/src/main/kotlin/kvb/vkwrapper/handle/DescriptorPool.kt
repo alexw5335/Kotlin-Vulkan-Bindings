@@ -2,6 +2,7 @@ package kvb.vkwrapper.handle
 
 import kvb.core.memory.MemStack
 import kvb.core.memory.MemStacks.default
+import kvb.vkwrapper.builder.DescriptorSetBuilder
 import kvb.vulkan.*
 
 class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(address) {
@@ -36,27 +37,17 @@ class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(addres
 
 
 	/**
-	 * Implementation of vkAllocateDescriptorSets.
-	 */
-	fun allocateDescriptorSets(info: DescriptorSetAllocateInfo, stack: MemStack = default) = stack.get {
-		val pointers = mallocPointer(info.descriptorSetCount)
-		device.commands.allocateDescriptorSets(info, pointers).check()
-		pointers.map { DescriptorSet(it, device) }
-	}
-
-
-
-	/**
 	 * Convenience implementation of vkAllocateDescriptorSets.
 	 */
-	fun allocateDescriptorSets(setLayouts: List<DescriptorSetLayout>, stack: MemStack = default) = stack.get {
+	fun allocateDescriptorSets(layouts: List<DescriptorSetLayout>, stack: MemStack = default) = stack.get {
 		val info = DescriptorSetAllocateInfo {
 			it.descriptorPool = self
-			it.setLayouts = wrapPointers(setLayouts)
-			it.descriptorSetCount = setLayouts.size
+			it.setLayouts = wrapPointers(layouts)
 		}
 
-		allocateDescriptorSets(info)[0]
+		val pointers = mallocPointer(info.descriptorSetCount)
+		device.commands.allocateDescriptorSets(info, pointers).check()
+		layouts.mapIndexed { i, l -> DescriptorSet(pointers[i], device, l) }
 	}
 
 
@@ -64,15 +55,21 @@ class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(addres
 	/**
 	 * Single implementation of vkAllocateDescriptorSets.
 	 */
-	fun allocateDescriptorSet(setLayout: DescriptorSetLayout, stack: MemStack = default) = stack.get {
+	fun allocateDescriptorSet(layout: DescriptorSetLayout, stack: MemStack = default) = stack.get {
 		val info = DescriptorSetAllocateInfo {
 			it.descriptorPool = self
-			it.setLayouts = wrapPointer(setLayout)
-			it.descriptorSetCount = 1
+			it.setLayouts = wrapPointer(layout)
 		}
 
-		allocateDescriptorSets(info)[0]
+		val pointers = mallocPointer(1)
+		device.commands.allocateDescriptorSets(info, pointers).check()
+		DescriptorSet(pointers[0], device, layout)
 	}
+
+
+
+	inline fun buildSet(stack: MemStack = default, block: DescriptorSetBuilder.() -> Unit) =
+		DescriptorSetBuilder(this, stack).also(block).build()
 
 
 

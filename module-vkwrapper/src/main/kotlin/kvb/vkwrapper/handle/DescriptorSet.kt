@@ -4,7 +4,7 @@ import kvb.core.memory.MemStack
 import kvb.core.memory.MemStacks.default
 import kvb.vulkan.*
 
-class DescriptorSet(address: Long, val device: Device) : DescriptorSetH(address) {
+class DescriptorSet(address: Long, val device: Device, val layout: DescriptorSetLayout) : DescriptorSetH(address) {
 
 
 	/**

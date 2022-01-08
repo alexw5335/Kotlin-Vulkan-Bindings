@@ -1,7 +1,7 @@
 package kvb.vkwrapper.builder
 
 import kvb.core.memory.Allocator
-import kvb.vkwrapper.handle.ShaderModule
+import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
 import kvb.vkwrapper.shader.Shader
 import kvb.vkwrapper.shader.ShaderCollection
@@ -9,20 +9,50 @@ import kvb.vkwrapper.shader.VertexAttribute
 import kvb.vkwrapper.shader.VertexBinding
 
 @Suppress("unused")
-class GraphicsPipelineBuilder(private val allocator: Allocator) {
+class GraphicsPipelineBuilder(private val device: Device, private val allocator: Allocator) {
 
 
 	var flags = PipelineCreateFlags(0)
 
-	var layout: PipelineLayoutH? = null
+	var layout: PipelineLayout? = null
 
-	var renderPass: RenderPassH? = null
+	var renderPass: RenderPass? = null
 
 	var subpass: Int = 0
 
 	var basePipelineIndex: Int = 0
 
 	var basePipelineHandle: PipelineH? = null
+
+
+
+	/*
+	Layout
+	 */
+
+
+
+	fun layout(layout: PipelineLayout) {
+		this.layout = layout
+	}
+
+
+
+	fun emptyLayout() {
+		layout(device.createPipelineLayout())
+	}
+
+
+
+	fun layout(setLayout: DescriptorSetLayout) {
+		layout(device.createPipelineLayout(setLayout))
+	}
+
+
+
+	fun layout(set: DescriptorSet) {
+		layout(set.layout)
+	}
 
 
 
@@ -69,8 +99,6 @@ class GraphicsPipelineBuilder(private val allocator: Allocator) {
 
 		vertexBindings(collection.bindings)
 		vertexAttributes(collection.attributes)
-
-		collection.pipelineLayout?.let { layout = it }
 	}
 
 

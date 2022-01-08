@@ -9,7 +9,6 @@ import kvb.core.memory.direct.*
 
 /**
  *     // provided by VK_VERSION_1_0
-
  *     struct VkWriteDescriptorSet {
  *         VkStructureType          sType
  *         void*                    pNext

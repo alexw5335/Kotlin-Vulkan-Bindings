@@ -19,8 +19,8 @@ class DirectList<T : DirectBuffer>(
 
 
 	val next: Int get() {
-		ensureCapacity();
-		return size++;
+		ensureCapacity()
+		return size++
 	}
 
 

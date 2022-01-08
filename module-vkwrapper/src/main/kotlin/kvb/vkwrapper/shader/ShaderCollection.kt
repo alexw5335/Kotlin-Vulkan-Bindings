@@ -17,14 +17,11 @@ interface ShaderCollection {
 
 	val pipeline: Pipeline? get() = null
 
-	val pipelineLayout: PipelineLayout? get() = null
-
 
 
 	fun destroy() {
 		pipeline?.destroy()
 		shaders.forEach { it.module.destroy() }
-		pipelineLayout?.destroy()
 	}
 
 

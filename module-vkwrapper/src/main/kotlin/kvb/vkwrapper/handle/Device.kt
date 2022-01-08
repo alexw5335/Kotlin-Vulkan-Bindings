@@ -315,49 +315,24 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 
 
 	/**
-	 * Implementation of vkCreateGraphicsPipelines.
-	 */
-	fun createGraphicsPipelines(
-		infos: GraphicsPipelineCreateInfo.Buffer,
-		pipelineCache: PipelineCache? = null,
-		stack: MemStack = default
-	) = stack.get {
-		val pointers = mallocPointer(infos.capacity)
-		commands.createGraphicsPipelines(pipelineCache, infos.capacity, infos, null, pointers).check()
-		pointers.map { Pipeline(it, self, PipelineBindPoint.GRAPHICS) }
-	}
-
-
-
-	/**
 	 * Builder implementation of vkCreateGraphicsPipelines.
 	 */
 	fun buildGraphicsPipeline(
 		stack: MemStack = default,
 		block: (GraphicsPipelineBuilder) -> Unit,
 	) = stack.get {
-		createGraphicsPipelines(GraphicsPipelineBuilder(this).also(block).build().asBuffer, null, stack)[0]
-	}
+		val pointer = mallocPointer(1)
+		val builder = GraphicsPipelineBuilder(self, this).also(block)
 
+		commands.createGraphicsPipelines(
+			null,
+			1,
+			builder.build().asBuffer,
+			null,
+			pointer
+		).check()
 
-
-	/*
-	Compute pipeline
-	 */
-
-
-
-	/**
-	 * Implementation of vkCreateComputePipelines.
-	 */
-	fun createComputePipelines(
-		infos: ComputePipelineCreateInfo.Buffer,
-		pipelineCache: PipelineCache? = null,
-		stack: MemStack = default
-	) = stack.get {
-		val pointers = mallocPointer(infos.capacity)
-		commands.createComputePipelines(pipelineCache, infos.capacity, infos, null, pointers).check()
-		pointers.map { Pipeline(it, self, PipelineBindPoint.COMPUTE) }
+		Pipeline(pointer[0], self, PipelineBindPoint.GRAPHICS, builder.layout!!)
 	}
 
 
@@ -517,7 +492,6 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 */
 	fun createPipelineLayout(stack: MemStack = default) = stack.get {
 		createPipelineLayout(PipelineLayoutCreateInfo { }, stack)
-
 	}
 
 

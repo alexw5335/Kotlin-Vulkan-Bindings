@@ -2,15 +2,11 @@ package kvb.vkwrapper.builder
 
 import kvb.core.memory.DirectList
 import kvb.core.memory.MemStack
-import kvb.vkwrapper.handle.DescriptorPool
-import kvb.vkwrapper.handle.DescriptorSet
-import kvb.vkwrapper.handle.DescriptorSetLayout
+import kvb.core.memory.MemStacks
+import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
 
-class DescriptorSetBuilder(
-	private val pool: DescriptorPool,
-	private val stack: MemStack
-) {
+class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: MemStack) {
 
 	/*
 
@@ -48,15 +44,58 @@ class DescriptorSetBuilder(
 	layout(set=1, binding=0) texture2D myTexture2;
 
 	Each DescriptorSet has a SINGLE DescriptorSetLayout.
+
+	shaders may share common uniforms, e.g. matrices. The LayoutBinding can be shared, but the
+	WriteDescriptorSet cannot, since it targets a specific set.
+
+	The purpose of splitting up bindings between multiple sets is so that sets can be reused
+	between shaders. So, sets don't have to constantly be unbound and rebound.
+
+	WriteDescriptorSet doesn't need to supply descriptor type nor binding (both are given by the DescriptorSetLayoutBinding).
+
+	val set = pool.buildSet {
+		vertexUniform {
+			write(uniform, offset, size)
+			write(uniform2, offset2, size2)
+			write(image, offset3, size3)
+		}
+
+		fragmentUniform {
+			write(uniform, offset, size)
+		}
+
+		uniform(stages = ShaderStageFlags { VERTEX + FRAGMENT }) {
+
+		}
+	}
+
+	val sets = pool.buildSets {
+		set {
+			uniform {
+				write()
+			}
+
+			uniform {
+				write()
+			}
+		}
+
+		set {
+
+		}
+	}
+
 	 */
 
 
 
-	val bindings = DirectList(stack) { DescriptorSetLayoutBinding(it) { } }
+	var flags = DescriptorSetLayoutCreateFlags(0)
 
-	val writes = DirectList(stack) { WriteDescriptorSet(it) { } }
+	private val bindings = DirectList(stack) { DescriptorSetLayoutBinding(it) { } }
 
-	val copies = DirectList(stack) { CopyDescriptorSet(it) { } }
+	private val writes = DirectList(stack) { WriteDescriptorSet(it) { } }
+
+	private val copies = DirectList(stack) { CopyDescriptorSet(it) { } }
 
 
 
@@ -66,32 +105,38 @@ class DescriptorSetBuilder(
 
 
 
-	fun uniform(stage: ShaderStageFlags, count: Int = 1) {
+	fun uniform(stages: ShaderStageFlags, count: Int = 1) {
 		bindings.buffer[bindings.next].let {
-			it.binding = bindings.size
+			it.binding = bindings.size - 1
 			it.descriptorType = DescriptorType.UNIFORM_BUFFER
 			it.descriptorCount = count
-			it.stageFlags = stage
+			it.stageFlags = stages
 		}
 	}
 
 
 
-	fun vertexUniform() = uniform(ShaderStageFlags.VERTEX)
+	fun vertexUniform(count: Int = 1) = uniform(ShaderStageFlags.VERTEX, count)
 
-	fun fragUniform() = uniform(ShaderStageFlags.FRAGMENT)
+	fun fragUniform(count: Int = 1) = uniform(ShaderStageFlags.FRAGMENT, count)
 
 
 
 	/*
-	Layouts
+	Build
 	 */
 
 
 
 	fun build(): DescriptorSet {
+		val layoutCI = stack.DescriptorSetLayoutCreateInfo {
+			it.flags = flags
+			it.bindingCount = bindings.size
+			it.pBindings = bindings.address
+		}
 
-		val set = pool.allocateDescriptorSet(layouts)
+		val layout = pool.device.createDescriptorSetLayout(layoutCI)
+		val set = pool.allocateDescriptorSet(layout)
 
 		if(writes.size > 0 || copies.size > 0) {
 			for(i in 0 until writes.size)
@@ -114,25 +159,55 @@ class DescriptorSetBuilder(
 
 
 
-	fun uniformBufferWrite(dstArrayElement: Int, descriptorCount: Int, type: DescriptorType) {
+	fun write(
+		buffer          : Buffer,
+		offset          : Long,
+		size            : Long,
+		dstArrayElement : Int = 0,
+		descriptorCount : Int = 1
+	) {
+		val binding = bindings.buffer[bindings.size - 1]
 
+		val bufferInfo = stack.DescriptorBufferInfo {
+			it.buffer = buffer
+			it.offset = offset
+			it.range = size
+		}
+
+		writes.buffer[writes.next].let {
+			it.dstBinding = binding.binding
+			it.dstArrayElement = dstArrayElement
+			it.descriptorCount = descriptorCount
+			it.descriptorType = binding.descriptorType
+			it.bufferInfo = bufferInfo.asBuffer
+		}
 	}
 
-	/*
-	 struct VkWriteDescriptorSet {
- *         VkStructureType          sType
- *         void*                    pNext
- *         VkDescriptorSet          dstSet
- *         uint32_t                 dstBinding
- *         uint32_t                 dstArrayElement
- *         uint32_t                 descriptorCount
- *         VkDescriptorType         descriptorType
- *         VkDescriptorImageInfo*   pImageInfo
- *         VkDescriptorBufferInfo*  pBufferInfo
- *         VkBufferView*            pTexelBufferView
- *     }
-	 */
 
+
+	fun write(
+		sampler         : Sampler,
+		imageView       : ImageView,
+		imageLayout     : ImageLayout,
+		dstArrayElement : Int = 0,
+		descriptorCount : Int = 1
+	) {
+		val binding = bindings.buffer[bindings.size - 1]
+
+		val imageInfo = stack.DescriptorImageInfo {
+			it.sampler = sampler
+			it.imageView = imageView
+			it.imageLayout = imageLayout
+		}
+
+		writes.buffer[writes.next].let {
+			it.dstBinding = binding.binding
+			it.dstArrayElement = dstArrayElement
+			it.descriptorCount = descriptorCount
+			it.descriptorType = binding.descriptorType
+			it.imageInfo = imageInfo.asBuffer
+		}
+	}
 
 
 }

@@ -1,34 +1,10 @@
 package kvb.samples.sample0
 
-import kvb.core.memory.MemStacks
 import kvb.vkwrapper.handle.CommandBuffer
-import kvb.vulkan.*
+import kvb.vulkan.PrimitiveTopology
 import kotlin.math.sin
-import kotlin.random.Random
 
 object SampleShader : AppShader("sample") {
-
-
-	/*
-
-	Can split layout bindings among multiple sets
-
-	DescriptorSet
-		DescriptorSetLayout[]
-			DescriptorSetLayoutBinding[]
-
-	layout(binding = 0) uniform UBO {
-		vec2 windowSize;
-		vec2 offset;
-	};
-
-	layout(binding = 1) uniform UBO2 {
-		float xOffset2;
-		float yOffset2;
-	};
-
-	 */
-
 
 
 	override val attributes = listOf(
@@ -36,13 +12,17 @@ object SampleShader : AppShader("sample") {
 		vec3Attrib(location = 1, binding = 0, offset = 4 * 2)
 	)
 
+
+
 	override val bindings = listOf(
 		binding(binding = 0, stride = 4 * 5)
 	)
 
+
+
 	override fun destroy() {
 		super.destroy()
-		descriptorSetLayout.destroy()
+		descriptorSet.layout.destroy()
 		uniformBuffer.destroy()
 		uniformBuffer2.destroy()
 		vertexBuffer.destroy()
@@ -56,82 +36,19 @@ object SampleShader : AppShader("sample") {
 
 
 
-	val descriptorSetLayout = MemStacks.get {
-		val bindings = DescriptorSetLayoutBinding(2) { bindings ->
-			bindings[0].let {
-				it.binding = 0
-				it.descriptorType = DescriptorType.UNIFORM_BUFFER
-				it.descriptorCount = 1
-				it.stageFlags = ShaderStageFlags.VERTEX
-			}
-
-			bindings[1].let {
-				it.binding = 1
-				it.descriptorType = DescriptorType.UNIFORM_BUFFER
-				it.descriptorCount = 1
-				it.stageFlags = ShaderStageFlags.VERTEX
-			}
-		}
-
-		context.device.createDescriptorSetLayout(DescriptorSetLayoutCreateInfo {
-			it.bindings = bindings
-		})
+	val descriptorSet = context.uniformPool.buildSet {
+		vertexUniform()
+		write(uniformBuffer, 0L, 16L)
+		vertexUniform()
+		write(uniformBuffer2, 0L, 8L)
 	}
-
-
-
-	val descriptorSet = context.uniformPool.allocateDescriptorSet(descriptorSetLayout)
-
-
-
-	init {
-		MemStacks.with {
-			descriptorSet.updateUniformWrite(uniformBuffer, 0, 16L, binding = 0)
-			descriptorSet.updateUniformWrite(uniformBuffer2, 0L, 8L, binding = 1)
-
-			val writes = WriteDescriptorSet(2) { writes ->
-				writes[0].let { write ->
-					write.dstSet = descriptorSet
-					write.dstBinding = 0
-					write.dstArrayElement = 0
-					write.descriptorType = DescriptorType.UNIFORM_BUFFER
-					write.bufferInfo = DescriptorBufferInfo(1) { bufferInfo ->
-						bufferInfo[0].let {
-							it.buffer = uniformBuffer
-							it.offset = 0L
-							it.range = 16L
-						}
-					}
-				}
-
-				writes[1].let { write ->
-					write.dstSet = descriptorSet
-					write.dstBinding = 1
-					write.dstArrayElement = 0
-					write.descriptorType = DescriptorType.UNIFORM_BUFFER
-					write.bufferInfo = DescriptorBufferInfo(1) { bufferInfo ->
-						bufferInfo[0].let {
-							it.buffer = uniformBuffer2
-							it.offset = 0L
-							it.range = 8L
-						}
-					}
-				}
-			}
-
-			device.updateDescriptorSets(writes)
-		}
-	}
-
-
-
-	override val pipelineLayout = device.createPipelineLayout(descriptorSetLayout)
 
 
 
 	override val pipeline = context.device.buildGraphicsPipeline {
 		it.renderPass = context.renderPass
 		it.shaders(this)
+		it.layout(descriptorSet)
 		it.topology = PrimitiveTopology.TRIANGLE_FAN
 		it.singleColourBlendAttachment()
 		it.dynamicViewportAndScissor()
@@ -149,10 +66,11 @@ object SampleShader : AppShader("sample") {
 
 	fun record(commandBuffer: CommandBuffer) {
 		commandBuffer.bindPipeline(pipeline)
-		commandBuffer.bindGraphicsDescriptorSet(pipelineLayout, descriptorSet)
+		commandBuffer.bindGraphicsDescriptorSet(pipeline.layout, descriptorSet)
 		commandBuffer.bindVertexBuffer(vertexBuffer)
 		commandBuffer.draw(vertexCount = Circles.numSections + 2, instanceCount = 1)
 	}
+
 
 
 	var time = 0F
