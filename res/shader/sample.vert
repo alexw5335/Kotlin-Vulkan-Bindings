@@ -25,5 +25,5 @@ layout(location = 0) out vec3 fragColour;
 void main() {
 	gl_Position = vec4((inPosition + offset + vec2(xOffset2, yOffset2)) * 2 / windowSize - 1, 0.0, 1.0);
 
-    fragColour = inColour;
+    fragColour = inColour * vec3(xOffset2 / windowSize.x, yOffset2 / windowSize.y, 1.0);
 }

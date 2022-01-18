@@ -195,21 +195,6 @@ class AppContext(window: WinApiWindow) {
 
 
 	/*
-	Uniform
-	 */
-
-
-
-	// Single DescriptorSet, single DescriptorSetLayout, multiple DescriptorSetBindings.
-	// 'Uniform' is an abstraction of DescriptorSetBinding.
-	//fun createUniforms()
-
-
-	//class Uniform(val set: DescriptorSet, val layout: DescriptorSetLayout)
-
-
-
-	/*
 	Update
 	 */
 
@@ -290,6 +275,7 @@ class AppContext(window: WinApiWindow) {
 
 
 	private fun onResize() {
+		device.waitIdle()
 		commandPool.reset()
 		imageViews.forEach { it.destroy() }
 		framebuffers.forEach { it.destroy() }

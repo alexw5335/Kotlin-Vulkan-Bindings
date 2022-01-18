@@ -25,7 +25,7 @@ class AppSurface(
 
 	val colourSpace = formatPair.colourSpace
 
-	val presentMode = PresentMode.IMMEDIATE
+	val presentMode = PresentMode.FIFO
 
 
 

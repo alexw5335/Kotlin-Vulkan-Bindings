@@ -28,9 +28,9 @@ object App {
 			if(WinApi.windows.isEmpty()) break
 			SampleShader.update()
 			context.present()
-			println("${(System.nanoTime() - start) / 1000} us")
-		//	(16 - (System.nanoTime() - start) / 1000000).let { if(it > 0) Thread.sleep(it) }
-			Thread.sleep(1)
+			println("${(System.nanoTime() - start) / 1000} \u00B5s")
+		    //(16 - (System.nanoTime() - start) / 1000000).let { if(it > 0) Thread.sleep(it) }
+			//Thread.sleep(1)
 		}
 	}
 
