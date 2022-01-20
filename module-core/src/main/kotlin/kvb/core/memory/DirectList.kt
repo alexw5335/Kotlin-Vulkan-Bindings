@@ -18,6 +18,10 @@ class DirectList<T : DirectBuffer>(
 
 
 
+	val isEmpty get() = size == 0
+
+	val isNotEmpty get() = size > 0
+
 	val next: Int get() {
 		ensureCapacity()
 		return size++

@@ -75,19 +75,21 @@ object SampleShader : AppShader("sample") {
 
 	var time = 0F
 
+
+
 	fun update() {
 		uniformBuffer.flush {
-			it.setFloat(0, context.surface.width.toFloat())
-			it.setFloat(4, context.surface.height.toFloat())
-			it.setFloat(8, context.surface.width / 2F)
-			it.setFloat(12, context.surface.height / 2F)
+			it[0] = context.surface.width.toFloat()
+			it[4] = context.surface.height.toFloat()
+			it[8] = context.surface.width / 2F
+			it[12] = context.surface.height / 2F
 		}
 
 		time += 0.02F
 
 		uniformBuffer2.flush {
-			it.setFloat(0, sin(time) * 200F)
-			it.setFloat(4, sin(0.5F*time) * 200F)
+			it[0] = sin(time) * 200F
+			it[4] = sin(0.5F*time) * 200F
 		}
 	}
 

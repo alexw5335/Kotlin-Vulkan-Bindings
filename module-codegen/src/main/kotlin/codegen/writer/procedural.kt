@@ -2,6 +2,9 @@ package codegen.writer
 
 
 
+/**
+ * A procedurally generated function in C.
+ */
 class CFunction(
 	val name        : String,
 	val returnType  : String?                     = null,
@@ -13,6 +16,9 @@ class CFunction(
 
 
 
+/**
+ * A procedurally generated function in Kotlin.
+ */
 class KFunction(
 	val name        : String,
 	val returnType  : String?                     = null,
@@ -24,6 +30,9 @@ class KFunction(
 
 
 
+/**
+ * Naming utils for generating JNI functions in C.
+ */
 object JniGeneration {
 
 

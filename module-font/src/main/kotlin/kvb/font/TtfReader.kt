@@ -52,11 +52,12 @@ class TtfReader(private val reader: BinaryReader) {
 		reader.pos += 6
 
 		for(i in 0 until numTables) {
-			val tag = reader.ascii4()
+			val tag = reader.ascii(4)
 			reader.pos += 4
 			val offset = reader.u32()
 			reader.pos += 4
 
+			// More efficient to use int comparison/
 			when(tag) {
 				"cmap" -> cmapOffset = offset
 				"glyf" -> glyfOffset = offset

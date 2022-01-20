@@ -112,6 +112,7 @@ class BinaryReader(val bytes: ByteArray, var endianness: Endianness) {
 
 
 
-	fun ascii4() = String(CharArray(4) { Char(u8()) })
+	fun ascii(length: Int) = String(CharArray(length) { Char(u8()) })
+
 
 }

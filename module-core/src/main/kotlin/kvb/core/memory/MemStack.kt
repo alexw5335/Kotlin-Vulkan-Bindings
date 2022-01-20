@@ -36,13 +36,14 @@ package kvb.core.memory
  *
  *     // No memory leak, exception caught outside of a stack frame,
  *     // but the stack is reset in response.
+ *     int pointer = stack.pointer
  *     try {
  *         stack.with {
  *             mallocInt()
  *             throw RuntimeException()
  *         }
  *     } catch(e: Exception) {
- *         stack.reset()
+ *         stack.pointer = pointer
  *     }
  *
  *     // TODO: Add memory-safe block functions
