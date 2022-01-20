@@ -1,6 +1,6 @@
 package kvb.vkwrapper.shader
 
-import kvb.core.file.FileUtils
+import kvb.core.FileUtils
 import kvb.vkwrapper.exception.VkShaderException
 import kvb.vkwrapper.handle.Device
 import kvb.vulkan.ShaderStageFlags

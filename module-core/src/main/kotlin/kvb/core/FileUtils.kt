@@ -1,4 +1,4 @@
-package kvb.core.file
+package kvb.core
 
 import kvb.core.memory.Allocator
 import kvb.core.memory.MemStack
