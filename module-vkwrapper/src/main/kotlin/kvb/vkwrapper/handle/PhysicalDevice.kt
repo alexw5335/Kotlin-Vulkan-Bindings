@@ -49,7 +49,7 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 	/**
 	 * Member variable implementation of vkGetPhysicalDeviceProperties.
 	 */
-	val properties by lazy { propertiesP() }
+	val properties: PhysicalDevicePropertiesP by lazy { propertiesP() }
 
 
 
@@ -521,6 +521,37 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 
 
 	/*
+	Surface creation
+	 */
+
+
+
+	/**
+	 * Implementation of vkCreateWin32SurfaceKHR.
+	 */
+	fun createWin32Surface(info: Win32SurfaceCreateInfo, stack: MemStack = default) = stack.get {
+		val surface = mallocPointer()
+		commands.createWin32Surface(info, null, surface).check()
+		Surface(surface.value, self)
+	}
+
+
+
+	/**
+	 * Convenience version of vkCreateWin32SurfaceKHR. Creates a [Surface] that is tied to a native Win32 window.
+	 */
+	fun createWin32Surface(hinstance: Long, hwnd: Long, stack: MemStack = default) = stack.get {
+		val info = Win32SurfaceCreateInfo {
+			it.hinstance 	= hinstance
+			it.hwnd 		= hwnd
+		}
+
+		createWin32Surface(info)
+	}
+
+
+
+	/*
 	Device creation
 	 */
 
@@ -542,7 +573,7 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 	 */
 	fun createDevice(
 		queues                : List<Pair<QueueFamilyPropertiesP, Int>>  = emptyList(),
-		enabledExtensionNames : List<String>                             = emptyList(),
+		enabledExtensionNames : Collection<String>                       = emptyList(),
 		enabledFeatures       : PhysicalDeviceFeatures?                  = null,
 		stack                 : MemStack                                 = default
 	) = stack.get {

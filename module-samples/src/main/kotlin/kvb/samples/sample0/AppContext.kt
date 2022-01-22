@@ -38,7 +38,7 @@ class AppContext(window: WinApiWindow) {
 
 	val physicalDevice = choosePhysicalDevice()
 
-	val surface        = AppSurface(instance.createWin32Surface(0, window.hwnd), physicalDevice)
+	val surface        = AppSurface(physicalDevice.createWin32Surface(0, window.hwnd), physicalDevice)
 
 	val queueFamily    = chooseQueueFamily()
 

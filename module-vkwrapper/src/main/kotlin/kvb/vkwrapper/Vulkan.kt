@@ -51,8 +51,8 @@ object Vulkan {
 		engineName    : String       = "engine",
 		engineVersion : Version      = Version(1, 0, 0),
 		apiVersion    : Version      = instanceVersion,
-		layers        : List<String> = emptyList(),
-		extensions    : List<String> = emptyList(),
+		layers        : Collection<String> = emptyList(),
+		extensions    : Collection<String> = emptyList(),
 		stack         : MemStack     = MemStacks.default
 	) = stack.get {
 		val appInfo = ApplicationInfo {

@@ -8,7 +8,7 @@ version = "1.0"
 
 
 plugins {
-	kotlin("jvm") version "1.6.0"
+	kotlin("jvm") version "1.6.10"
 }
 
 

@@ -1,7 +1,7 @@
 package kvb.vkwrapper.handle
 
 import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks
+import kvb.core.memory.MemStacks.default
 import kvb.vulkan.*
 
 class Instance(address: Long) : InstanceH(address) {
@@ -40,7 +40,7 @@ class Instance(address: Long) : InstanceH(address) {
 	/**
 	 * Implementation of vkEnumeratePhysicalDevices.
 	 */
-	fun physicalDevices(stack: MemStack = MemStacks.default) = stack.get {
+	fun physicalDevices(stack: MemStack = default) = stack.get {
 		val count = mallocInt()
 		commands.enumeratePhysicalDevices(count, null).check()
 		val devices = mallocPointer(count.value)
@@ -59,7 +59,7 @@ class Instance(address: Long) : InstanceH(address) {
 	/**
 	 * Implementation of vkCreateDebugUtilsMessengerEXT.
 	 */
-	fun createDebugMessenger(info: DebugUtilsMessengerCreateInfo, stack: MemStack = MemStacks.default) = stack.get {
+	fun createDebugMessenger(info: DebugUtilsMessengerCreateInfo, stack: MemStack = default) = stack.get {
 		val messenger = mallocPointer()
 		commands.createDebugUtilsMessenger(info, null, messenger).check()
 		DebugUtilsMessenger(messenger.value, self)
@@ -74,44 +74,13 @@ class Instance(address: Long) : InstanceH(address) {
 		callback	: Long,
 		severities	: DebugUtilsMessageSeverityFlags,
 		types		: DebugUtilsMessageTypeFlags,
-		stack       : MemStack = MemStacks.default
+		stack       : MemStack = default
 	) = stack.get {
 		createDebugMessenger(DebugUtilsMessengerCreateInfo {
 			it.messageSeverity = severities
 			it.messageType     = types
 			it.pfnUserCallback = callback
 		}, stack)
-	}
-
-
-
-	/*
-	Surface
-	 */
-
-
-
-	/**
-	 * Implementation of vkCreateWin32SurfaceKHR.
-	 */
-	fun createWin32Surface(info: Win32SurfaceCreateInfo, stack: MemStack = MemStacks.default) = stack.get {
-		val surface = mallocPointer()
-		commands.createWin32Surface(info, null, surface).check()
-		Surface(surface.value, self)
-	}
-
-
-
-	/**
-	 * Convenience version of vkCreateWin32SurfaceKHR. Creates a [Surface] that is tied to a native Win32 window.
-	 */
-	fun createWin32Surface(hinstance: Long, hwnd: Long, stack: MemStack = MemStacks.default) = stack.get {
-		val info = Win32SurfaceCreateInfo {
-			it.hinstance 	= hinstance
-			it.hwnd 		= hwnd
-		}
-
-		createWin32Surface(info)
 	}
 
 

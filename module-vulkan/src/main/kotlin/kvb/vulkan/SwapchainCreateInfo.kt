@@ -9,7 +9,6 @@ import kvb.core.memory.direct.*
 
 /**
  *     // provided by VK_KHR_swapchain
-
  *     struct VkSwapchainCreateInfoKHR {
  *         VkStructureType                sType
  *         void*                          pNext

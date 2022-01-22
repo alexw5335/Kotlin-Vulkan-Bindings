@@ -235,19 +235,19 @@ interface Allocator {
 
 
 
-	fun encodeStringList(strings: List<String>, charset: Charset): DirectLongBuffer {
+	fun encodeStringList(strings: Collection<String>, charset: Charset): DirectLongBuffer {
 		val buffer = callocLong(strings.size)
-		for(i in strings.indices)
-			buffer[i] = encodeString(strings[i], charset).address
+		for((i, s) in strings.withIndex())
+			buffer[i] = encodeString(s, charset).address
 		return buffer
 	}
 
 
 
-	fun encodeStringNTList(strings: List<String>, charset: Charset, charSize: Int): DirectLongBuffer {
+	fun encodeStringNTList(strings: Collection<String>, charset: Charset, charSize: Int): DirectLongBuffer {
 		val buffer = callocLong(strings.size)
-		for(i in strings.indices)
-			buffer[i] = encodeStringNT(strings[i], charset, charSize).address
+		for((i, s) in strings.withIndex())
+			buffer[i] = encodeStringNT(s, charset, charSize).address
 		return buffer
 	}
 
@@ -255,41 +255,41 @@ interface Allocator {
 
 	fun encodeAscii(string: String) = encodeString(string, Charsets.US_ASCII)
 
-	fun encodeAsciiList(strings: List<String>) = encodeStringList(strings, Charsets.US_ASCII)
+	fun encodeAsciiList(strings: Collection<String>) = encodeStringList(strings, Charsets.US_ASCII)
 
 	fun encodeAsciiNT(string: String) = encodeStringNT(string, Charsets.US_ASCII, 1)
 
-	fun encodeAsciiNTList(strings: List<String>) = encodeStringNTList(strings, Charsets.US_ASCII, 1)
+	fun encodeAsciiNTList(strings: Collection<String>) = encodeStringNTList(strings, Charsets.US_ASCII, 1)
 
 
 
 	fun encodeUtf8(string: String) = encodeString(string, Charsets.UTF_8)
 
-	fun encodeUtf8List(strings: List<String>) = encodeStringList(strings, Charsets.UTF_8)
+	fun encodeUtf8List(strings: Collection<String>) = encodeStringList(strings, Charsets.UTF_8)
 
 	fun encodeUtf8NT(string: String) = encodeStringNT(string, Charsets.UTF_8, 1)
 
-	fun encodeUtf8NTList(strings: List<String>) = encodeStringNTList(strings, Charsets.UTF_8, 1)
+	fun encodeUtf8NTList(strings: Collection<String>) = encodeStringNTList(strings, Charsets.UTF_8, 1)
 
 
 
 	fun encodeUtf16(string: String) = encodeString(string, Charsets.UTF_16LE)
 
-	fun encodeUtf16List(strings: List<String>) = encodeStringList(strings, Charsets.UTF_16LE)
+	fun encodeUtf16List(strings: Collection<String>) = encodeStringList(strings, Charsets.UTF_16LE)
 
 	fun encodeUtf16NT(string: String) = encodeStringNT(string, Charsets.UTF_16LE, 2)
 
-	fun encodeUtf16NTList(strings: List<String>) = encodeStringNTList(strings, Charsets.UTF_16LE, 2)
+	fun encodeUtf16NTList(strings: Collection<String>) = encodeStringNTList(strings, Charsets.UTF_16LE, 2)
 
 
 
 	fun encodeUtf16Big(string: String) = encodeString(string, Charsets.UTF_16BE)
 
-	fun encodeUtf16BigList(strings: List<String>) = encodeStringList(strings, Charsets.UTF_16BE)
+	fun encodeUtf16BigList(strings: Collection<String>) = encodeStringList(strings, Charsets.UTF_16BE)
 
 	fun encodeUtf16BigNT(string: String) = encodeStringNT(string, Charsets.UTF_16BE, 2)
 
-	fun encodeUtf16BigNTList(strings: List<String>) = encodeStringNTList(strings, Charsets.UTF_16BE, 2)
+	fun encodeUtf16BigNTList(strings: Collection<String>) = encodeStringNTList(strings, Charsets.UTF_16BE, 2)
 
 
 }
