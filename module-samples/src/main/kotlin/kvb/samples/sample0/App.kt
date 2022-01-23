@@ -1,5 +1,6 @@
 package kvb.samples.sample0
 
+import kvb.core.Platform
 import kvb.window.winapi.WinApi
 
 object App {
@@ -43,6 +44,7 @@ object App {
 
 
 	fun run() {
+		Platform.init()
 		Runtime.getRuntime().exec("res/shader/compile.bat").waitFor()
 		init()
 		update()

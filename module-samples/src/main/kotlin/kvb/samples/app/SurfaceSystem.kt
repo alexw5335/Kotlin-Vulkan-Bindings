@@ -1,10 +1,8 @@
 package kvb.samples.app
 
-import kvb.vkwrapper.Vulkan
-import kvb.vkwrapper.handle.Device
-import kvb.vkwrapper.handle.RenderPass
-import kvb.vkwrapper.handle.Surface
-import kvb.vkwrapper.handle.Swapchain
+import kvb.core.memory.Unsafe
+import kvb.vkwrapper.handle.*
+import kvb.vulkan.*
 
 /**
  * Note: The [renderPass] is not necessarily the only renderpass. It is the final renderpass that will be used to render
@@ -13,6 +11,7 @@ import kvb.vkwrapper.handle.Swapchain
 class SurfaceSystem(
 	val surface: Surface,
 	val device: Device,
+	val queue: Queue,
 	val renderPass: RenderPass,
 	val createSwapchain: () -> Swapchain
 ) {
@@ -26,8 +25,58 @@ class SurfaceSystem(
 
 	var framebuffers = createFramebuffers()
 
+	val commandPool = device.createCommandPool(queue.family)
 
-	val viewports = Vulkan.mem.Viepo
+	val commandBuffers = commandPool.allocatePrimary(images.size)
+
+
+
+	private var currentFrame = 0
+
+	private val framesInFlight = 2
+
+	private val imageAvailableSemaphores = List(framesInFlight) { device.createSemaphore() }
+
+	private val renderFinishedSemaphores = List(framesInFlight) { device.createSemaphore() }
+
+	private val inFlightFences = List(framesInFlight) { device.createFence() }
+
+	private val imagesInFlight = arrayOfNulls<Image>(framesInFlight)
+
+
+
+	private val viewports = Unsafe.Viewport(1) { }
+
+	private val scissors = Unsafe.Rect2D(1) { }
+
+
+
+	/*
+	Dimensions
+	 */
+
+
+
+	fun setViewportAndScissor(commandBuffer: CommandBuffer) {
+		commandBuffer.setViewport(viewports)
+		commandBuffer.setScissor(scissors)
+	}
+
+
+
+	fun updateDimensions() {
+		surface.updateCapabilities()
+		viewports[0].width = surface.width.toFloat()
+		viewports[0].height = surface.height.toFloat()
+		scissors[0].extent.width = surface.width
+		scissors[0].extent.height = surface.height
+	}
+
+
+
+	/*
+	Object creation
+	 */
 
 
 
@@ -41,7 +90,9 @@ class SurfaceSystem(
 
 
 
-	fun updateSwapchain() {
+	fun recreateSwapchain() {
+		// All command buffers must be re-recorded
+		commandPool.reset()
 		imageViews.forEach { it.destroy() }
 		framebuffers.forEach { it.destroy() }
 
@@ -53,10 +104,6 @@ class SurfaceSystem(
 		imageViews = createImageViews()
 		framebuffers = createFramebuffers()
 	}
-
-
-
-
 
 
 }

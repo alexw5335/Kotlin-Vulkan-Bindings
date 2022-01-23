@@ -117,7 +117,7 @@ abstract class ContextBuilder {
 
 
 
-	fun create() : Context {
+	fun build() : Context {
 		val instanceLayers = HashSet<String>()
 		val instanceExtensions = HashSet<String>()
 		val deviceExtensions = HashSet<String>()
@@ -167,11 +167,11 @@ abstract class ContextBuilder {
 
 		device = physicalDevice.createDevice(listOf(queueFamily to 1), deviceExtensions)
 
-		queue = device.getQueue(queueFamily.index, 0)
+		queue = device.getQueue(queueFamily, 0)
 
 		val surfaceSystem = surface?.let {
 			val surfaceRenderPass = device.buildRenderPass(block = ::createSurfaceRenderPass)
-			SurfaceSystem(it, device, surfaceRenderPass, ::createSwapchain)
+			SurfaceSystem(it, device, queue, surfaceRenderPass, ::createSwapchain)
 		}
 
 		descriptorPool = createDescriptorPool()

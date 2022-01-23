@@ -1,9 +1,16 @@
 package kvb.vkwrapper.handle
 
+import kvb.core.memory.MemStack
 import kvb.core.memory.MemStacks
+import kvb.core.memory.MemStacks.default
+import kvb.vkwrapper.persistent.QueueFamilyPropertiesP
 import kvb.vulkan.*
 
-class CommandPool(address: Long, val device: Device) : CommandPoolH(address) {
+class CommandPool(
+	address: Long,
+	val device: Device,
+	val queueFamily: QueueFamilyPropertiesP
+) : CommandPoolH(address) {
 
 
 	/**
@@ -32,7 +39,7 @@ class CommandPool(address: Long, val device: Device) : CommandPoolH(address) {
 	/**
 	 * Implementation of vkAllocateCommandBuffers.
 	 */
-	fun allocateCommandBuffers(level: CommandBufferLevel, count: Int) = MemStacks.get {
+	fun allocate(level: CommandBufferLevel, count: Int, stack: MemStack = default) = stack.get {
 		val info = CommandBufferAllocateInfo {
 			it.commandPool = self
 			it.level = level
@@ -47,52 +54,57 @@ class CommandPool(address: Long, val device: Device) : CommandPoolH(address) {
 
 
 	/**
+	 * Single implementation of vkAllocateCommandBuffers.
+	 */
+	fun allocate(level: CommandBufferLevel, stack: MemStack = default) = stack.get {
+		val info = CommandBufferAllocateInfo {
+			it.commandPool = self
+			it.level = level
+			it.commandBufferCount = 1
+		}
+
+		val buffers = mallocPointer(1)
+		commands.allocateCommandBuffers(info, buffers)
+		CommandBuffer(buffers[0], self)
+	}
+
+
+
+	/**
 	 * Version of vkAllocateCommandBuffers with [CommandBufferLevel.PRIMARY].
 	 */
-	fun allocatePrimaryCommandBuffers(count: Int) = allocateCommandBuffers(CommandBufferLevel.PRIMARY, count)
+	fun allocatePrimary(count: Int, stack: MemStack = default) = allocate(CommandBufferLevel.PRIMARY, count, stack)
 
 
 
 	/**
 	 * Version of vkAllocateCommandBuffers with [CommandBufferLevel.SECONDARY].
 	 */
-	fun allocateSecondaryCommandBuffers(count: Int) = allocateCommandBuffers(CommandBufferLevel.SECONDARY, count)
+	fun allocateSecondary(count: Int, stack: MemStack = default) = allocate(CommandBufferLevel.SECONDARY, count, stack)
 
 
 
 	/**
-	 * Single version of [allocatePrimaryCommandBuffers].
+	 * Single version of [allocatePrimary].
 	 */
-	fun allocatePrimaryCommandBuffer() = allocatePrimaryCommandBuffers(1)[0]
+	fun allocatePrimary(stack: MemStack = default) = allocate(CommandBufferLevel.PRIMARY, stack)
 
 
 
 	/**
-	 * Single version of [allocateSecondaryCommandBuffers].
+	 * Single version of [allocateSecondary].
 	 */
-	fun allocateSecondaryCommandBuffer() = allocateSecondaryCommandBuffers(1)[0]
+	fun allocateSecondary(stack: MemStack = default) = allocate(CommandBufferLevel.SECONDARY, stack)
 
 
 
 	/*
-	Other functions
+	Functions
 	 */
 
 
 
-	fun reset(flags: CommandPoolResetFlags = CommandPoolResetFlags(0)) = commands.resetCommandPool(this, flags)
-
-
-
-	fun freeBuffers(buffers: List<CommandBuffer>) = MemStacks.with {
-		commands.freeCommandBuffers(self, buffers.size, wrapPointers(buffers))
-	}
-
-
-
-	fun freeBuffer(buffer: CommandBuffer) = MemStacks.with {
-		commands.freeCommandBuffers(self, 1, wrapPointer(buffer))
-	}
+	fun reset() = commands.resetCommandPool(this, CommandPoolResetFlags(0))
 
 
 }

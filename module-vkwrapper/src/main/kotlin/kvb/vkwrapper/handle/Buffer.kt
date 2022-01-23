@@ -14,10 +14,10 @@ import kvb.vulkan.*
  * [VkMemoryRequirements][MemoryRequirements].
  */
 class Buffer(
-	address: Long,
-	val device: Device,
-	val size: Long,
-	val usage: BufferUsageFlags
+	address    : Long,
+	val device : Device,
+	val size   : Long,
+	val usage  : BufferUsageFlags
 ) : BufferH(address) {
 
 

@@ -23,7 +23,6 @@ class VkLinearAllocator(val memory: DeviceMemory) : VkAllocator {
 
 
 
-
 	override fun destroy() {
 		memory.free()
 	}

@@ -23,13 +23,9 @@ class ShaderDirectory(val root: String, val device: Device, readImmediately: Boo
 	fun readShaders(device: Device) = Files.walk(Paths.get(root)).use { stream ->
 		for(path in stream) {
 			val pathString = path.toString()
-
 			val stage = ShaderCreation.stageFromFileName(pathString) ?: continue
-
 			val name = path.fileName.toString().substringBefore('.')
-
 			val shader = ShaderCreation.createFromFile(device, pathString, stage)
-
 			shaders.getOrPut(name, ::ArrayList).add(shader)
 		}
 	}

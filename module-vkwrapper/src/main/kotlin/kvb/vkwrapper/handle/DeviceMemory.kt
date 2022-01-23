@@ -70,19 +70,19 @@ class DeviceMemory(
 	/**
 	 * Implementation of vkMapMemory. Cannot be called if the memory has already been host mapped.
 	 */
-	fun map(offset: Long, size: Long, pData: DirectLong) {
+	fun map(offset: Long, size: Long, data: DirectLong) {
 		if(!type.isHostVisible)
 			throw VkException("Cannot call vkMapMemory on memory that is not host-visible.")
 
 		if(mapped)
 			throw VkException("Cannot call vkMapMemory on a VkDeviceMemory object that has already been host-mapped.")
 
-		commands.mapMemory(self, offset, size, pData).check()
+		commands.mapMemory(self, offset, size, data).check()
 
-		mapped = true
-		mappedAddress = pData.value
-		mappedOffset = offset
-		mappedSize = size
+		mapped        = true
+		mappedAddress = data.value
+		mappedOffset  = offset
+		mappedSize    = size
 	}
 
 
@@ -120,6 +120,13 @@ class DeviceMemory(
 		mappedOffset = 0L
 		mappedSize = 0L
 	}
+
+
+
+	/**
+	 * If the currently mapped memory region contains the given region.
+	 */
+	fun isMapped(offset: Int, size: Int) = offset >= mappedOffset && offset + size <= mappedOffset + mappedSize
 
 
 

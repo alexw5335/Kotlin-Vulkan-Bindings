@@ -2,9 +2,14 @@ package kvb.vkwrapper.handle
 
 import kvb.core.memory.MemStack
 import kvb.core.memory.MemStacks.default
+import kvb.vkwrapper.persistent.QueueFamilyPropertiesP
 import kvb.vulkan.*
 
-class Queue(address: Long, val device: Device) : QueueH(address) {
+class Queue(
+	address    : Long,
+	val device : Device,
+	val family : QueueFamilyPropertiesP
+) : QueueH(address) {
 
 
 	/**

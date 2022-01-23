@@ -605,7 +605,7 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 		memoryTypeBits : Int = UInt.MAX_VALUE.toInt(),
 		failureIndex   : Int = 0
 	) = memoryTypes.firstOrNull {
-		it.flags.contains(requiredFlags) && it.validMemoryTypeBits(memoryTypeBits) && it.typeIndex > failureIndex
+		it.flags.contains(requiredFlags) && it.isValid(memoryTypeBits) && it.index > failureIndex
 	}
 
 

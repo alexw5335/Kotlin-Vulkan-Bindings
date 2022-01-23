@@ -1,5 +1,6 @@
 package kvb.samples.sample0
 
+import kvb.core.memory.Unsafe
 import kvb.vkwrapper.DebugUtils
 import kvb.vkwrapper.Vulkan
 import kvb.vkwrapper.handle.*
@@ -116,7 +117,7 @@ class AppContext(window: WinApiWindow) {
 
 	private fun createDevice() = physicalDevice.createDevice(listOf(queueFamily to 1), deviceExtensions)
 
-	private fun createQueue() = device.getQueue(queueFamily.index, 0)
+	private fun createQueue() = device.getQueue(queueFamily, 0)
 
 	private fun createAllocator() = AppAllocator(device, 1L shl 20, 1L shl 22)
 
@@ -166,9 +167,9 @@ class AppContext(window: WinApiWindow) {
 		device.createFramebuffer(renderPass, listOf(it), surface.width, surface.height, 1)
 	}
 
-	private fun createCommandPool() = device.createCommandPool(queueFamily.index)
+	private fun createCommandPool() = device.createCommandPool(queueFamily)
 
-	private fun allocateCommandBuffers() = commandPool.allocatePrimaryCommandBuffers(imageViews.size)
+	private fun allocateCommandBuffers() = commandPool.allocatePrimary(imageViews.size)
 
 	private fun createUniformPool() = device.createDescriptorPool(DescriptorType.UNIFORM_BUFFER, 20)
 
@@ -182,9 +183,9 @@ class AppContext(window: WinApiWindow) {
 
 
 
-	fun allocateBuffer(buffer: Buffer) = allocator.bufferAllocator.allocateBuffer(buffer)
+	fun allocateBuffer(buffer: Buffer) = allocator.bufferAllocator.allocate(buffer.memoryRequirements(Unsafe))
 
-	fun allocateImage(image: Image) = allocator.imageAllocator.allocateImage(image)
+	fun allocateImage(image: Image) = allocator.imageAllocator.allocate(image)
 
 	fun createBuffer(size: Long, usage: BufferUsageFlags) = device.createBuffer(size, usage).also(::allocateBuffer)
 

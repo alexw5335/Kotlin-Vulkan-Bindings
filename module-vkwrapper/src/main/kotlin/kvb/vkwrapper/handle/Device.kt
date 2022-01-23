@@ -6,6 +6,7 @@ import kvb.core.memory.MemStacks.default
 import kvb.core.memory.direct.DirectByteBuffer
 import kvb.vkwrapper.builder.GraphicsPipelineBuilder
 import kvb.vkwrapper.builder.RenderPassBuilder
+import kvb.vkwrapper.persistent.QueueFamilyPropertiesP
 
 @Suppress("unused")
 class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(address) {
@@ -88,28 +89,20 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 
 
 	/**
-	 * Implementation of vkCreateCommandPool.
-	 */
-	fun createCommandPool(info: CommandPoolCreateInfo, stack: MemStack = default) = stack.get {
-		val commandPool = mallocPointer()
-		commands.createCommandPool(info, null, commandPool).check()
-		CommandPool(commandPool.value, self)
-	}
-
-
-
-	/**
 	 * Convenience implementation of vkCreateCommandPool.
 	 */
 	fun createCommandPool(
-		queueFamilyIndex : Int,
-		flags            : CommandPoolCreateFlags = CommandPoolCreateFlags(0),
-		stack            : MemStack = default
+		queueFamily : QueueFamilyPropertiesP,
+		flags       : CommandPoolCreateFlags = CommandPoolCreateFlags(0),
+		stack       : MemStack = default
 	) = stack.get {
-		createCommandPool(CommandPoolCreateInfo {
-			it.queueFamilyIndex = queueFamilyIndex
+		val info = CommandPoolCreateInfo {
+			it.queueFamilyIndex = queueFamily.index
 			it.flags = flags
-		}, stack)
+		}
+		val pointer = mallocPointer()
+		commands.createCommandPool(info, null, pointer).check()
+		CommandPool(pointer.value, self, queueFamily)
 	}
 
 
@@ -755,7 +748,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	) = stack.get {
 		allocateMemory(MemoryAllocateInfo {
 			it.allocationSize = size
-			it.memoryTypeIndex = physicalDevice.chooseMemoryType(flags, memoryTypeBits)!!.typeIndex
+			it.memoryTypeIndex = physicalDevice.chooseMemoryType(flags, memoryTypeBits)!!.index
 		}, stack)
 	}
 
@@ -778,13 +771,13 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 * Implementation of vkGetDeviceQueue.
 	 */
 	fun getQueue(
-		queueFamilyIndex : Int,
-		queueIndex       : Int,
-		stack            : MemStack = default
+		queueFamily : QueueFamilyPropertiesP,
+		queueIndex  : Int,
+		stack       : MemStack = default
 	) = stack.get {
 		val queue = mallocPointer()
-		commands.getDeviceQueue(queueFamilyIndex, queueIndex, queue)
-		Queue(queue.value, self)
+		commands.getDeviceQueue(queueFamily.index, queueIndex, queue)
+		Queue(queue.value, self, queueFamily)
 	}
 
 

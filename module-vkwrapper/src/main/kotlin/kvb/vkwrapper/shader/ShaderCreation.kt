@@ -5,6 +5,9 @@ import kvb.vkwrapper.exception.VkShaderException
 import kvb.vkwrapper.handle.Device
 import kvb.vulkan.ShaderStageFlags
 
+/**
+ * Util functions for reading shaders from files.
+ */
 object ShaderCreation {
 
 

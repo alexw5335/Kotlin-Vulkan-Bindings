@@ -9,11 +9,11 @@ import kvb.vulkan.MemoryType
  * Persistent implementation of [VkMemoryType][MemoryType].
  */
 class MemoryTypeP(
-	val typeIndex: Int,
-	val flags: MemoryPropertyFlags,
-	val heapIndex: Int,
-	val heapSize: Long,
-	val heapFlags: MemoryHeapFlags
+	val index     : Int,
+	val flags     : MemoryPropertyFlags,
+	val heapIndex : Int,
+	val heapSize  : Long,
+	val heapFlags : MemoryHeapFlags
 ) {
 
 
@@ -28,7 +28,7 @@ class MemoryTypeP(
 
 
 	/*
-	Wrapper functions
+	Properties
 	 */
 
 
@@ -53,11 +53,41 @@ class MemoryTypeP(
 
 
 
-	fun validMemoryTypeBits(memoryTypeBits: Int) = memoryTypeBits and (1 shl typeIndex) != 0
+	fun isValid(memoryTypeBits: Int) = memoryTypeBits and (1 shl index) != 0
 
 
 
-	override fun toString() = "MemoryType(index = $typeIndex, flags = $flags, heapSize = $heapSize)"
+	/*
+	ToString
+	 */
+
+
+
+	override fun toString() =
+		"MemoryType(index = $index, flags = ${flags.toString}, heapSize = ${heapFlags.toString})"
+
+
+
+	private val MemoryPropertyFlags.toString get() = when(value) {
+		1    -> "DEVICE_LOCAL"
+		2    -> "HOST_VISIBLE"
+		4    -> "HOST_COHERENT"
+		8    -> "HOST_CACHED"
+		16   -> "LAZILY_ALLOCATED"
+		32   -> "PROTECTED"
+		64   -> "DEVICE_COHERENT"
+		128  -> "DEVICE_UNCACHED"
+		256  -> "RDMA_CAPABLE"
+		else -> "__INVALID__"
+	}
+
+
+
+	private val MemoryHeapFlags.toString get() = when(value) {
+		1    -> "DEVICE_LOCAL"
+		2    -> "MULTI_INSTANCE"
+		else -> "__INVALID__"
+	}
 
 
 }

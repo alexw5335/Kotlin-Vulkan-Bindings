@@ -21,11 +21,6 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 	 */
 	private val self get() = this
 
-	/**
-	 * Single implementation of vkFreeCommandBuffers.
-	 */
-	fun free() = commandPool.freeBuffer(this)
-
 
 
 	/*
@@ -100,7 +95,6 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 		pScissors 		= scissors,
 		scissorCount 	= scissorCount
 	)
-
 
 
 

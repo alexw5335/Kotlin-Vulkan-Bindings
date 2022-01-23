@@ -1,34 +1,12 @@
 package kvb.samples
 
 import kvb.core.Platform
-import kvb.samples.app.ContextBuilder
-import kvb.samples.app.ContextCreator
-import kvb.samples.sample0.App
-import kvb.vkwrapper.builder.RenderPassBuilder
-import kvb.vulkan.*
-import kvb.window.winapi.WinApi
+import kvb.samples.app.AppTest
 
 fun main() {
 	Platform.init()
-	//App.run()
-
-	val window = WinApi.createWindow("My Window")
-
-	window.show()
-
-	val builder = object : ContextBuilder() {
-
-		override val window = window
-
-		override val isDebugEnabled = true
-
-		override fun createSurfaceRenderPass(builder: RenderPassBuilder) = defaultSurfaceRenderPass(builder)
-
-	}
-
-	val context = builder.create()
+	AppTest.run()
 }
-
 
 
 
