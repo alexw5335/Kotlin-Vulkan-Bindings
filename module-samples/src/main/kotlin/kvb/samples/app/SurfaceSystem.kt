@@ -29,6 +29,8 @@ class SurfaceSystem(
 
 	val commandBuffers = commandPool.allocatePrimary(images.size)
 
+	val clearValues = Unsafe.ClearValue(r = 1.0F, g = 1.0F, b = 1.0F, a = 1.0F).asBuffer
+
 
 
 	private var currentFrame = 0
@@ -103,6 +105,30 @@ class SurfaceSystem(
 		images = createImages()
 		imageViews = createImageViews()
 		framebuffers = createFramebuffers()
+	}
+
+
+
+	/*
+	Commands
+	 */
+
+
+
+	fun record(frameIndex: Int, block: () -> Unit) {
+		val commandBuffer = commandBuffers[frameIndex]
+		val framebuffer = framebuffers[frameIndex]
+
+		commandBuffer.begin()
+
+		commandBuffer.setViewport(viewports)
+		commandBuffer.setScissor(scissors)
+
+		commandBuffer.beginRenderPass(renderPass, framebuffer, clearValues)
+		block()
+		commandBuffer.endRenderPass()
+
+		commandBuffer.end()
 	}
 
 
