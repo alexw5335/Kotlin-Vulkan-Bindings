@@ -13,11 +13,13 @@ class SurfaceSystem(
 	val device: Device,
 	val queue: Queue,
 	val renderPass: RenderPass,
-	val createSwapchain: () -> Swapchain
+	val createSwapchain: (Swapchain?) -> Swapchain
 ) {
 
 
-	var swapchain = createSwapchain()
+	var onRecord: (CommandBuffer) -> Unit = { }
+
+	var swapchain = createSwapchain(null)
 
 	var images = createImages()
 
@@ -29,7 +31,7 @@ class SurfaceSystem(
 
 	val commandBuffers = commandPool.allocatePrimary(images.size)
 
-	val clearValues = Unsafe.ClearValue(r = 1.0F, g = 1.0F, b = 1.0F, a = 1.0F).asBuffer
+	val clearValues = Unsafe.ClearValue(r = 0.2F, g = 0.5F, b = 0.1F, a = 1.0F).asBuffer
 
 
 
@@ -43,13 +45,17 @@ class SurfaceSystem(
 
 	private val inFlightFences = List(framesInFlight) { device.createFence() }
 
-	private val imagesInFlight = arrayOfNulls<Image>(framesInFlight)
+	private val imagesInFlight = arrayOfNulls<Fence>(framesInFlight)
 
 
 
 	private val viewports = Unsafe.Viewport(1) { }
 
 	private val scissors = Unsafe.Rect2D(1) { }
+
+
+
+	init { updateDimensions() }
 
 
 
@@ -93,13 +99,12 @@ class SurfaceSystem(
 
 
 	fun recreateSwapchain() {
-		// All command buffers must be re-recorded
-		commandPool.reset()
+		commandPool.reset() // All command buffers must be re-recorded
 		imageViews.forEach { it.destroy() }
 		framebuffers.forEach { it.destroy() }
 
 		val prevSwapchain = this.swapchain
-		this.swapchain = createSwapchain()
+		this.swapchain = createSwapchain(prevSwapchain)
 		prevSwapchain.destroy()
 
 		images = createImages()
@@ -115,7 +120,13 @@ class SurfaceSystem(
 
 
 
-	fun record(frameIndex: Int, block: () -> Unit) {
+	fun record() {
+		for(i in images.indices) record(i)
+	}
+
+
+
+	private fun record(frameIndex: Int) {
 		val commandBuffer = commandBuffers[frameIndex]
 		val framebuffer = framebuffers[frameIndex]
 
@@ -125,11 +136,90 @@ class SurfaceSystem(
 		commandBuffer.setScissor(scissors)
 
 		commandBuffer.beginRenderPass(renderPass, framebuffer, clearValues)
-		block()
+		onRecord(commandBuffer)
 		commandBuffer.endRenderPass()
 
 		commandBuffer.end()
 	}
+
+
+
+	val imageAvailableSemaphore = device.createSemaphore()
+	val renderFinishedSemaphore = device.createSemaphore()
+
+	fun present() {
+		val imageIndex = swapchain.acquireNextImage(semaphore = imageAvailableSemaphore)
+
+		// Resizing
+		if(imageIndex == -1) {
+			updateDimensions()
+
+			// Minimisation
+			if(surface.width == 0 || surface.height == 0) return
+
+			recreateSwapchain()
+			record()
+
+			return
+		}
+
+		queue.submit(
+			waitSemaphore    = imageAvailableSemaphore,
+			waitDstStageMask = PipelineStageFlags.COLOR_ATTACHMENT_OUTPUT,
+			commandBuffer    = commandBuffers[imageIndex],
+			signalSemaphore  = renderFinishedSemaphore,
+			fence            = null
+		)
+
+
+		queue.present(
+			waitSemaphore = renderFinishedSemaphore,
+			swapchain = swapchain,
+			imageIndex = imageIndex
+		)
+
+		device.waitIdle()
+	}
+	/*fun present() {
+		inFlightFences[currentFrame].wait()
+
+		val imageIndex = swapchain.acquireNextImage(semaphore = imageAvailableSemaphores[currentFrame])
+
+		// Resizing
+		if(imageIndex == -1) {
+			updateDimensions()
+
+			// Minimisation
+			if(surface.width == 0 || surface.height == 0) return
+
+			recreateSwapchain()
+			record()
+
+			return
+		}
+
+		imagesInFlight[imageIndex]?.wait()
+		imagesInFlight[imageIndex] = inFlightFences[currentFrame]
+		inFlightFences[currentFrame].reset()
+
+		// Complicated synchronisation is mostly only required for presenting.
+		// For non-presentation work, a simple queue submit is enough.
+		queue.submit(
+			waitSemaphore    = imageAvailableSemaphores[currentFrame],
+			waitDstStageMask = PipelineStageFlags.COLOR_ATTACHMENT_OUTPUT,
+			commandBuffer    = commandBuffers[imageIndex],
+			signalSemaphore  = renderFinishedSemaphores[currentFrame],
+			fence            = inFlightFences[currentFrame]
+		)
+
+		queue.present(
+			waitSemaphore = renderFinishedSemaphores[currentFrame],
+			swapchain     = swapchain,
+			imageIndex    = imageIndex
+		)
+
+		currentFrame = (currentFrame + 1) % framesInFlight
+	}*/
 
 
 }

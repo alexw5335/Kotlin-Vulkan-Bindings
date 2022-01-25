@@ -47,6 +47,7 @@ package kvb.core.memory
  *     }
  *
  *     // TODO: Add memory-safe block functions
+ *     // TODO: Document other memory leaks such as returning early from block functions.
  */
 class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 

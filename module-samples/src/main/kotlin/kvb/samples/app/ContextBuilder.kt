@@ -32,7 +32,7 @@ abstract class ContextBuilder {
 
 	open fun createSurfaceRenderPass(builder: RenderPassBuilder) = defaultSurfaceRenderPass(builder)
 
-	open fun createSwapchain(): Swapchain = defaultSwapchain()
+	open fun createSwapchain(prevSwapchain: Swapchain?): Swapchain = defaultSwapchain(prevSwapchain)
 
 	open fun createDescriptorPool(): DescriptorPool = defaultDescriptorPool()
 
@@ -92,14 +92,15 @@ abstract class ContextBuilder {
 
 
 
-	protected fun defaultSwapchain() = device.createSwapchain(
+	protected fun defaultSwapchain(prevSwapchain: Swapchain?) = device.createSwapchain(
 		surface          = surface!!,
 		minImageCount    = surface!!.capabilities.minImageCount + 1,
 		imageFormat      = surfaceFormat!!.format,
 		imageColourSpace = surfaceFormat!!.colourSpace,
 		width            = surface!!.width,
 		height           = surface!!.height,
-		presentMode      = presentMode
+		presentMode      = presentMode,
+		oldSwapchain     = prevSwapchain
 	)
 
 

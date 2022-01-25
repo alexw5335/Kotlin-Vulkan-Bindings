@@ -85,6 +85,15 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 		}
 	}
 
+	val set = pool.buildSet {
+
+	}
+	
+	binding(0) {
+		vec2() // location = 0
+		vec2() // location = 1, offset = 8
+	}
+
 	 */
 
 
@@ -119,6 +128,19 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 	fun vertexUniform(count: Int = 1) = uniform(ShaderStageFlags.VERTEX, count)
 
 	fun fragUniform(count: Int = 1) = uniform(ShaderStageFlags.FRAGMENT, count)
+
+
+
+	fun vertexWriteUniform(
+		buffer          : Buffer,
+		offset          : Long,
+		size            : Long,
+		dstArrayElement : Int = 0,
+		count           : Int = 1
+	) {
+		vertexUniform(count)
+		write(buffer, offset, size, dstArrayElement, count)
+	}
 
 
 

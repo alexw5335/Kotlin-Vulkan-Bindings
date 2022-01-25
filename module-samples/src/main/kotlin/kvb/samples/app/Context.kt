@@ -12,4 +12,10 @@ class Context(
 	val queue          : Queue,
 	val surfaceSystem  : SurfaceSystem?,
 	val descriptorPool : DescriptorPool
-)
+) {
+
+
+	val memoryManager = VkMemoryManager(device, queue, 8192, 8192, 8192)
+
+
+}

@@ -37,10 +37,8 @@ object SampleShader : AppShader("sample") {
 
 
 	val descriptorSet = context.uniformPool.buildSet {
-		vertexUniform()
-		write(uniformBuffer, 0L, 16L)
-		vertexUniform()
-		write(uniformBuffer2, 0L, 8L)
+		vertexWriteUniform(uniformBuffer, offset = 0L, size = 16L)
+		vertexWriteUniform(uniformBuffer2, offset = 0L, size = 8L)
 	}
 
 

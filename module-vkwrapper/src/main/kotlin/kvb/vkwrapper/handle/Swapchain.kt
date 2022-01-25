@@ -78,7 +78,7 @@ class Swapchain(address: Long, val device: Device, val format: Format) : Swapcha
 	): Int = stack.get {
 		val index = mallocInt()
 
-		return when(val result = commands.acquireNextImage(self, timeout, semaphore, fence, index)) {
+		when(val result = commands.acquireNextImage(self, timeout, semaphore, fence, index)) {
 			Result.ERROR_OUT_OF_DATE -> -1
 			Result.SUCCESS           -> index.value
 			else                     -> result.err()

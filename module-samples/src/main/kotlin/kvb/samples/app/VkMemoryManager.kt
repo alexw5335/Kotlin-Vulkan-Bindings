@@ -40,7 +40,7 @@ class VkMemoryManager(
 
 
 
-	private val stagingAllocator = VkLinearAllocator(
+	val stagingAllocator = VkLinearAllocator(
 		device.allocateMemory(
 			size = stagingMemorySize.toLong(),
 			flags = MemoryPropertyFlags { HOST_VISIBLE },
@@ -50,7 +50,7 @@ class VkMemoryManager(
 
 
 
-	private val imageAllocator = VkLinearAllocator(
+	val imageAllocator = VkLinearAllocator(
 		device.allocateMemory(
 			size = imageMemorySize.toLong(),
 			flags = MemoryPropertyFlags { DEVICE_LOCAL },
@@ -60,7 +60,7 @@ class VkMemoryManager(
 
 
 
-	private val bufferAllocator = VkLinearAllocator(
+	val bufferAllocator = VkLinearAllocator(
 		device.allocateMemory(
 			size = bufferMemorySize.toLong(),
 			flags = MemoryPropertyFlags { DEVICE_LOCAL },

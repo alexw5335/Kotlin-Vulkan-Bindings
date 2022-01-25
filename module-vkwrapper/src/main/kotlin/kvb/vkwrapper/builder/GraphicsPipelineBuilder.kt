@@ -1,6 +1,7 @@
 package kvb.vkwrapper.builder
 
 import kvb.core.memory.Allocator
+import kvb.core.memory.DirectList
 import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
 import kvb.vkwrapper.shader.Shader
@@ -132,6 +133,10 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 	private val vertexInputState = allocator.PipelineVertexInputStateCreateInfo { }
 
 
+
+	private val vertexBindings = DirectList(allocator, 5) { VertexInputBindingDescription(it) { } }
+
+	private val vertexAttributes = DirectList(allocator, 5) { VertexInputAttributeDescription(it) { } }
 
 	var vertexBindingDescriptions
 		get() = vertexInputState.vertexBindingDescriptions
