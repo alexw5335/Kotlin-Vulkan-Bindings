@@ -1,8 +1,6 @@
 package kvb.vkwrapper.shader
 
-import kvb.vkwrapper.handle.Device
-import kvb.vkwrapper.handle.Pipeline
-import kvb.vkwrapper.handle.PipelineLayout
+import kvb.vkwrapper.handle.*
 
 interface ShaderCollection {
 
@@ -11,17 +9,24 @@ interface ShaderCollection {
 
 	val device: Device
 
-	val attributes: List<VertexAttribute> get() = emptyList()
+	val pipeline: Pipeline
 
-	val bindings: List<VertexBinding> get() = emptyList()
+	val descriptors: Map<Int, DescriptorSet> get() = emptyMap()
 
-	val pipeline: Pipeline? get() = null
+
+
+	fun bind(commandBuffer: CommandBuffer) {
+		commandBuffer.bindPipeline(pipeline)
+
+		for((binding, set) in descriptors)
+			commandBuffer.bindDescriptorSet(pipeline.bindPoint, pipeline.layout, binding, set)
+	}
 
 
 
 	fun destroy() {
-		pipeline?.destroy()
 		shaders.forEach { it.module.destroy() }
+		pipeline.destroy()
 	}
 
 

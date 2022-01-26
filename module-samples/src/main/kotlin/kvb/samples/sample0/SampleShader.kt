@@ -7,19 +7,6 @@ import kotlin.math.sin
 object SampleShader : AppShader("sample") {
 
 
-	override val attributes = listOf(
-		vec2Attrib(location = 0, binding = 0, offset = 0),
-		vec3Attrib(location = 1, binding = 0, offset = 4 * 2)
-	)
-
-
-
-	override val bindings = listOf(
-		binding(binding = 0, stride = 4 * 5)
-	)
-
-
-
 	override fun destroy() {
 		super.destroy()
 		descriptorSet.layout.destroy()
@@ -37,19 +24,24 @@ object SampleShader : AppShader("sample") {
 
 
 	val descriptorSet = context.uniformPool.buildSet {
-		vertexWriteUniform(uniformBuffer, offset = 0L, size = 16L)
-		vertexWriteUniform(uniformBuffer2, offset = 0L, size = 8L)
+		vertexWriteUniform(uniformBuffer, size = 16L)
+		vertexWriteUniform(uniformBuffer2, size = 8L)
 	}
 
 
 
 	override val pipeline = context.device.buildGraphicsPipeline {
-		it.renderPass = context.renderPass
-		it.shaders(this)
-		it.layout(descriptorSet)
-		it.topology = PrimitiveTopology.TRIANGLE_FAN
-		it.singleColourBlendAttachment()
-		it.dynamicViewportAndScissor()
+		vertexBinding {
+			vec2()
+			vec3()
+		}
+
+		shaders(this@SampleShader)
+		renderPass(context.renderPass)
+		layout(descriptorSet)
+		topology = PrimitiveTopology.TRIANGLE_FAN
+		singleColourBlendAttachment()
+		dynamicViewportAndScissor()
 	}
 
 
@@ -63,8 +55,7 @@ object SampleShader : AppShader("sample") {
 
 
 	fun record(commandBuffer: CommandBuffer) {
-		commandBuffer.bindPipeline(pipeline)
-		commandBuffer.bindGraphicsDescriptorSet(pipeline.layout, descriptorSet)
+		bind(commandBuffer)
 		commandBuffer.bindVertexBuffer(vertexBuffer)
 		commandBuffer.draw(vertexCount = Circles.numSections + 2, instanceCount = 1)
 	}

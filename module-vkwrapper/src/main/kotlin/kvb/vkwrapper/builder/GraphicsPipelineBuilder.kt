@@ -21,10 +21,6 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 	var subpass: Int = 0
 
-	var basePipelineIndex: Int = 0
-
-	var basePipelineHandle: PipelineH? = null
-
 
 
 	/*
@@ -53,6 +49,12 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 	fun layout(set: DescriptorSet) {
 		layout(set.layout)
+	}
+
+
+
+	fun renderPass(renderPass: RenderPass) {
+		this.renderPass = renderPass
 	}
 
 
@@ -98,8 +100,10 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 		for(shader in collection.shaders)
 			shader(shader)
 
-		vertexBindings(collection.bindings)
-		vertexAttributes(collection.attributes)
+		layout = if(collection.descriptors.isEmpty())
+			device.createPipelineLayout()
+		else
+			device.createPipelineLayout(collection.descriptors.map { it.value.layout })
 	}
 
 
@@ -134,46 +138,52 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	private val vertexBindings = DirectList(allocator, 5) { VertexInputBindingDescription(it) { } }
+	val vertexBindings = DirectList(allocator, 5) { VertexInputBindingDescription(it) { } }
 
-	private val vertexAttributes = DirectList(allocator, 5) { VertexInputAttributeDescription(it) { } }
-
-	var vertexBindingDescriptions
-		get() = vertexInputState.vertexBindingDescriptions
-		set(value) { vertexInputState.vertexBindingDescriptions = value }
-
-	var vertexAttributeDescriptions
-		get() = vertexInputState.vertexAttributeDescriptions
-		set(value) { vertexInputState.vertexAttributeDescriptions = value }
+	val vertexAttributes = DirectList(allocator, 5) { VertexInputAttributeDescription(it) { } }
 
 
 
-	fun vertexBindings(bindings: List<VertexBinding>) {
-		vertexBindingDescriptions = allocator.VertexInputBindingDescription(bindings.size) { }
+	var currentVertexLocation = 0
 
-		for((i, b) in bindings.withIndex()) {
-			vertexBindingDescriptions[i].let {
-				it.binding = b.binding
-				it.stride = b.stride
-				it.inputRate = b.inputRate
-			}
+
+
+	fun vertexBinding(binding: Int, stride: Int, inputRate: VertexInputRate) {
+		vertexBindings.buffer[vertexBindings.next].let {
+			it.binding   = if(binding < 0) vertexBindings.size - 1 else binding
+			it.stride    = stride
+			it.inputRate = inputRate
 		}
+		currentVertexLocation = 0
 	}
 
 
 
-	fun vertexAttributes(attributes: List<VertexAttribute>) {
-		vertexAttributeDescriptions = allocator.VertexInputAttributeDescription(attributes.size) { }
-
-		for((i, a) in attributes.withIndex()) {
-			vertexAttributeDescriptions[i].let {
-				it.location = a.location
-				it.binding = a.binding
-				it.format = a.format
-				it.offset = a.offset
-			}
-		}
+	inline fun vertexBinding(binding: Int = -1, block: VertexInputBindingDescription.() -> Unit) {
+		vertexBinding(binding, 0, VertexInputRate.VERTEX)
+		block(vertexBindings.buffer[vertexBindings.size - 1])
 	}
+
+
+
+	fun VertexInputBindingDescription.vertexAttribute(format: Format, size: Int) {
+		// WARNING: Some formats require multiple location slots.
+		vertexAttributes.buffer[vertexAttributes.next].let {
+			it.binding  = binding
+			it.location = currentVertexLocation++
+			it.offset   = stride
+			it.format   = format
+		}
+		stride += size
+	}
+
+
+
+	fun VertexInputBindingDescription.vec2() = vertexAttribute(Format.R32G32_SFLOAT, 8)
+
+	fun VertexInputBindingDescription.vec3() = vertexAttribute(Format.R32G32B32_SFLOAT, 12)
+
+	fun VertexInputBindingDescription.vec4() = vertexAttribute(Format.R32G32B32A32_SFLOAT, 16)
 
 
 
@@ -489,6 +499,11 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 	fun build() = allocator.GraphicsPipelineCreateInfo {
+		vertexInputState.vertexBindingDescriptionCount = vertexBindings.size
+		vertexInputState.pVertexBindingDescriptions = vertexBindings.buffer.address
+		vertexInputState.vertexAttributeDescriptionCount = vertexAttributes.size
+		vertexInputState.pVertexAttributeDescriptions = vertexAttributes.buffer.address
+
 		it.flags 				= flags
 		it.stages 				= shaderStagesBuffer
 		it.vertexInputState 	= vertexInputState
@@ -503,8 +518,6 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 		it.layout 				= layout ?: error("Graphics pipeline must contain a pipeline layout.")
 		it.renderPass 			= renderPass ?: error("Graphics pipeline must contain a render pass.")
 		it.subpass 				= subpass
-		it.basePipelineHandle 	= basePipelineHandle ?: PipelineH(0)
-		it.basePipelineIndex 	= basePipelineIndex
 	}
 
 

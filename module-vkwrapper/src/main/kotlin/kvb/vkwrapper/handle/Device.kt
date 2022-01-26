@@ -335,7 +335,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 */
 	fun buildGraphicsPipeline(
 		stack: MemStack = default,
-		block: (GraphicsPipelineBuilder) -> Unit,
+		block: GraphicsPipelineBuilder.() -> Unit,
 	) = stack.get {
 		val pointer = mallocPointer(1)
 		val builder = GraphicsPipelineBuilder(self, this).also(block)

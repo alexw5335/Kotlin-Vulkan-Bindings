@@ -30,18 +30,6 @@ class VulkanGenerator(
 	private val handles = registry.types.filterIsInstance<HandleType>()
 
 
-
-	private val namesToProviders = HashMap<String, Provider>().also { map ->
-		for(provider in registry.providers) {
-			for(type in provider.types)
-				map[type.name] = provider
-
-			for(command in provider.commands)
-				map[command.name] = provider
-		}
-	}
-
-
 	
 	/*
 	Writer utils
@@ -96,7 +84,7 @@ class VulkanGenerator(
 	val StructType.docStrings get() = ArrayList<String>().also { list ->
 		val maxLength = members.maxOfOrNull { it.docType.length + 2 } ?: 0
 
-		list.add("    // provided by ${namesToProviders[name]!!.name}\n")
+		list.add("    // provided by ${registry.namesToProviders[name]!!.name}\n")
 
 		if(isUnion)
 			list.add("    union $name {")
@@ -127,7 +115,7 @@ class VulkanGenerator(
 	val EnumType.docStrings get() = ArrayList<String>().also { list ->
 		val maxLength = entries.maxOfOrNull { it.name.length + 2} ?: 0
 
-		list.add("    // provided by ${namesToProviders[name]!!.name}\n")
+		list.add("    // provided by ${registry.namesToProviders[name]!!.name}\n")
 		list.add("    enum $name {")
 
 		for(e in entries) {

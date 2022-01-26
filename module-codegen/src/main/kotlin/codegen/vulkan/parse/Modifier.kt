@@ -5,7 +5,11 @@ package codegen.vulkan.parse
  * modifiers, then this class must be updated. The [identifier] is how the modifier appears in the vk.xml registry file.
  * The [castName] is used in JNI files to cast java data types to the appropriate Vulkan type.
  */
-enum class Modifier(val isPointer: Boolean, val identifier: String?, val castName: (String) -> String) {
+enum class Modifier(
+	val isPointer  : Boolean,
+	val identifier : String?,
+	val castName   : (String) -> String
+) {
 
 
 	POINTER(  true,  "*",               { "$it*" }),

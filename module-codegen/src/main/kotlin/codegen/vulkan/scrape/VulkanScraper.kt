@@ -59,7 +59,17 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 			if(provider.shouldGen)
 				genProviders.add(provider)
 
-		return ScrapedRegistry(genTypes, genCommands, genConstants, genProviders)
+		val namesToProviders = HashMap<String, Provider>()
+
+		for(provider in providers) {
+			for(type in provider.types)
+				namesToProviders[type.name] = provider
+
+			for(command in provider.commands)
+				namesToProviders[command.name] = provider
+		}
+
+		return ScrapedRegistry(genTypes, genCommands, genConstants, genProviders, namesToProviders)
 	}
 
 

@@ -237,11 +237,11 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 	 * Implementation of vkCmdBindDescriptorSets.
 	 */
 	fun bindDescriptorSets(
-		bindPoint: PipelineBindPoint,
-		layout: PipelineLayout,
-		firstSet: Int,
-		descriptorSets: DirectLongBuffer,
-		dynamicOffsets: DirectIntBuffer
+		bindPoint      : PipelineBindPoint,
+		layout         : PipelineLayout,
+		firstSet       : Int,
+		descriptorSets : DirectLongBuffer,
+		dynamicOffsets : DirectIntBuffer
 	) = commands.cmdBindDescriptorSets(
 		commandBuffer 		= this,
 		pipelineBindPoint 	= bindPoint,
@@ -257,20 +257,22 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 
 	/**
 	 * Convenience implementation of vkCmdBindDescriptorSets. For binding a single descriptor set with no dynamic
-	 * descriptors to a graphics pipeline.
+	 * descriptors.
 	 */
-	fun bindGraphicsDescriptorSet(
-		layout        : PipelineLayout,
-		descriptorSet : DescriptorSet,
-		stack         : MemStack = default
+	fun bindDescriptorSet(
+		bindPoint : PipelineBindPoint,
+		layout    : PipelineLayout,
+		binding   : Int,
+		set       : DescriptorSet,
+		stack     : MemStack = default
 	) = stack.with {
 		commands.cmdBindDescriptorSets(
 			commandBuffer      = self,
-			pipelineBindPoint  = PipelineBindPoint.GRAPHICS,
+			pipelineBindPoint  = bindPoint,
 			layout             = layout,
-			firstSet           = 0,
+			firstSet           = binding,
 			descriptorSetCount = 1,
-			pDescriptorSets    = wrapPointer(descriptorSet),
+			pDescriptorSets    = wrapPointer(set),
 			dynamicOffsetCount = 0,
 			pDynamicOffsets    = DirectIntBuffer(0, 0)
 		)

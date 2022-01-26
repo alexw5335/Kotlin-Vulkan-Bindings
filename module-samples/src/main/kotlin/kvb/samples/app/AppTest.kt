@@ -1,13 +1,14 @@
 package kvb.samples.app
 
 import kvb.core.memory.MemStacks
-import kvb.samples.sample0.Circles
-import kvb.samples.sample0.SampleShader
 import kvb.vkwrapper.shader.FileShaderCollection
 import kvb.vkwrapper.shader.ShaderDirectory
 import kvb.vulkan.BufferUsageFlags
 import kvb.vulkan.PrimitiveTopology
 import kvb.window.winapi.WinApi
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 object AppTest {
 
@@ -30,23 +31,15 @@ object AppTest {
 
 
 
-	val shader = object : FileShaderCollection(shaders, "simple") {
-
-		override val attributes = listOf(
-			vec2Attrib(location = 0, binding = 0, offset = 0)
-		)
-
-		override val bindings = listOf(
-			binding(binding = 0, stride = 2 * 4)
-		)
+	object Shader : FileShaderCollection(shaders, "simple") {
 
 		override val pipeline = device.buildGraphicsPipeline {
-			it.renderPass = context.surfaceSystem!!.renderPass
-			it.shaders(this)
-			it.emptyLayout()
-			it.topology = PrimitiveTopology.TRIANGLE_STRIP
-			it.singleColourBlendAttachment()
-			it.dynamicViewportAndScissor()
+			vertexBinding { vec2() }
+			renderPass(context.surfaceSystem!!.renderPass)
+			shaders(this@Shader)
+			topology = PrimitiveTopology.TRIANGLE_STRIP
+			singleColourBlendAttachment()
+			dynamicViewportAndScissor()
 		}
 
 	}
@@ -73,10 +66,8 @@ object AppTest {
 
 
 	fun run() {
-		Runtime.getRuntime().exec("res/shader/compile.bat").waitFor()
-
 		context.surfaceSystem!!.onRecord = {
-			it.bindPipeline(shader.pipeline!!)
+			Shader.bind(it)
 			it.bindVertexBuffer(vertexBuffer)
 			it.draw(vertexCount = 3, instanceCount = 1)
 		}
@@ -90,7 +81,6 @@ object AppTest {
 			if(WinApi.windows.isEmpty()) break
 			context.surfaceSystem.present()
 			Thread.sleep(16)
-			println(MemStacks.default.bytesUsed)
 		}
 	}
 

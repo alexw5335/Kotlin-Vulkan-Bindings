@@ -1,7 +1,9 @@
 package codegen
 
 import codegen.core.PrimitiveGenerator
+import codegen.vulkan.VulkanCWrapperGenerator
 import codegen.vulkan.VulkanGenerator
+import codegen.vulkan.rawparse.VkParser
 import codegen.vulkan.scrape.VulkanScraper
 import java.nio.file.Paths
 
@@ -39,6 +41,20 @@ private fun genPrimitives() {
 
 
 
+private fun genVulkanCWrapper() {
+	val generator = VulkanCWrapperGenerator(
+		registry = VulkanScraper.scrape(Paths.get("vk.xml")),
+		directory = Paths.get("gen/c")
+	)
+
+	generator.genDef()
+}
+
+
+
 fun main() {
-	genVulkan()
+	//genVulkan()
+	//genVulkanCWrapper()
+
+	VkParser.parse(Paths.get("vk.xml"))
 }

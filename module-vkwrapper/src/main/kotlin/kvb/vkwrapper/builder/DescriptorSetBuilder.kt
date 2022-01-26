@@ -94,6 +94,23 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 		vec2() // location = 1, offset = 8
 	}
 
+
+	vertexBinding(0, VertexInputRate.INSTANCE) {
+		int(location = 1)
+	}
+
+	vertexBinding(0, 20) {
+		vertexAttribute(0, 0, Format.R8G8B8A8_SFLOAT, 0)
+		vertexAttribute(1, 0, Format.R8G8B8A8_SFLOAT, 32)
+	}
+
+	vertexBinding(0) {
+		vec4()
+		vec4()
+	}
+
+
+
 	 */
 
 
@@ -133,7 +150,7 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 	fun vertexWriteUniform(
 		buffer          : Buffer,
-		offset          : Long,
+		offset          : Long = 0,
 		size            : Long,
 		dstArrayElement : Int = 0,
 		count           : Int = 1
