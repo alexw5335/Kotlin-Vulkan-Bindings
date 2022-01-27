@@ -6,8 +6,7 @@ import kvb.core.memory.direct.DirectByteBuffer
 import kvb.vkwrapper.Vulkan
 import kvb.vkwrapper.handle.*
 import kvb.vkwrapper.persistent.QueueFamilyPropertiesP
-import kvb.vulkan.BufferUsageFlags
-import kvb.vulkan.MappedMemoryRange
+import kvb.vulkan.*
 
 class Context(
 	val instance       : Instance,
@@ -19,6 +18,14 @@ class Context(
 	val surfaceSystem  : SurfaceSystem?,
 	val descriptorPool : DescriptorPool
 ) {
+
+
+
+	val sampler = device.createSampler(
+		magFilter = Filter.NEAREST,
+		minFilter = Filter.NEAREST
+	)
+
 
 
 	/*

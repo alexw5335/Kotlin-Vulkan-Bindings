@@ -10,6 +10,15 @@ import java.nio.file.Path
 class VulkanCWrapperGenerator(private val registry: ParsedRegistry, private val directory: Path) {
 
 
+	/*
+	Organisation:
+
+	vk_def.h: contains all types
+	vk_cmd.h: contains function addresses, global instance, physical device, and device,
+		and commands (filled in with global handles).
+	Separate functions for VkPhysicalDevice commands that take in a handle (for choosing).
+
+	 */
 	init { Files.createDirectories(directory) }
 
 
@@ -52,28 +61,81 @@ class VulkanCWrapperGenerator(private val registry: ParsedRegistry, private val 
 	}
 
 
-
-	val VarElement.typeGenName get() = when(type) {
-		"VkBool32"        -> "uint32_t"
-		"VkDeviceAddress" -> "uint64_t"
-		"VkDeviceSize"    -> "uint64_t"
-		"VkFlags"         -> "uint32_t"
-		"VkSampleMask"    -> "uint32_t"
-		else              -> type
-	}.let {
-		if(modifier != Modifier.ARRAY)
-			modifier.castName(it)
-		else
-			it
-	}
+	private val VarElement.typeGenName get() = modifier.memberName(type)
 
 
 
-	val VarElement.genName get() = if(modifier == Modifier.ARRAY)
+	private val VarElement.genName get() = if(modifier == Modifier.ARRAY)
 		name + '[' + constLen!! + ']'
 	else
 		name
 
+
+
+
+	fun genCmd() = CWriter.writeHeader(directory, "vk_cmd") {
+		multilineDeclaration("""
+			#pragma clang diagnostic push
+			#pragma ide diagnostic ignored "OCUnusedMacroInspection"
+			#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+			#pragma once
+			
+			#include "vk_def.h"
+		""")
+
+		group(0) {
+			for(command in commands) {
+				declaration {
+
+					write("typedef ${command.returnType ?: "void"} (__stdcall* PFN_${command.name})(")
+					for((index, param) in command.params.withIndex()) {
+						if(index != 0) write(' ')
+						write("${param.typeGenName} ${param.name}")
+						if(index != command.params.size - 1) write(',')
+					}
+					writeln(");")
+				}
+			}
+		}
+
+		group(0) {
+			for(command in commands) {
+				writeln("PFN_${command.name} ${command.name}_;")
+			}
+		}
+
+		function("void vkwLoadInstance(VkInstance instance)") {
+			for(provider in providers) {
+				val platform = (provider as? ExtensionElement)?.platform
+
+				if(platform != null) writeln("#ifdef ${platform.define}")
+
+				for(command in provider.commands) {
+					if(command.alias != null) continue
+					if(command.params.first().type != "VkInstance") continue
+					val name = command.name
+					writeln("${name}_ = (PFN_$name) vkGetInstanceProcAddr_(instance, \"$name\");")
+				}
+				if(platform != null) writeln("#endif")
+			}
+		}
+
+		function("void vkwLoadDevice(VkDevice device)") {
+			for(provider in providers) {
+				val platform = (provider as? ExtensionElement)?.platform
+
+				if(platform != null) writeln("#ifdef ${platform.define}")
+
+				for(command in provider.commands) {
+					if(command.alias != null) continue
+					if(command.params.first().type != "VkDevice") continue
+					val name = command.name
+					writeln("${name}_ = (PFN_$name) vkGetDeviceProcAddr_(device, \"$name\");")
+				}
+				if(platform != null) writeln("#endif")
+			}
+		}
+	}
 
 
 
@@ -85,6 +147,12 @@ class VulkanCWrapperGenerator(private val registry: ParsedRegistry, private val 
 			#pragma once
 			
 			#include <stdint.h>
+			
+			typedef uint32_t VkBool32;
+			typedef uint64_t VkDeviceAddress;
+			typedef uint64_t VkDeviceSize;
+			typedef uint32_t VkFlags;
+			typedef uint32_t VkSampleMask;
 		""")
 
 		group(0) {
@@ -183,37 +251,6 @@ class VulkanCWrapperGenerator(private val registry: ParsedRegistry, private val 
 				writeln(" ${struct.name};")
 			}
 		}
-
-		group(0) {
-			for(command in commands) {
-				declaration {
-					val returnTypeName = when(command.returnType) {
-						"VkBool32"        -> "uint32_t"
-						"VkDeviceAddress" -> "uint64_t"
-						"VkDeviceSize"    -> "uint64_t"
-						"VkFlags"         -> "uint32_t"
-						"VkSampleMask"    -> "uint32_t"
-						null              -> "void"
-						else              -> command.returnType
-					}
-
-					write("typedef $returnTypeName (__stdcall* PFN_${command.name})(")
-					for((index, param) in command.params.withIndex()) {
-						if(index != 0) write(' ')
-						write("${param.typeGenName} ${param.name}")
-						if(index != command.params.size - 1) write(',')
-					}
-					writeln(");")
-				}
-			}
-		}
-
-		group(0) {
-			for(command in commands) {
-				writeln("PFN_${command.name} ${command.name}_;")
-			}
-		}
-
 	}
 
 

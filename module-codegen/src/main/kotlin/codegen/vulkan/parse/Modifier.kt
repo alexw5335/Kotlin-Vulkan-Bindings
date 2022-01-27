@@ -8,7 +8,8 @@ package codegen.vulkan.parse
 enum class Modifier(
 	val isPointer  : Boolean,
 	val identifier : String?,
-	val castName   : (String) -> String
+	val castName   : (String) -> String,
+	val memberName : (String) -> String = castName
 ) {
 
 
@@ -28,7 +29,7 @@ enum class Modifier(
 
 	POINTER8( true,  "const * const *", { "const $it* const*" }),
 
-	ARRAY(    false, null,              { "$it*" }),
+	ARRAY(    false, null,              { "$it*" }, memberName = { it }),
 
 	NONE(     false, null,              { it });
 

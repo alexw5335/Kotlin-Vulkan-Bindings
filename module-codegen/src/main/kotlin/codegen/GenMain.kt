@@ -48,6 +48,7 @@ private fun genVulkanCWrapper() {
 	)
 
 	generator.genDef()
+	generator.genCmd()
 }
 
 

@@ -578,12 +578,56 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 
 
 	/**
-	 * Implementation of vkCreateSampler
+	 * Implementation of vkCreateSampler.
 	 */
 	fun createSampler(info: SamplerCreateInfo, stack: MemStack = default) = stack.get {
 		val pointer = mallocPointer()
 		commands.createSampler(info, null, pointer).check()
 		Sampler(pointer.value, self)
+	}
+
+
+
+	/**
+	 * Convenience implementation of vkCreateSampler.
+	 */
+	fun createSampler(
+		magFilter               : Filter,
+		minFilter               : Filter,
+		mipmapMode              : SamplerMipmapMode   = SamplerMipmapMode.NEAREST,
+		addressModeU            : SamplerAddressMode  = SamplerAddressMode.REPEAT,
+		addressModeV            : SamplerAddressMode  = SamplerAddressMode.REPEAT,
+		addressModeW            : SamplerAddressMode  = SamplerAddressMode.REPEAT,
+		mipLodBias              : Float               = 0.0F,
+		anisotropyEnable        : Boolean             = false,
+		maxAnisotropy           : Float               = 0.0F,
+		compareEnable           : Boolean             = false,
+		compareOp               : CompareOp           = CompareOp.NEVER,
+		minLod                  : Float               = 0.0F,
+		maxLod                  : Float               = 1.0F,
+		borderColour            : BorderColor         = BorderColor.FLOAT_TRANSPARENT_BLACK,
+		unnormalisedCoordinates : Boolean             = false,
+		flags                   : SamplerCreateFlags  = SamplerCreateFlags(0),
+		stack                   : MemStack            = default
+	) = stack.get {
+		createSampler(SamplerCreateInfo {
+			it.flags = flags
+			it.magFilter = magFilter
+			it.minFilter = minFilter
+			it.mipmapMode = mipmapMode
+			it.addressModeU = addressModeU
+			it.addressModeV = addressModeV
+			it.addressModeW = addressModeW
+			it.mipLodBias = mipLodBias
+			it.anisotropyEnable = VK_BOOL(anisotropyEnable)
+			it.maxAnisotropy = maxAnisotropy
+			it.compareEnable = VK_BOOL(compareEnable)
+			it.compareOp = compareOp
+			it.minLod = minLod
+			it.maxLod = maxLod
+			it.borderColor = borderColour
+			it.unnormalizedCoordinates = VK_BOOL(unnormalisedCoordinates)
+		})
 	}
 
 

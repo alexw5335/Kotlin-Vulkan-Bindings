@@ -51,3 +51,5 @@ const val VK_MAX_DRIVER_INFO_SIZE = 256
 const val VK_SHADER_UNUSED_KHR = -1
 
 const val VK_MAX_GLOBAL_PRIORITY_SIZE_EXT = 16
+
+fun VK_BOOL(value: Boolean) = if(value) VK_TRUE else VK_FALSE

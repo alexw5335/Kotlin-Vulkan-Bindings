@@ -144,10 +144,11 @@ class VulkanGenerator(
 			vulkanPackage()
 		}
 
-		styled(style(1, 0)) {
+		group(1) {
 			for(constant in registry.constants)
 				if(constant.shouldGen)
 					declaration("const val ${constant.genName} = ${constant.value}")
+			declaration("fun VK_BOOL(value: Boolean) = if(value) VK_TRUE else VK_FALSE")
 		}
 	}
 
@@ -1211,14 +1212,12 @@ class VulkanGenerator(
 		}
 
 		function("void loadInstanceCommands()") {
-			newline()
 			forEachCommand {
 				writeln("$addressName = ($pfnName) vkGetInstanceProcAddr(gInstance, \"$name\");")
 			}
 		}
 
 		function("void loadDeviceCommands()") {
-			newline()
 			forEachCommand {
 				writeln("$addressName = ($pfnName) vkGetDeviceProcAddr_(gDevice, \"$name\");")
 			}
