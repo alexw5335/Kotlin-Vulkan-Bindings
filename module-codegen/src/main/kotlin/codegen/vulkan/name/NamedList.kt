@@ -13,6 +13,8 @@ class NamedList<T : Named>(
 
 	fun fromName(name: String) = map[name] ?: throw NoSuchElementException("No element with name '$name'")
 
+	fun fromNameOrNull(name: String) = map[name]
+
 	fun contains(name: String) = map[name] != null
 
 

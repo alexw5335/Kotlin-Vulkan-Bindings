@@ -10,30 +10,32 @@ class DirectList<T : DirectBuffer>(
 ) : Addressable {
 
 
+	override val address get() = buffer.address
+
 	var size = 0
 
 	var buffer = allocator.create(initialCapacity)
-
-	override val address get() = buffer.address
-
-
 
 	val isEmpty get() = size == 0
 
 	val isNotEmpty get() = size > 0
 
+
+
+	fun reset() {
+		// WARNING: Will not zero out memory.
+		size = 0
+	}
+
+	fun resetCompletely() {
+		size = 0
+		Unsafe.set(buffer.address, buffer.byteSize, 0)
+	}
+
 	val next: Int get() {
 		ensureCapacity()
 		return size++
 	}
-
-
-
-	fun reset() {
-		size = 0
-	}
-
-
 
 	private fun ensureCapacity() {
 		if(size < buffer.capacity) return

@@ -8,6 +8,7 @@ import kvb.vkwrapper.allocation.VkAllocation
 import kvb.vkwrapper.exception.VkException
 import kvb.vkwrapper.persistent.MemoryRequirementsP
 import kvb.vulkan.*
+import kotlin.math.min
 
 /**
  * Note: size is user-defined size of the buffer, not the aligned size given by
@@ -63,6 +64,12 @@ class Buffer(
 		throw VkException("No memory has been bound to this buffer.")
 	else
 		DirectByteBuffer(memory.mappedAddress - memory.mappedOffset + offset, size)
+
+
+
+	fun flush(offset: Long = 0L, size: Long = this.size, stack: MemStack = default) {
+		memory.flush(this.offset + offset, min(this.size - offset, size), stack)
+	}
 
 
 

@@ -202,27 +202,27 @@ class VulkanParser private constructor(private val registry: XmlElement) {
 		val name = element["name"] ?: err(element)
 
 		element["alias"]?.let {
-			return ConstantElement(name, "", true)
+			return ConstantElement(name, "", "", true)
 		}
 
-		val value = element.attrib("value")
+		val cValue = element.attrib("value")
 
 		// Int literal
-		value.toIntOrNull()?.let {
-			return ConstantElement(name, value)
+		cValue.toIntOrNull()?.let {
+			return ConstantElement(name, cValue, cValue)
 		}
 
 		// Hardcoded, may need to be updated in the future.
-		return when(value) {
-			"(~0ULL)" 	-> ConstantElement(name, "-1L")
-			"(~0U)" 	-> ConstantElement(name, "-1")
-			"(~0U-1)" 	-> ConstantElement(name, "-2")
-			"(~0U-2)" 	-> ConstantElement(name, "-3")
-			"(~1U)"     -> ConstantElement(name, "-2")
-			"(~2U)"     -> ConstantElement(name, "-3")
-			"1000.0f"	-> ConstantElement(name, "1000.0f")
-			"1000.0F"   -> ConstantElement(name, "1000.0f")
-			else		-> err("Unrecognised api constant value: $value", element)
+		return when(cValue) {
+			"(~0ULL)" 	-> ConstantElement(name, cValue, "-1L")
+			"(~0U)" 	-> ConstantElement(name, cValue, "-1")
+			"(~0U-1)" 	-> ConstantElement(name, cValue, "-2")
+			"(~0U-2)" 	-> ConstantElement(name, cValue, "-3")
+			"(~1U)"     -> ConstantElement(name, cValue, "-2")
+			"(~2U)"     -> ConstantElement(name, cValue, "-3")
+			"1000.0f"	-> ConstantElement(name, cValue, "1000.0f")
+			"1000.0F"   -> ConstantElement(name, cValue, "1000.0f")
+			else		-> err("Unrecognised api constant value: $cValue", element)
 		}
 	}
 

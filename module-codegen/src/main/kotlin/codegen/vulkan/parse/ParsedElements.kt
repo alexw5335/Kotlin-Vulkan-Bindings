@@ -14,6 +14,7 @@ class PlatformElement(
 
 class ConstantElement(
 	override val name : String,
+	val cValue        : String,
 	val value         : String,
 	val aliased       : Boolean = false
 ) : Named

@@ -5,68 +5,42 @@ import kvb.vkwrapper.handle.Device
 import kvb.vkwrapper.handle.Queue
 import kvb.vulkan.*
 
-class VkMemoryManager(
-	val device: Device,
-	val queue: Queue,
-	val stagingMemorySize: Int,
-	val imageMemorySize: Int,
-	val bufferMemorySize: Int
-) {
+class VkMemoryManager(device: Device, bufferMemorySize: Int, imageMemorySize: Int) {
 
 
-	private val commandPool = device.createCommandPool(queue.family, CommandPoolCreateFlags.TRANSIENT)
+	private val dummyBuffer = device.createBuffer(32L, BufferUsageFlags.VERTEX_BUFFER)
+
+	private val dummyImage = device.createImage2D(32, 32, ImageUsageFlags.COLOR_ATTACHMENT)
 
 
 
-	private val dummyStagingBuffer = device.createBuffer(
-		size = 32L,
-		usage = BufferUsageFlags.TRANSFER_SRC
-	)
-
-
-
-	private val dummyImage = device.createImage2D(
-		width = 32,
-		height = 32,
-		usage = ImageUsageFlags.COLOR_ATTACHMENT
-	)
-
-
-
-	private val dummyBuffer = device.createBuffer(
-		size = 32L,
-		usage = BufferUsageFlags.VERTEX_BUFFER
-	)
-
-
-
-	val stagingAllocator = VkLinearAllocator(
+	val bufferAllocator = VkLinearAllocator(
 		device.allocateMemory(
-			size = stagingMemorySize.toLong(),
-			flags = MemoryPropertyFlags { HOST_VISIBLE },
-			memoryTypeBits = dummyStagingBuffer.memoryRequirementsP().memoryTypeBits
-		)
+			size           = bufferMemorySize.toLong(),
+			requiredFlags  = MemoryPropertyFlags { HOST_VISIBLE },
+			preferredFlags = MemoryPropertyFlags { DEVICE_LOCAL + HOST_COHERENT },
+			memoryTypeBits = dummyBuffer.memoryRequirementsP().memoryTypeBits
+		).also { it.mapWhole() }
 	)
 
 
 
 	val imageAllocator = VkLinearAllocator(
 		device.allocateMemory(
-			size = imageMemorySize.toLong(),
-			flags = MemoryPropertyFlags { DEVICE_LOCAL },
+			size           = imageMemorySize.toLong(),
+			requiredFlags  = MemoryPropertyFlags { DEVICE_LOCAL },
 			memoryTypeBits = dummyImage.memoryRequirementsP().memoryTypeBits
 		)
 	)
 
 
 
-	val bufferAllocator = VkLinearAllocator(
-		device.allocateMemory(
-			size = bufferMemorySize.toLong(),
-			flags = MemoryPropertyFlags { DEVICE_LOCAL },
-			memoryTypeBits = dummyBuffer.memoryRequirementsP().memoryTypeBits
-		)
-	)
+	fun destroy() {
+		dummyBuffer.destroy()
+		dummyImage.destroy()
+		bufferAllocator.destroy()
+		imageAllocator.destroy()
+	}
 
 
 }

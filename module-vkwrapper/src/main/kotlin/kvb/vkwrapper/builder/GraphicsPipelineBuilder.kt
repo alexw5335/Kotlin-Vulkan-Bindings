@@ -1,16 +1,14 @@
 package kvb.vkwrapper.builder
 
-import kvb.core.memory.Allocator
 import kvb.core.memory.DirectList
+import kvb.core.memory.MemStack
 import kvb.vkwrapper.handle.*
-import kvb.vulkan.*
 import kvb.vkwrapper.shader.Shader
 import kvb.vkwrapper.shader.ShaderCollection
-import kvb.vkwrapper.shader.VertexAttribute
-import kvb.vkwrapper.shader.VertexBinding
+import kvb.vulkan.*
 
 @Suppress("unused")
-class GraphicsPipelineBuilder(private val device: Device, private val allocator: Allocator) {
+class GraphicsPipelineBuilder(private val device: Device, private val stack: MemStack) {
 
 
 	var flags = PipelineCreateFlags(0)
@@ -24,7 +22,7 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 	/*
-	Layout
+	Layout and RenderPass
 	 */
 
 
@@ -33,25 +31,17 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 		this.layout = layout
 	}
 
-
-
-	fun emptyLayout() {
-		layout(device.createPipelineLayout())
-	}
-
-
-
 	fun layout(setLayout: DescriptorSetLayout) {
 		layout(device.createPipelineLayout(setLayout))
 	}
-
-
 
 	fun layout(set: DescriptorSet) {
 		layout(set.layout)
 	}
 
-
+	fun emptyLayout() {
+		layout(device.createPipelineLayout())
+	}
 
 	fun renderPass(renderPass: RenderPass) {
 		this.renderPass = renderPass
@@ -65,40 +55,26 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	private var shaderStages = LongArray(10)
-
-	private var numShaderStages = 0
-
-	private val shaderStagesBuffer get() = allocator.PipelineShaderStageCreateInfo(numShaderStages) {
-		for(i in 0 until numShaderStages) it[i] = PipelineShaderStageCreateInfo(shaderStages[i])
-	}
+	private val shaderStages = DirectList(stack, 2) { PipelineShaderStageCreateInfo(it) { } }
 
 
 
-	fun shader(module: ShaderModule, stage: ShaderStageFlags, entryPoint: String = "main") {
-		val info = allocator.PipelineShaderStageCreateInfo {
+	fun shader(module: ShaderModule, stage: ShaderStageFlags, entryPoint: String) {
+		shaderStages.buffer[shaderStages.next].let {
 			it.module = module
 			it.stage = stage
-			it.name = allocator.encodeUtf8NT(entryPoint)
+			it.name = stack.encodeUtf8NT(entryPoint)
 		}
-
-		if(numShaderStages == shaderStages.size)
-			shaderStages = shaderStages.copyOf(shaderStages.size*2)
-
-		shaderStages[numShaderStages++] = info.address
 	}
 
 
 
-	fun shader(shader: Shader, entryPoint: String = shader.defaultEntryPoint) {
-		shader(shader.module, shader.stage, entryPoint)
-	}
+	fun shader(shader: Shader) = shader(shader.module, shader.stage, shader.defaultEntryPoint)
 
 
 
 	fun shaders(collection: ShaderCollection) {
-		for(shader in collection.shaders)
-			shader(shader)
+		for(shader in collection.shaders) shader(shader)
 
 		layout = if(collection.descriptors.isEmpty())
 			device.createPipelineLayout()
@@ -108,43 +84,21 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	fun vertexShader(module: ShaderModule, entryPoint: String = "main") =
-		shader(module, ShaderStageFlags.VERTEX, entryPoint)
-
-	fun fragmentShader(module: ShaderModule, entryPoint: String = "main") =
-		shader(module, ShaderStageFlags.FRAGMENT, entryPoint)
-
-	fun geometryShader(module: ShaderModule, entryPoint: String = "main") =
-		shader(module, ShaderStageFlags.GEOMETRY, entryPoint)
-
-	fun computeShader(module: ShaderModule, entryPoint: String = "main") =
-		shader(module, ShaderStageFlags.COMPUTE, entryPoint)
-
-	fun tessellationControlShader(module: ShaderModule, entryPoint: String = "main") =
-		shader(module, ShaderStageFlags.TESSELLATION_CONTROL, entryPoint)
-
-	fun tessellationEvaluationShader(module: ShaderModule, entryPoint: String = "main") =
-		shader(module, ShaderStageFlags.TESSELLATION_EVALUATION, entryPoint)
-
-
-
 	/*
 	Vertex input state
 	 */
 
 
 
-	private val vertexInputState = allocator.PipelineVertexInputStateCreateInfo { }
+	private val vertexInputState = stack.PipelineVertexInputStateCreateInfo { }
 
 
 
-	val vertexBindings = DirectList(allocator, 5) { VertexInputBindingDescription(it) { } }
+	private val vertexBindings = DirectList(stack, 5) { VertexInputBindingDescription(it) { } }
 
-	val vertexAttributes = DirectList(allocator, 5) { VertexInputAttributeDescription(it) { } }
+	private val vertexAttributes = DirectList(stack, 5) { VertexInputAttributeDescription(it) { } }
 
-
-
-	var currentVertexLocation = 0
+	private var currentVertexLocation = 0
 
 
 
@@ -159,21 +113,22 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	inline fun vertexBinding(binding: Int = -1, block: VertexInputBindingDescription.() -> Unit) {
+	fun vertexBinding(binding: Int = -1, block: VertexInputBindingDescription.() -> Unit) {
 		vertexBinding(binding, 0, VertexInputRate.VERTEX)
 		block(vertexBindings.buffer[vertexBindings.size - 1])
 	}
 
 
 
-	fun VertexInputBindingDescription.vertexAttribute(format: Format, size: Int) {
-		// WARNING: Some formats require multiple location slots.
+	private fun VertexInputBindingDescription.vertexAttribute(format: Format, size: Int, locationSize: Int = 1) {
 		vertexAttributes.buffer[vertexAttributes.next].let {
 			it.binding  = binding
-			it.location = currentVertexLocation++
+			it.location = currentVertexLocation
 			it.offset   = stride
 			it.format   = format
 		}
+
+		currentVertexLocation += locationSize
 		stride += size
 	}
 
@@ -193,7 +148,7 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	private val inputAssemblyState = allocator.PipelineInputAssemblyStateCreateInfo { }
+	private val inputAssemblyState = stack.PipelineInputAssemblyStateCreateInfo { }
 
 
 
@@ -207,13 +162,19 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
+	fun topology(topology: PrimitiveTopology) {
+		this.topology = topology
+	}
+
+
+
 	/*
 	Tessellation state
 	 */
 
 
 
-	private val tessellationState = allocator.PipelineTessellationStateCreateInfo { }
+	private val tessellationState = stack.PipelineTessellationStateCreateInfo { }
 
 	var patchControlPoints: Int
 		get() = tessellationState.patchControlPoints
@@ -227,7 +188,7 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	private val viewportState = allocator.PipelineViewportStateCreateInfo { }
+	private val viewportState = stack.PipelineViewportStateCreateInfo { }
 
 
 
@@ -255,7 +216,7 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	private val rasterizationState = allocator.PipelineRasterizationStateCreateInfo {
+	private val rasterizationState = stack.PipelineRasterizationStateCreateInfo {
 		it.lineWidth = 1F
 	}
 
@@ -305,7 +266,7 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	val multisampleState = allocator.PipelineMultisampleStateCreateInfo {
+	val multisampleState = stack.PipelineMultisampleStateCreateInfo {
 		it.rasterizationSamples = SampleCountFlags._1
 	}
 
@@ -339,7 +300,7 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	private val depthStencilState = allocator.PipelineDepthStencilStateCreateInfo { }
+	private val depthStencilState = stack.PipelineDepthStencilStateCreateInfo { }
 
 
 
@@ -448,7 +409,7 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	val colourBlendState = allocator.PipelineColorBlendStateCreateInfo { }
+	val colourBlendState = stack.PipelineColorBlendStateCreateInfo { }
 
 
 
@@ -460,7 +421,7 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 	fun singleColourBlendAttachment() {
 		colourBlendState.attachmentCount = 1
-		colourBlendState.pAttachments = allocator.PipelineColorBlendAttachmentState {
+		colourBlendState.pAttachments = stack.PipelineColorBlendAttachmentState {
 			it.colorWriteMask = ColorComponentFlags { R + G + B + A }
 		}.address
 	}
@@ -473,19 +434,19 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	val dynamicState = allocator.PipelineDynamicStateCreateInfo {
-		it.dynamicStates = allocator.mallocInt(32)
+	val dynamicState = stack.PipelineDynamicStateCreateInfo {
+		it.dynamicStates = stack.mallocInt(32)
 		it.dynamicStateCount = 0
 	}
 
-	fun addDynamicState(state: DynamicState) {
+	fun dynamicState(state: DynamicState) {
 		if(dynamicState.dynamicStateCount >= 32) throw IllegalStateException("Illegal number of dynamic states.")
 		dynamicState.dynamicStates[dynamicState.dynamicStateCount++] = state.value
 	}
 
 	fun dynamicViewportAndScissor() {
-		addDynamicState(DynamicState.VIEWPORT)
-		addDynamicState(DynamicState.SCISSOR)
+		dynamicState(DynamicState.VIEWPORT)
+		dynamicState(DynamicState.SCISSOR)
 		viewportState.viewportCount = 1
 		viewportState.scissorCount = 1
 	}
@@ -498,14 +459,15 @@ class GraphicsPipelineBuilder(private val device: Device, private val allocator:
 
 
 
-	fun build() = allocator.GraphicsPipelineCreateInfo {
+	fun build() = stack.GraphicsPipelineCreateInfo {
 		vertexInputState.vertexBindingDescriptionCount = vertexBindings.size
 		vertexInputState.pVertexBindingDescriptions = vertexBindings.buffer.address
 		vertexInputState.vertexAttributeDescriptionCount = vertexAttributes.size
 		vertexInputState.pVertexAttributeDescriptions = vertexAttributes.buffer.address
 
 		it.flags 				= flags
-		it.stages 				= shaderStagesBuffer
+		it.stageCount           = shaderStages.size
+		it.pStages              = shaderStages.buffer.address
 		it.vertexInputState 	= vertexInputState
 		it.inputAssemblyState 	= inputAssemblyState
 		it.tessellationState 	= tessellationState

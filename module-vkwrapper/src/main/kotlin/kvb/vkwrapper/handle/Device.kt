@@ -6,6 +6,8 @@ import kvb.core.memory.MemStacks.default
 import kvb.core.memory.direct.DirectByteBuffer
 import kvb.vkwrapper.builder.GraphicsPipelineBuilder
 import kvb.vkwrapper.builder.RenderPassBuilder
+import kvb.vkwrapper.exception.VkCommandException
+import kvb.vkwrapper.exception.VkException
 import kvb.vkwrapper.persistent.QueueFamilyPropertiesP
 
 @Suppress("unused")
@@ -742,14 +744,38 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 */
 	fun allocateMemory(
 		size           : Long,
-		flags          : MemoryPropertyFlags,
-		memoryTypeBits : Int = UInt.MAX_VALUE.toInt(),
-		stack          : MemStack = default
+		requiredFlags  : MemoryPropertyFlags,
+		preferredFlags : MemoryPropertyFlags  = MemoryPropertyFlags(0),
+		memoryTypeBits : Int                  = UInt.MAX_VALUE.toInt(),
+		stack          : MemStack             = default
 	) = stack.get {
-		allocateMemory(MemoryAllocateInfo {
-			it.allocationSize = size
-			it.memoryTypeIndex = physicalDevice.chooseMemoryType(flags, memoryTypeBits)!!.index
-		}, stack)
+		var failureIndex = -1
+		var typeIndex = -1
+		var memory: DeviceMemory
+
+		while(true) {
+			try {
+				typeIndex = physicalDevice.chooseMemoryType(
+					requiredFlags,
+					preferredFlags,
+					memoryTypeBits,
+					failureIndex
+				)?.index ?: throw VkException(
+					"No memory type with required flags: $requiredFlags and memory type bits: $memoryTypeBits."
+				)
+
+				memory = allocateMemory(MemoryAllocateInfo {
+					it.allocationSize = size
+					it.memoryTypeIndex = typeIndex
+				}, stack)
+
+				break
+			} catch(e: VkCommandException) {
+				failureIndex = typeIndex
+			}
+		}
+
+		memory
 	}
 
 

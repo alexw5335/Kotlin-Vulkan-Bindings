@@ -19,7 +19,7 @@ class AppAllocator(
 
 	val bufferAllocator = VkLinearAllocator(device.allocateMemory(
 		size = bufferMemorySize,
-		flags = MemoryPropertyFlags { HOST_VISIBLE },
+		requiredFlags = MemoryPropertyFlags { HOST_VISIBLE },
 		memoryTypeBits = dummyBuffer.memoryRequirementsP().memoryTypeBits,
 	))
 
@@ -27,7 +27,7 @@ class AppAllocator(
 
 	val imageAllocator = VkLinearAllocator(device.allocateMemory(
 		size = imageMemorySize,
-		flags = MemoryPropertyFlags { DEVICE_LOCAL },
+		requiredFlags = MemoryPropertyFlags { DEVICE_LOCAL },
 		memoryTypeBits = dummyImage.memoryRequirementsP().memoryTypeBits
 	))
 
