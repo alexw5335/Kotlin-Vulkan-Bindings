@@ -7,7 +7,16 @@ import kvb.core.memory.direct.DirectInt
 import kvb.core.memory.direct.DirectLongBuffer
 import kvb.vulkan.*
 
-class Swapchain(address: Long, val device: Device, val format: Format) : SwapchainH(address) {
+class Swapchain(
+	address         : Long,
+	val device      : Device,
+	val format      : Format,
+	val colourSpace : ColorSpace,
+	val width       : Int,
+	val height      : Int,
+	val arrayLayers : Int,
+	val usage       : ImageUsageFlags
+	) : SwapchainH(address) {
 
 
 	/**
@@ -55,8 +64,8 @@ class Swapchain(address: Long, val device: Device, val format: Format) : Swapcha
 		getImages(count, null)
 		val images = stack.mallocPointer(count.value)
 		getImages(count, images)
-		// Actual parameters given to Image do not matter as they will not be used.
-		images.map { Image(it, device, ImageType._2D, format, 1, 1, ImageTiling.OPTIMAL) }
+		// Actual parameters given to Image do not matter as they will never be queried.
+		images.map { Image(it, device, ImageType._2D, format, width, height, 1, 1, 1, ImageTiling.OPTIMAL) }
 	}
 
 

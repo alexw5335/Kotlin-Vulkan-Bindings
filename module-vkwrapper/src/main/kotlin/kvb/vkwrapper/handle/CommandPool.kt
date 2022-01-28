@@ -1,15 +1,14 @@
 package kvb.vkwrapper.handle
 
 import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks
 import kvb.core.memory.MemStacks.default
-import kvb.vkwrapper.persistent.QueueFamilyPropertiesP
+import kvb.vkwrapper.persistent.QueueFamily
 import kvb.vulkan.*
 
 class CommandPool(
 	address: Long,
 	val device: Device,
-	val queueFamily: QueueFamilyPropertiesP
+	val queueFamily: QueueFamily
 ) : CommandPoolH(address) {
 
 

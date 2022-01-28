@@ -10,7 +10,7 @@ object MemStacks {
 	val meta = MemStack(Unsafe, 1L shl 22) // 4 MB
 
 	/**
-	 * A general-purpose [MemStack] for small allocations that must only be used from the main thread.
+	 * A general-purpose [MemStack] for small allocations. Must only be used from the main thread.
 	 */
 	val default = MemStack(meta, 1L shl 20) // 1 MB
 

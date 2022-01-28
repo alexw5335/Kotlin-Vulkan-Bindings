@@ -411,19 +411,29 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 	val colourBlendState = stack.PipelineColorBlendStateCreateInfo { }
 
-
-
-	var colourAttachments
-		get() = colourBlendState.attachments
-		set(value) { colourBlendState.attachments = value }
+	val colourBlendAttachments = DirectList(stack, 1) { PipelineColorBlendAttachmentState(it) { } }
 
 
 
-	fun singleColourBlendAttachment() {
-		colourBlendState.attachmentCount = 1
-		colourBlendState.pAttachments = stack.PipelineColorBlendAttachmentState {
+	fun noBlendColourAttachment() {
+		colourBlendAttachments.buffer[colourBlendAttachments.next].let {
 			it.colorWriteMask = ColorComponentFlags { R + G + B + A }
-		}.address
+		}
+	}
+
+
+
+	fun simpleBlendColourAttachment() {
+		colourBlendAttachments.buffer[colourBlendAttachments.next].let {
+			it.colorWriteMask      = ColorComponentFlags { R + G + B + A }
+			it.blendEnable         = VK_TRUE
+			it.srcColorBlendFactor = BlendFactor.SRC_ALPHA
+			it.dstColorBlendFactor = BlendFactor.ONE_MINUS_SRC_ALPHA
+			it.colorBlendOp        = BlendOp.ADD
+			it.srcAlphaBlendFactor = BlendFactor.ONE
+			it.dstAlphaBlendFactor = BlendFactor.ZERO
+			it.alphaBlendOp        = BlendOp.ADD
+		}
 	}
 
 
@@ -464,6 +474,8 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 		vertexInputState.pVertexBindingDescriptions = vertexBindings.buffer.address
 		vertexInputState.vertexAttributeDescriptionCount = vertexAttributes.size
 		vertexInputState.pVertexAttributeDescriptions = vertexAttributes.buffer.address
+		colourBlendState.attachmentCount = colourBlendAttachments.size
+		colourBlendState.pAttachments = colourBlendAttachments.buffer.address
 
 		it.flags 				= flags
 		it.stageCount           = shaderStages.size

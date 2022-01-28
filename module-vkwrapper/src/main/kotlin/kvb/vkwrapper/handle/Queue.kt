@@ -2,13 +2,13 @@ package kvb.vkwrapper.handle
 
 import kvb.core.memory.MemStack
 import kvb.core.memory.MemStacks.default
-import kvb.vkwrapper.persistent.QueueFamilyPropertiesP
+import kvb.vkwrapper.persistent.QueueFamily
 import kvb.vulkan.*
 
 class Queue(
 	address    : Long,
 	val device : Device,
-	val family : QueueFamilyPropertiesP
+	val family : QueueFamily
 ) : QueueH(address) {
 
 
@@ -38,7 +38,7 @@ class Queue(
 		submitCount = submitCount,
 		pSubmits 	= submits,
 		fence 		= fence
-	)
+	).check()
 
 
 
@@ -61,7 +61,23 @@ class Queue(
 			it.pCommandBuffers      = wrapPointer(commandBuffer).address
 			it.signalSemaphoreCount = 1
 			it.pSignalSemaphores    = wrapPointer(signalSemaphore).address
-		}.asBuffer, fence)
+		}.asBuffer, fence).check()
+	}
+
+
+
+	/**
+	 * Convenience implementation of vkQueueSubmit, uses a single submit info with no semaphores.
+	 */
+	fun submit(
+		commandBuffer: CommandBuffer,
+		fence: Fence? = null,
+		stack: MemStack = default
+	) = stack.with {
+		commands.queueSubmit(self, 1, SubmitInfo {
+			it.waitSemaphoreCount = 0
+			it.commandBuffers = wrapPointer(commandBuffer)
+		}.asBuffer, fence).check()
 	}
 
 
@@ -97,7 +113,7 @@ class Queue(
 			it.pSwapchains        = wrapPointer(swapchain).address
 			it.pImageIndices      = wrapInt(imageIndex).address
 			it.pResults           = result.address
-		})
+		}).check()
 		Result(result.value)
 	}
 

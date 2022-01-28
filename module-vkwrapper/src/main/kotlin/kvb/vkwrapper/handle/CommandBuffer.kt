@@ -336,8 +336,6 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 		buffer : Buffer,
 		image  : Image,
 		layout : ImageLayout,
-		width  : Int,
-		height : Int,
 		stack  : MemStack = default
 	) = stack.with {
 		val region = BufferImageCopy {
@@ -351,8 +349,8 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 			it.imageOffset.x = 0
 			it.imageOffset.y = 0
 			it.imageOffset.z = 0
-			it.imageExtent.width = width
-			it.imageExtent.height = height
+			it.imageExtent.width = image.width
+			it.imageExtent.height = image.height
 			it.imageExtent.depth = 1
 		}
 

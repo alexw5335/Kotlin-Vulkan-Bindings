@@ -24,8 +24,8 @@ object SampleShader : AppShader("sample") {
 
 
 	val descriptorSet = context.uniformPool.buildSet {
-		vertexWriteUniform(uniformBuffer, size = 16L)
-		vertexWriteUniform(uniformBuffer2, size = 8L)
+		vertexUniform(uniformBuffer, size = 16L)
+		vertexUniform(uniformBuffer2, size = 8L)
 	}
 
 
@@ -40,7 +40,7 @@ object SampleShader : AppShader("sample") {
 		renderPass(context.renderPass)
 		layout(descriptorSet)
 		topology = PrimitiveTopology.TRIANGLE_FAN
-		singleColourBlendAttachment()
+		noBlendColourAttachment()
 		dynamicViewportAndScissor()
 	}
 

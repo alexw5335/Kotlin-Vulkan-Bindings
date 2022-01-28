@@ -319,7 +319,7 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 		queueFamilyProperties(count, null)
 		val properties = QueueFamilyProperties(count.value) { }
 		queueFamilyProperties(count, properties)
-		properties.asList.mapIndexed { i, p -> QueueFamilyPropertiesP(i, self, p) }
+		properties.asList.mapIndexed { i, p -> QueueFamily(i, self, p) }
 	}
 
 
@@ -572,7 +572,7 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 	 * Convenience implementation of vkCreateDevice.
 	 */
 	fun createDevice(
-		queues                : List<Pair<QueueFamilyPropertiesP, Int>>  = emptyList(),
+		queues                : List<Pair<QueueFamily, Int>>  = emptyList(),
 		enabledExtensionNames : Collection<String>                       = emptyList(),
 		enabledFeatures       : PhysicalDeviceFeatures?                  = null,
 		stack                 : MemStack                                 = default

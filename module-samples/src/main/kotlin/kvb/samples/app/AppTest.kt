@@ -1,8 +1,12 @@
 package kvb.samples.app
 
+import kvb.core.FileUtils
+import kvb.core.memory.Unsafe
+import kvb.vkwrapper.handle.DescriptorSet
+import kvb.vkwrapper.handle.Image
 import kvb.vkwrapper.shader.FileShaderCollection
 import kvb.vkwrapper.shader.ShaderDirectory
-import kvb.vulkan.PrimitiveTopology
+import kvb.vulkan.*
 import kvb.window.winapi.WinApi
 
 object AppTest {
@@ -33,10 +37,56 @@ object AppTest {
 			renderPass(context.surfaceSystem!!.renderPass)
 			shaders(this@Shader)
 			topology(PrimitiveTopology.TRIANGLE_STRIP)
-			singleColourBlendAttachment()
+			noBlendColourAttachment()
 			dynamicViewportAndScissor()
 		}
 
+	}
+
+
+
+	val image = FileUtils.readRGBA("res/font_attempt.png") { imageData ->
+		val stagingBuffer = context.stagingBuffer(imageData.width * imageData.height * 4) {
+			Unsafe.copy(imageData.address, it.address, it.byteSize)
+		}
+
+		context.device.createImage2D(
+			width = imageData.width,
+			height = imageData.height,
+			format = Format.R8G8B8A8_SRGB,
+			usage = ImageUsageFlags { TRANSFER_DST + SAMPLED }
+		).also {
+			context.memoryManager.imageAllocator.allocate(it).also(it::bindMemory)
+			context.transitionImage(it, stagingBuffer)
+			stagingBuffer.destroy()
+		}
+	}
+
+
+
+	val imageView = context.device.createImageView(image)
+
+
+
+	val sampler = context.device.createSampler(Filter.NEAREST, Filter.NEAREST)
+
+
+
+	object TextureShader : FileShaderCollection(shaders, "texture") {
+
+		val descriptorSet = context.descriptorPool.buildSet {
+			fragmentCominedSampler(ImageLayout.SHADER_READ_ONLY_OPTIMAL, imageView, sampler)
+		}
+
+		override val descriptors = mapOf(0 to descriptorSet)
+
+		override val pipeline = device.buildGraphicsPipeline {
+			renderPass(context.surfaceSystem!!.renderPass)
+			shaders(this@TextureShader)
+			topology(PrimitiveTopology.TRIANGLE_STRIP)
+			simpleBlendColourAttachment()
+			dynamicViewportAndScissor()
+		}
 	}
 
 
@@ -49,6 +99,7 @@ object AppTest {
 		it[16] = 1F
 		it[20] = 0F
 	}
+
 
 
 	/*
@@ -76,6 +127,9 @@ object AppTest {
 			Shader.bind(it)
 			it.bindVertexBuffer(vertexBuffer)
 			it.draw(vertexCount = 3, instanceCount = 1)
+
+			TextureShader.bind(it)
+			it.draw(vertexCount = 4, instanceCount = 2)
 		}
 
 		context.surfaceSystem.record()

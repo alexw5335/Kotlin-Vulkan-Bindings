@@ -4,7 +4,7 @@ import kvb.vkwrapper.DebugUtils
 import kvb.vkwrapper.Vulkan
 import kvb.vkwrapper.builder.RenderPassBuilder
 import kvb.vkwrapper.handle.*
-import kvb.vkwrapper.persistent.QueueFamilyPropertiesP
+import kvb.vkwrapper.persistent.QueueFamily
 import kvb.vkwrapper.persistent.SurfaceFormatP
 import kvb.vulkan.*
 import kvb.window.winapi.WinApiWindow
@@ -53,7 +53,7 @@ abstract class ContextBuilder {
 
 	var surface: Surface? = null
 
-	lateinit var queueFamily: QueueFamilyPropertiesP
+	lateinit var queueFamily: QueueFamily
 
 	lateinit var device: Device
 

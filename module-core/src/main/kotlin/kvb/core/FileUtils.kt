@@ -2,6 +2,7 @@ package kvb.core
 
 import kvb.core.memory.Allocator
 import kvb.core.memory.MemStack
+import kvb.core.memory.MemStacks
 import kvb.core.memory.MemStacks.default
 import kvb.core.memory.direct.DirectByteBuffer
 
@@ -23,6 +24,10 @@ object FileUtils {
 	private external fun getFileSize(file: Long): Long
 
 	private external fun readFile(file: Long, size: Long, data: Long)
+
+	external fun loadImage(pFile: Long, pImage: Long, desiredChannels: Int)
+
+	external fun freeImageData(pData: Long)
 
 
 
@@ -57,6 +62,35 @@ object FileUtils {
 	fun<R> readFullyAndFree(path: String, stack: MemStack = default, block: (DirectByteBuffer) -> R): R = stack.get {
 		block(readFully(path, stack, stack))
 	}
+
+
+
+	/*
+	Image reading
+	 */
+
+
+
+	inline fun<T> readRGBA(path: String, block: (Image) -> T) = MemStacks.get {
+		val imageBuffer = mallocByte(8 + 4 + 4 + 4)
+
+		loadImage(encodeUtf8NT(path).address, imageBuffer.address, desiredChannels = 4)
+
+		val data = Image(
+			imageBuffer.getLong(0),
+			imageBuffer.getInt(8),
+			imageBuffer.getInt(12),
+			imageBuffer.getInt(16)
+		)
+
+		val result = block(data)
+		freeImageData(data.address)
+		result
+	}
+
+
+
+	class Image(val address: Long, val width: Int, val height: Int, val channels: Int)
 
 
 }

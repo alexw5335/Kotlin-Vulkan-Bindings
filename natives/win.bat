@@ -16,6 +16,12 @@ gcc -shared "module-core/src/main/c/file_utils.c" ^
 -I "%JAVA_HOME%/include" ^
 -I "%JAVA_HOME%/include/win32"
 
+gcc -shared "module-core/src/main/c/image_reading.c" ^
+-o "natives/windows/image_reading.dll" ^
+-I "%JAVA_HOME%/include" ^
+-I "%JAVA_HOME%/include/win32" ^
+-I "module-core/src/main/c"
+
 gcc -shared "module-window/src/main/c/winapi.c" ^
 -o "natives/windows/winapi.dll" ^
 -I "%JAVA_HOME%/include" ^

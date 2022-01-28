@@ -8,7 +8,7 @@ import kvb.vkwrapper.handle.Surface
 /**
  * Persistent implementation of [VkQueueFamilyProperties][QueueFamilyProperties].
  */
-class QueueFamilyPropertiesP(
+class QueueFamily(
 	val index: Int,
 	val physicalDevice: PhysicalDevice,
 	val queueFlags: QueueFlags,

@@ -2,6 +2,7 @@ package codegen.vulkan
 
 import codegen.vulkan.parse.*
 import codegen.vulkan.scrape.Var
+import codegen.writer.CFunction
 import codegen.writer.CWriter
 import java.nio.file.Files
 import java.nio.file.Path
@@ -55,7 +56,8 @@ class VulkanCWrapperGenerator(private val registry: ParsedRegistry, private val 
 			"VK_KHR_swapchain",
 			"VK_KHR_surface",
 			"VK_KHR_display",
-			"VK_KHR_debug_utils"
+			"VK_KHR_debug_utils",
+			"VK_KHR_win32_surface"
 		)
 
 	}
@@ -69,6 +71,20 @@ class VulkanCWrapperGenerator(private val registry: ParsedRegistry, private val 
 		name + '[' + constLen!! + ']'
 	else
 		name
+
+
+
+	private val CommandElement.isInstanceCommand get() =
+		name != "vkGetInstanceProcAddr" && (
+		params.first().type == "VkInstance" ||
+		params.first().type == "VkPhysicalDevice" ||
+		name == "vkGetDeviceProcAddr")
+
+	private val CommandElement.isDeviceCommand get() =
+		name != "vkGetDeviceProcAddr" && (
+		params.first().type == "VkDevice" ||
+		params.first().type == "VkQueue" ||
+		params.first().type == "VkCommandBuffer")
 
 
 
@@ -100,41 +116,92 @@ class VulkanCWrapperGenerator(private val registry: ParsedRegistry, private val 
 
 		group(0) {
 			for(command in commands) {
-				writeln("PFN_${command.name} ${command.name}_;")
+				writeln("PFN_${command.name} ${command.name};")
 			}
 		}
 
+		multilineDeclaration("""
+			void vkwLoadInitial(PFN_vkGetInstanceProcAddr addr) {
+				vkGetInstanceProcAddr = addr;
+				vkCreateInstance = (PFN_vkCreateInstance) vkGetInstanceProcAddr(NULL, "vkCreateInstance");
+				vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties) vkGetInstanceProcAddr(NULL, "vkEnumerateInstanceExtensionProperties");
+				vkEnumerateInstanceLayerProperties = (PFN_vkEnumerateInstanceLayerProperties) vkGetInstanceProcAddr(NULL, "vkEnumerateInstanceLayerProperties");
+				vkEnumerateInstanceVersion = (PFN_vkEnumerateInstanceVersion) vkGetInstanceProcAddr(NULL, "vkEnumerateInstanceVersion");
+			}
+		""")
+
 		function("void vkwLoadInstance(VkInstance instance)") {
 			for(provider in providers) {
-				val platform = (provider as? ExtensionElement)?.platform
-
-				if(platform != null) writeln("#ifdef ${platform.define}")
+				if(provider.commands.none { it.isInstanceCommand }) continue
+				//val platform = (provider as? ExtensionElement)?.platform
+				//if(platform != null) writeln("#ifdef ${platform.define}")
 
 				for(command in provider.commands) {
-					if(command.alias != null) continue
-					if(command.params.first().type != "VkInstance") continue
+					if(command.alias != null || !command.isInstanceCommand) continue
+
 					val name = command.name
-					writeln("${name}_ = (PFN_$name) vkGetInstanceProcAddr_(instance, \"$name\");")
+					writeln("$name = (PFN_$name) vkGetInstanceProcAddr(instance, \"$name\");")
 				}
-				if(platform != null) writeln("#endif")
+				//if(platform != null) writeln("#endif")
 			}
 		}
 
 		function("void vkwLoadDevice(VkDevice device)") {
 			for(provider in providers) {
-				val platform = (provider as? ExtensionElement)?.platform
-
-				if(platform != null) writeln("#ifdef ${platform.define}")
+				if(provider.commands.none { it.isDeviceCommand }) continue
+				//val platform = (provider as? ExtensionElement)?.platform
+				//if(platform != null) writeln("#ifdef ${platform.define}")
 
 				for(command in provider.commands) {
-					if(command.alias != null) continue
-					if(command.params.first().type != "VkDevice") continue
+					if(command.alias != null || !command.isDeviceCommand) continue
+
 					val name = command.name
-					writeln("${name}_ = (PFN_$name) vkGetDeviceProcAddr_(device, \"$name\");")
+					writeln("$name = (PFN_$name) vkGetDeviceProcAddr(device, \"$name\");")
 				}
-				if(platform != null) writeln("#endif")
+				//if(platform != null) writeln("#endif")
 			}
 		}
+
+		/*group(1) {
+			for(provider in providers) {
+				if(provider.commands.isEmpty()) continue
+
+				for(command in provider.commands) {
+					var params = command.params.map { Pair(it.typeGenName, it.name) }
+
+					val first = params[0].first
+
+					if(first == "VkInstance" || first == "VkDevice") params = params.drop(1)
+
+					val cFunction = CFunction(
+						name       = command.name,
+						returnType = command.returnType,
+						params     = params,
+						contents   = buildString {
+							if(command.returnType != null) append("return ")
+							append(command.name + '_')
+							append('(')
+
+							when(first) {
+								"VkInstance"       -> { append("globalInstance");       if (params.isNotEmpty()) append(", ") }
+								//"VkPhysicalDevice" -> { append("globalPhysicalDevice"); if (params.isNotEmpty()) append(", ") }
+								"VkDevice"         -> { append("globalDevice");         if (params.isNotEmpty()) append(", ") }
+							}
+
+							for(i in params.indices) {
+								append(params[i].second)
+								if(i != params.lastIndex) append(", ")
+							}
+
+							append(");")
+						}
+					)
+
+					function(cFunction)
+
+				}
+			}
+		}*/
 	}
 
 
@@ -153,6 +220,9 @@ class VulkanCWrapperGenerator(private val registry: ParsedRegistry, private val 
 			typedef uint64_t VkDeviceSize;
 			typedef uint32_t VkFlags;
 			typedef uint32_t VkSampleMask;
+			
+			typedef struct HWND_T* HWND;
+			typedef struct HINSTANCE_T* HINSTANCE;
 		""")
 
 		group(0) {

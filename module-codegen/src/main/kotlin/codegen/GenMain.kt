@@ -47,7 +47,7 @@ private fun genVulkanCWrapper() {
 		directory = Paths.get("gen/c")
 	)
 
-	generator.genDef()
+	//generator.genDef()
 	generator.genCmd()
 }
 

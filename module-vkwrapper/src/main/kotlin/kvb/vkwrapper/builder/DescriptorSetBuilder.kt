@@ -2,7 +2,6 @@ package kvb.vkwrapper.builder
 
 import kvb.core.memory.DirectList
 import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks
 import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
 
@@ -126,15 +125,20 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 
 	/*
-	Layout bindings
+	Bindings
 	 */
 
 
 
-	fun uniform(stages: ShaderStageFlags, count: Int = 1) {
+	fun binding(
+		binding : Int,
+		type    : DescriptorType,
+		count   : Int,
+		stages  : ShaderStageFlags
+	) {
 		bindings.buffer[bindings.next].let {
-			it.binding = bindings.size - 1
-			it.descriptorType = DescriptorType.UNIFORM_BUFFER
+			it.binding = binding
+			it.descriptorType = type
 			it.descriptorCount = count
 			it.stageFlags = stages
 		}
@@ -142,21 +146,45 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 
 
-	fun vertexUniform(count: Int = 1) = uniform(ShaderStageFlags.VERTEX, count)
+	fun binding(type: DescriptorType, count: Int, stages: ShaderStageFlags) {
+		bindings.buffer[bindings.next].let {
+			it.binding = bindings.size - 1
+			it.descriptorType = type
+			it.descriptorCount = count
+			it.stageFlags = stages
+		}
+	}
 
-	fun fragUniform(count: Int = 1) = uniform(ShaderStageFlags.FRAGMENT, count)
+
+
+	fun combinedSampler(count: Int, stages: ShaderStageFlags) = binding(DescriptorType.COMBINED_IMAGE_SAMPLER, count, stages)
+
+	fun uniform(count: Int, stages: ShaderStageFlags) = binding(DescriptorType.UNIFORM_BUFFER, count, stages)
 
 
 
-	fun vertexWriteUniform(
+	fun vertexUniform(
 		buffer          : Buffer,
 		offset          : Long = 0,
 		size            : Long,
 		dstArrayElement : Int = 0,
 		count           : Int = 1
 	) {
-		vertexUniform(count)
+		uniform(count, ShaderStageFlags.VERTEX)
 		write(buffer, offset, size, dstArrayElement, count)
+	}
+
+
+
+	fun fragmentCominedSampler(
+		imageLayout     : ImageLayout,
+		imageView       : ImageView,
+		sampler         : Sampler,
+		dstArrayElement : Int = 0,
+		count           : Int = 1
+	) {
+		combinedSampler(count, ShaderStageFlags.FRAGMENT)
+		write(sampler, imageView, imageLayout, dstArrayElement)
 	}
 
 

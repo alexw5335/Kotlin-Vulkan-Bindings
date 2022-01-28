@@ -8,7 +8,7 @@ import kvb.vkwrapper.builder.GraphicsPipelineBuilder
 import kvb.vkwrapper.builder.RenderPassBuilder
 import kvb.vkwrapper.exception.VkCommandException
 import kvb.vkwrapper.exception.VkException
-import kvb.vkwrapper.persistent.QueueFamilyPropertiesP
+import kvb.vkwrapper.persistent.QueueFamily
 
 @Suppress("unused")
 class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(address) {
@@ -94,7 +94,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 * Convenience implementation of vkCreateCommandPool.
 	 */
 	fun createCommandPool(
-		queueFamily : QueueFamilyPropertiesP,
+		queueFamily : QueueFamily,
 		flags       : CommandPoolCreateFlags = CommandPoolCreateFlags(0),
 		stack       : MemStack = default
 	) = stack.get {
@@ -106,6 +106,14 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		commands.createCommandPool(info, null, pointer).check()
 		CommandPool(pointer.value, self, queueFamily)
 	}
+
+
+
+	/**
+	 * Convenience implementation of vkCreateCommandPool.
+	 */
+	fun createTransientCommandPool(queueFamily: QueueFamily, stack: MemStack = default) =
+		createCommandPool(queueFamily, CommandPoolCreateFlags.TRANSIENT, stack)
 
 
 
@@ -367,7 +375,19 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	fun createImage(info: ImageCreateInfo, stack: MemStack = default) = stack.get {
 		val pointer = mallocPointer()
 		commands.createImage(info, null, pointer).check()
-		Image(pointer.value, self, info.imageType, info.format, info.mipLevels, info.arrayLayers, info.tiling)
+
+		Image(
+			pointer.value,
+			self,
+			info.imageType,
+			info.format,
+			info.extent.width,
+			info.extent.height,
+			info.extent.depth,
+			info.mipLevels,
+			info.arrayLayers,
+			info.tiling
+		)
 	}
 
 
@@ -604,28 +624,28 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		compareEnable           : Boolean             = false,
 		compareOp               : CompareOp           = CompareOp.NEVER,
 		minLod                  : Float               = 0.0F,
-		maxLod                  : Float               = 1.0F,
+		maxLod                  : Float               = 0.0F,
 		borderColour            : BorderColor         = BorderColor.FLOAT_TRANSPARENT_BLACK,
 		unnormalisedCoordinates : Boolean             = false,
 		flags                   : SamplerCreateFlags  = SamplerCreateFlags(0),
 		stack                   : MemStack            = default
 	) = stack.get {
 		createSampler(SamplerCreateInfo {
-			it.flags = flags
-			it.magFilter = magFilter
-			it.minFilter = minFilter
-			it.mipmapMode = mipmapMode
-			it.addressModeU = addressModeU
-			it.addressModeV = addressModeV
-			it.addressModeW = addressModeW
-			it.mipLodBias = mipLodBias
-			it.anisotropyEnable = VK_BOOL(anisotropyEnable)
-			it.maxAnisotropy = maxAnisotropy
-			it.compareEnable = VK_BOOL(compareEnable)
-			it.compareOp = compareOp
-			it.minLod = minLod
-			it.maxLod = maxLod
-			it.borderColor = borderColour
+			it.flags                   = flags
+			it.magFilter               = magFilter
+			it.minFilter               = minFilter
+			it.mipmapMode              = mipmapMode
+			it.addressModeU            = addressModeU
+			it.addressModeV            = addressModeV
+			it.addressModeW            = addressModeW
+			it.mipLodBias              = mipLodBias
+			it.anisotropyEnable        = VK_BOOL(anisotropyEnable)
+			it.maxAnisotropy           = maxAnisotropy
+			it.compareEnable           = VK_BOOL(compareEnable)
+			it.compareOp               = compareOp
+			it.minLod                  = minLod
+			it.maxLod                  = maxLod
+			it.borderColor             = borderColour
 			it.unnormalizedCoordinates = VK_BOOL(unnormalisedCoordinates)
 		})
 	}
@@ -710,7 +730,17 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	fun createSwapchain(info: SwapchainCreateInfo, stack: MemStack = default) = stack.get {
 		val pointer = mallocPointer()
 		commands.createSwapchain(info, null, pointer).check()
-		Swapchain(pointer.value, self, info.imageFormat)
+
+		Swapchain(
+			pointer.value,
+			self,
+			info.imageFormat,
+			info.imageColorSpace,
+			info.imageExtent.width,
+			info.imageExtent.height,
+			info.imageArrayLayers,
+			info.imageUsage
+		)
 	}
 
 
@@ -841,7 +871,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 * Implementation of vkGetDeviceQueue.
 	 */
 	fun getQueue(
-		queueFamily : QueueFamilyPropertiesP,
+		queueFamily : QueueFamily,
 		queueIndex  : Int,
 		stack       : MemStack = default
 	) = stack.get {

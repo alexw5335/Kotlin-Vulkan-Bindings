@@ -1,6 +1,7 @@
 package kvb.samples.app
 
 import kvb.core.memory.Unsafe
+import kvb.vkwrapper.exception.VkCommandException
 import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
 
@@ -171,12 +172,18 @@ class SurfaceSystem(
 			fence            = null
 		)
 
+		// TODO: Handle ERROR_OUT_OF_DATE?
+		try {
+			queue.present(
+				waitSemaphore = renderFinishedSemaphore,
+				swapchain = swapchain,
+				imageIndex = imageIndex
+			)
+		} catch(exception: VkCommandException) {
+			if(exception.result != Result.ERROR_OUT_OF_DATE)
+				throw exception
+		}
 
-		queue.present(
-			waitSemaphore = renderFinishedSemaphore,
-			swapchain = swapchain,
-			imageIndex = imageIndex
-		)
 
 		device.waitIdle()
 	}
