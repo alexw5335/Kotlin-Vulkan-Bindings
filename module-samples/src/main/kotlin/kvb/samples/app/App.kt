@@ -7,7 +7,7 @@ import kvb.vkwrapper.pipeline.ShaderDirectory
 import kvb.vulkan.*
 import kvb.window.winapi.WinApi
 
-object AppTest {
+object App {
 
 
 	val window = WinApi.createWindow("My window", 0, 0, 700, 700)
@@ -16,7 +16,7 @@ object AppTest {
 
 	val context = object : ContextBuilder() {
 
-		override val window = this@AppTest.window
+		override val window = this@App.window
 
 		override val isDebugEnabled = true
 
@@ -38,7 +38,7 @@ object AppTest {
 			shaders(shaderDirectory["simple"])
 			emptyLayout()
 			topology(PrimitiveTopology.TRIANGLE_STRIP)
-			noBlendColourAttachment()
+			noBlendAttachment()
 			dynamicViewportAndScissor()
 		}
 
@@ -88,7 +88,7 @@ object AppTest {
 			shaders(shaderDirectory["texture"])
 			layout(descriptors)
 			topology(PrimitiveTopology.TRIANGLE_STRIP)
-			simpleBlendColourAttachment()
+			simpleBlendAttachment()
 			dynamicViewportAndScissor()
 		}
 	}

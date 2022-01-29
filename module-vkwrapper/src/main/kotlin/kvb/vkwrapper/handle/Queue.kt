@@ -96,8 +96,9 @@ class Queue(
 
 
 	/**
-	 * Convenience implementation of vkPresentQueueKHR. Single present info and wait semaphore. Returns its result,
-	 * which may be [Result.ERROR_OUT_OF_DATE] if a surface has been resized.
+	 * Convenience implementation of vkPresentQueueKHR. Single present info and wait semaphore. Returns true if the
+	 * command returned VK_SUCCESS. Returns false if the command returned VK_ERROR_OUT_OF_DATE, which signals that a
+	 * resize has occurred. Any other returned result will cause an exception.
 	 */
 	fun present(
 		waitSemaphore : Semaphore,
@@ -105,16 +106,25 @@ class Queue(
 		imageIndex    : Int,
 		stack         : MemStack = default
 	) = stack.get {
-		val result = mallocInt()
+		val resultValue = mallocInt()
+
 		commands.queuePresent(self, PresentInfo {
 			it.waitSemaphoreCount = 1
 			it.pWaitSemaphores    = wrapPointer(waitSemaphore).address
 			it.swapchainCount     = 1
 			it.pSwapchains        = wrapPointer(swapchain).address
 			it.pImageIndices      = wrapInt(imageIndex).address
-			it.pResults           = result.address
-		}).check()
-		Result(result.value)
+			it.pResults           = resultValue.address
+		})
+
+		val result = Result(resultValue.value)
+
+		if(result == Result.ERROR_OUT_OF_DATE) {
+			false
+		} else {
+			result.check()
+			true
+		}
 	}
 
 

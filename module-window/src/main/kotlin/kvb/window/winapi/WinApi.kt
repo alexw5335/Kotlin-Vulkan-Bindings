@@ -3,7 +3,7 @@ package kvb.window.winapi
 import kvb.core.memory.MemStacks
 import kvb.window.WindowManager
 
-object WinApi : WindowManager<WinApiWindow> {
+object WinApi : WindowManager {
 
 
 	/*
@@ -82,7 +82,7 @@ object WinApi : WindowManager<WinApiWindow> {
 
 
 
-	fun update() {
+	override fun update() {
 		while(peekMessage(message.address)) {
 			handleMessage()
 		}

@@ -1,9 +1,16 @@
 package kvb.window
 
-interface WindowManager<T: Window> {
+import kvb.core.Platform
+import kvb.window.winapi.WinApi
+
+interface WindowManager {
 
 
-	val windows: List<T>
+	val windows: List<Window>
+
+
+
+	fun update()
 
 
 
@@ -13,7 +20,20 @@ interface WindowManager<T: Window> {
 		y      : Int = 0,
 		width  : Int = 600,
 		height : Int = 600
-	): T
+	): Window
+
+
+
+	companion object {
+
+		val INSTANCE: WindowManager by lazy {
+			when {
+				Platform.isWindows -> WinApi
+				else -> throw RuntimeException("Windowing only supported on Windows")
+			}
+		}
+
+	}
 
 
 }

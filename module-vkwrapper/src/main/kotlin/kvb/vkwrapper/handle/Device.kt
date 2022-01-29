@@ -474,10 +474,10 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateImageView.
 	 */
-	fun createImageView(info: ImageViewCreateInfo, stack: MemStack = default) = stack.get {
+	fun createImageView(info: ImageViewCreateInfo, image: Image, stack: MemStack = default) = stack.get {
 		val pointer = mallocPointer()
 		commands.createImageView(info, null, pointer).check()
-		ImageView(pointer.value, self)
+		ImageView(pointer.value, self, image)
 	}
 
 
@@ -503,7 +503,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 			it.subresourceRange.levelCount     = mipLevelCount
 			it.subresourceRange.baseArrayLayer = baseArrayLayer
 			it.subresourceRange.layerCount     = arrayLayerCount
-		}, stack)
+		}, image, stack)
 	}
 
 

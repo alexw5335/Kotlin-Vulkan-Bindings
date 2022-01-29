@@ -71,6 +71,21 @@ object FileUtils {
 
 
 
+	fun readRgba(path: String, stack: MemStack = default) = stack.get {
+		val imageBuffer = mallocByte(8 + 8 + 8)
+
+		loadImage(encodeUtf8NT(path).address, imageBuffer.address, desiredChannels = 4)
+
+		Image(
+			imageBuffer.getLong(0),
+			imageBuffer.getInt(8),
+			imageBuffer.getInt(12),
+			imageBuffer.getInt(16)
+		)
+	}
+
+
+
 	inline fun<T> readRGBA(path: String, block: (Image) -> T) = MemStacks.get {
 		val imageBuffer = mallocByte(8 + 4 + 4 + 4)
 

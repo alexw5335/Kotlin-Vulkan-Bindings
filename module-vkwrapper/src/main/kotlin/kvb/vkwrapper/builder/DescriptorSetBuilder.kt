@@ -177,7 +177,7 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 
 	fun fragmentCominedSampler(
-		imageLayout     : ImageLayout,
+		imageLayout     : ImageLayout = ImageLayout.SHADER_READ_ONLY_OPTIMAL,
 		imageView       : ImageView,
 		sampler         : Sampler,
 		dstArrayElement : Int = 0,

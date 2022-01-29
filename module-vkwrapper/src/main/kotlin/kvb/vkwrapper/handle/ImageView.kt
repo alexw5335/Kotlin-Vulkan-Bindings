@@ -2,7 +2,7 @@ package kvb.vkwrapper.handle
 
 import kvb.vulkan.ImageViewH
 
-class ImageView(address: Long, val device: Device) : ImageViewH(address) {
+class ImageView(address: Long, val device: Device, val image: Image) : ImageViewH(address) {
 
 
 	/**

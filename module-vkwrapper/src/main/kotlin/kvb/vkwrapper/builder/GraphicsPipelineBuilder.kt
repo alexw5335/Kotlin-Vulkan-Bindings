@@ -4,7 +4,6 @@ import kvb.core.memory.DirectList
 import kvb.core.memory.MemStack
 import kvb.vkwrapper.handle.*
 import kvb.vkwrapper.pipeline.Shader
-import kvb.vkwrapper.pipeline.Program
 import kvb.vulkan.*
 
 @Suppress("unused")
@@ -414,26 +413,45 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 
 
-	fun noBlendColourAttachment() {
-		colourBlendAttachments.buffer[colourBlendAttachments.next].let {
-			it.colorWriteMask = ColorComponentFlags { R + G + B + A }
-		}
+	fun noBlendAttachment(
+		colourWriteMask: ColorComponentFlags = ColorComponentFlags { R + G + B + A }
+	) {
+		colourBlendAttachments.buffer[colourBlendAttachments.next].colorWriteMask = colourWriteMask
 	}
 
 
 
-	fun simpleBlendColourAttachment() {
+	fun blendAttachment(
+		srcColourFactor : BlendFactor,
+		dstColourFactor : BlendFactor,
+		colourOp        : BlendOp,
+		srcAlphaFactor  : BlendFactor,
+		dstAlphaFactor  : BlendFactor,
+		alphaOp         : BlendOp,
+		colourWriteMask : ColorComponentFlags = ColorComponentFlags { R + G + B + A }
+	) {
 		colourBlendAttachments.buffer[colourBlendAttachments.next].let {
-			it.colorWriteMask      = ColorComponentFlags { R + G + B + A }
-			it.blendEnable         = VK_TRUE
-			it.srcColorBlendFactor = BlendFactor.SRC_ALPHA
-			it.dstColorBlendFactor = BlendFactor.ONE_MINUS_SRC_ALPHA
-			it.colorBlendOp        = BlendOp.ADD
-			it.srcAlphaBlendFactor = BlendFactor.ONE
-			it.dstAlphaBlendFactor = BlendFactor.ZERO
-			it.alphaBlendOp        = BlendOp.ADD
+			it.blendEnable = VK_TRUE
+			it.srcColorBlendFactor = srcColourFactor
+			it.dstColorBlendFactor = dstColourFactor
+			it.colorBlendOp = colourOp
+			it.srcAlphaBlendFactor = srcAlphaFactor
+			it.dstAlphaBlendFactor = dstAlphaFactor
+			it.alphaBlendOp = alphaOp
+			it.colorWriteMask = colourWriteMask
 		}
 	}
+
+
+	
+	fun simpleBlendAttachment() = blendAttachment(
+		srcColourFactor = BlendFactor.SRC_ALPHA,
+		dstColourFactor = BlendFactor.ONE_MINUS_SRC_ALPHA,
+		colourOp        = BlendOp.ADD,
+		srcAlphaFactor  = BlendFactor.ONE,
+		dstAlphaFactor  = BlendFactor.ZERO,
+		alphaOp         = BlendOp.ADD
+	)
 
 
 

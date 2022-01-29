@@ -7,5 +7,9 @@ interface Window {
 
 	fun hide()
 
+	val width: Int
+
+	val height: Int
+
 
 }
