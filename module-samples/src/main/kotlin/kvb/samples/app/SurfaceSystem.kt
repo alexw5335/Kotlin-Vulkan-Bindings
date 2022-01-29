@@ -187,46 +187,4 @@ class SurfaceSystem(
 
 		device.waitIdle()
 	}
-	/*fun present() {
-		inFlightFences[currentFrame].wait()
-
-		val imageIndex = swapchain.acquireNextImage(semaphore = imageAvailableSemaphores[currentFrame])
-
-		// Resizing
-		if(imageIndex == -1) {
-			updateDimensions()
-
-			// Minimisation
-			if(surface.width == 0 || surface.height == 0) return
-
-			recreateSwapchain()
-			record()
-
-			return
-		}
-
-		imagesInFlight[imageIndex]?.wait()
-		imagesInFlight[imageIndex] = inFlightFences[currentFrame]
-		inFlightFences[currentFrame].reset()
-
-		// Complicated synchronisation is mostly only required for presenting.
-		// For non-presentation work, a simple queue submit is enough.
-		queue.submit(
-			waitSemaphore    = imageAvailableSemaphores[currentFrame],
-			waitDstStageMask = PipelineStageFlags.COLOR_ATTACHMENT_OUTPUT,
-			commandBuffer    = commandBuffers[imageIndex],
-			signalSemaphore  = renderFinishedSemaphores[currentFrame],
-			fence            = inFlightFences[currentFrame]
-		)
-
-		queue.present(
-			waitSemaphore = renderFinishedSemaphores[currentFrame],
-			swapchain     = swapchain,
-			imageIndex    = imageIndex
-		)
-
-		currentFrame = (currentFrame + 1) % framesInFlight
-	}*/
-
-
 }
