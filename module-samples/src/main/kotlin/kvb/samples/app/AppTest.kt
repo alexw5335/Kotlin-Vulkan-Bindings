@@ -2,7 +2,7 @@ package kvb.samples.app
 
 import kvb.core.FileUtils
 import kvb.core.memory.Unsafe
-import kvb.vkwrapper.pipeline.FileShaderCollection
+import kvb.vkwrapper.pipeline.Program
 import kvb.vkwrapper.pipeline.ShaderDirectory
 import kvb.vulkan.*
 import kvb.window.winapi.WinApi
@@ -24,16 +24,19 @@ object AppTest {
 
 
 
-	val shaders = ShaderDirectory("res/shader/out", context.device)
+	val shaderDirectory = ShaderDirectory("res/shader/out", context.device)
 
 
 
-	object Shader : FileShaderCollection(shaders, "simple") {
+	object Shader : Program {
+
+		override val device = context.device
 
 		override val pipeline = device.buildGraphicsPipeline {
 			vertexBinding { vec2() }
 			renderPass(context.surfaceSystem!!.renderPass)
-			shaders(this@Shader)
+			shaders(shaderDirectory["simple"])
+			emptyLayout()
 			topology(PrimitiveTopology.TRIANGLE_STRIP)
 			noBlendColourAttachment()
 			dynamicViewportAndScissor()
@@ -70,7 +73,9 @@ object AppTest {
 
 
 
-	object TextureShader : FileShaderCollection(shaders, "texture") {
+	object TextureShader : Program {
+
+		override val device = context.device
 
 		val descriptorSet = context.descriptorPool.buildSet {
 			fragmentCominedSampler(ImageLayout.SHADER_READ_ONLY_OPTIMAL, imageView, sampler)
@@ -80,7 +85,8 @@ object AppTest {
 
 		override val pipeline = device.buildGraphicsPipeline {
 			renderPass(context.surfaceSystem!!.renderPass)
-			shaders(this@TextureShader)
+			shaders(shaderDirectory["texture"])
+			layout(descriptors)
 			topology(PrimitiveTopology.TRIANGLE_STRIP)
 			simpleBlendColourAttachment()
 			dynamicViewportAndScissor()

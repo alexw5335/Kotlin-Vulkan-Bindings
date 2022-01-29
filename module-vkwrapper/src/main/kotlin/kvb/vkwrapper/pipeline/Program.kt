@@ -5,10 +5,8 @@ import kvb.vkwrapper.handle.*
 /**
  * Wraps a complete graphics pipeline, including shaders and descriptors.
  */
-interface ShaderCollection {
+interface Program {
 
-
-	val shaders: List<Shader>
 
 	val device: Device
 
@@ -28,9 +26,6 @@ interface ShaderCollection {
 
 
 	fun destroy() {
-		for(s in shaders)
-			s.module.destroy()
-
 		pipeline.destroy()
 	}
 

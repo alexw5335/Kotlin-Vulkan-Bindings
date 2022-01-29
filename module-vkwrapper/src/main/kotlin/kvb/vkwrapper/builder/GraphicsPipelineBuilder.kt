@@ -4,7 +4,7 @@ import kvb.core.memory.DirectList
 import kvb.core.memory.MemStack
 import kvb.vkwrapper.handle.*
 import kvb.vkwrapper.pipeline.Shader
-import kvb.vkwrapper.pipeline.ShaderCollection
+import kvb.vkwrapper.pipeline.Program
 import kvb.vulkan.*
 
 @Suppress("unused")
@@ -35,8 +35,12 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 		layout(device.createPipelineLayout(setLayout))
 	}
 
-	fun layout(set: DescriptorSet) {
-		layout(set.layout)
+	fun layout(setLayouts: List<DescriptorSetLayout>) {
+		layout(device.createPipelineLayout(setLayouts))
+	}
+
+	fun layout(sets: Map<Int, DescriptorSet>) {
+		if(sets.isEmpty()) emptyLayout() else layout(sets.map { it.value.layout })
 	}
 
 	fun emptyLayout() {
@@ -73,13 +77,8 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 
 
-	fun shaders(collection: ShaderCollection) {
-		for(shader in collection.shaders) shader(shader)
-
-		layout = if(collection.descriptors.isEmpty())
-			device.createPipelineLayout()
-		else
-			device.createPipelineLayout(collection.descriptors.map { it.value.layout })
+	fun shaders(shaders: Iterable<Shader>) {
+		for(s in shaders) shader(s)
 	}
 
 

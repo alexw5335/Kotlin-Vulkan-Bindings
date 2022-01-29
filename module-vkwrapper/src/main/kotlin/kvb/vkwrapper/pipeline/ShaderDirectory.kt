@@ -13,9 +13,6 @@ class ShaderDirectory(val root: String, val device: Device) {
 	 */
 	val shaders = HashMap<String, ArrayList<Shader>>()
 
-	val shaderCollections = ArrayList<ShaderCollection>()
-
-
 
 
 	init {
@@ -38,9 +35,6 @@ class ShaderDirectory(val root: String, val device: Device) {
 
 
 	fun destroy() {
-		for(s in shaderCollections)
-			s.destroy()
-
 		for(e in shaders)
 			for(s in e.value)
 				s.module.destroy()
