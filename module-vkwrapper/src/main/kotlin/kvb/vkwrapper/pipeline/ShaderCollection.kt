@@ -1,7 +1,10 @@
-package kvb.vkwrapper.shader
+package kvb.vkwrapper.pipeline
 
 import kvb.vkwrapper.handle.*
 
+/**
+ * Wraps a complete graphics pipeline, including shaders and descriptors.
+ */
 interface ShaderCollection {
 
 
@@ -25,7 +28,9 @@ interface ShaderCollection {
 
 
 	fun destroy() {
-		shaders.forEach { it.module.destroy() }
+		for(s in shaders)
+			s.module.destroy()
+
 		pipeline.destroy()
 	}
 

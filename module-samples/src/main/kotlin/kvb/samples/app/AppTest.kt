@@ -2,10 +2,8 @@ package kvb.samples.app
 
 import kvb.core.FileUtils
 import kvb.core.memory.Unsafe
-import kvb.vkwrapper.handle.DescriptorSet
-import kvb.vkwrapper.handle.Image
-import kvb.vkwrapper.shader.FileShaderCollection
-import kvb.vkwrapper.shader.ShaderDirectory
+import kvb.vkwrapper.pipeline.FileShaderCollection
+import kvb.vkwrapper.pipeline.ShaderDirectory
 import kvb.vulkan.*
 import kvb.window.winapi.WinApi
 

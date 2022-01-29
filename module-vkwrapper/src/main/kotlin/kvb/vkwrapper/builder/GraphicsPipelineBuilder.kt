@@ -3,8 +3,8 @@ package kvb.vkwrapper.builder
 import kvb.core.memory.DirectList
 import kvb.core.memory.MemStack
 import kvb.vkwrapper.handle.*
-import kvb.vkwrapper.shader.Shader
-import kvb.vkwrapper.shader.ShaderCollection
+import kvb.vkwrapper.pipeline.Shader
+import kvb.vkwrapper.pipeline.ShaderCollection
 import kvb.vulkan.*
 
 @Suppress("unused")
@@ -69,7 +69,7 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 
 
-	fun shader(shader: Shader) = shader(shader.module, shader.stage, shader.defaultEntryPoint)
+	fun shader(shader: Shader) = shader(shader.module, shader.stage, shader.entryPoint)
 
 
 

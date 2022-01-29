@@ -4,7 +4,7 @@ import kvb.core.memory.Unsafe
 import kvb.vkwrapper.DebugUtils
 import kvb.vkwrapper.Vulkan
 import kvb.vkwrapper.handle.*
-import kvb.vkwrapper.shader.ShaderDirectory
+import kvb.vkwrapper.pipeline.ShaderDirectory
 import kvb.vulkan.*
 import kvb.window.winapi.WinApiWindow
 

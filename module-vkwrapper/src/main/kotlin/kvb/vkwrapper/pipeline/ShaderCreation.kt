@@ -1,4 +1,4 @@
-package kvb.vkwrapper.shader
+package kvb.vkwrapper.pipeline
 
 import kvb.core.FileUtils
 import kvb.vkwrapper.exception.VkShaderException
@@ -34,27 +34,26 @@ object ShaderCreation {
 
 
 	fun createFromFile(
-		device            : Device,
-		path              : String,
-		stage             : ShaderStageFlags,
-		defaultEntryPoint : String = "main"
+		device      : Device,
+		path        : String,
+		stage       : ShaderStageFlags,
+		entryPoint  : String = "main"
 	) = Shader(
-		FileUtils.readFullyAndFree(path) { device.createShaderModule(it) },
-		stage,
-		defaultEntryPoint
+		module      = FileUtils.readFullyAndFree(path) { device.createShaderModule(it) },
+		stage       = stage,
+		entryPoint  = entryPoint
 	)
 
 
 
 	fun createFromFile(
-		device            : Device,
-		path              : String,
-		defaultEntryPoint : String = "main"
-	) = createFromFile(
-		device,
-		path,
-		stageFromFileName(path) ?: throw VkShaderException("Invalid shader file extension: $path"),
-		defaultEntryPoint
+		device      : Device,
+		path        : String,
+		entryPoint  : String = "main"
+	) = Shader(
+		module      = FileUtils.readFullyAndFree(path) { device.createShaderModule(it) },
+		stage       = stageFromFileName(path) ?: throw VkShaderException("Invalid shader file extension: $path"),
+		entryPoint  = entryPoint
 	)
 
 
