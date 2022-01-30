@@ -4,10 +4,20 @@ import kvb.core.memory.Addressable
 import kvb.core.memory.Unsafe
 import kvb.window.Window
 
-class WinApiWindow(private val struct: Struct) : Window {
+class WinApiWindow(address: Long) : Window {
 
+
+	private val struct = Struct(address)
 
 	val hwnd = struct.hwnd
+
+	override val x get() = struct.x
+
+	override val y get() = struct.y
+
+	override val width get() = struct.width
+
+	override val height get() = struct.height
 
 
 
@@ -30,19 +40,19 @@ class WinApiWindow(private val struct: Struct) : Window {
 			get()      = Unsafe.getLong(address)
 			set(value) = Unsafe.setLong(address, value)
 
-		var minWidth
+		var x
 			get()      = Unsafe.getInt(address + 8)
 			set(value) = Unsafe.setInt(address + 8, value)
 
-		var minHeight
+		var y
 			get()      = Unsafe.getInt(address + 12)
 			set(value) = Unsafe.setInt(address + 12, value)
 
-		var maxWidth
+		var width
 			get()      = Unsafe.getInt(address + 16)
 			set(value) = Unsafe.setInt(address + 16, value)
 
-		var maxHeight
+		var height
 			get()      = Unsafe.getInt(address + 20)
 			set(value) = Unsafe.setInt(address + 20, value)
 

@@ -6,6 +6,10 @@
 
 
 
+// Structs
+
+
+
 typedef struct {
 	HWND hwnd;
 	int x;
@@ -16,14 +20,89 @@ typedef struct {
 
 
 
-WNDCLASS windowClass = {};
+typedef struct {
+	Window* array;
+	int size;
+	int capacity;
+} WindowList;
 
-Window globalWindow = {};
+
+
+// Functions
+
+
+
+void wl_init(WindowList* list, int initialCapacity) {
+	list->array = calloc(initialCapacity, sizeof(Window));
+	list->capacity = initialCapacity;
+	list->size = 0;
+}
+
+
+
+void wl_resize(WindowList* list, int newCapacity) {
+	list->array = realloc(list->array, newCapacity * sizeof(Window));
+	list->capacity = newCapacity;
+	if(newCapacity < list->size) list->size = newCapacity;
+}
+
+
+
+void wl_add(WindowList* list, Window* window) {
+	if(list->size == list->capacity)
+		wl_resize(list, list->capacity * 2);
+	list->array[list->size++] = *window;
+}
+
+
+
+void wl_remove(WindowList* list, int index) {
+	if(index < 0 || index >= list->size) return;
+	for(int i = index; i < list->size - 1; i++) {
+		list->array[i] = list->array[i + 1];
+	}
+	list->size--;
+}
+
+
+
+int wl_getIndex(WindowList* list, HWND hwnd) {
+	for(int i = 0; i < list->size; i++)
+		if(list->array[i].hwnd == hwnd)
+			return i;
+
+	return -1;
+}
+
+
+
+Window* wl_get(WindowList* list, HWND hwnd) {
+	for(int i = 0; i < list->size; i++)
+		if(list->array[i].hwnd == hwnd)
+			return &list->array[i];
+
+	return NULL;
+}
+
+
+
+// API
+
+
+
+WNDCLASS class = {};
+
+WindowList windows = {};
+
+int initialised = FALSE;
 
 
 
 LRESULT CALLBACK windowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_DESTROY) PostQuitMessage(0);
+	if(uMsg == WM_DESTROY) {
+		PostMessage(NULL, WM_DESTROY, (WPARAM) hwnd, 0);
+		return 0;
+	}
 
 	if(uMsg == WM_PAINT) {
 		PAINTSTRUCT ps;
@@ -39,13 +118,18 @@ LRESULT CALLBACK windowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 
 Window* createWindow(const wchar_t* title, int x, int y, int width, int height) {
-	windowClass.lpszClassName = L"JNI";
-	windowClass.lpfnWndProc = windowProc;
-	windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-	RegisterClass(&windowClass);
+	if(!initialised) {
+		class.lpszClassName = L"JNI";
+		class.lpfnWndProc = windowProc;
+		class.hCursor = LoadCursor(NULL, IDC_ARROW);
+		RegisterClass(&class);
+
+		wl_init(&windows, 8);
+		initialised = TRUE;
+	}
 
 	HWND hwnd = CreateWindow(
-		windowClass.lpszClassName,
+		class.lpszClassName,
 		title,
 		WS_OVERLAPPEDWINDOW,
 		x,
@@ -58,8 +142,10 @@ Window* createWindow(const wchar_t* title, int x, int y, int width, int height) 
 		NULL
 	);
 
-	globalWindow.hwnd = hwnd;
-	return &globalWindow;
+	Window window = {};
+	window.hwnd = hwnd;
+	wl_add(&windows, &window);
+	return &windows.array[windows.size - 1];
 }
 
 
@@ -72,7 +158,7 @@ Window* createWindow(const wchar_t* title, int x, int y, int width, int height) 
 
 
 
-JNIEXPORT jlong JNICALL Java_window_winapi_WinApi_createWindow(
+JNIEXPORT jlong JNICALL Java_kvb_window_winapi_WinApi_createWindow(
 	JNIEnv* env,
 	jobject obj,
 	jlong title,
@@ -86,26 +172,38 @@ JNIEXPORT jlong JNICALL Java_window_winapi_WinApi_createWindow(
 
 
 
-JNIEXPORT jboolean JNICALL Java_window_winapi_WinApi_destroyWindow(
-	JNIEnv* env,
-	jobject obj
-) {
-	return DestroyWindow(globalWindow.hwnd);
-}
-
-
-
-JNIEXPORT jboolean JNICALL Java_window_winapi_WinApi_showWindow(
+JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_removeWindow(
 	JNIEnv* env,
 	jobject obj,
-	jint code
+	jlong hwnd
 ) {
-	return (jboolean) ShowWindow(globalWindow.hwnd, code);
+	wl_remove(&windows, wl_getIndex(&windows, (HWND) hwnd));
 }
 
 
 
-JNIEXPORT jint JNICALL Java_window_winapi_WinApi_getSystemMetrics(
+JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_destroyWindow(
+	JNIEnv* env,
+	jobject obj,
+	jlong hwnd
+) {
+	return DestroyWindow((HWND) hwnd);
+}
+
+
+
+JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_showWindow(
+	JNIEnv* env,
+	jobject obj,
+	jlong hwnd,
+	jint code
+) {
+	return (jboolean) ShowWindow((HWND) hwnd, code);
+}
+
+
+
+JNIEXPORT jint JNICALL Java_kvb_window_winapi_WinApi_getSystemMetrics(
 	JNIEnv* env,
 	jobject obj,
 	jint code
@@ -115,7 +213,7 @@ JNIEXPORT jint JNICALL Java_window_winapi_WinApi_getSystemMetrics(
 
 
 
-JNIEXPORT jboolean JNICALL Java_window_winapi_WinApi_peekMessage(
+JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_peekMessage(
 	JNIEnv* env,
 	jobject obj,
 	jlong msg
@@ -125,7 +223,7 @@ JNIEXPORT jboolean JNICALL Java_window_winapi_WinApi_peekMessage(
 
 
 
-JNIEXPORT jboolean JNICALL Java_window_winapi_WinApi_translateMessage(
+JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_translateMessage(
 	JNIEnv* env,
 	jobject obj,
 	jlong pMsg
@@ -135,7 +233,7 @@ JNIEXPORT jboolean JNICALL Java_window_winapi_WinApi_translateMessage(
 
 
 
-JNIEXPORT jint JNICALL Java_window_winapi_WinApi_dispatchMessage(
+JNIEXPORT jint JNICALL Java_kvb_window_winapi_WinApi_dispatchMessage(
 	JNIEnv* env,
 	jobject obj,
 	jlong pMsg
@@ -145,14 +243,16 @@ JNIEXPORT jint JNICALL Java_window_winapi_WinApi_dispatchMessage(
 
 
 
-JNIEXPORT void JNICALL Java_window_winapi_WinApi_updateRect(
+JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_updateRect(
 	JNIEnv* env,
-	jobject obj
+	jobject obj,
+	jlong hwnd
 ) {
+	Window* window = wl_get(&windows, (HWND) hwnd);
 	RECT rect = {};
-	GetWindowRect(globalWindow.hwnd, &rect);
-	globalWindow.x = rect.left;
-	globalWindow.y = rect.top;
-	globalWindow.width = rect.right - rect.left;
-	globalWindow.height = rect.bottom - rect.top;
+	GetWindowRect((HWND) hwnd, &rect);
+	window->x = rect.left;
+	window->y = rect.top;
+	window->width = rect.right - rect.left;
+	window->height = rect.bottom - rect.top;
 }

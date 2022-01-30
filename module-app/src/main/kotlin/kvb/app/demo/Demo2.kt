@@ -2,7 +2,6 @@ package kvb.app.demo
 
 import kvb.app.App
 import kvb.app.VkContextBuilder
-import kvb.vkwrapper.handle.DescriptorSet
 import kvb.vkwrapper.pipeline.Program
 import kvb.vulkan.*
 import kvb.window.Windows
@@ -10,7 +9,7 @@ import kvb.window.Windows
 object Demo2 : App() {
 
 
-	val window = Windows.createWindow("My Window", 0, 0, 1000, 600)
+	val window = Windows.create("My Window", 0, 0, 256, 256)
 
 
 
@@ -26,9 +25,42 @@ object Demo2 : App() {
 
 
 
-	val imageView = context.loadImageRgba("res/sdf.png")
+	val imageView = context.loadImageRgba("res/font_attempt.png")
 
-	val sampler = context.device.createSampler(Filter.LINEAR, Filter.LINEAR)
+	val sampler = context.device.createSampler(Filter.NEAREST, Filter.NEAREST)
+
+
+
+	private const val width = 1F
+	private val vertexBuffer = context.vertexBuffer(4 * 4 * 4) {
+/*		it.setFloats(0, floatArrayOf(
+			-1F, 1F, 0F, 0F,
+			1F, 1F, 1F, 0F,
+			-1F, -1F, 0F, 1F,
+			1F, -1F, 1F, 1F
+		))*/
+
+		it.setFloats(0, floatArrayOf(
+			-1F, -1F, 0F, 0F,
+			width, -1F, 1F, 0F,
+			-1F, width, 0F, 1F,
+			width, width, 1F, 1F
+		))
+	}
+
+
+
+	private val windowSizeBuffer = context.uniformBuffer(4 * 2)
+
+
+
+	private val windowSizeDescriptor = context.descriptorPool.buildSet {
+		vertexUniform(windowSizeBuffer)
+	}
+
+	private val textureDescriptor = context.descriptorPool.buildSet {
+		fragmentCominedSampler(ImageLayout.SHADER_READ_ONLY_OPTIMAL, imageView, sampler)
+	}
 
 
 
@@ -36,11 +68,10 @@ object Demo2 : App() {
 
 		override val device = context.device
 
-		private val descriptorSet = context.descriptorPool.buildSet {
-			fragmentCominedSampler(ImageLayout.SHADER_READ_ONLY_OPTIMAL, imageView, sampler)
-		}
-
-		override val descriptors = mapOf(0 to descriptorSet)
+		override val descriptors = mapOf(
+			0 to windowSizeDescriptor,
+			1 to textureDescriptor
+		)
 
 		override val pipeline = context.device.buildGraphicsPipeline {
 			vertexBinding {
@@ -52,26 +83,13 @@ object Demo2 : App() {
 			shaders(context.shaderDirectory["binary_texture"])
 			layout(descriptors)
 			topology(PrimitiveTopology.TRIANGLE_STRIP)
-			noBlendAttachment()
+			//noBlendAttachment()
+			simpleBlendAttachment()
 			dynamicViewportAndScissor()
 		}
 
 	}
 
-
-
-	private val vertexBuffer = context.vertexBuffer(4 * 4 * 4) {
-		it.setFloats(0, floatArrayOf(
-			-1F, 1F, 0F, 0F,
-			1F, 1F, 1F, 0F,
-			-1F, -1F, 0F, 1F,
-			1F, -1F, 1F, 1F
-		))
-	}
-
-
-
-	private val windowSizeBuffer = context.uniformBuffer(4 * 2);
 
 
 
@@ -92,8 +110,9 @@ object Demo2 : App() {
 
 			context.write(windowSizeBuffer) {
 				it[0] = window.width.toFloat()
-				it[1] = window.height.toFloat()
+				it[4] = window.height.toFloat()
 			}
+
 			context.surfaceSystem.present()
 		}
 	}

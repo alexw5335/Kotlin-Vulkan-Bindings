@@ -7,6 +7,10 @@ interface Window {
 
 	fun hide()
 
+	val x: Int
+
+	val y: Int
+
 	val width: Int
 
 	val height: Int

@@ -76,6 +76,10 @@ object FileUtils {
 
 		loadImage(encodeUtf8NT(path).address, imageBuffer.address, desiredChannels = 4)
 
+		if(imageBuffer.getLong(0) == 0L) {
+			throw RuntimeException("Could not load image.")
+		}
+
 		Image(
 			imageBuffer.getLong(0),
 			imageBuffer.getInt(8),

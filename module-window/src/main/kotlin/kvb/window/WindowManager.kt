@@ -8,19 +8,9 @@ interface WindowManager {
 
 	val windows: List<Window>
 
-
-
 	fun update()
 
-
-
-	fun createWindow(
-		title  : String = "Window ${windows.size}",
-		x      : Int = 0,
-		y      : Int = 0,
-		width  : Int = 600,
-		height : Int = 600
-	): Window
+	fun create(title: String, x: Int, y: Int, width: Int, height: Int): Window
 
 
 

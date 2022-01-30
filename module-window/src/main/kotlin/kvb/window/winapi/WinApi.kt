@@ -1,6 +1,7 @@
 package kvb.window.winapi
 
 import kvb.core.memory.MemStacks
+import kvb.window.Window
 import kvb.window.WindowManager
 
 object WinApi : WindowManager {
@@ -28,9 +29,7 @@ object WinApi : WindowManager {
 
 	external fun dispatchMessage(pMsg: Long): Int
 
-
-
-	private val CW_USEDEFAULT = 0x80000000.toUInt().toInt()
+	external fun updateRect(hwnd: Long)
 
 
 
@@ -44,17 +43,22 @@ object WinApi : WindowManager {
 
 
 
-	override fun createWindow(
-		title  : String,
-		x      : Int,
-		y      : Int,
-		width  : Int,
-		height : Int,
-	) = MemStacks.get {
-		val address = createWindow(encodeUtf16NT(title).address, x, y, width, height)
-		val window = WinApiWindow(WinApiWindow.Struct(address))
-		windows.add(window)
-		window
+	override fun create(title: String, x: Int, y: Int, width: Int, height: Int): Window {
+		val address = MemStacks.get {
+			createWindow(encodeUtf16NT(title).address, x, y, width, height)
+		}
+
+		return WinApiWindow(address).also(windows::add)
+	}
+
+
+
+	override fun update() {
+		for(window in windows) updateRect(window.hwnd)
+
+		while(peekMessage(message.address)) {
+			handleMessage()
+		}
 	}
 
 
@@ -73,18 +77,10 @@ object WinApi : WindowManager {
 		translateMessage(message.address)
 		dispatchMessage(message.address)
 
-		if(message.message == 0x0002) {
+		if(message.message == MessageType.DESTROY.value) {
 			val window = windows.first { it.hwnd == message.wparam }
 			windows.remove(window)
 			removeWindow(window.hwnd)
-		}
-	}
-
-
-
-	override fun update() {
-		while(peekMessage(message.address)) {
-			handleMessage()
 		}
 	}
 

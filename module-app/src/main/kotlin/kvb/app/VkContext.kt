@@ -131,7 +131,7 @@ class VkContext(
 
 
 
-	private val imageStagingBuffer = stagingBuffer(5_000_000)
+	private val imageStagingBuffer = stagingBuffer(9_000_000)
 
 
 

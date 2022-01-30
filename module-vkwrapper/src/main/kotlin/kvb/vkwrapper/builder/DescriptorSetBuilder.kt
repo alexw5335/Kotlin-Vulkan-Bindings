@@ -166,7 +166,7 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 	fun vertexUniform(
 		buffer          : Buffer,
 		offset          : Long = 0,
-		size            : Long,
+		size            : Long = buffer.size,
 		dstArrayElement : Int = 0,
 		count           : Int = 1
 	) {

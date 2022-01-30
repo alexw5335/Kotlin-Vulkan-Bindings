@@ -11,7 +11,7 @@ import kvb.window.Windows
 object Demo1 : App() {
 
 
-	val window = Windows.createWindow("My Window", 0, 0, 1000, 600)
+	val window = Windows.create("My Window", 0, 0, 1000, 600)
 
 
 
