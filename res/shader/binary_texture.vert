@@ -8,17 +8,33 @@ layout(set = 0, binding = 0) uniform ubo {
 	float zoom;
 };
 
-layout(location = 0) in vec2 position;
 
-layout(location = 1) in vec2 texCoordsIn;
 
 layout(location = 0) out vec2 texCoords;
 
 
 
 
+vec2 positions[4] = vec2[](
+	vec2(-1, -1),
+	vec2(1, -1),
+	vec2(-1, 1),
+	vec2(1, 1)
+);
+
+
+
+vec2 texCoordsArray[4] = vec2[](
+	vec2(0.0, 0.0),
+	vec2(1.0, 0.0),
+	vec2(0.0, 1.0),
+	vec2(1.0, 1.0)
+);
+
+
+
 void main() {
-	//gl_Position = vec4(position.x / windowSize.x * 2 - 1, position.y / windowSize.y * 2 - 1, 0.0, 1.0);
-	gl_Position = vec4(position.x, position.y, 0.0, 1.0);
-	texCoords = texCoordsIn;
+	vec2 pos = positions[gl_VertexIndex];
+	gl_Position = vec4(((pos * vec2(windowSize.x)) / windowSize + offset / windowSize * 2) / vec2(zoom), 0.0, 1.0);
+	texCoords = texCoordsArray[gl_VertexIndex];
 }

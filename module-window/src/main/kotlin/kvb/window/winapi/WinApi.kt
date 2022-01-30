@@ -31,6 +31,14 @@ object WinApi : WindowManager {
 
 	external fun updateRect(hwnd: Long)
 
+	external fun updateClientRect(hwnd: Long)
+
+	external fun getCursorX(hwnd: Long): Int
+
+	external fun getCursorY(hwnd: Long): Int
+
+	external fun getKeyState(virtualKey: Int): Int
+
 
 
 	/*
@@ -54,12 +62,19 @@ object WinApi : WindowManager {
 
 
 	override fun update() {
-		for(window in windows) updateRect(window.hwnd)
+		for(window in windows) {
+			updateRect(window.hwnd)
+			updateClientRect(window.hwnd)
+		}
 
 		while(peekMessage(message.address)) {
 			handleMessage()
 		}
 	}
+
+
+
+	override var onScroll: (Int) -> Unit = { }
 
 
 
@@ -81,6 +96,8 @@ object WinApi : WindowManager {
 			val window = windows.first { it.hwnd == message.wparam }
 			windows.remove(window)
 			removeWindow(window.hwnd)
+		} else if(message.message == MessageType.MOUSE_WHEEL.value) {
+			onScroll(((message.wparam shr 16) and 0xffff).toShort().toInt())
 		}
 	}
 

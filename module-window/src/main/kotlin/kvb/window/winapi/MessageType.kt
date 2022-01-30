@@ -7,7 +7,9 @@ enum class MessageType(val value: Int) {
 
 	QUIT(0x0012),
 
-	GET_MIN_MAX_INFO(0x0024);
+	GET_MIN_MAX_INFO(0x0024),
+
+	MOUSE_WHEEL(0x020A);
 
 
 }

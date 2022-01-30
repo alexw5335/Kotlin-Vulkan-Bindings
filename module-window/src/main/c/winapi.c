@@ -12,10 +12,8 @@
 
 typedef struct {
 	HWND hwnd;
-	int x;
-	int y;
-	int width;
-	int height;
+	RECT rect;
+	RECT clientRect;
 } Window;
 
 
@@ -128,14 +126,17 @@ Window* createWindow(const wchar_t* title, int x, int y, int width, int height) 
 		initialised = TRUE;
 	}
 
+	RECT clientArea = { x, y, width, height };
+	AdjustWindowRect(&clientArea, WS_OVERLAPPEDWINDOW, FALSE);
+
 	HWND hwnd = CreateWindow(
 		class.lpszClassName,
 		title,
 		WS_OVERLAPPEDWINDOW,
-		x,
+		clientArea.left,
 		y,
-		width,
-		height,
+		clientArea.right - clientArea.left,
+		clientArea.bottom - clientArea.top,
 		NULL,
 		NULL,
 		NULL,
@@ -249,10 +250,52 @@ JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_updateRect(
 	jlong hwnd
 ) {
 	Window* window = wl_get(&windows, (HWND) hwnd);
-	RECT rect = {};
-	GetWindowRect((HWND) hwnd, &rect);
-	window->x = rect.left;
-	window->y = rect.top;
-	window->width = rect.right - rect.left;
-	window->height = rect.bottom - rect.top;
+	GetWindowRect((HWND) hwnd, &window->rect);
+}
+
+
+
+JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_updateClientRect(
+	JNIEnv* env,
+	jobject obj,
+	jlong hwnd
+) {
+	Window* window = wl_get(&windows, (HWND) hwnd);
+	GetClientRect((HWND) hwnd, &window->clientRect);
+}
+
+
+
+JNIEXPORT jint JNICALL Java_kvb_window_winapi_WinApi_getCursorX(
+	JNIEnv* env,
+	jobject obj,
+	HWND hwnd
+) {
+	POINT point = { };
+	GetCursorPos(&point);
+	ScreenToClient(hwnd, &point);
+	return point.x;
+}
+
+
+
+JNIEXPORT int JNICALL Java_kvb_window_winapi_WinApi_getCursorY(
+	JNIEnv* env,
+	jobject obj,
+	HWND hwnd
+) {
+	POINT point = { };
+	GetCursorPos(&point);
+	ScreenToClient(hwnd, &point);
+	return point.y;
+}
+
+
+
+JNIEXPORT jint JNICALL Java_kvb_window_winapi_WinApi_getKeyState(
+	JNIEnv* env,
+	jobject obj,
+	jint virtualKey
+) {
+	return (jint) GetKeyState(virtualKey);
 }

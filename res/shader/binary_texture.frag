@@ -12,6 +12,5 @@ layout(set = 1, binding = 0) uniform sampler2D texSampler;
 
 
 void main() {
-	//float alpha = texture(texSampler, texCoords).r;
 	outColour = texture(texSampler, texCoords);
 }

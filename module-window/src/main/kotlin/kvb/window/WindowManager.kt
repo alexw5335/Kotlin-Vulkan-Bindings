@@ -12,6 +12,8 @@ interface WindowManager {
 
 	fun create(title: String, x: Int, y: Int, width: Int, height: Int): Window
 
+	var onScroll: (Int) -> Unit
+
 
 
 	companion object {
