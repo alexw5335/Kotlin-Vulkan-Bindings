@@ -15,8 +15,6 @@ layout(set = 0, binding = 0) uniform ubo {
 
 
 void main() {
-	float x = pos / screenSize;
-	float y = pos / screenSize;
-	gl_Position = vec4(x, y, 0.0, zoom);
+	gl_Position = vec4(2 * (pos + offset) / screenSize - 1, 0.0, zoom);
 	texCoords = texCoordsIn;
 }

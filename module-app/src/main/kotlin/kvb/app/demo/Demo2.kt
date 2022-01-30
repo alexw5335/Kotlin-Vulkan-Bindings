@@ -6,9 +6,6 @@ import kvb.vkwrapper.pipeline.Program
 import kvb.vulkan.*
 import kvb.window.Windows
 import kvb.window.winapi.WinApi
-import java.lang.Float.max
-import java.lang.Float.min
-import java.lang.Integer.min
 
 object Demo2 : App() {
 
@@ -76,6 +73,7 @@ object Demo2 : App() {
 				vec2() // pos
 				vec2() // texCoords
 			}
+
 			renderPass(context.surfaceSystem!!.renderPass)
 			shaders(context.shaderDirectory["binary_texture"])
 			layout(descriptors)
@@ -88,16 +86,43 @@ object Demo2 : App() {
 
 
 
+	val binaryImage = context.device.createImage2D(
+		width = 128,
+		height = 128,
+		usage = ImageUsageFlags { TRANSFER_DST + SAMPLED },
+		format = Format.R8_SRGB
+	)
+
+
+
+	val binaryBuffer = context.stagingBuffer(128 * 128) {
+		it[0] = Byte.MAX_VALUE
+	}
+
+
+	init {
+		context.transitionImageForShaderRead(binaryImage, binaryBuffer)
+	}
+
+
+
 	var offsetX = 0F
 	var offsetY = 0F
 	var zoom = 1F
 
 	var wasPressed = false
-	var dragOriginX = 0F
-	var dragOriginY = 0F
+	var offsetOriginX = 0F
+	var offsetOriginY = 0F
+	var cursorOriginX = 0F
+	var cursorOriginY = 0F
 
 	val targetFps = 500
 	val frameTime = 1_000_000 / targetFps
+
+	fun centre() {
+		offsetX = (window.clientWidth - width) / 2F
+		offsetY = (window.clientHeight - width) / 2F
+	}
 
 	fun run() {
 		Windows.onScroll = {
@@ -119,6 +144,7 @@ object Demo2 : App() {
 		context.surfaceSystem.record()
 
 		window.show()
+		centre()
 
 		while(true) {
 			val frameStart = System.nanoTime()
@@ -129,17 +155,16 @@ object Demo2 : App() {
 
 			if(WinApi.getKeyState(0x01) and 0x8000 != 0) {
 				if(!wasPressed) {
-					dragOriginX = window.cursorX.toFloat()
-					dragOriginY = window.cursorY.toFloat()
+					offsetOriginX = offsetX
+					offsetOriginY = offsetY
+					cursorOriginX = window.cursorX.toFloat()
+					cursorOriginY = window.cursorY.toFloat()
 				}
 
 				wasPressed = true
 
-				offsetX += (window.cursorX - dragOriginX) * zoom
-				offsetY += (window.cursorY - dragOriginY) * zoom
-
-				dragOriginX = window.cursorX.toFloat()
-				dragOriginY = window.cursorY.toFloat()
+				offsetX = offsetOriginX + (window.cursorX - cursorOriginX) * zoom
+				offsetY = offsetOriginY + (window.cursorY - cursorOriginY) * zoom
 			} else {
 				wasPressed = false
 			}

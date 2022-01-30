@@ -56,7 +56,11 @@ object WinApi : WindowManager {
 			createWindow(encodeUtf16NT(title).address, x, y, width, height)
 		}
 
-		return WinApiWindow(address).also(windows::add)
+		val window = WinApiWindow(address)
+		windows.add(window)
+		updateRect(window.hwnd)
+		updateClientRect(window.hwnd)
+		return window
 	}
 
 
