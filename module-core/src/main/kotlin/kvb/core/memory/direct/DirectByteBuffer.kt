@@ -19,6 +19,10 @@ class DirectByteBuffer(override val address: Long, override val capacity: Int): 
 
 
 
+	val asFloatBuffer get() = DirectFloatBuffer(address, capacity / 4)
+
+
+
 	/*
 	Reading
 	 */

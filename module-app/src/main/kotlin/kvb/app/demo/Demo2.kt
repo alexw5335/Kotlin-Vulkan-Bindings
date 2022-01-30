@@ -35,12 +35,14 @@ object Demo2 : App() {
 
 
 
+	private const val width = 256F
+
 	private val vertexBuffer = context.vertexBuffer(4 * 4 * 4) {
 		it.setFloats(0, floatArrayOf(
 			0F, 0F, 0F, 0F,
-			800F, 0F, 1F, 0F,
-			0F, 800F, 0F, 1F,
-			800F, 800F, 1F, 1F
+			width, 0F, 1F, 0F,
+			0F, width, 0F, 1F,
+			width, width, 1F, 1F
 		))
 	}
 
@@ -70,6 +72,10 @@ object Demo2 : App() {
 		)
 
 		override val pipeline = context.device.buildGraphicsPipeline {
+			vertexBinding {
+				vec2() // pos
+				vec2() // texCoords
+			}
 			renderPass(context.surfaceSystem!!.renderPass)
 			shaders(context.shaderDirectory["binary_texture"])
 			layout(descriptors)
@@ -121,8 +127,6 @@ object Demo2 : App() {
 
 			if(Windows.windows.isEmpty()) break
 
-			println("${window.clientWidth} ${window.clientHeight}")
-
 			if(WinApi.getKeyState(0x01) and 0x8000 != 0) {
 				if(!wasPressed) {
 					dragOriginX = window.cursorX.toFloat()
@@ -141,8 +145,8 @@ object Demo2 : App() {
 			}
 
 			context.write(ubo) {
-				it[0] = window.width.toFloat()
-				it[4] = window.height.toFloat()
+				it[0] = window.clientWidth.toFloat()
+				it[4] = window.clientHeight.toFloat()
 				it[8] = offsetX
 				it[12] = offsetY
 				it[16] = zoom
