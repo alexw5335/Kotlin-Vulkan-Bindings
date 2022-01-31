@@ -12,3 +12,6 @@ glslc res/shader/fire.frag -o res/shader/out/fire.frag.spv
 
 glslc res/shader/binary_texture.vert -o res/shader/out/binary_texture.vert.spv
 glslc res/shader/binary_texture.frag -o res/shader/out/binary_texture.frag.spv
+
+glslc res/shader/binary_texture2.vert -o res/shader/out/binary_texture2.vert.spv
+glslc res/shader/binary_texture2.frag -o res/shader/out/binary_texture2.frag.spv

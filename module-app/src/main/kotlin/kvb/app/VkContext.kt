@@ -102,6 +102,10 @@ class VkContext(
 		write(it, block = block)
 	}
 
+	fun uniformBuffer(size: Int, block: (DirectByteBuffer) -> Unit) = uniformBuffer(size).also {
+		write(it, block = block)
+	}
+
 
 
 	/*

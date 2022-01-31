@@ -4,6 +4,8 @@ import kvb.core.memory.Unsafe
 import kvb.vkwrapper.exception.VkCommandException
 import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
+import kotlin.system.measureNanoTime
+import kotlin.system.measureTimeMillis
 
 /**
  * Note: The [renderPass] is not necessarily the only renderpass. It is the final renderpass that will be used to render
@@ -35,6 +37,8 @@ class SurfaceSystem(
 	private val imageAvailableSemaphore = device.createSemaphore()
 
 	private val renderFinishedSemaphore = device.createSemaphore()
+
+	private val fence = device.createFence()
 
 
 
@@ -147,6 +151,7 @@ class SurfaceSystem(
 
 
 	fun present() {
+		val start = System.nanoTime()
 		val imageIndex = swapchain.acquireNextImage(semaphore = imageAvailableSemaphore)
 
 		if(imageIndex == -1) {
@@ -163,14 +168,15 @@ class SurfaceSystem(
 		)
 
 		if(!queue.present(
-			waitSemaphore = renderFinishedSemaphore,
-			swapchain     = swapchain,
-			imageIndex    = imageIndex
+				waitSemaphore = renderFinishedSemaphore,
+				swapchain     = swapchain,
+				imageIndex    = imageIndex
 		)) {
 			onResize()
 			return
 		}
 
-		device.waitIdle()
+		queue.waitIdle()
 	}
+
 }
