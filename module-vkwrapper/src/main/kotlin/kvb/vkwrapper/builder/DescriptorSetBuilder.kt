@@ -176,6 +176,19 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 
 
+	fun fragmentUniform(
+		buffer          : Buffer,
+		offset          : Long = 0,
+		size            : Long = buffer.size,
+		dstArrayElement : Int = 0,
+		count           : Int = 1
+	) {
+		uniform(count, ShaderStageFlags.FRAGMENT)
+		write(buffer, offset, size, dstArrayElement, count)
+	}
+
+
+
 	fun fragmentCominedSampler(
 		imageLayout     : ImageLayout = ImageLayout.SHADER_READ_ONLY_OPTIMAL,
 		imageView       : ImageView,

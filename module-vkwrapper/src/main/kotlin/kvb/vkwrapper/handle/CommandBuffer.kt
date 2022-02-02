@@ -330,7 +330,8 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 
 
 	/**
-	 * Convenience implementation of vkCopyBufferToImage. For 2D colour images.
+	 * Convenience implementation of vkCopyBufferToImage. For 2D colour images. Layout must be either
+	 * SHADER_READ_ONLY_OPTIMAL or GENERAL.
 	 */
 	fun copyBufferToImage2D(
 		buffer : Buffer,
@@ -403,7 +404,7 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 
 	fun draw(
 		vertexCount		: Int,
-		instanceCount	: Int,
+		instanceCount	: Int = 1,
 		firstVertex		: Int = 0,
 		firstInstance	: Int = 0
 	) = commands.cmdDraw(
@@ -413,6 +414,10 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 		firstVertex 	= firstVertex,
 		firstInstance 	= firstInstance
 	)
+
+
+
+	fun setLineWidth(lineWidth: Float) = commands.cmdSetLineWidth(self, lineWidth)
 
 
 }

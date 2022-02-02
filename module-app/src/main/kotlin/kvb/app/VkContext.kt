@@ -106,6 +106,14 @@ class VkContext(
 		write(it, block = block)
 	}
 
+	fun vertexBuffer(size: Int, floats: FloatArray) = vertexBuffer(size) {
+		it.setFloats(0, floats)
+	}
+
+
+
+	fun allocateImage(image: Image) = image.bindMemory(memoryManager.imageAllocator.allocate(image))
+
 
 
 	/*
@@ -163,6 +171,29 @@ class VkContext(
 			it.srcAccessMask = srcAccessMask
 			it.dstAccessMask = dstAccessMask
 		})
+	}
+
+
+
+	//https://github.com/PacktPublishing/Vulkan-Cookbook/blob/master/Library/Source%20Files/04%20Resources%20and%20Memory/16%20Using%20staging%20buffer%20to%20update%20an%20image%20with%20a%20device-local%20memory%20bound.cpp
+
+
+
+	fun updateImage(image: Image, stagingBuffer: Buffer) {
+		oneTimeSubmit {
+			transitionImageLayout(
+				it,
+				image,
+				ImageLayout.SHADER_READ_ONLY_OPTIMAL,
+				ImageLayout.TRANSFER_DST_OPTIMAL,
+				AccessFlags { MEMORY_WRITE + MEMORY_READ },
+				AccessFlags { MEMORY_WRITE + MEMORY_READ },
+				PipelineStageFlags.ALL_COMMANDS,
+				PipelineStageFlags.ALL_COMMANDS
+			)
+		}
+
+		transitionImageForShaderRead(image, stagingBuffer)
 	}
 
 

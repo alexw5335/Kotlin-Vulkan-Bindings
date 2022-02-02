@@ -734,12 +734,17 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		Swapchain(
 			pointer.value,
 			self,
+			info.minImageCount,
 			info.imageFormat,
 			info.imageColorSpace,
 			info.imageExtent.width,
 			info.imageExtent.height,
 			info.imageArrayLayers,
-			info.imageUsage
+			info.imageUsage,
+			info.preTransform,
+			info.compositeAlpha,
+			info.presentMode,
+			info.clipped == VK_TRUE
 		)
 	}
 

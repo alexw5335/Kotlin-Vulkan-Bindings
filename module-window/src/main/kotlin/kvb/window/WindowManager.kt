@@ -14,6 +14,8 @@ interface WindowManager {
 
 	var onScroll: (Int) -> Unit
 
+	var onKeyUp: (Int) -> Unit
+
 
 
 	companion object {

@@ -15,3 +15,9 @@ glslc res/shader/binary_texture.frag -o res/shader/out/binary_texture.frag.spv
 
 glslc res/shader/binary_texture2.vert -o res/shader/out/binary_texture2.vert.spv
 glslc res/shader/binary_texture2.frag -o res/shader/out/binary_texture2.frag.spv
+
+glslc res/shader/binary_texture3.vert -o res/shader/out/binary_texture3.vert.spv
+glslc res/shader/binary_texture3.frag -o res/shader/out/binary_texture3.frag.spv
+
+glslc res/shader/line.vert -o res/shader/out/line.vert.spv
+glslc res/shader/line.frag -o res/shader/out/line.frag.spv

@@ -80,6 +80,8 @@ object WinApi : WindowManager {
 
 	override var onScroll: (Int) -> Unit = { }
 
+	override var onKeyUp: (Int) -> Unit = { }
+
 
 
 	/*
@@ -102,6 +104,8 @@ object WinApi : WindowManager {
 			removeWindow(window.hwnd)
 		} else if(message.message == MessageType.MOUSE_WHEEL.value) {
 			onScroll(((message.wparam shr 16) and 0xffff).toShort().toInt())
+		} else if(message.message == MessageType.KEY_UP.value) {
+			onKeyUp(message.wparam.toInt())
 		}
 	}
 

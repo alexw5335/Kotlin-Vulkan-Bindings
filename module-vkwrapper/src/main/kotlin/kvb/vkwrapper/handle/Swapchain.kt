@@ -8,15 +8,20 @@ import kvb.core.memory.direct.DirectLongBuffer
 import kvb.vulkan.*
 
 class Swapchain(
-	address         : Long,
-	val device      : Device,
-	val format      : Format,
-	val colourSpace : ColorSpace,
-	val width       : Int,
-	val height      : Int,
-	val arrayLayers : Int,
-	val usage       : ImageUsageFlags
-	) : SwapchainH(address) {
+	address                : Long,
+	val device             : Device,
+	val minImageCount      : Int,
+	val format             : Format,
+	val colourSpace        : ColorSpace,
+	val width              : Int,
+	val height             : Int,
+	val arrayLayers        : Int,
+	val usage              : ImageUsageFlags,
+	val preTransform       : SurfaceTransformFlags,
+	val compositeAlpha     : CompositeAlphaFlags,
+	val presentMode        : PresentMode,
+	val clipped            : Boolean,
+) : SwapchainH(address) {
 
 
 	/**

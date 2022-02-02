@@ -117,6 +117,7 @@ class SurfaceSystem(
 
 
 	fun record() {
+		commandPool.reset()
 		for(i in images.indices)
 			record(commandBuffers[i], framebuffers[i])
 	}
@@ -151,7 +152,6 @@ class SurfaceSystem(
 
 
 	fun present() {
-		val start = System.nanoTime()
 		val imageIndex = swapchain.acquireNextImage(semaphore = imageAvailableSemaphore)
 
 		if(imageIndex == -1) {
@@ -176,7 +176,7 @@ class SurfaceSystem(
 			return
 		}
 
-		queue.waitIdle()
+		device.waitIdle()
 	}
 
 }
