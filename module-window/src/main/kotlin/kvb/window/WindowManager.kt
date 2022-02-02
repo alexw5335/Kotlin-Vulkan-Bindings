@@ -1,6 +1,7 @@
 package kvb.window
 
 import kvb.core.Platform
+import kvb.window.input.Button
 import kvb.window.winapi.WinApi
 
 interface WindowManager {
@@ -12,22 +13,15 @@ interface WindowManager {
 
 	fun create(title: String, x: Int, y: Int, width: Int, height: Int): Window
 
-	var onScroll: (Int) -> Unit
-
-	var onKeyUp: (Int) -> Unit
+	fun getButton(code: Int): Button?
 
 
 
-	companion object {
-
-		val INSTANCE: WindowManager by lazy {
-			when {
-				Platform.isWindows -> WinApi
-				else -> throw RuntimeException("Windowing only supported on Windows")
-			}
-		}
-
+	companion object : WindowManager by when {
+		Platform.isWindows  -> WinApi
+		else                -> throw RuntimeException("Window implementation supported only on Windows.")
 	}
+
 
 
 }

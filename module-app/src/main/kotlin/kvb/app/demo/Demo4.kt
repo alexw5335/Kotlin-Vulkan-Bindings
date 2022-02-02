@@ -5,14 +5,14 @@ import kvb.app.VkContextBuilder
 import kvb.vkwrapper.handle.CommandBuffer
 import kvb.vkwrapper.pipeline.Program
 import kvb.vulkan.*
-import kvb.window.Windows
+import kvb.window.WindowManager
 import kvb.window.winapi.WinApi
 import kotlin.math.sqrt
 
 object Demo4 : App() {
 
 
-	val window = Windows.create("My Window", 0, 0, 512, 512)
+	val window = WindowManager.create("My Window", 0, 0, 512, 512)
 
 
 
@@ -227,12 +227,12 @@ object Demo4 : App() {
 			throw RuntimeException("No window")
 
 		context.surfaceSystem.onRecord = ::record
-		Windows.onScroll = ::onScroll
+/*		Windows.onScroll = ::onScroll
 
 		Windows.onKeyUp = {
 			if(it == 0x51)
 				displayLines = !displayLines
-		}
+		}*/
 
 		window.show()
 
@@ -241,8 +241,8 @@ object Demo4 : App() {
 		while(true) {
 			val frameStart = System.nanoTime()
 
-			Windows.update()
-			if(Windows.windows.isEmpty()) break
+			WindowManager.update()
+			if(WindowManager.windows.isEmpty()) break
 
 			val meshX = (window.cursorX - window.clientWidth / 2 ) * zoom + window.clientWidth / 2 - offsetX
 			val meshY = (window.cursorY - window.clientHeight / 2) * zoom + window.clientHeight / 2 - offsetY

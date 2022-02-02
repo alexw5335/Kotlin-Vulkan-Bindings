@@ -3,6 +3,7 @@ package kvb.window.winapi
 import kvb.core.memory.MemStacks
 import kvb.window.Window
 import kvb.window.WindowManager
+import kvb.window.input.Button
 
 object WinApi : WindowManager {
 
@@ -78,9 +79,7 @@ object WinApi : WindowManager {
 
 
 
-	override var onScroll: (Int) -> Unit = { }
-
-	override var onKeyUp: (Int) -> Unit = { }
+	override fun getButton(code: Int) = Button.windowsMap[code]
 
 
 
@@ -98,14 +97,21 @@ object WinApi : WindowManager {
 		translateMessage(message.address)
 		dispatchMessage(message.address)
 
+		val hwnd = message.hwnd
+		val window = windows.firstOrNull { it.hwnd == hwnd }
+
 		if(message.message == MessageType.DESTROY.value) {
-			val window = windows.first { it.hwnd == message.wparam }
-			windows.remove(window)
-			removeWindow(window.hwnd)
+			println(hwnd)
+			println(message.wparam)
+			windows.first { it.hwnd == message.wparam }.let {
+				windows.remove(it)
+				removeWindow(it.hwnd)
+			}
 		} else if(message.message == MessageType.MOUSE_WHEEL.value) {
-			onScroll(((message.wparam shr 16) and 0xffff).toShort().toInt())
+			//onScroll(((message.wparam shr 16) and 0xffff).toShort().toInt())
 		} else if(message.message == MessageType.KEY_UP.value) {
-			onKeyUp(message.wparam.toInt())
+			//onKeyUp(message.wparam.toInt())
+			println(getButton(message.wparam.toInt()))
 		}
 	}
 

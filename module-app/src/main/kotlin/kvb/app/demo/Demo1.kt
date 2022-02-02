@@ -2,11 +2,9 @@ package kvb.app.demo
 
 import kvb.app.App
 import kvb.app.VkContextBuilder
-import kvb.vkwrapper.handle.DescriptorSet
 import kvb.vkwrapper.pipeline.Program
 import kvb.vulkan.PrimitiveTopology
 import kvb.vulkan.ShaderStageFlags
-import kvb.window.Windows
 
 object Demo1 : App() {
 
