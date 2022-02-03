@@ -11,8 +11,9 @@ enum class MessageType(val value: Int) {
 
 	MOUSE_WHEEL(0x020A),
 
-	//https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-keyup
 	KEY_UP(0x0101),
+
+	KEY_DOWN(0x0100),
 
 	LBUTTON_DCLICK(0x0203),
 
@@ -24,7 +25,15 @@ enum class MessageType(val value: Int) {
 
 	RBUTTON_DOWN(0x0204),
 
-	RBUTTON_UP(0x0205);
+	RBUTTON_UP(0x0205),
+
+	SIZE(0x0005);
+
+
+
+	companion object {
+		val map = values().associateBy { it.value }
+	}
 
 
 }

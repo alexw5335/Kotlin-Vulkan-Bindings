@@ -1,31 +1,71 @@
 package kvb.window
 
-interface Window {
+import kvb.window.input.Button
+
+abstract class Window {
 
 
-	fun show()
+	/*
+	Metrics
+	 */
 
-	fun hide()
 
-	val x: Int
 
-	val y: Int
+	abstract val x: Int
 
-	val width: Int
+	abstract val y: Int
 
-	val height: Int
+	abstract val width: Int
 
-	val clientX: Int
+	abstract val height: Int
 
-	val clientY: Int
+	abstract val clientX: Int
 
-	val clientWidth: Int
+	abstract val clientY: Int
 
-	val clientHeight: Int
+	abstract val clientWidth: Int
 
-	val cursorX: Int
+	abstract val clientHeight: Int
 
-	val cursorY: Int
+	abstract val cursorX: Int
+
+	abstract val cursorY: Int
+
+	abstract val hasFocus: Boolean
+
+
+
+	/*
+	Visibility
+	 */
+
+
+
+	abstract fun show()
+
+	abstract fun hide()
+
+
+
+	/*
+	Event handlers
+	 */
+
+
+
+	var onScroll: (Int) -> Unit = { }
+
+	var onKeyHold: (Button) -> Unit = { }
+
+	var onKeyPress: (Button) -> Unit = { }
+
+	var onKeyRelease: (Button) -> Unit = { }
+
+	var onMouseHold: (Button) -> Unit = { }
+
+	var onMousePress: (Button) -> Unit = { }
+
+	var onMouseRelease: (Button) -> Unit = { }
 
 
 }

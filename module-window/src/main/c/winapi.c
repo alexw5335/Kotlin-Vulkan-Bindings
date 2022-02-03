@@ -299,3 +299,12 @@ JNIEXPORT jint JNICALL Java_kvb_window_winapi_WinApi_getKeyState(
 ) {
 	return (jint) GetKeyState(virtualKey);
 }
+
+
+
+JNIEXPORT jlong JNICALL Java_kvb_window_winapi_WinApi_getFocussedWindow(
+	JNIEnv* env,
+	jobject obj
+) {
+	return (jlong) GetFocus();
+}

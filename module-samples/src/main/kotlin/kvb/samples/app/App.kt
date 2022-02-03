@@ -121,7 +121,7 @@ object App {
 		window.show()
 
 		while(true) {
-			WinApi.update()
+			WinApi.pollEvents()
 			if(WinApi.windows.isEmpty()) break
 			context.surfaceSystem.present()
 			Thread.sleep(16)

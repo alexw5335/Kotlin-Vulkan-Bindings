@@ -131,7 +131,7 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 
 	fun binding(
-		binding : Int,
+		binding : Int = bindings.size,
 		type    : DescriptorType,
 		count   : Int,
 		stages  : ShaderStageFlags
@@ -241,8 +241,8 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 	fun write(
 		buffer          : Buffer,
-		offset          : Long,
-		size            : Long,
+		offset          : Long = 0L,
+		size            : Long = buffer.size,
 		dstArrayElement : Int = 0,
 		descriptorCount : Int = 1
 	) {

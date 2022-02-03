@@ -9,7 +9,7 @@ interface WindowManager {
 
 	val windows: List<Window>
 
-	fun update()
+	fun pollEvents()
 
 	fun create(title: String, x: Int, y: Int, width: Int, height: Int): Window
 
@@ -21,7 +21,6 @@ interface WindowManager {
 		Platform.isWindows  -> WinApi
 		else                -> throw RuntimeException("Window implementation supported only on Windows.")
 	}
-
 
 
 }

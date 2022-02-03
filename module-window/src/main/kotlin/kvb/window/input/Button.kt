@@ -3,14 +3,16 @@ package kvb.window.input
 /**
  * Codes are based on WinApi codes.
  */
-enum class Button(val code: Int) {
+enum class Button(val code: Int, val type: Type = Type.KEY) {
 
 
-	LEFT_MOUSE(0x01),
-	RIGHT_MOUSE(0x02),
-	MIDDLE_MOUSE(0x04),
-	X1_MOUSE(0x05),
-	X2_MOUSE(0x06),
+	NONE(0x00),
+
+	LEFT_MOUSE(0x01, Type.MOUSE),
+	RIGHT_MOUSE(0x02, Type.MOUSE),
+	MIDDLE_MOUSE(0x04, Type.MOUSE),
+	X1_MOUSE(0x05, Type.MOUSE),
+	X2_MOUSE(0x06, Type.MOUSE),
 
 	BACKSPACE(0x08),
 	TAB(0x09),
@@ -179,7 +181,7 @@ enum class Button(val code: Int) {
 
 	// [{
 	OEM_FOUR(0xDB),
-	OEM_RIGHT_BRACKET(OEM_FOUR.code),
+	OEM_LEFT_BRACKET(OEM_FOUR.code),
 
 	// \|
 	OEM_FIVE(0xDC),
@@ -187,7 +189,7 @@ enum class Button(val code: Int) {
 
 	// ]}
 	OEM_SIX(0xDD),
-	OEM_LEFT_BRACKET(OEM_SIX.code),
+	OEM_RIGHT_BRACKET(OEM_SIX.code),
 
 	// '"
 	OEM_SEVEN(0xDE),
@@ -206,14 +208,28 @@ enum class Button(val code: Int) {
 
 
 
-	var isPressed = false
+	enum class Type {
+
+		KEY,
+
+		MOUSE;
+
+	}
+
+
+
+
+	val isPressed get() = pressed.contains(this)
 
 
 
 	companion object {
 
 		val values = values()
+
 		val windowsMap = values.associateBy { it.code }
+
+		val pressed = HashSet<Button>()
 
 	}
 

@@ -6,6 +6,7 @@ import kvb.vkwrapper.handle.CommandBuffer
 import kvb.vkwrapper.pipeline.Program
 import kvb.vulkan.*
 import kvb.window.WindowManager
+import kvb.window.input.Button
 import kvb.window.winapi.WinApi
 import kotlin.math.sqrt
 
@@ -63,7 +64,9 @@ object Demo4 : App() {
 	}
 
 	val windowDescriptorSet = context.descriptorPool.buildSet {
-		vertexUniform(windowUBO)
+		binding(0, DescriptorType.UNIFORM_BUFFER, 1, ShaderStageFlags.VERTEX)
+		write(windowUBO)
+		//vertexUniform(windowUBO)
 	}
 
 
@@ -170,7 +173,6 @@ object Demo4 : App() {
 	var offsetX = 0F
 	var offsetY = 0F
 	var zoom = 1F
-
 	var wasPressed = false
 	var offsetOriginX = 0F
 	var offsetOriginY = 0F
@@ -182,6 +184,7 @@ object Demo4 : App() {
 	var displayLines = false
 	var minZoom = 0.03F
 	var maxZoom = 1.0F
+	var erase = false
 
 
 
@@ -190,10 +193,6 @@ object Demo4 : App() {
 		offsetX = (window.clientWidth - meshWidth) / 2F * zoom
 		offsetY = (window.clientHeight - meshHeight) / 2F * zoom
 	}
-
-
-
-	private fun isPressed(code: Int) = WinApi.getKeyState(code) and 0x8000 != 0
 
 
 
@@ -222,17 +221,78 @@ object Demo4 : App() {
 
 
 
+	private fun onMouseHold(button: Button) {
+		if(button == Button.RIGHT_MOUSE) {
+			if(!wasPressed) {
+				offsetOriginX = offsetX
+				offsetOriginY = offsetY
+				cursorOriginX = window.cursorX.toFloat()
+				cursorOriginY = window.cursorY.toFloat()
+			}
+
+			wasPressed = true
+
+			if(!dragging) {
+				val xdif = window.cursorX - cursorOriginX
+				val ydif = window.cursorY - cursorOriginY
+				val distance = sqrt(xdif * xdif + ydif * ydif)
+				if(distance > 2F) dragging = true
+			}
+
+			if(dragging) {
+				offsetX = offsetOriginX + (window.cursorX - cursorOriginX) * zoom
+				offsetY = offsetOriginY + (window.cursorY - cursorOriginY) * zoom
+			}
+
+			return
+		}
+
+		if(button == Button.LEFT_MOUSE) {
+			if(dragging) return
+
+			context.write(stagingBuffer) {
+				val meshX = (window.cursorX - window.clientWidth / 2 ) * zoom + window.clientWidth / 2 - offsetX
+				val meshY = (window.cursorY - window.clientHeight / 2) * zoom + window.clientHeight / 2 - offsetY
+				val meshXIndex = (meshX * (WIDTH.toFloat() / meshWidth)).toInt()
+				val meshYIndex = (meshY * (HEIGHT.toFloat() / meshHeight)).toInt()
+
+				if(meshXIndex in 0 until WIDTH && meshYIndex in 0 until HEIGHT) {
+					val colour = if(erase) BLACK else WHITE
+					it[meshYIndex * HEIGHT + meshXIndex] = colour
+					updateImage()
+				}
+			}
+		}
+	}
+
+
+
+	private fun onKeyRelease(button: Button) {
+		when(button) {
+			Button.Q -> displayLines = !displayLines
+			Button.E -> erase = false
+			else -> { }
+		}
+	}
+
+
+	private fun onKeyPress(button: Button) {
+		if(button == Button.E)
+			erase = true
+	}
+
+
+
 	fun run() {
 		if(context.surfaceSystem == null)
 			throw RuntimeException("No window")
 
 		context.surfaceSystem.onRecord = ::record
-/*		Windows.onScroll = ::onScroll
 
-		Windows.onKeyUp = {
-			if(it == 0x51)
-				displayLines = !displayLines
-		}*/
+		window.onScroll = ::onScroll
+		window.onMouseHold = ::onMouseHold
+		window.onKeyRelease = ::onKeyRelease
+		window.onKeyPress = ::onKeyPress
 
 		window.show()
 
@@ -241,47 +301,10 @@ object Demo4 : App() {
 		while(true) {
 			val frameStart = System.nanoTime()
 
-			WindowManager.update()
+			WindowManager.pollEvents()
 			if(WindowManager.windows.isEmpty()) break
 
-			val meshX = (window.cursorX - window.clientWidth / 2 ) * zoom + window.clientWidth / 2 - offsetX
-			val meshY = (window.cursorY - window.clientHeight / 2) * zoom + window.clientHeight / 2 - offsetY
-
-			if(isPressed(0x01) && !dragging) {
-				context.write(stagingBuffer) {
-					val meshXIndex = (meshX * (WIDTH.toFloat() / meshWidth)).toInt()
-					val meshYIndex = (meshY * (HEIGHT.toFloat() / meshHeight)).toInt()
-
-					if(meshXIndex in 0 until WIDTH && meshYIndex in 0 until HEIGHT) {
-						val colour = if(isPressed(0x45)) BLACK else WHITE
-						it[meshYIndex * HEIGHT + meshXIndex] = colour
-						updateImage()
-					}
-				}
-			}
-
-			if(WinApi.getKeyState(0x02) and 0x8000 != 0) {
-				if(!wasPressed) {
-					offsetOriginX = offsetX
-					offsetOriginY = offsetY
-					cursorOriginX = window.cursorX.toFloat()
-					cursorOriginY = window.cursorY.toFloat()
-				}
-
-				wasPressed = true
-
-				if(!dragging) {
-					val xdif = window.cursorX - cursorOriginX
-					val ydif = window.cursorY - cursorOriginY
-					val distance = sqrt(xdif * xdif + ydif * ydif)
-					if(distance > 2F) dragging = true
-				}
-
-				if(dragging) {
-					offsetX = offsetOriginX + (window.cursorX - cursorOriginX) * zoom
-					offsetY = offsetOriginY + (window.cursorY - cursorOriginY) * zoom
-				}
-			} else {
+			if(!Button.RIGHT_MOUSE.isPressed) {
 				wasPressed = false
 				dragging = false
 			}
