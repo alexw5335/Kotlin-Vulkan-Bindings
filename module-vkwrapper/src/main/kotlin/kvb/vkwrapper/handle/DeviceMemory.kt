@@ -126,7 +126,7 @@ class DeviceMemory(
 	/**
 	 * If the currently mapped memory region contains the given region.
 	 */
-	fun isMapped(offset: Int, size: Int) = offset >= mappedOffset && offset + size <= mappedOffset + mappedSize
+	fun isMapped(offset: Long, size: Long) = offset >= mappedOffset && offset + size <= mappedOffset + mappedSize
 
 
 

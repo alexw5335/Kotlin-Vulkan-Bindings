@@ -12,7 +12,7 @@ import kotlin.math.min
 
 /**
  * Note: size is user-defined size of the buffer, not the aligned size given by
- * [VkMemoryRequirements][MemoryRequirements].
+ * [VkMemoryRequirements][MemoryRequirements], which is the actual size.
  */
 class Buffer(
 	address    : Long,
@@ -60,10 +60,14 @@ class Buffer(
 	/**
 	 * Gets the [memory] range that backs this buffer. This must only be used if memory has been bound to this buffer.
 	 */
-	fun data() = if(!isBound)
-		throw VkException("No memory has been bound to this buffer.")
-	else
-		DirectByteBuffer(memory.mappedAddress - memory.mappedOffset + offset, size)
+	fun data(offset: Long = 0L, size: Long = this.size) = when {
+		!isBound ->
+			throw VkException("No memory has been bound to this buffer.")
+		!memory.isMapped(this.offset + offset, size) ->
+			throw VkException("The memory range of this buffer has not been mapped.")
+		else ->
+			DirectByteBuffer(memory.mappedAddress - memory.mappedOffset + offset, size)
+	}
 
 
 

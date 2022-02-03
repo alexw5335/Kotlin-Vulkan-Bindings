@@ -1116,6 +1116,44 @@ class VulkanGenerator(
 
 
 
+	private fun genCWrapper2() = CWriter.writeHeader(cDirectory, "vk_commands.h"){
+		currentStyle = style(3)
+
+		multilineDeclaration("""
+			#pragma once
+			
+			#include <jni.h>
+			#include <vulkan.h>
+		""")
+
+		fun forEachCommand(spacing: Int = 0, predicate: (Command) -> Boolean, block: Command.() -> Unit) {
+			for(p in registry.providers) {
+				if(p.commands.none(predicate)) continue
+				if(p.commands.isEmpty()) continue
+
+				group("Provided by ${p.name}", spacing) {
+					if(p is Extension && p.platform != null)
+						ifdef(p.platform.define)
+
+					for(c in p.commands)
+						if(c.type != CommandType.STANDALONE)
+							block(c)
+
+					if(p is Extension && p.platform != null)
+						endif()
+				}
+			}
+		}
+
+		group(0) {
+			forEachCommand(0, { true }) {
+				declaration("PFN_$name ${name}_;")
+			}
+		}
+	}
+
+
+
 	fun genCWrapper() = CWriter.writeHeader(cDirectory, "vkload") {
 		currentStyle = style(3)
 

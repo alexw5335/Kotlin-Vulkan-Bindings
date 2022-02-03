@@ -334,6 +334,7 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 
 
 	private val CommandElement.determineType: CommandType get() {
+		if(name == "vkGetInstanceProcAddr") return CommandType.STANDALONE
 		if(name == "vkGetDeviceProcAddr") return CommandType.INSTANCE
 
 		return when(params.first().type) {

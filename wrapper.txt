@@ -1,0 +1,20 @@
+Wrapper limitations:
+	- For all applications, there is a global instance and device.
+	- There is a global physical device, however, physical device commands
+	may take other physical devices for the purpose of choosing the global one.
+	- Many extensions and advanced features will not be supported at all. Their structs
+	and commands will simply not be included in the bindings.
+	- Each Pipeline has a unique PipelineLayout that will be destroyed along with it.
+	- Each DescriptorSet has a unique DescriptorSetLayout that will be destroyed when the
+	DescriptorSet is freed.
+	- All commands are made global, not requiring the global instance nor device to
+	be specified. All physical device commands have two versions, one for the global
+	physical device and the other for a specified one.
+
+vk_commands.h
+	- Holds a global instance, physical device, and device.
+	- Non-global physical device functions are postfixed to distinguish them from global ones.
+
+- All instance, physical device, and device information is made global.
+- In order to switch physical devices, an application restart is required, e.g.
+to switch full-screen monitors.
