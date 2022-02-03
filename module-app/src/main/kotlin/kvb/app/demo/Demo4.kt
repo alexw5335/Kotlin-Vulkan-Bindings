@@ -3,11 +3,10 @@ package kvb.app.demo
 import kvb.app.App
 import kvb.app.VkContextBuilder
 import kvb.vkwrapper.handle.CommandBuffer
-import kvb.vkwrapper.pipeline.Program
+import kvb.vkwrapper.pipeline.ShaderProgram
 import kvb.vulkan.*
 import kvb.window.WindowManager
 import kvb.window.input.Button
-import kvb.window.winapi.WinApi
 import kotlin.math.sqrt
 
 object Demo4 : App() {
@@ -64,26 +63,24 @@ object Demo4 : App() {
 	}
 
 	val windowDescriptorSet = context.descriptorPool.buildSet {
-		bindingBufferWrite(
-			type = DescriptorType.UNIFORM_BUFFER,
-			stages = ShaderStageFlags.VERTEX,
-			buffer = windowUBO
-		)
+		binding(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.VERTEX)
+		bufferWrite(windowUBO)
 	}
 
 	val textureDescriptorSet = context.descriptorPool.buildSet {
-		bindingImageWrite()
-		fragmentCominedSampler(imageLayout = ImageLayout.SHADER_READ_ONLY_OPTIMAL, imageView = imageView, sampler = sampler)
+		binding(DescriptorType.COMBINED_IMAGE_SAMPLER, ShaderStageFlags.FRAGMENT)
+		imageWrite(sampler, imageView, ImageLayout.SHADER_READ_ONLY_OPTIMAL)
 	}
 
 
 	val colourDescriptorSet = context.descriptorPool.buildSet {
-		fragmentUniform(colourUBO)
+		binding(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.FRAGMENT)
+		bufferWrite(colourUBO)
 	}
 
 
 
-	val Shaders = object : Program {
+	object TextureSP : ShaderProgram {
 
 		override val device = context.device
 
@@ -110,7 +107,7 @@ object Demo4 : App() {
 
 
 
-	val LineShaders = object : Program {
+	object LineSP : ShaderProgram {
 
 		override val device = context.device
 
@@ -199,11 +196,11 @@ object Demo4 : App() {
 
 
 	private fun record(commandBuffer: CommandBuffer) {
-		Shaders.bind(commandBuffer)
+		TextureSP.bind(commandBuffer)
 		commandBuffer.bindVertexBuffer(vertexBuffer)
 		commandBuffer.draw(4)
 
-		LineShaders.bind(commandBuffer)
+		LineSP.bind(commandBuffer)
 		commandBuffer.bindVertexBuffer(linesBuffer)
 		commandBuffer.draw((WIDTH - 1 + HEIGHT - 1) * 2)
 	}

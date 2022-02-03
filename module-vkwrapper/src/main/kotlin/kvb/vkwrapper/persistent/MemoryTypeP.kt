@@ -58,8 +58,11 @@ class MemoryTypeP(
 
 
 	/*
-	ToString
+	toString
 	 */
+
+
+	override fun hashCode() = index
 
 
 

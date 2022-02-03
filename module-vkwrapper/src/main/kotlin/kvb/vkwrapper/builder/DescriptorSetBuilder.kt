@@ -25,7 +25,7 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 
 	fun binding(
-		binding : Int = bindings.size,
+		binding : Int,
 		type    : DescriptorType,
 		count   : Int,
 		stages  : ShaderStageFlags
@@ -40,33 +40,10 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 
 
-	fun bindingBufferWrite(
-		binding : Int = bindings.size,
-		type    : DescriptorType,
-		count   : Int = 1,
-		stages  : ShaderStageFlags,
-		buffer  : Buffer,
-		offset  : Long = 0L,
-		size    : Long = buffer.size
-	) {
-		binding(binding, type, count, stages)
-		write(buffer, offset, size)
+	fun binding(type: DescriptorType, stages: ShaderStageFlags) {
+		binding(bindings.size, type, 1, stages)
 	}
 
-
-
-	fun bindingImageWrite(
-		binding     : Int = bindings.size,
-		type        : DescriptorType,
-		count       : Int = 1,
-		stages      : ShaderStageFlags,
-		sampler     : Sampler,
-		imageView   : ImageView,
-		imageLayout : ImageLayout
-	) {
-		binding(binding, type, count, stages)
-		write(sampler, imageView, imageLayout)
-	}
 
 
 
@@ -107,13 +84,7 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 
 
-	fun write(
-		buffer          : Buffer,
-		offset          : Long = 0L,
-		size            : Long = buffer.size,
-		dstArrayElement : Int = 0,
-		descriptorCount : Int = 1
-	) {
+	fun bufferWrite(buffer: Buffer, offset: Long = 0L, size: Long = buffer.size) {
 		val binding = bindings.buffer[bindings.size - 1]
 
 		val bufferInfo = stack.DescriptorBufferInfo {
@@ -124,8 +95,8 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 		writes.buffer[writes.next].let {
 			it.dstBinding = binding.binding
-			it.dstArrayElement = dstArrayElement
-			it.descriptorCount = descriptorCount
+			it.dstArrayElement = 0
+			it.descriptorCount = 1
 			it.descriptorType = binding.descriptorType
 			it.bufferInfo = bufferInfo.asBuffer
 		}
@@ -133,13 +104,7 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 
 
-	fun write(
-		sampler         : Sampler,
-		imageView       : ImageView,
-		imageLayout     : ImageLayout,
-		dstArrayElement : Int = 0,
-		descriptorCount : Int = 1
-	) {
+	fun imageWrite(sampler: Sampler, imageView: ImageView, imageLayout: ImageLayout) {
 		val binding = bindings.buffer[bindings.size - 1]
 
 		val imageInfo = stack.DescriptorImageInfo {
@@ -149,11 +114,11 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 		}
 
 		writes.buffer[writes.next].let {
-			it.dstBinding = binding.binding
-			it.dstArrayElement = dstArrayElement
-			it.descriptorCount = descriptorCount
-			it.descriptorType = binding.descriptorType
-			it.imageInfo = imageInfo.asBuffer
+			it.dstBinding      = binding.binding
+			it.dstArrayElement = 0
+			it.descriptorCount = 1
+			it.descriptorType  = binding.descriptorType
+			it.imageInfo       = imageInfo.asBuffer
 		}
 	}
 

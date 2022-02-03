@@ -5,7 +5,7 @@ import kvb.vkwrapper.handle.*
 /**
  * Wraps a complete graphics pipeline, including shaders and descriptors.
  */
-interface Program {
+interface ShaderProgram {
 
 
 	val device: Device

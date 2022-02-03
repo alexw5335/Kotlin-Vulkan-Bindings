@@ -2,7 +2,7 @@ package kvb.samples.app
 
 import kvb.core.FileUtils
 import kvb.core.memory.Unsafe
-import kvb.vkwrapper.pipeline.Program
+import kvb.vkwrapper.pipeline.ShaderProgram
 import kvb.vkwrapper.pipeline.ShaderDirectory
 import kvb.vulkan.*
 import kvb.window.winapi.WinApi
@@ -28,7 +28,7 @@ object App {
 
 
 
-	object Shader : Program {
+	object Shader : ShaderProgram {
 
 		override val device = context.device
 
@@ -73,7 +73,7 @@ object App {
 
 
 
-	object TextureShader : Program {
+	object TextureShader : ShaderProgram {
 
 		override val device = context.device
 
