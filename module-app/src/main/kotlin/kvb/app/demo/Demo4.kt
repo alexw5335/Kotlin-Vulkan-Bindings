@@ -64,13 +64,15 @@ object Demo4 : App() {
 	}
 
 	val windowDescriptorSet = context.descriptorPool.buildSet {
-		binding(0, DescriptorType.UNIFORM_BUFFER, 1, ShaderStageFlags.VERTEX)
-		write(windowUBO)
-		//vertexUniform(windowUBO)
+		bindingBufferWrite(
+			type = DescriptorType.UNIFORM_BUFFER,
+			stages = ShaderStageFlags.VERTEX,
+			buffer = windowUBO
+		)
 	}
 
-
 	val textureDescriptorSet = context.descriptorPool.buildSet {
+		bindingImageWrite()
 		fragmentCominedSampler(imageLayout = ImageLayout.SHADER_READ_ONLY_OPTIMAL, imageView = imageView, sampler = sampler)
 	}
 
