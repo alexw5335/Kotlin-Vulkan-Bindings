@@ -75,7 +75,7 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 
 
 	/*
-	Short names
+	Naming
 	 */
 
 
@@ -125,8 +125,7 @@ class VulkanScraper private constructor(private val registry: ParsedRegistry) {
 
 
 
-	private val CommandElement.shouldGen get() =
-		alias == null && name != "vkGetInstanceProcAddr"
+	private val CommandElement.shouldGen get() = alias == null
 
 
 

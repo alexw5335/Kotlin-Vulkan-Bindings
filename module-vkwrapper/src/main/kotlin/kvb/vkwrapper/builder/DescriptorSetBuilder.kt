@@ -46,7 +46,6 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 
 
 
-
 	/*
 	Build
 	 */

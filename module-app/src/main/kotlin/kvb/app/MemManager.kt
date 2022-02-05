@@ -5,6 +5,7 @@ import kvb.vkwrapper.handle.Device
 class MemManager(val context: VkContext) {
 
 
-	val heaps = arrayOfNulls(context.)
+	//val heaps = arrayOfNulls(context.)
+
 
 }

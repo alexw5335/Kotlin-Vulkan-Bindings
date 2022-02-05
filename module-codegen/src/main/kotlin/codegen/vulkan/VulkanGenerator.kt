@@ -1112,31 +1112,41 @@ class VulkanGenerator(
 
 	private val Command.wrapperName get() = "vk${genName.replaceFirstChar { it.uppercase() }}"
 
-	private val Command.addressName get() = "${wrapperName}_"
+	private val Command.addressName get() = "${name}_"
+
+	private val standaloneCommands = registry.commands.filter { it.type == CommandType.STANDALONE }
 
 
 
-	private fun genCWrapper2() = CWriter.writeHeader(cDirectory, "vk_commands.h"){
+	fun genCWrapper2() = CWriter.writeHeader(cDirectory, "vk_commands"){
 		currentStyle = style(3)
 
 		multilineDeclaration("""
+			// This file has been automatically generated.
+			#pragma clang diagnostic push
+			#pragma ide diagnostic ignored "OCUnusedMacroInspection"
+			#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 			#pragma once
 			
 			#include <jni.h>
 			#include <vulkan.h>
+			
+			VkInstance globalInstance;
+			VkPhysicalDevice globalPhysicalDevice;
+			VkDevice globalDevice;
 		""")
 
-		fun forEachCommand(spacing: Int = 0, predicate: (Command) -> Boolean, block: Command.() -> Unit) {
+		fun forEachCommand(spacing: Int = 0, predicate: (Command) -> Boolean, block: (Command) -> Unit) {
 			for(p in registry.providers) {
-				if(p.commands.none(predicate)) continue
 				if(p.commands.isEmpty()) continue
+				if(p.commands.none(predicate)) continue
 
 				group("Provided by ${p.name}", spacing) {
 					if(p is Extension && p.platform != null)
 						ifdef(p.platform.define)
 
 					for(c in p.commands)
-						if(c.type != CommandType.STANDALONE)
+						if(predicate(c))
 							block(c)
 
 					if(p is Extension && p.platform != null)
@@ -1147,7 +1157,103 @@ class VulkanGenerator(
 
 		group(0) {
 			forEachCommand(0, { true }) {
-				declaration("PFN_$name ${name}_;")
+				declaration("${it.pfnName} ${it.addressName};")
+			}
+		}
+
+		function("void vkwLoadInitial(void* procAddr)") {
+			writeln("vkGetInstanceProcAddr_ = procAddr;")
+			for(c in standaloneCommands) {
+				writeln("${c.addressName} = (${c.pfnName}) vkGetInstanceProcAddr_(NULL, \"${c.name}\");")
+			}
+		}
+
+		function("void vkwLoadInstance(VkInstance instance)") {
+			writeln("globalInstance = instance;")
+			forEachCommand(0, { it.type == CommandType.INSTANCE }) {
+				writeln("${it.addressName} = (${it.pfnName}) vkGetInstanceProcAddr_(instance, \"${it.name}\");")
+			}
+		}
+
+		function("void vkwLoadDevice(VkDevice device)") {
+			writeln("globalDevice = device;")
+			forEachCommand(0, { it.type == CommandType.DEVICE }) {
+				writeln("${it.addressName} = (${it.pfnName}) vkGetDeviceProcAddr_(device, \"${it.name}\");")
+			}
+		}
+
+		multilineDeclaration("""
+			#ifdef WIN32
+				#include <windef.h>
+				#include <winbase.h>
+			#else
+				#include <dlfcn.h>
+			#endif
+
+
+
+			int vkwLoad() {
+
+			#ifdef WIN32
+
+				HMODULE module = LoadLibrary("vulkan-1.dll");
+				vkwLoadInitial(GetProcAddress(module, "vkGetInstanceProcAddr"));
+
+			#elif defined(__APPLE__)
+
+				void* module = dlopen("libMoltenVK.dylib", RTLD_NOW | RTLD_LOCAL);
+				vkwLoadInitial(dlsym(module, "vkGetInstanceProcAddr"));
+
+			#else
+
+				void* module = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+				vkwLoadInitial(dlsym(module, "vkGetInstanceProcAddr"));
+
+			#endif
+
+				return vkGetInstanceProcAddr_ != NULL;
+			}
+		""")
+
+		JniGeneration.createCFunction(
+			packageName  = packageName,
+			className    = "Vulkan",
+			functionName = "load",
+			returnType   = "jint",
+			params       = emptyList(),
+			contents     = "return vkwLoad();"
+		).let(::function)
+
+		JniGeneration.createCFunction(
+			packageName  = packageName,
+			className    = "Vulkan",
+			functionName = "loadInstance",
+			returnType   = null,
+			params       = listOf("VkInstance" to "instance"),
+			contents     = "vkwLoadInstance(instance);"
+		).let(::function)
+
+		JniGeneration.createCFunction(
+			packageName  = packageName,
+			className    = "Vulkan",
+			functionName = "loadDevice",
+			returnType   = null,
+			params       = listOf("VkDevice" to "device"),
+			contents     = "vkwLoadDevice(device);"
+		).let(::function)
+
+		group(1) {
+			forEachCommand(1, { true }) { command ->
+				val params = when(command.params[0].type.name) {
+					"VkInstance", "VkDevice" -> command.params.drop(1)
+					else -> command.params
+				}
+
+				//val function = JniGeneration.createCFunction(
+				//	packageName = packageName,
+				//	className = "Vulkan",
+//
+				//)
 			}
 		}
 	}

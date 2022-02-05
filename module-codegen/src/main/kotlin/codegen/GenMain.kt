@@ -25,7 +25,7 @@ private fun genVulkan() {
 	//generator.genStructAllocations()
 	//generator.genCommandsKotlin()
 	//generator.genCommandsC()
-	generator.genCWrapper()
+	generator.genCWrapper2()
 }
 
 
@@ -54,7 +54,5 @@ private fun genVulkanCWrapper() {
 
 
 fun main() {
-	//genVulkan()
-	//genVulkanCWrapper()
-	genVulkanCWrapper()
+	genVulkan()
 }
