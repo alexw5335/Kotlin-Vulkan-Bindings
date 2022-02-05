@@ -44,4 +44,18 @@ object MemStacks {
 	}
 
 
+
+	/*
+	Test
+	 */
+
+
+
+	class StackLazy<T>(private val initialiser: MemStack.() -> T): Lazy<T> {
+		private var value_: T? = null
+		override val value: T get() = value_ ?: initialiser(default).also { value_ = it }
+		override fun isInitialized() = value_ != null
+	}
+
+
 }

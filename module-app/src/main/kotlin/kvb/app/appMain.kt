@@ -1,9 +1,9 @@
 package kvb.app
 
 import kvb.app.demo.Demo4
-import kvb.core.Platform
+import kvb.core.Platforms
 
 fun main() {
-	Platform.init()
+	Platforms.init()
 	Demo4.run()
 }

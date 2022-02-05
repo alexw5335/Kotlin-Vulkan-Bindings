@@ -3,6 +3,7 @@ package kvb.vkwrapper.handle
 import kvb.core.memory.Addressable.Companion.addressOrNULL
 import kvb.core.memory.Allocator
 import kvb.core.memory.MemStack
+import kvb.core.memory.MemStacks
 import kvb.core.memory.MemStacks.default
 import kvb.core.memory.direct.DirectByteBuffer
 import kvb.core.memory.direct.DirectInt
@@ -31,6 +32,14 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 	 */
 
 
+
+	val test by StackLazy {
+		val count = mallocInt()
+		commands.enumerateDeviceLayerProperties(self, count, null).check()
+		val layers = LayerProperties(count.value) { }
+		commands.enumerateDeviceLayerProperties(self, count, layers).check()
+		layers.map { LayerPropertiesP(it) }
+	}
 
 	/**
 	 * Member implementation of vkEnumerateDeviceLayerProperties.
@@ -70,21 +79,21 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 	/**
 	 * Member variable implementation of vkGetPhysicalDeviceMemoryProperties.
 	 */
-	val memoryProperties = memoryPropertiesP()
+	val memoryProperties by lazy { memoryPropertiesP() }
 
 
 
 	/**
 	 * Member variable implementation of vkGetPhysicalDeviceQueueFamilyProperties.
 	 */
-	val queueFamilies = queueFamilyPropertiesP()
+	val queueFamilies by lazy { queueFamilyPropertiesP() }
 
 
 
 	/**
 	 * Wrapper for [PhysicalDeviceMemoryProperties.memoryTypes].
 	 */
-	val memoryTypes = memoryProperties.memoryTypes
+	val memoryTypes get() = memoryProperties.memoryTypes
 
 
 

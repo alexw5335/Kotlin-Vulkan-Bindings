@@ -3,7 +3,7 @@ package kvb.core
 import kvb.core.memory.Unsafe
 import java.nio.file.*
 
-object Platform {
+object Platforms {
 
 
 	/*

@@ -1,11 +1,15 @@
 package kvb.app
 
 import kvb.vkwrapper.handle.Device
+import kvb.vulkan.*
 
-class MemManager(val context: VkContext) {
+class MemManager(val device: Device) {
 
 
-	//val heaps = arrayOfNulls(context.)
+	private val mappedMemoryType = device.physicalDevice.chooseMemoryType(
+		requiredFlags = MemoryPropertyFlags.HOST_VISIBLE,
+		preferredFlags = MemoryPropertyFlags { DEVICE_LOCAL + HOST_COHERENT }
+	)
 
 
 }

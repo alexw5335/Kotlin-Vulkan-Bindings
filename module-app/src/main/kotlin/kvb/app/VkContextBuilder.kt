@@ -1,6 +1,6 @@
 package kvb.app
 
-import kvb.core.Platform
+import kvb.core.Platforms
 import kvb.vkwrapper.DebugUtils
 import kvb.vkwrapper.Vulkan
 import kvb.vkwrapper.builder.RenderPassBuilder
@@ -151,7 +151,7 @@ abstract class VkContextBuilder {
 			deviceExtensions.add("VK_KHR_swapchain")
 
 			when {
-				Platform.isWindows -> 	instanceExtensions.add("VK_KHR_win32_surface")
+				Platforms.isWindows -> 	instanceExtensions.add("VK_KHR_win32_surface")
 				else -> throw RuntimeException("Windowing is only supported on Windows")
 			}
 		}

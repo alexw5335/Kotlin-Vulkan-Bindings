@@ -1,11 +1,11 @@
 package kvb.samples
 
-import kvb.core.Platform
+import kvb.core.Platforms
 import kvb.samples.app.App
 
 
 
 fun main() {
-	Platform.init()
+	Platforms.init()
 	App.run()
 }
