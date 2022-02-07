@@ -33,13 +33,13 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 
 
 
-	val test by StackLazy {
+	/*val test by MemStacks.StackLazy {
 		val count = mallocInt()
 		commands.enumerateDeviceLayerProperties(self, count, null).check()
 		val layers = LayerProperties(count.value) { }
 		commands.enumerateDeviceLayerProperties(self, count, layers).check()
 		layers.map { LayerPropertiesP(it) }
-	}
+	}*/
 
 	/**
 	 * Member implementation of vkEnumerateDeviceLayerProperties.
@@ -94,6 +94,16 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 	 * Wrapper for [PhysicalDeviceMemoryProperties.memoryTypes].
 	 */
 	val memoryTypes get() = memoryProperties.memoryTypes
+
+
+
+	val isDiscrete get() = properties.deviceType == PhysicalDeviceType.DISCRETE_GPU
+
+	val isIntegrated get() = properties.deviceType == PhysicalDeviceType.INTEGRATED_GPU
+
+	val isVirtual get() = properties.deviceType == PhysicalDeviceType.VIRTUAL_GPU
+
+	val isCpu get() = properties.deviceType == PhysicalDeviceType.CPU
 
 
 
