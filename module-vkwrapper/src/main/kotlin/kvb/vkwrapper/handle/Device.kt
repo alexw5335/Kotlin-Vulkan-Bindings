@@ -98,12 +98,13 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		flags       : CommandPoolCreateFlags = CommandPoolCreateFlags(0),
 		stack       : MemStack = default
 	) = stack.get {
-		val info = CommandPoolCreateInfo {
+		val pointer = mallocPointer()
+
+		commands.createCommandPool(CommandPoolCreateInfo {
 			it.queueFamilyIndex = queueFamily.index
 			it.flags = flags
-		}
-		val pointer = mallocPointer()
-		commands.createCommandPool(info, null, pointer).check()
+		}, null, pointer).check()
+
 		CommandPool(pointer.value, self, queueFamily)
 	}
 

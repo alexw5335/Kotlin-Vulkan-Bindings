@@ -5,6 +5,7 @@ import kvb.core.memory.MemStack
 import kvb.core.memory.MemStacks.default
 import kvb.core.memory.direct.DirectIntBuffer
 import kvb.core.memory.direct.DirectLongBuffer
+import kvb.vkwrapper.exception.VkException
 import kvb.vulkan.*
 
 @Suppress("unused")
@@ -20,6 +21,30 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 	 * Convenience variable for 'this' due to MemStack extension functions.
 	 */
 	private val self get() = this
+
+
+
+	/*
+	Reset
+	 */
+
+
+
+	/**
+	 * Implementation of vkResetCommandBuffer.
+	 */
+	fun reset() {
+		commands.resetCommandBuffer(self, CommandBufferResetFlags(0))
+	}
+
+
+
+	/**
+	 * Implementation of vkResetCommandBuffer.
+	 */
+	fun resetReleaseResources() {
+		commands.resetCommandBuffer(self, CommandBufferResetFlags.RELEASE_RESOURCES)
+	}
 
 
 

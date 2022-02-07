@@ -1,22 +1,14 @@
 package kvb.app
 
 import kvb.core.memory.Unsafe
-import kvb.vkwrapper.exception.VkCommandException
 import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
-import kotlin.system.measureNanoTime
-import kotlin.system.measureTimeMillis
 
-/**
- * Note: The [renderPass] is not necessarily the only renderpass. It is the final renderpass that will be used to render
- * to the swapchain's images.
- */
 class SurfaceSystem(
-	val surface: Surface,
-	val device: Device,
-	val queue: Queue,
-	val renderPass: RenderPass,
-	val createSwapchain: (Swapchain?) -> Swapchain
+	val surface              : Surface,
+	val device               : Device,
+	val compatibleRenderPass : RenderPass,
+	val createSwapchain      : (Swapchain?) -> Swapchain
 ) {
 
 
@@ -30,19 +22,11 @@ class SurfaceSystem(
 
 	private var framebuffers = createFramebuffers()
 
-	private val commandPool = device.createCommandPool(queue.family)
-
-	private val commandBuffers = commandPool.allocatePrimary(images.size)
-
 	private val imageAvailableSemaphore = device.createSemaphore()
 
 	private val renderFinishedSemaphore = device.createSemaphore()
 
-	private val fence = device.createFence()
 
-
-
-	private val clearValues = Unsafe.ClearValue(r = 0.2F, g = 0.5F, b = 0.1F, a = 1.0F).asBuffer
 
 	private val viewports = Unsafe.Viewport(1) { }
 
@@ -88,14 +72,13 @@ class SurfaceSystem(
 	private fun createImageViews() = images.map(device::createImageView)
 
 	private fun createFramebuffers() = imageViews.map {
-		device.createFramebuffer(renderPass, listOf(it), surface.width, surface.height, 1)
+		device.createFramebuffer(compatibleRenderPass, listOf(it), surface.width, surface.height, 1)
 	}
 
 
 
 	fun recreateSwapchain() {
 		device.waitIdle()
-		commandPool.reset() // All command buffers must be re-recorded
 		imageViews.forEach { it.destroy() }
 		framebuffers.forEach { it.destroy() }
 
@@ -116,67 +99,15 @@ class SurfaceSystem(
 
 
 
-	fun record() {
-		commandPool.reset()
-		for(i in images.indices)
-			record(commandBuffers[i], framebuffers[i])
-	}
-
-
-
-	private fun record(commandBuffer: CommandBuffer, framebuffer: Framebuffer) {
-		commandBuffer.begin()
-
-		commandBuffer.setViewport(viewports)
-		commandBuffer.setScissor(scissors)
-
-		commandBuffer.beginRenderPass(renderPass, framebuffer, clearValues)
-		onRecord(commandBuffer)
-		commandBuffer.endRenderPass()
-
-		commandBuffer.end()
-	}
-
-
-
-	private fun onResize() {
+	/**
+	 * Must be called when vkQueuePresentKHR or vkAcquireNextImageKHR fails with VK_ERROR_OUT_OF_DATE. The submit and
+	 * present queues must be waited upon before recreating the swapchain.
+	 */
+	fun onResize() {
 		updateDimensions()
-
-		// Minimisation
 		if(surface.width == 0 || surface.height == 0) return
-
 		recreateSwapchain()
-		record()
 	}
 
-
-
-	fun present() {
-		val imageIndex = swapchain.acquireNextImage(semaphore = imageAvailableSemaphore)
-
-		if(imageIndex == -1) {
-			onResize()
-			return
-		}
-
-		queue.submit(
-			waitSemaphore    = imageAvailableSemaphore,
-			waitDstStageMask = PipelineStageFlags.COLOR_ATTACHMENT_OUTPUT,
-			commandBuffer    = commandBuffers[imageIndex],
-			signalSemaphore  = renderFinishedSemaphore,
-			fence            = null
-		)
-
-		if(!queue.present(
-				waitSemaphore = renderFinishedSemaphore,
-				swapchain     = swapchain,
-				imageIndex    = imageIndex
-		)) {
-			onResize()
-			return
-		}
-
-		device.waitIdle()
-	}
 
 }

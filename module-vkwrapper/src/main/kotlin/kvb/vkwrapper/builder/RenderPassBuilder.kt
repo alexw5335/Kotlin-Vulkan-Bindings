@@ -34,6 +34,18 @@ class RenderPassBuilder(private val allocator: Allocator) {
 
 
 
+	fun build() = allocator.RenderPassCreateInfo {
+		it.flags = flags
+		it.attachmentCount  = attachments.size
+		it.pAttachments     = attachments.address
+		it.subpassCount     = subpasses.size
+		it.pSubpasses       = subpasses.address
+		it.dependencyCount  = dependencies.size
+		it.pDependencies    = dependencies.address
+	}
+
+
+
 	fun attachment(
 		flags          : AttachmentDescriptionFlags  = AttachmentDescriptionFlags(0),
 		format         : Format,
@@ -46,15 +58,15 @@ class RenderPassBuilder(private val allocator: Allocator) {
 		finalLayout    : ImageLayout
 	) {
 		attachments.buffer[attachments.next].let {
-			it.flags = flags
-			it.format = format
-			it.samples = samples
-			it.loadOp = loadOp
-			it.storeOp = storeOp
-			it.stencilLoadOp = stencilLoadOp
+			it.flags          = flags
+			it.format         = format
+			it.samples        = samples
+			it.loadOp         = loadOp
+			it.storeOp        = storeOp
+			it.stencilLoadOp  = stencilLoadOp
 			it.stencilStoreOp = stencilStoreOp
-			it.initialLayout = initialLayout
-			it.finalLayout = finalLayout
+			it.initialLayout  = initialLayout
+			it.finalLayout    = finalLayout
 		}
 	}
 
@@ -127,13 +139,13 @@ class RenderPassBuilder(private val allocator: Allocator) {
 		dependencyFlags : DependencyFlags = DependencyFlags(0)
 	) {
 		dependencies.buffer[dependencies.next].also {
-			it.srcSubpass = srcSubpass
-			it.dstSubpass = dstSubpass
-			it.srcStageMask = srcStageMask
-			it.dstStageMask = dstStageMask
-			it.srcAccessMask = srcAccessMask
-			it.dstAccessMask = dstAccessMask
-			it.dependencyFlags = dependencyFlags
+			it.srcSubpass       = srcSubpass
+			it.dstSubpass       = dstSubpass
+			it.srcStageMask     = srcStageMask
+			it.dstStageMask     = dstStageMask
+			it.srcAccessMask    = srcAccessMask
+			it.dstAccessMask    = dstAccessMask
+			it.dependencyFlags  = dependencyFlags
 		}
 	}
 
@@ -142,22 +154,10 @@ class RenderPassBuilder(private val allocator: Allocator) {
 	private fun List<Pair<Int, ImageLayout>>.toBuffer() = allocator.AttachmentReference(size) { buffer ->
 		for(i in indices) {
 			buffer[i].let {
-				it.attachment = get(i).first
-				it.layout = get(i).second
+				it.attachment  = get(i).first
+				it.layout      = get(i).second
 			}
 		}
-	}
-
-
-
-	fun build() = allocator.RenderPassCreateInfo {
-		it.flags = flags
-		it.attachmentCount = attachments.size
-		it.pAttachments    = attachments.address
-		it.subpassCount    = subpasses.size
-		it.pSubpasses      = subpasses.address
-		it.dependencyCount = dependencies.size
-		it.pDependencies   = dependencies.address
 	}
 
 

@@ -1,9 +1,11 @@
-package kvb.samples.app
+package kvb.app
 
 import kvb.core.memory.Unsafe
 import kvb.vkwrapper.exception.VkCommandException
 import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
+import kotlin.system.measureNanoTime
+import kotlin.system.measureTimeMillis
 
 /**
  * Note: The [renderPass] is not necessarily the only renderpass. It is the final renderpass that will be used to render
@@ -22,33 +24,25 @@ class SurfaceSystem(
 
 	var swapchain = createSwapchain(null)
 
-	var images = createImages()
+	private var images = createImages()
 
-	var imageViews = createImageViews()
+	private var imageViews = createImageViews()
 
-	var framebuffers = createFramebuffers()
+	private var framebuffers = createFramebuffers()
 
-	val commandPool = device.createCommandPool(queue.family)
+	private val commandPool = device.createCommandPool(queue.family)
 
-	val commandBuffers = commandPool.allocatePrimary(images.size)
+	private val commandBuffers = commandPool.allocatePrimary(images.size)
 
-	val clearValues = Unsafe.ClearValue(r = 0.2F, g = 0.5F, b = 0.1F, a = 1.0F).asBuffer
+	private val imageAvailableSemaphore = device.createSemaphore()
 
+	private val renderFinishedSemaphore = device.createSemaphore()
 
-
-	private var currentFrame = 0
-
-	private val framesInFlight = 2
-
-	private val imageAvailableSemaphores = List(framesInFlight) { device.createSemaphore() }
-
-	private val renderFinishedSemaphores = List(framesInFlight) { device.createSemaphore() }
-
-	private val inFlightFences = List(framesInFlight) { device.createFence() }
-
-	private val imagesInFlight = arrayOfNulls<Fence>(framesInFlight)
+	private val fence = device.createFence()
 
 
+
+	private val clearValues = Unsafe.ClearValue(r = 0.2F, g = 0.5F, b = 0.1F, a = 1.0F).asBuffer
 
 	private val viewports = Unsafe.Viewport(1) { }
 
@@ -100,6 +94,7 @@ class SurfaceSystem(
 
 
 	fun recreateSwapchain() {
+		device.waitIdle()
 		commandPool.reset() // All command buffers must be re-recorded
 		imageViews.forEach { it.destroy() }
 		framebuffers.forEach { it.destroy() }
@@ -122,15 +117,14 @@ class SurfaceSystem(
 
 
 	fun record() {
-		for(i in images.indices) record(i)
+		commandPool.reset()
+		for(i in images.indices)
+			record(commandBuffers[i], framebuffers[i])
 	}
 
 
 
-	private fun record(frameIndex: Int) {
-		val commandBuffer = commandBuffers[frameIndex]
-		val framebuffer = framebuffers[frameIndex]
-
+	private fun record(commandBuffer: CommandBuffer, framebuffer: Framebuffer) {
 		commandBuffer.begin()
 
 		commandBuffer.setViewport(viewports)
@@ -145,22 +139,23 @@ class SurfaceSystem(
 
 
 
-	val imageAvailableSemaphore = device.createSemaphore()
-	val renderFinishedSemaphore = device.createSemaphore()
+	private fun onResize() {
+		updateDimensions()
+
+		// Minimisation
+		if(surface.width == 0 || surface.height == 0) return
+
+		recreateSwapchain()
+		record()
+	}
+
+
 
 	fun present() {
 		val imageIndex = swapchain.acquireNextImage(semaphore = imageAvailableSemaphore)
 
-		// Resizing
 		if(imageIndex == -1) {
-			updateDimensions()
-
-			// Minimisation
-			if(surface.width == 0 || surface.height == 0) return
-
-			recreateSwapchain()
-			record()
-
+			onResize()
 			return
 		}
 
@@ -172,19 +167,16 @@ class SurfaceSystem(
 			fence            = null
 		)
 
-		// TODO: Handle ERROR_OUT_OF_DATE?
-		try {
-			queue.present(
+		if(!queue.present(
 				waitSemaphore = renderFinishedSemaphore,
-				swapchain = swapchain,
-				imageIndex = imageIndex
-			)
-		} catch(exception: VkCommandException) {
-			if(exception.result != Result.ERROR_OUT_OF_DATE)
-				throw exception
+				swapchain     = swapchain,
+				imageIndex    = imageIndex
+		)) {
+			onResize()
+			return
 		}
-
 
 		device.waitIdle()
 	}
+
 }

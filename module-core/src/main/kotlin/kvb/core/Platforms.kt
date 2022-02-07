@@ -12,11 +12,24 @@ object Platforms {
 
 
 
-	val osName = System.getProperty("os.name")
+	private val osName = System.getProperty("os.name")
 
-	val isWindows = osName.startsWith("Windows")
 
-	val isMac = osName.startsWith("Mac")
+
+	val current = when {
+		osName.startsWith("Windows")  -> Platform.WINDOWS
+		osName.startsWith("LINUX")    -> Platform.LINUX
+		osName.startsWith("Mac")      -> Platform.MAC
+		else                          -> throw RuntimeException("Unidentified or unsupported platform: $osName")
+	}
+
+
+
+	val isWindows = current == Platform.WINDOWS
+
+	val isLinux = current == Platform.LINUX
+
+	val isMac = current == Platform.MAC
 
 
 
@@ -30,8 +43,6 @@ object Platforms {
 		if(it.toString().endsWith(extension))
 			System.load(it.toAbsolutePath().toString())
 	}
-
-
 
 
 
@@ -51,17 +62,18 @@ object Platforms {
 
 
 
-
 	private fun loadNatives() {
 		if(Files.exists(Paths.get("natives"))) {
-			when {
-				isWindows -> loadFileNatives("natives/windows", ".dll")
-				isMac -> loadFileNatives("natives/mac", ".dylib")
+			when(current) {
+				Platform.WINDOWS -> loadFileNatives("natives/windows", ".dll")
+				Platform.LINUX   -> loadFileNatives("natives/linux", ".so")
+				Platform.MAC     -> loadFileNatives("natives/mac", ".dylib")
 			}
 		} else {
-			when {
-				isWindows -> loadResourceNatives("/natives/windows", "natives/windows", ".dll")
-				isMac -> loadResourceNatives("/natives/mac", "natives/mac", ".dylib")
+			when(current) {
+				Platform.WINDOWS -> loadResourceNatives("/natives/windows", "natives/windows", ".dll")
+				Platform.LINUX   -> loadResourceNatives("/natives/linux", "natives/linux", ".so")
+				Platform.MAC     -> loadResourceNatives("/natives/mac", "natives/mac", ".dylib")
 			}
 		}
 	}

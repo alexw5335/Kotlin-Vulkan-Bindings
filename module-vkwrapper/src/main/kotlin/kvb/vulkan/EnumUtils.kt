@@ -32,3 +32,12 @@ val ImageType.asImageViewType get() = when(this) {
 	ImageType._2D -> ImageViewType._2D
 	ImageType._3D -> ImageViewType._3D
 }
+
+
+
+/*
+pClearValues is a pointer to an array of clearValueCount VkClearValue structures containing clear values for each
+attachment, if the attachment uses a loadOp value of VK_ATTACHMENT_LOAD_OP_CLEAR or if the attachment has a
+depth/stencil format and uses a stencilLoadOp value of VK_ATTACHMENT_LOAD_OP_CLEAR. The array is indexed by attachment
+number. Only elements corresponding to cleared attachments are used. Other elements of pClearValues are ignored.
+ */
