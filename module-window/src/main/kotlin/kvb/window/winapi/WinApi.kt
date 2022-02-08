@@ -98,8 +98,6 @@ object WinApi : WindowManager {
 
 	override fun getButton(code: Int) = Button.windowsMap[code]
 
-
-
 	private fun isButtonPressed(code: Int) = getKeyState(code) and (1 shl 15) != 0
 
 
