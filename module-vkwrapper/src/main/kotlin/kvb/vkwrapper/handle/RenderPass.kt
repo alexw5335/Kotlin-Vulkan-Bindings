@@ -15,5 +15,4 @@ class RenderPass(address: Long, val device: Device) : RenderPassH(address) {
 	 */
 	fun destroy() = commands.destroyRenderPass(this, null)
 
-
 }

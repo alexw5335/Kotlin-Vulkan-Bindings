@@ -160,18 +160,21 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 * Convenience implementation of vkCreateDescriptorSetPool.
 	 */
 	fun createDescriptorPool(
-		types   : List<Pair<DescriptorType, Int>>,
-		maxSets : Int,
+		types   : Map<DescriptorType, Int>,
+		maxSets : Int                       = types.values.sum(),
 		flags   : DescriptorPoolCreateFlags = DescriptorPoolCreateFlags(0),
-		stack   : MemStack = default
+		stack   : MemStack                  = default
 	) = stack.get {
-		createDescriptorPool(DescriptorPoolCreateInfo {
-			it.maxSets   = maxSets
-			it.flags     = flags
-			it.poolSizes = DescriptorPoolSize(types.size) { sizes ->
-				for((index, pair) in types.withIndex()) {
-					sizes[index].type = pair.first
-					sizes[index].descriptorCount = pair.second
+		createDescriptorPool(DescriptorPoolCreateInfo { ci ->
+			ci.maxSets   = maxSets
+			ci.flags     = flags
+			ci.poolSizes = DescriptorPoolSize(types.size) { sizes ->
+				var index = 0
+				for((type, count) in types) {
+					sizes[index++].let {
+						it.type = type
+						it.descriptorCount = count
+					}
 				}
 			}
 		}, stack)
