@@ -591,20 +591,21 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 	 * Convenience implementation of vkCreateDevice.
 	 */
 	fun createDevice(
-		queues                : List<Pair<QueueFamily, Int>>  = emptyList(),
-		enabledExtensionNames : Collection<String>                       = emptyList(),
-		enabledFeatures       : PhysicalDeviceFeatures?                  = null,
-		stack                 : MemStack                                 = default
+		queues      : Map<QueueFamily, Int>    = emptyMap(),
+		extensions  : Collection<String>       = emptyList(),
+		features    : PhysicalDeviceFeatures?  = null,
+		stack       : MemStack                 = default
 	) = stack.get {
 		createDevice(DeviceCreateInfo { deviceCI ->
-			deviceCI.enabledExtensionNames = encodeUtf8NTList(enabledExtensionNames)
-			deviceCI.pEnabledFeatures = enabledFeatures.addressOrNULL
+			deviceCI.enabledExtensionNames = encodeUtf8NTList(extensions)
+			deviceCI.pEnabledFeatures = features.addressOrNULL
 			deviceCI.queueCreateInfos = DeviceQueueCreateInfo(queues.size) { queueCIs ->
-				for(index in queues.indices) {
-					queueCIs[index].let {
-						it.queueFamilyIndex = queues[index].first.index
-						it.queueCount       = queues[index].second
-						it.queuePriorities  = mallocFloat(queues[index].second).apply { fill(1.0F) }
+				var index = 0
+				for((family, count) in queues) {
+					queueCIs[index++].let {
+						it.queueFamilyIndex = family.index
+						it.queueCount = count
+						it.queuePriorities = mallocFloat(count).apply { fill(1.0F) }
 					}
 				}
 			}
