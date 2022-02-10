@@ -621,17 +621,22 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 
 
 	fun chooseMemoryType(
-		requiredFlags  : MemoryPropertyFlags,
-		preferredFlags : MemoryPropertyFlags  = MemoryPropertyFlags(0),
+		property1      : MemoryPropertyFlags,
+		property2      : MemoryPropertyFlags  = MemoryPropertyFlags(0),
+		property3      : MemoryPropertyFlags  = MemoryPropertyFlags(0),
 		memoryTypeBits : Int                  = UInt.MAX_VALUE.toInt(),
 		failureIndex   : Int                  = -1
 	): MemoryTypeP? {
 		for(m in memoryTypes)
-			if(m.isValid(memoryTypeBits) && m.index > failureIndex && m.flags.contains(requiredFlags + preferredFlags))
+			if(m.isValid(memoryTypeBits) && m.index > failureIndex && m.flags.contains(property1 + property2 + property3))
 				return m
 
 		for(m in memoryTypes)
-			if(m.isValid(memoryTypeBits) && m.index > failureIndex && m.flags.contains(requiredFlags))
+			if(m.isValid(memoryTypeBits) && m.index > failureIndex && m.flags.contains(property1 + property2))
+				return m
+
+		for(m in memoryTypes)
+			if(m.isValid(memoryTypeBits) && m.index > failureIndex && m.flags.contains(property1))
 				return m
 
 		return null

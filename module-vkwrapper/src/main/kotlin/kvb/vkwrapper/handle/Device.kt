@@ -827,8 +827,9 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 */
 	fun allocateMemory(
 		size           : Long,
-		requiredFlags  : MemoryPropertyFlags,
-		preferredFlags : MemoryPropertyFlags  = MemoryPropertyFlags(0),
+		property1      : MemoryPropertyFlags,
+		property2      : MemoryPropertyFlags  = MemoryPropertyFlags(0),
+		property3      : MemoryPropertyFlags  = MemoryPropertyFlags(0),
 		memoryTypeBits : Int                  = UInt.MAX_VALUE.toInt(),
 		stack          : MemStack             = default
 	) = stack.get {
@@ -839,12 +840,13 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		while(true) {
 			try {
 				typeIndex = physicalDevice.chooseMemoryType(
-					requiredFlags,
-					preferredFlags,
+					property1,
+					property2,
+					property3,
 					memoryTypeBits,
 					failureIndex
 				)?.index ?: throw VkException(
-					"No memory type with required flags: $requiredFlags and memory type bits: $memoryTypeBits."
+					"No memory type with required flags: $property1 and memory type bits: $memoryTypeBits."
 				)
 
 				memory = allocateMemory(MemoryAllocateInfo {

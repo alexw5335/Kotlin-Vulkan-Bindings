@@ -47,15 +47,15 @@ class RenderPassBuilder(private val allocator: Allocator) {
 
 
 	fun attachment(
-		flags          : AttachmentDescriptionFlags  = AttachmentDescriptionFlags(0),
 		format         : Format,
-		samples        : SampleCountFlags            = SampleCountFlags._1,
-		loadOp         : AttachmentLoadOp            = AttachmentLoadOp.DONT_CARE,
-		storeOp        : AttachmentStoreOp           = AttachmentStoreOp.DONT_CARE,
-		stencilLoadOp  : AttachmentLoadOp            = AttachmentLoadOp.DONT_CARE,
-		stencilStoreOp : AttachmentStoreOp           = AttachmentStoreOp.DONT_CARE,
-		initialLayout  : ImageLayout                 = ImageLayout.UNDEFINED,
-		finalLayout    : ImageLayout
+		samples        : SampleCountFlags,
+		loadOp         : AttachmentLoadOp,
+		storeOp        : AttachmentStoreOp,
+		stencilLoadOp  : AttachmentLoadOp,
+		stencilStoreOp : AttachmentStoreOp,
+		initialLayout  : ImageLayout,
+		finalLayout    : ImageLayout,
+		flags          : AttachmentDescriptionFlags = AttachmentDescriptionFlags(0),
 	) {
 		attachments.buffer[attachments.next].let {
 			it.flags          = flags
@@ -67,21 +67,6 @@ class RenderPassBuilder(private val allocator: Allocator) {
 			it.stencilStoreOp = stencilStoreOp
 			it.initialLayout  = initialLayout
 			it.finalLayout    = finalLayout
-		}
-	}
-
-
-
-	/**
-	 * Creates a [SubpassDescription] with a single colour attachment.
-	 */
-	fun colourSubpass(colourAttachment: Int, colourLayout: ImageLayout) {
-		subpasses.buffer[subpasses.next].also {
-			it.pipelineBindPoint = bindPoint
-			it.colorAttachments = allocator.AttachmentReference { ref ->
-				ref.attachment = colourAttachment
-				ref.layout = colourLayout
-			}.asBuffer
 		}
 	}
 
@@ -157,6 +142,46 @@ class RenderPassBuilder(private val allocator: Allocator) {
 				it.attachment  = get(i).first
 				it.layout      = get(i).second
 			}
+		}
+	}
+
+
+
+	/*
+	Convenience builders
+	 */
+
+
+
+	/**
+	 * Creates an [AttachmentDescription] that uses swapchain images that will be presented.
+	 */
+	fun presentAttachment(
+		format      : Format,
+		sampleCount : SampleCountFlags = SampleCountFlags._1
+	) = attachment(
+		format,
+		sampleCount,
+		AttachmentLoadOp.CLEAR,
+		AttachmentStoreOp.STORE,
+		AttachmentLoadOp.DONT_CARE,
+		AttachmentStoreOp.DONT_CARE,
+		ImageLayout.UNDEFINED,
+		ImageLayout.PRESENT_SRC
+	)
+
+
+
+	/**
+	 * Creates a [SubpassDescription] with a single colour attachment.
+	 */
+	fun colourSubpass(colourAttachment: Int, colourLayout: ImageLayout) {
+		subpasses.buffer[subpasses.next].also {
+			it.pipelineBindPoint = bindPoint
+			it.colorAttachments = allocator.AttachmentReference { ref ->
+				ref.attachment = colourAttachment
+				ref.layout = colourLayout
+			}.asBuffer
 		}
 	}
 

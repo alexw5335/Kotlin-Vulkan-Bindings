@@ -4,6 +4,7 @@ import kvb.core.FileUtils
 import kvb.vkwrapper.exception.VkShaderException
 import kvb.vkwrapper.handle.Device
 import kvb.vulkan.ShaderStageFlags
+import java.io.File
 
 /**
  * Util functions for reading shaders from files.
@@ -55,6 +56,20 @@ object ShaderCreation {
 		stage       = stageFromFileName(path) ?: throw VkShaderException("Invalid shader file extension: $path"),
 		entryPoint  = entryPoint
 	)
+
+
+
+	fun compileAll(srcPath: String, outPath: String) {
+		val srcDirectory = File(srcPath)
+		val outDirectory = File(outPath)
+		for(file in srcDirectory.listFiles() ?: return) {
+			if(stageFromExtension(file.extension) == null) continue
+			val process = Runtime.getRuntime().exec("glslc $file -o $outDirectory/${file.name}.spv")
+			process.waitFor()
+			val error = process.errorReader().readText()
+			if(error.isNotEmpty()) throw VkShaderException(error)
+		}
+	}
 
 
 }

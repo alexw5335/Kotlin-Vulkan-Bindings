@@ -1,4 +1,4 @@
-package kvb.fontcreator
+package kvb.app
 
 import kvb.core.memory.Unsafe
 import kvb.vkwrapper.handle.*

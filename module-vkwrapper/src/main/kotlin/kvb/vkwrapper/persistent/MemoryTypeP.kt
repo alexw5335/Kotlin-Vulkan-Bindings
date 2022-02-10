@@ -62,6 +62,7 @@ class MemoryTypeP(
 	 */
 
 
+
 	override fun hashCode() = index
 
 

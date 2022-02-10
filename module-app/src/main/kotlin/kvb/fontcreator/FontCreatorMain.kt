@@ -4,5 +4,5 @@ import kvb.core.Platforms
 
 fun main() {
 	Platforms.init()
-	Context2
+	FontCreator.run()
 }

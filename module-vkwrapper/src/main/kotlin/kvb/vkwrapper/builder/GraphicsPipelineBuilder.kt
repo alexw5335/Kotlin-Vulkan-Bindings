@@ -6,6 +6,9 @@ import kvb.vkwrapper.handle.*
 import kvb.vkwrapper.pipeline.Shader
 import kvb.vulkan.*
 
+/**
+ * Minimum usage: renderPass, layout, shaders, topology, attachments
+ */
 @Suppress("unused")
 class GraphicsPipelineBuilder(private val device: Device, private val stack: MemStack) {
 
@@ -160,9 +163,19 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 
 
-	fun topology(topology: PrimitiveTopology) {
-		this.topology = topology
-	}
+	fun topology(topology: PrimitiveTopology) { this.topology = topology }
+
+	fun triangleStrip() { this.topology = PrimitiveTopology.TRIANGLE_STRIP }
+
+	fun triangleList() { this.topology = PrimitiveTopology.TRIANGLE_LIST }
+
+	fun triangleFan() { this.topology = PrimitiveTopology.TRIANGLE_FAN }
+
+	fun lineList() { this.topology = PrimitiveTopology.LINE_LIST }
+
+	fun lineStrip() { this.topology = PrimitiveTopology.LINE_STRIP }
+
+	fun pointList() { this.topology = PrimitiveTopology.POINT_LIST }
 
 
 

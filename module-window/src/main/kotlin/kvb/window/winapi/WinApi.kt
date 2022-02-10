@@ -81,9 +81,11 @@ object WinApi : WindowManager {
 			handleMessage()
 		}
 
+		val buttonsToRemove = HashSet<Button>()
+
 		for(button in Button.pressed) {
 			if(!isButtonPressed(button.code)) {
-				Button.pressed.remove(button)
+				buttonsToRemove.add(button)
 				continue
 			}
 
@@ -92,6 +94,8 @@ object WinApi : WindowManager {
 				Button.Type.MOUSE -> focussedWindow?.onMouseHold?.invoke(button)
 			}
 		}
+
+		Button.pressed.removeAll(buttonsToRemove)
 	}
 
 
