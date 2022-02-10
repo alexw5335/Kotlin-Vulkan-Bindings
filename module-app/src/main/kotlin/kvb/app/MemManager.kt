@@ -1,18 +1,18 @@
 package kvb.app
 
 import kvb.core.memory.DirectList
+import kvb.core.memory.MemStacks
 import kvb.core.memory.direct.DirectByteBuffer
 import kvb.vkwrapper.Vulkan
 import kvb.vkwrapper.allocation.VkLinearAllocator
 import kvb.vkwrapper.exception.VkException
-import kvb.vkwrapper.handle.Buffer
-import kvb.vkwrapper.handle.Device
-import kvb.vkwrapper.handle.Image
+import kvb.vkwrapper.handle.*
 import kvb.vkwrapper.persistent.MemoryTypeP
 import kvb.vulkan.*
 
 class MemManager(
 	val device           : Device,
+	val queue            : Queue,
 	val bufferMemorySize : Long = 10_000_000,
 	val imageMemorySize  : Long = 32_000_000
 ) {
@@ -147,6 +147,107 @@ class MemManager(
 
 	fun uniformBuffer(size: Int, floats: FloatArray) = uniformBuffer(size) {
 		it.setFloats(0, floats)
+	}
+
+
+
+	/*
+	Layout transitions
+	 */
+
+
+
+	private val commandPool = device.createTransientCommandPool(queue.family)
+
+	private val commandBuffer = commandPool.allocatePrimary()
+
+	private val fence = device.createFence()
+
+
+
+	private fun oneTimeSubmit(block: (CommandBuffer) -> Unit) {
+		commandBuffer.beginOneTimeSubmit()
+		block(commandBuffer)
+		commandBuffer.end()
+		queue.submit(commandBuffer, fence)
+		fence.wait()
+		fence.reset()
+		commandBuffer.reset()
+	}
+
+
+
+	private fun transitionImageLayout(
+		commandBuffer : CommandBuffer,
+		image         : Image,
+		prevLayout    : ImageLayout,
+		newLayout     : ImageLayout,
+		srcAccessMask : AccessFlags,
+		dstAccessMask : AccessFlags,
+		srcStages     : PipelineStageFlags,
+		dstStages     : PipelineStageFlags
+	) = MemStacks.with {
+		commandBuffer.pipelineImageMemoryBarrier(srcStages, dstStages, ImageMemoryBarrier {
+			it.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED
+			it.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED
+			it.oldLayout = prevLayout
+			it.newLayout = newLayout
+			it.image = image
+			it.subresourceRange.aspectMask = ImageAspectFlags.COLOR
+			it.subresourceRange.baseMipLevel = 0
+			it.subresourceRange.levelCount = image.mipLevels
+			it.subresourceRange.baseArrayLayer = 0
+			it.subresourceRange.layerCount = image.arrayLayers
+			it.srcAccessMask = srcAccessMask
+			it.dstAccessMask = dstAccessMask
+		})
+	}
+
+
+
+	fun updateImageForShaderRead(image: Image, stagingBuffer: Buffer) {
+		oneTimeSubmit {
+			transitionImageLayout(
+				it,
+				image,
+				ImageLayout.SHADER_READ_ONLY_OPTIMAL,
+				ImageLayout.TRANSFER_DST_OPTIMAL,
+				AccessFlags { MEMORY_WRITE + MEMORY_READ },
+				AccessFlags { MEMORY_WRITE + MEMORY_READ },
+				PipelineStageFlags.ALL_COMMANDS,
+				PipelineStageFlags.ALL_COMMANDS
+			)
+		}
+
+		transitionImageForShaderRead(image, stagingBuffer)
+	}
+
+
+
+	fun transitionImageForShaderRead(image: Image, stagingBuffer: Buffer) = oneTimeSubmit {
+		transitionImageLayout(
+			it,
+			image,
+			ImageLayout.UNDEFINED,
+			ImageLayout.TRANSFER_DST_OPTIMAL,
+			AccessFlags.NONE,
+			AccessFlags.TRANSFER_WRITE,
+			PipelineStageFlags.TOP_OF_PIPE,
+			PipelineStageFlags.TRANSFER
+		)
+
+		it.copyBufferToImage2D(stagingBuffer, image, ImageLayout.TRANSFER_DST_OPTIMAL)
+
+		transitionImageLayout(
+			it,
+			image,
+			ImageLayout.TRANSFER_DST_OPTIMAL,
+			ImageLayout.SHADER_READ_ONLY_OPTIMAL,
+			AccessFlags.TRANSFER_WRITE,
+			AccessFlags.SHADER_READ,
+			PipelineStageFlags.TRANSFER,
+			PipelineStageFlags.FRAGMENT_SHADER
+		)
 	}
 
 
