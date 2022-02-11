@@ -2,18 +2,10 @@ package kvb.vkwrapper.pipeline
 
 import kvb.vkwrapper.handle.*
 
-/**
- * Wraps a complete graphics pipeline, including shaders and descriptors.
- */
-interface PipelineWrapper {
-
-
-	val device: Device
-
-	val pipeline: Pipeline
-
-	val descriptors: Map<Int, DescriptorSet> get() = emptyMap()
-
+class PipelineWrapper(
+	val pipeline    : Pipeline,
+	val descriptors : Map<Int, DescriptorSet>
+) {
 
 
 	fun bind(commandBuffer: CommandBuffer) {
@@ -21,12 +13,6 @@ interface PipelineWrapper {
 
 		for((binding, set) in descriptors)
 			commandBuffer.bindDescriptorSet(pipeline.bindPoint, pipeline.layout, binding, set)
-	}
-
-
-
-	fun destroy() {
-		pipeline.destroy()
 	}
 
 

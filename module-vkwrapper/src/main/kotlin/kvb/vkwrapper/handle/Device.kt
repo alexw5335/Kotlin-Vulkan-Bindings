@@ -516,10 +516,14 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreatePipelineLayout.
 	 */
-	fun createPipelineLayout(info: PipelineLayoutCreateInfo, stack: MemStack = default) = stack.get {
+	fun createPipelineLayout(
+		info           : PipelineLayoutCreateInfo,
+		descriptorSets : Map<Int, DescriptorSet>,
+		stack          : MemStack = default
+	) = stack.get {
 		val pointer = mallocPointer()
 		commands.createPipelineLayout(info, null, pointer).check()
-		PipelineLayout(pointer.value, self)
+		PipelineLayout(pointer.value, self, descriptorSets)
 	}
 
 
@@ -528,7 +532,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 * Convenience implementation of vkCreatePipelineLayout. Creates an empty layout.
 	 */
 	fun createPipelineLayout(stack: MemStack = default) = stack.get {
-		createPipelineLayout(PipelineLayoutCreateInfo { }, stack)
+		createPipelineLayout(PipelineLayoutCreateInfo { }, emptyMap(), stack)
 	}
 
 

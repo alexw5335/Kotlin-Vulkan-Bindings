@@ -2,7 +2,11 @@ package kvb.vkwrapper.handle
 
 import kvb.vulkan.PipelineLayoutH
 
-class PipelineLayout(address: Long, val device: Device) : PipelineLayoutH(address) {
+class PipelineLayout(
+	address: Long,
+	val device: Device,
+	val descriptorSets: Map<Int, DescriptorSet>
+) : PipelineLayoutH(address) {
 
 
 	/**

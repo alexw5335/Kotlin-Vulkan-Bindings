@@ -12,18 +12,6 @@ val context = FontCreatorContext
 
 
 
-interface FCPipeline : PipelineWrapper {
-
-
-	override val device get() = context.device
-
-	fun GraphicsPipelineBuilder.shaders(name: String) = shaders(context.shaderDirectory[name])
-
-
-}
-
-
-
 val windowUbo = context.memManager.uniformBuffer(4 * 5)
 
 val sampler = context.device.createSampler(Filter.NEAREST, Filter.NEAREST)
@@ -52,17 +40,14 @@ fun setTexture(sampler: Sampler, imageView: ImageView) {
 
 
 
-object SimplePipeline : FCPipeline {
-
-
-	override val pipeline = device.buildGraphicsPipeline {
+val SimplePipeline = PipelineWrapper(
+	pipeline = context.device.buildGraphicsPipeline {
 		renderPass(context.renderPass)
 		emptyLayout()
-		shaders("simple")
+		shaders(context.shaderDirectory["simple"])
 		triangleStrip()
 		noBlendAttachment()
 		dynamicViewportAndScissor()
-	}
-
-
-}
+	},
+	emptyMap()
+)
