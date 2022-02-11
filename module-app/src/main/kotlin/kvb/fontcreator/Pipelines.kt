@@ -2,6 +2,7 @@ package kvb.fontcreator
 
 import kvb.vkwrapper.builder.GraphicsPipelineBuilder
 import kvb.vkwrapper.handle.*
+import kvb.vkwrapper.persistent.Descriptor
 import kvb.vkwrapper.pipeline.PipelineWrapper
 import kvb.vulkan.*
 
@@ -33,19 +34,20 @@ val imageView = context.device.createImageView(image)
 
 
 
-val windowUboDescriptor = context.descriptorPool.buildSet {
-	binding(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.VERTEX)
-	bufferWrite(windowUbo)
+val windowUboDescriptor = context.descriptorPool.createSet(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.VERTEX)
+
+val textureDescriptor = context.descriptorPool.createSet(DescriptorType.COMBINED_IMAGE_SAMPLER, ShaderStageFlags.FRAGMENT)
+
+
+
+fun update() {
+	windowUboDescriptor.bufferWrite(0, windowUbo)
+	textureDescriptor.imageWrite(0, sampler, imageView, ImageLayout.SHADER_READ_ONLY_OPTIMAL)
 }
 
-val samplerDescriptor = context.descriptorPool.buildSet {
-	binding(DescriptorType.SAMPLER, ShaderStageFlags.FRAGMENT)
-	
-}
 
-val textureDescriptor = context.descriptorPool.buildSet {
-	binding(DescriptorType.COMBINED_IMAGE_SAMPLER, ShaderStageFlags.FRAGMENT)
-	imageWrite(sampler, imageView, ImageLayout.COLOR_ATTACHMENT_OPTIMAL)
+fun setTexture(sampler: Sampler, imageView: ImageView) {
+	textureDescriptor.imageWrite(0, sampler, imageView, ImageLayout.SHADER_READ_ONLY_OPTIMAL)
 }
 
 

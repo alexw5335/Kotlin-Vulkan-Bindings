@@ -2,6 +2,7 @@ package kvb.vkwrapper.builder
 
 import kvb.core.memory.DirectList
 import kvb.core.memory.MemStack
+import kvb.core.memory.MemStacks
 import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
 
@@ -43,6 +44,10 @@ class DescriptorSetBuilder(private val pool: DescriptorPool, private val stack: 
 	fun binding(type: DescriptorType, stages: ShaderStageFlags) {
 		binding(bindings.size, type, 1, stages)
 	}
+
+
+
+	fun combinedImageSampler() = binding(DescriptorType.COMBINED_IMAGE_SAMPLER, ShaderStageFlags.FRAGMENT)
 
 
 

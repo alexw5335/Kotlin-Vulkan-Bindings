@@ -8,6 +8,7 @@ import kvb.vkwrapper.builder.GraphicsPipelineBuilder
 import kvb.vkwrapper.builder.RenderPassBuilder
 import kvb.vkwrapper.exception.VkCommandException
 import kvb.vkwrapper.exception.VkException
+import kvb.vkwrapper.persistent.Descriptor
 import kvb.vkwrapper.persistent.QueueFamily
 
 @Suppress("unused")
@@ -191,10 +192,14 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateDescriptorSetLayout.
 	 */
-	fun createDescriptorSetLayout(info: DescriptorSetLayoutCreateInfo, stack: MemStack = default) = stack.get {
+	fun createDescriptorSetLayout(
+		info        : DescriptorSetLayoutCreateInfo,
+		descriptors : List<Descriptor>,
+		stack       : MemStack = default
+	) = stack.get {
 		val pointer = mallocPointer()
 		commands.createDescriptorSetLayout(info, null, pointer).check()
-		DescriptorSetLayout(pointer.value, self)
+		DescriptorSetLayout(pointer.value, self, descriptors)
 	}
 
 
@@ -203,37 +208,27 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 * Convenience version of vkCreateDescriptorSetLayout.
 	 */
 	fun createDescriptorSetLayout(
-		bindings	: DescriptorSetLayoutBinding.Buffer,
+		descriptors : List<Descriptor>,
 		flags		: DescriptorSetLayoutCreateFlags = DescriptorSetLayoutCreateFlags(0),
 		stack       : MemStack = default
 	) = stack.get {
-		createDescriptorSetLayout(DescriptorSetLayoutCreateInfo {
+		val bindings = DescriptorSetLayoutBinding(descriptors.size) { }
+
+		for((i, d) in descriptors.withIndex()) {
+			bindings[i].let {
+				it.binding = d.binding
+				it.descriptorType = d.type
+				it.descriptorCount = d.count
+				it.stageFlags = d.stages
+			}
+		}
+
+		val info = DescriptorSetLayoutCreateInfo {
 			it.bindings = bindings
 			it.flags = flags
-		}, stack)
-	}
+		}
 
-
-
-	/**
-	 * Convenience implementation of vkCreateDescriptorSetLayout with only one binding.
-	 */
-	fun createDescriptorSetLayout(
-		binding : Int,
-		type    : DescriptorType,
-		count   : Int,
-		stages  : ShaderStageFlags,
-		stack   : MemStack = default
-	) = stack.get {
-		createDescriptorSetLayout(
-			DescriptorSetLayoutCreateInfo { info ->
-				info.bindings = DescriptorSetLayoutBinding {
-					it.binding         = binding
-					it.descriptorType  = type
-					it.descriptorCount = count
-					it.stageFlags      = stages
-				}.asBuffer
-		}, stack)
+		createDescriptorSetLayout(info, descriptors, stack)
 	}
 
 

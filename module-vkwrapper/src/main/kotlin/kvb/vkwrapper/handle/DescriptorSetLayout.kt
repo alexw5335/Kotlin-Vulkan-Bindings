@@ -1,8 +1,13 @@
 package kvb.vkwrapper.handle
 
+import kvb.vkwrapper.persistent.Descriptor
 import kvb.vulkan.DescriptorSetLayoutH
 
-class DescriptorSetLayout(address: Long, val device: Device) : DescriptorSetLayoutH(address) {
+class DescriptorSetLayout(
+	address         : Long,
+	val device      : Device,
+	val descriptors : List<Descriptor>
+) : DescriptorSetLayoutH(address) {
 
 
 	/**

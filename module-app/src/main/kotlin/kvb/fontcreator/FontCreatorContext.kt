@@ -136,7 +136,19 @@ object FontCreatorContext {
 
 
 
-	val memManager = MemManager(device)
+	val memManager = MemManager(device, queue)
+
+
+
+	val sampler = device.createSampler(Filter.NEAREST, Filter.NEAREST)
+
+	val windowUbo = memManager.uniformBuffer(4 * 5)
+
+
+
+	init {
+		windowUboDescriptor.bufferWrite(0, windowUbo)
+	}
 
 
 }

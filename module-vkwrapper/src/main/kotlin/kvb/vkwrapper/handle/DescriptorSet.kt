@@ -4,7 +4,11 @@ import kvb.core.memory.MemStack
 import kvb.core.memory.MemStacks.default
 import kvb.vulkan.*
 
-class DescriptorSet(address: Long, val device: Device, val layout: DescriptorSetLayout) : DescriptorSetH(address) {
+class DescriptorSet(
+	address    : Long,
+	val device : Device,
+	val layout : DescriptorSetLayout
+) : DescriptorSetH(address) {
 
 
 	/**
@@ -17,6 +21,8 @@ class DescriptorSet(address: Long, val device: Device, val layout: DescriptorSet
 	 */
 	private val self get() = this
 
+	val descriptors = layout.descriptors
+
 
 
 	/*
@@ -25,31 +31,96 @@ class DescriptorSet(address: Long, val device: Device, val layout: DescriptorSet
 
 
 
-	/**
-	 * Convenience implementation of vkUpdateDescriptorSets. For a single uniform descriptor set with a single buffer
-	 * write.
-	 */
-	fun updateUniformWrite(
-		buffer       : Buffer,
-		offset       : Long,
-		range        : Long,
-		binding      : Int,
-		arrayElement : Int = 0,
-		stack        : MemStack = default
+	fun bufferWrite(
+		binding : Int,
+		buffer  : Buffer,
+		offset  : Long = 0L,
+		size    : Long = 0L,
+		stack   : MemStack = default
 	) = stack.with {
-		val writeInfo = WriteDescriptorSet {
-			it.dstSet = self
-			it.dstBinding = binding
-			it.dstArrayElement = arrayElement
-			it.descriptorType = DescriptorType.UNIFORM_BUFFER
-			it.bufferInfo = DescriptorBufferInfo { bufferInfo ->
-				bufferInfo.buffer = buffer
-				bufferInfo.offset = offset
-				bufferInfo.range = range
+		device.updateDescriptorSets(
+			WriteDescriptorSet {
+				it.dstSet = self
+				it.dstBinding = binding
+				it.dstArrayElement = 0
+				it.descriptorType  = descriptors[binding].type
+				it.descriptorCount = 1
+				it.bufferInfo = DescriptorBufferInfo { bufferInfo ->
+					bufferInfo.buffer = buffer
+					bufferInfo.offset = offset
+					bufferInfo.range  = size
+				}.asBuffer
 			}.asBuffer
-		}
+		)
+	}
 
-		device.updateDescriptorSets(writeInfo.asBuffer)
+
+
+	fun imageWrite(
+		binding     : Int,
+		sampler     : Sampler,
+		imageView   : ImageView,
+		imageLayout : ImageLayout,
+		stack       : MemStack = default
+	) = stack.with {
+		device.updateDescriptorSets(
+			WriteDescriptorSet {
+				it.dstSet = self
+				it.dstBinding = binding
+				it.dstArrayElement = 0
+				it.descriptorType  = descriptors[binding].type
+				it.descriptorCount = 1
+				it.imageInfo = DescriptorImageInfo { imageInfo ->
+					imageInfo.sampler = sampler
+					imageInfo.imageView = imageView
+					imageInfo.imageLayout  = imageLayout
+				}.asBuffer
+			}.asBuffer
+		)
+	}
+
+
+
+	fun imageWrite(
+		binding     : Int,
+		sampler     : Sampler,
+		stack       : MemStack = default
+	) = stack.with {
+		device.updateDescriptorSets(
+			WriteDescriptorSet {
+				it.dstSet = self
+				it.dstBinding = binding
+				it.dstArrayElement = 0
+				it.descriptorType  = descriptors[binding].type
+				it.descriptorCount = 1
+				it.imageInfo = DescriptorImageInfo { imageInfo ->
+					imageInfo.sampler = sampler
+				}.asBuffer
+			}.asBuffer
+		)
+	}
+
+
+
+	fun imageWrite(
+		binding     : Int,
+		imageView   : ImageView,
+		imageLayout : ImageLayout,
+		stack       : MemStack = default
+	) = stack.with {
+		device.updateDescriptorSets(
+			WriteDescriptorSet {
+				it.dstSet = self
+				it.dstBinding = binding
+				it.dstArrayElement = 0
+				it.descriptorType  = descriptors[binding].type
+				it.descriptorCount = 1
+				it.imageInfo = DescriptorImageInfo { imageInfo ->
+					imageInfo.imageView = imageView
+					imageInfo.imageLayout  = imageLayout
+				}.asBuffer
+			}.asBuffer
+		)
 	}
 
 
