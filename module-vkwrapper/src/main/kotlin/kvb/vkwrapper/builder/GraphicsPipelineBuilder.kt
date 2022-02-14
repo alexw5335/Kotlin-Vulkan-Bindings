@@ -3,7 +3,7 @@ package kvb.vkwrapper.builder
 import kvb.core.memory.DirectList
 import kvb.core.memory.MemStack
 import kvb.vkwrapper.handle.*
-import kvb.vkwrapper.pipeline.Shader
+import kvb.vkwrapper.shader.Shader
 import kvb.vulkan.*
 
 /**
@@ -23,34 +23,41 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 
 
-	/*
-	Layout and RenderPass
-	 */
-
-
+	fun flags(flags: PipelineCreateFlags) {
+		this.flags = flags
+	}
 
 	fun layout(layout: PipelineLayout) {
 		this.layout = layout
 	}
 
-	fun layout(setLayout: DescriptorSetLayout) {
-		layout(device.createPipelineLayout(setLayout))
-	}
-
-	fun layout(setLayouts: List<DescriptorSetLayout>) {
-		layout(device.createPipelineLayout(setLayouts))
-	}
-
-	fun layout(sets: Map<Int, DescriptorSet>) {
-		if(sets.isEmpty()) emptyLayout() else layout(sets.map { it.value.layout })
-	}
-
-	fun emptyLayout() {
-		layout(device.createPipelineLayout())
-	}
-
 	fun renderPass(renderPass: RenderPass) {
 		this.renderPass = renderPass
+	}
+
+	fun subpass(subpass: Int) {
+		this.subpass = subpass
+	}
+
+
+
+	/*
+	Layout
+	 */
+
+
+
+	private var descriptorSets: Map<Int, DescriptorSet>? = null
+
+	fun emptyLayout() = layout(device.createPipelineLayout())
+
+	fun descriptors(setLayout: DescriptorSetLayout) = layout(device.createPipelineLayout(setLayout))
+
+	fun descriptors(setLayouts: List<DescriptorSetLayout>) = layout(device.createPipelineLayout(setLayouts))
+
+	fun descriptorSets(vararg sets: Pair<Int, DescriptorSet>) {
+		descriptors(sets.map { it.second.layout })
+		this.descriptorSets = mapOf(*sets)
 	}
 
 
@@ -499,29 +506,33 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 
 
-	fun build() = stack.GraphicsPipelineCreateInfo {
-		vertexInputState.vertexBindingDescriptionCount = vertexBindings.size
-		vertexInputState.pVertexBindingDescriptions = vertexBindings.buffer.address
-		vertexInputState.vertexAttributeDescriptionCount = vertexAttributes.size
-		vertexInputState.pVertexAttributeDescriptions = vertexAttributes.buffer.address
-		colourBlendState.attachmentCount = colourBlendAttachments.size
-		colourBlendState.pAttachments = colourBlendAttachments.buffer.address
+	fun build() = stack.get {
+		val info = GraphicsPipelineCreateInfo {
+			vertexInputState.vertexBindingDescriptionCount = vertexBindings.size
+			vertexInputState.pVertexBindingDescriptions = vertexBindings.buffer.address
+			vertexInputState.vertexAttributeDescriptionCount = vertexAttributes.size
+			vertexInputState.pVertexAttributeDescriptions = vertexAttributes.buffer.address
+			colourBlendState.attachmentCount = colourBlendAttachments.size
+			colourBlendState.pAttachments = colourBlendAttachments.buffer.address
 
-		it.flags 				= flags
-		it.stageCount           = shaderStages.size
-		it.pStages              = shaderStages.buffer.address
-		it.vertexInputState 	= vertexInputState
-		it.inputAssemblyState 	= inputAssemblyState
-		it.tessellationState 	= tessellationState
-		it.viewportState 		= viewportState
-		it.rasterizationState 	= rasterizationState
-		it.multisampleState 	= multisampleState
-		it.depthStencilState 	= depthStencilState
-		it.colorBlendState 		= colourBlendState
-		it.dynamicState 		= dynamicState
-		it.layout 				= layout ?: error("Graphics pipeline must contain a pipeline layout.")
-		it.renderPass 			= renderPass ?: error("Graphics pipeline must contain a render pass.")
-		it.subpass 				= subpass
+			it.flags 				= flags
+			it.stageCount           = shaderStages.size
+			it.pStages              = shaderStages.buffer.address
+			it.vertexInputState 	= vertexInputState
+			it.inputAssemblyState 	= inputAssemblyState
+			it.tessellationState 	= tessellationState
+			it.viewportState 		= viewportState
+			it.rasterizationState 	= rasterizationState
+			it.multisampleState 	= multisampleState
+			it.depthStencilState 	= depthStencilState
+			it.colorBlendState 		= colourBlendState
+			it.dynamicState 		= dynamicState
+			it.layout 				= layout ?: error("Graphics pipeline must contain a pipeline layout.")
+			it.renderPass 			= renderPass ?: error("Graphics pipeline must contain a render pass.")
+			it.subpass 				= subpass
+		}
+
+		device.createGraphicsPipeline(info, layout!!, descriptorSets)
 	}
 
 

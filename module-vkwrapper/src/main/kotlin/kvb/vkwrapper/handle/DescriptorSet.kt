@@ -35,7 +35,7 @@ class DescriptorSet(
 		binding : Int,
 		buffer  : Buffer,
 		offset  : Long = 0L,
-		size    : Long = 0L,
+		size    : Long = buffer.size,
 		stack   : MemStack = default
 	) = stack.with {
 		device.updateDescriptorSets(

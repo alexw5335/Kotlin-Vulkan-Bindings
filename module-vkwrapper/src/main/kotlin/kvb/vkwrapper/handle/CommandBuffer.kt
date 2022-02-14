@@ -188,6 +188,16 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 
 
 
+	fun bindPipelineAndDescriptorSets(pipeline: Pipeline) {
+		bindPipeline(pipeline)
+
+		if(pipeline.descriptorSets != null)
+			for((index, set) in pipeline.descriptorSets)
+				bindDescriptorSet(pipeline, index, set)
+	}
+
+
+
 	/*
 	Vertex buffer binding
 	 */
@@ -295,6 +305,30 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 			commandBuffer      = self,
 			pipelineBindPoint  = bindPoint,
 			layout             = layout,
+			firstSet           = binding,
+			descriptorSetCount = 1,
+			pDescriptorSets    = wrapPointer(set),
+			dynamicOffsetCount = 0,
+			pDynamicOffsets    = DirectIntBuffer(0, 0)
+		)
+	}
+
+
+
+	/**
+	 * Convenience implementation of vkCmdBindDescriptorSets. For binding a single descriptor set with no dynamic
+	 * descriptors.
+	 */
+	fun bindDescriptorSet(
+		pipeline : Pipeline,
+		binding  : Int,
+		set      : DescriptorSet,
+		stack    : MemStack = default
+	) = stack.with {
+		commands.cmdBindDescriptorSets(
+			commandBuffer      = self,
+			pipelineBindPoint  = pipeline.bindPoint,
+			layout             = pipeline.layout,
 			firstSet           = binding,
 			descriptorSetCount = 1,
 			pDescriptorSets    = wrapPointer(set),

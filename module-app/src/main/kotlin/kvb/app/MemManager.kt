@@ -32,7 +32,9 @@ class MemManager(
 
 	val bufferAllocator = VkLinearAllocator(
 		device.allocateMemory(bufferMemorySize, mappedType.index)
-	)
+	).also {
+		it.memory.mapWhole()
+	}
 
 
 
@@ -137,16 +139,29 @@ class MemManager(
 
 
 
-	fun vertexBuffer(size: Int, floats: FloatArray) = vertexBuffer(size) {
+	fun vertexBuffer(floats: FloatArray) = vertexBuffer(floats.size * 4) {
 		it.setFloats(0, floats)
 	}
 
-	fun stagingBuffer(size: Int, floats: FloatArray) = stagingBuffer(size) {
+	fun stagingBuffer(floats: FloatArray) = stagingBuffer(floats.size * 4) {
 		it.setFloats(0, floats)
 	}
 
-	fun uniformBuffer(size: Int, floats: FloatArray) = uniformBuffer(size) {
+	fun uniformBuffer(floats: FloatArray) = uniformBuffer(floats.size * 4) {
 		it.setFloats(0, floats)
+	}
+
+
+
+	fun vertexBuffer(bytes: ByteArray) = vertexBuffer(bytes.size) {
+		it[0] = bytes
+	}
+
+	fun stagingBuffer(bytes: ByteArray) = stagingBuffer(bytes.size) {
+		it[0] = bytes
+	}
+	fun uniformBuffer(bytes: ByteArray) = uniformBuffer(bytes.size) {
+		it[0] = bytes
 	}
 
 
@@ -157,7 +172,7 @@ class MemManager(
 
 
 
-	private val commandPool = device.createTransientCommandPool(queue.family)
+	private val commandPool = device.createCommandPool(queue.family, CommandPoolCreateFlags.RESET_COMMAND_BUFFER)
 
 	private val commandBuffer = commandPool.allocatePrimary()
 

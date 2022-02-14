@@ -1,4 +1,4 @@
-package kvb.vkwrapper.pipeline
+package kvb.vkwrapper.shader
 
 import kvb.vkwrapper.exception.VkShaderException
 import kvb.vkwrapper.handle.Device

@@ -4,15 +4,16 @@ import kvb.app.MemManager
 import kvb.app.SurfaceSystem
 import kvb.vkwrapper.DebugUtils
 import kvb.vkwrapper.Vulkan
+import kvb.vkwrapper.handle.ImageView
+import kvb.vkwrapper.handle.Sampler
 import kvb.vkwrapper.handle.Swapchain
-import kvb.vkwrapper.pipeline.ShaderCreation
-import kvb.vkwrapper.pipeline.ShaderDirectory
+import kvb.vkwrapper.shader.ShaderCreation
+import kvb.vkwrapper.shader.ShaderDirectory
 import kvb.vulkan.*
 import kvb.window.WindowManager
 import kvb.window.winapi.WinApiWindow
-import java.io.File
 
-object FontCreatorContext {
+object Context {
 
 
 	val window = WindowManager.create("My window", 0, 0, 700, 700)
@@ -26,7 +27,7 @@ object FontCreatorContext {
 		engineVersion = Version(1, 0, 0),
 		apiVersion    = Version(1, 2, 0),
 		layers        = listOf("VK_LAYER_KHRONOS_validation"),
-		extensions    = listOf("VK_EXT_debug_utils", "VK_KHR_surface", "VK_KHR_win32_surface")
+		extensions    = listOf("VK_EXT_debug_utils","VK_KHR_surface", "VK_KHR_win32_surface")
 	)
 
 
@@ -36,7 +37,6 @@ object FontCreatorContext {
 		severities = DebugUtilsMessageSeverityFlags { ERROR + WARNING },
 		types      = DebugUtilsMessageTypeFlags { GENERAL + VALIDATION + PERFORMANCE }
 	)
-
 
 
 	val physicalDevice = instance.physicalDevices.firstOrNull {
@@ -140,14 +140,133 @@ object FontCreatorContext {
 
 
 
+	/*
+	Descriptors
+	 */
+
+
+
+	val transformUbo = memManager.uniformBuffer(4 * 5)
+
+	val colourUbo = memManager.uniformBuffer(4 * 4)
+
+
+
+	val transformDescriptor = descriptorPool.createSet(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.VERTEX).also {
+		it.bufferWrite(0, transformUbo)
+	}
+
+	val textureDescriptor = descriptorPool.createSet(DescriptorType.COMBINED_IMAGE_SAMPLER, ShaderStageFlags.FRAGMENT)
+
+	val colourDescriptor = descriptorPool.createSet(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.FRAGMENT).also {
+		it.bufferWrite(0, colourUbo)
+	}
+
+	val testDescriptor = descriptorPool.createSet(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.FRAGMENT)
+
+
+
+	fun setTexture(sampler: Sampler, imageView: ImageView) {
+		textureDescriptor.imageWrite(0, sampler, imageView, ImageLayout.SHADER_READ_ONLY_OPTIMAL)
+	}
+
+
+
+	/*
+	Pipelines
+	 */
+
+
+
+	val binaryTexturePipeline = device.buildGraphicsPipeline {
+		vertexBinding { vec2(); vec2() }
+		renderPass(this@Context.renderPass)
+		descriptorSets(0 to transformDescriptor, 1 to textureDescriptor)
+		shaders(shaderDirectory["binary_texture"])
+		triangleStrip()
+		noBlendAttachment()
+		dynamicViewportAndScissor()
+	}
+
+
+
+	val linePipeline = device.buildGraphicsPipeline {
+		vertexBinding { vec2() }
+		renderPass(this@Context.renderPass)
+		descriptorSets(0 to transformDescriptor, 1 to colourDescriptor)
+		shaders(shaderDirectory["line"])
+		lineList()
+		noBlendAttachment()
+		dynamicViewportAndScissor()
+	}
+
+
+
+	val textPipeline = device.buildGraphicsPipeline {
+		vertexBinding { vec2(); vec2() }
+		renderPass(this@Context.renderPass)
+		descriptorSets(0 to transformDescriptor, 1 to testDescriptor)
+		shaders(shaderDirectory["binary_texture2"])
+		triangleList()
+		noBlendAttachment()
+		dynamicViewportAndScissor()
+	}
+
+
+
+	const val textureWidth = 64
+
+	const val textureHeight = 64
+
+	const val meshWidth = 512F
+
+	const val meshHeight = 512F
+
+
+
+	val vertexBuffer = memManager.vertexBuffer(floatArrayOf(
+		0F, 0F, 0F, 0F,
+		meshWidth, 0F, 1F, 0F,
+		0F, meshHeight, 0F, 1F,
+		meshWidth, meshHeight, 1F, 1F
+	))
+
+
+
+	val linesVertexBuffer = memManager.vertexBuffer((textureWidth - 1 + textureHeight - 1) * 16) {
+		var index = 0
+		val scale = meshWidth / textureWidth
+
+		for(i in 1 until textureWidth) {
+			it[index] = i.toFloat() * scale
+			it[index + 4] = 0F
+			it[index + 8] = i.toFloat() * scale
+			it[index + 12] = textureHeight.toFloat() * scale
+			index += 16
+		}
+
+		for(i in 1 until textureHeight) {
+			it[index] = 0F
+			it[index + 4] = i.toFloat() * scale
+			it[index + 8] = textureWidth.toFloat() * scale
+			it[index + 12] = i.toFloat() * scale
+			index += 16
+		}
+	}
+
 	val sampler = device.createSampler(Filter.NEAREST, Filter.NEAREST)
 
-	val windowUbo = memManager.uniformBuffer(4 * 5)
+	val image = memManager.image(textureWidth, textureHeight, ImageUsageFlags { TRANSFER_DST + SAMPLED }, Format.R8_SRGB)
+
+	val imageView = device.createImageView(image)
+
+	val stagingBuffer = memManager.stagingBuffer(500_000)
 
 
 
 	init {
-		windowUboDescriptor.bufferWrite(0, windowUbo)
+		memManager.transitionImageForShaderRead(image, stagingBuffer)
+		setTexture(sampler, imageView)
 	}
 
 

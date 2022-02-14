@@ -1,4 +1,4 @@
-package kvb.vkwrapper.pipeline
+package kvb.vkwrapper.shader
 
 import kvb.vkwrapper.handle.ShaderModule
 import kvb.vulkan.ShaderStageFlags

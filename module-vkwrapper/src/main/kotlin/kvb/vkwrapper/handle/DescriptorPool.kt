@@ -2,7 +2,6 @@ package kvb.vkwrapper.handle
 
 import kvb.core.memory.MemStack
 import kvb.core.memory.MemStacks.default
-import kvb.vkwrapper.builder.DescriptorSetBuilder
 import kvb.vkwrapper.persistent.Descriptor
 import kvb.vulkan.*
 
@@ -69,17 +68,12 @@ class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(addres
 
 
 
-	inline fun buildSet(stack: MemStack = default, block: DescriptorSetBuilder.() -> Unit) =
-		DescriptorSetBuilder(this, stack).also(block).build()
-
-
-
 	fun createSet(
 		descriptors : List<Descriptor>,
 		flags       : DescriptorSetLayoutCreateFlags = DescriptorSetLayoutCreateFlags(0),
 		stack       : MemStack = default
 	) = stack.get {
-		allocateDescriptorSet(device.createDescriptorSetLayout(descriptors, stack = stack))
+		allocateDescriptorSet(device.createDescriptorSetLayout(descriptors, flags, stack = stack))
 	}
 
 
@@ -89,7 +83,7 @@ class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(addres
 		flags      : DescriptorSetLayoutCreateFlags = DescriptorSetLayoutCreateFlags(0),
 		stack      : MemStack = default
 	) = stack.get {
-		allocateDescriptorSet(device.createDescriptorSetLayout(listOf(descriptor), stack = stack))
+		allocateDescriptorSet(device.createDescriptorSetLayout(listOf(descriptor), flags, stack = stack))
 	}
 
 

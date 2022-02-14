@@ -2,7 +2,10 @@
 #extension GL_ARB_separate_shader_objects : enable
 
 
+
 layout(location = 0) in vec2 pos;
+
+
 
 layout(set = 0, binding = 0) uniform ubo {
 	vec2 screenSize;
@@ -13,5 +16,5 @@ layout(set = 0, binding = 0) uniform ubo {
 
 
 void main() {
-	gl_Position = vec4(2 * (pos + offset) / screenSize - 1, 0.0, zoom);
+	gl_Position = vec4(2 * (pos + offset) / (screenSize * zoom) - 1, 0.0, 1.0);
 }

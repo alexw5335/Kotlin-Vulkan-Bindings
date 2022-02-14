@@ -66,7 +66,7 @@ class Buffer(
 		!memory.isMapped(this.offset + offset, size) ->
 			throw VkException("The memory range of this buffer has not been mapped.")
 		else ->
-			DirectByteBuffer(memory.mappedAddress - memory.mappedOffset + offset, size)
+			DirectByteBuffer(memory.mappedAddress - memory.mappedOffset + this.offset + offset, size)
 	}
 
 

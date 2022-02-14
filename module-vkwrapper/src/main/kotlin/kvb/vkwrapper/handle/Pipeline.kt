@@ -4,10 +4,11 @@ import kvb.vulkan.PipelineBindPoint
 import kvb.vulkan.PipelineH
 
 class Pipeline(
-	address       : Long,
-	val device    : Device,
-	val bindPoint : PipelineBindPoint,
-	val layout    : PipelineLayout,
+	address            : Long,
+	val device         : Device,
+	val bindPoint      : PipelineBindPoint,
+	val layout         : PipelineLayout,
+	val descriptorSets : Map<Int, DescriptorSet>? = null
 ) : PipelineH(address) {
 
 

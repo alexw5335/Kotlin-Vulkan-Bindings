@@ -339,26 +339,26 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 
 
 
+	fun createGraphicsPipeline(
+		info           : GraphicsPipelineCreateInfo,
+		layout         : PipelineLayout,
+		descriptorSets : Map<Int, DescriptorSet>? = null,
+		stack          : MemStack = default
+	) = stack.get {
+		val pointer = stack.mallocPointer(1)
+		commands.createGraphicsPipelines(null, 1, info.asBuffer, null, pointer).check()
+		Pipeline(pointer[0], self, PipelineBindPoint.GRAPHICS, layout, descriptorSets)
+	}
+
+
+
 	/**
 	 * Builder implementation of vkCreateGraphicsPipelines.
 	 */
 	fun buildGraphicsPipeline(
 		stack: MemStack = default,
 		block: GraphicsPipelineBuilder.() -> Unit,
-	) = stack.get {
-		val pointer = mallocPointer(1)
-		val builder = GraphicsPipelineBuilder(self, this).also(block)
-
-		commands.createGraphicsPipelines(
-			null,
-			1,
-			builder.build().asBuffer,
-			null,
-			pointer
-		).check()
-
-		Pipeline(pointer[0], self, PipelineBindPoint.GRAPHICS, builder.layout!!)
-	}
+	) = GraphicsPipelineBuilder(this, stack).also(block).build()
 
 
 
@@ -516,14 +516,10 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreatePipelineLayout.
 	 */
-	fun createPipelineLayout(
-		info           : PipelineLayoutCreateInfo,
-		descriptorSets : Map<Int, DescriptorSet>,
-		stack          : MemStack = default
-	) = stack.get {
+	fun createPipelineLayout(info: PipelineLayoutCreateInfo, stack: MemStack = default) = stack.get {
 		val pointer = mallocPointer()
 		commands.createPipelineLayout(info, null, pointer).check()
-		PipelineLayout(pointer.value, self, descriptorSets)
+		PipelineLayout(pointer.value, self)
 	}
 
 
@@ -532,7 +528,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 * Convenience implementation of vkCreatePipelineLayout. Creates an empty layout.
 	 */
 	fun createPipelineLayout(stack: MemStack = default) = stack.get {
-		createPipelineLayout(PipelineLayoutCreateInfo { }, emptyMap(), stack)
+		createPipelineLayout(PipelineLayoutCreateInfo { }, stack)
 	}
 
 
@@ -540,10 +536,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Convenience implementation of vkCreatePipelineLayout. No push constants.
 	 */
-	fun createPipelineLayout(
-		setLayouts : List<DescriptorSetLayout>,
-		stack      : MemStack = default
-	) = stack.get {
+	fun createPipelineLayout(setLayouts: List<DescriptorSetLayout>, stack: MemStack = default) = stack.get {
 		createPipelineLayout(PipelineLayoutCreateInfo {
 			it.setLayouts = wrapPointers(setLayouts)
 		}, stack)
@@ -554,10 +547,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Convenience implementation of vkCreatePipelineLayout. One descriptor set, no push constant ranges.
 	 */
-	fun createPipelineLayout(
-		setLayout : DescriptorSetLayout,
-		stack     : MemStack = default
-	) = stack.get {
+	fun createPipelineLayout(setLayout: DescriptorSetLayout, stack: MemStack = default) = stack.get {
 		createPipelineLayout(PipelineLayoutCreateInfo {
 			it.setLayouts = wrapPointer(setLayout)
 		}, stack)

@@ -3,12 +3,16 @@
 
 
 
-layout(location = 0) in flat int colour;
-
 layout(location = 0) out vec4 outColour;
 
 
 
+layout(set = 1, binding = 0) uniform colourUbo {
+	vec4 lineColour;
+};
+
+
+
 void main() {
-	outColour = vec4(colour);
+	outColour = lineColour;
 }
