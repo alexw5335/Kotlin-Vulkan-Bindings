@@ -1,6 +1,7 @@
 package kvb.fontcreator
 
 import kvb.core.Platforms
+import kvb.vkwrapper.shader.ShaderCreation
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -14,14 +15,15 @@ TODO: Simplify JNI bindings to not include vulkan.h, with custom function pointe
 
 
 fun main() {
+	//ShaderCreation.compileAll("res/shader/font_creator", "res/shader/font_creator/out")
 	Platforms.init()
 	FontCreator.run()
 }
 
 
 
-private val textureWidth = 64F
-private val textureHeight = 64F
+private const val textureWidth = 64F
+private const val textureHeight = 64F
 
 private fun character(char: Char, x: Int, y: Int, width: Int, height: Int, yOffset: Int) = BinaryCharacter(
 	char, x, y, width, height, yOffset, x / textureWidth, y / textureHeight, width / textureWidth, height / textureHeight

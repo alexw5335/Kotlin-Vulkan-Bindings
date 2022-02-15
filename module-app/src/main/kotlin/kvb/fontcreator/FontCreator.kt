@@ -256,9 +256,39 @@ object FontCreator {
 
 
 
+
+	val fontPipeline = context.device.buildGraphicsPipeline {
+		vertexBinding { vec4(); u32() }
+		renderPass(context.renderPass)
+		descriptorSets(0 to transformDescriptor)
+		shaders(shaderDirectory["font"])
+		pointList()
+		noBlendAttachment()
+		dynamicViewportAndScissor()
+	}
+
+
+
+
 	/*
 	Vertex buffers
 	 */
+
+
+
+	val fontVertexBuffer = memManager.buffer(20, BufferUsageFlags.VERTEX_BUFFER) {
+		it[0] = 0F
+		it[4] = 0F
+		it[8] = 400F
+		it[12] = 400F
+
+		it[16] = byteArrayOf(
+			0b00010101,
+			0b00010101,
+			0b00010101,
+			0b00010101
+		)
+	}
 
 
 
@@ -298,31 +328,6 @@ object FontCreator {
 	Update
 	 */
 
-
-
-	fun createText(string: String) {
-		val vertexBuffer = memManager.buffer(string.length * 8, BufferUsageFlags.VERTEX_BUFFER)
-		val data = vertexBuffer.data().asFloatBuffer
-		var index = 0
-		var x = 0F
-		var y = 0F
-
-		for(c in string) {
-			val character = font.characters.first { it.char == c }
-
-			data[index++] = x
-			data[index++] = y + character.yOffset
-			data[index++] = character.width.toFloat()
-			data[index++] = character.height.toFloat()
-
-			data[index++] = character.x.toFloat() / textureWidth.toFloat()
-			data[index++] = character.y.toFloat() / textureHeight.toFloat()
-			data[index++] = character.width.toFloat() / textureWidth.toFloat()
-			data[index++] = character.height.toFloat() / textureHeight.toFloat()
-
-			// pass x, y, width, height, u, v, uvWidth, uvHeight as two vertices per character.
-		}
-	}
 	
 
 	fun save() {
@@ -344,15 +349,19 @@ object FontCreator {
 
 	private fun render() {
 		context.surfaceSystem.onRecord = {
-			it.bindPipelineAndDescriptorSets(binaryTexturePipeline)
-			it.bindVertexBuffer(vertexBuffer)
-			it.draw(4)
+			//it.bindPipelineAndDescriptorSets(binaryTexturePipeline)
+			//it.bindVertexBuffer(vertexBuffer)
+			//it.draw(4)
 
-			if(displayLines) {
-				it.bindPipelineAndDescriptorSets(linePipeline)
-				it.bindVertexBuffer(linesVertexBuffer)
-				it.draw((textureWidth - 1 + textureHeight - 1) * 2)
-			}
+			//if(displayLines) {
+			//	it.bindPipelineAndDescriptorSets(linePipeline)
+			//	it.bindVertexBuffer(linesVertexBuffer)
+			//	it.draw((textureWidth - 1 + textureHeight - 1) * 2)
+			//}
+
+			it.bindPipelineAndDescriptorSets(fontPipeline)
+			it.bindVertexBuffer(fontVertexBuffer)
+			it.draw(1)
 		}
 
 		context.surfaceSystem.record()

@@ -1,17 +1,12 @@
 package kvb.fontcreator
 
-import kvb.app.MemManager
 import kvb.app.SurfaceSystem
+import kvb.core.memory.Unsafe
 import kvb.vkwrapper.DebugUtils
 import kvb.vkwrapper.Vulkan
-import kvb.vkwrapper.handle.ImageView
-import kvb.vkwrapper.handle.Sampler
 import kvb.vkwrapper.handle.Swapchain
-import kvb.vkwrapper.shader.ShaderCreation
-import kvb.vkwrapper.shader.ShaderDirectory
 import kvb.vulkan.*
 import kvb.window.Window
-import kvb.window.WindowManager
 import kvb.window.winapi.WinApiWindow
 
 class Context(window: Window) {
@@ -52,7 +47,13 @@ class Context(window: Window) {
 
 
 
-	val device = physicalDevice.createDevice(mapOf(queueFamily to 1), extensions = listOf("VK_KHR_swapchain"))
+	val features = Unsafe.PhysicalDeviceFeatures {
+		it.geometryShader = VK_TRUE
+	}
+
+
+
+	val device = physicalDevice.createDevice(mapOf(queueFamily to 1), listOf("VK_KHR_swapchain"), features)
 
 
 

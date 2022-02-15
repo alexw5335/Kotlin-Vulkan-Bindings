@@ -68,7 +68,7 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 
 
-	private val shaderStages = DirectList(stack, 2) { PipelineShaderStageCreateInfo(it) { } }
+	private val shaderStages = DirectList(stack, 4) { PipelineShaderStageCreateInfo(it) { } }
 
 
 
@@ -147,6 +147,10 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 	fun VertexInputBindingDescription.vec3() = vertexAttribute(Format.R32G32B32_SFLOAT, 12)
 
 	fun VertexInputBindingDescription.vec4() = vertexAttribute(Format.R32G32B32A32_SFLOAT, 16)
+
+	fun VertexInputBindingDescription.u64() = vertexAttribute(Format.R64_UINT, 8)
+
+	fun VertexInputBindingDescription.u32() = vertexAttribute(Format.R32_UINT, 4)
 
 
 
