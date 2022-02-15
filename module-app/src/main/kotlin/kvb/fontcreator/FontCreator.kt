@@ -1,8 +1,6 @@
 package kvb.fontcreator
 
 import kvb.app.MemManager
-import kvb.vkwrapper.handle.ImageView
-import kvb.vkwrapper.handle.Sampler
 import kvb.vkwrapper.shader.ShaderCreation
 import kvb.vkwrapper.shader.ShaderDirectory
 import kvb.vulkan.*
@@ -14,33 +12,101 @@ import kotlin.math.sqrt
 
 object FontCreator {
 
-	
-	private val window = WindowManager.create("Binary Font Creator", 0, 0, 700, 700)
 
-	private val context = Context(window)
-	
-	private const val targetFps = 500
-
-	private const val frameTime = 1_000_000 / targetFps
-
-
-
-	private fun render() {
-		context.surfaceSystem.onRecord = {
-			it.bindPipelineAndDescriptorSets(binaryTexturePipeline)
-			it.bindVertexBuffer(context.vertexBuffer)
-			it.draw(4)
-
-			if(displayLines) {
-				it.bindPipelineAndDescriptorSets(linePipeline)
-				it.bindVertexBuffer(context.linesVertexBuffer)
-				it.draw((textureWidth - 1 + textureHeight - 1) * 2)
-			}
-		}
-
-		context.surfaceSystem.record()
-		context.surfaceSystem.present()
+	init {
+		ShaderCreation.compileAll("res/shader/font_creator", "res/shader/font_creator/out")
 	}
+
+
+
+	val window = WindowManager.create("Binary Font Creator", 0, 0, 700, 700)
+
+	val context = Context(window)
+
+	val shaderDirectory = ShaderDirectory("res/shader/font_creator/out", context.device)
+
+	val memManager = MemManager(context.device, context.queue)
+
+
+
+	/*
+	Render
+	 */
+
+
+
+	val targetFps = 500
+
+	val frameTime = 1_000_000 / targetFps
+
+
+
+	/*
+	Mesh dimensions
+	 */
+
+
+	val textureWidth = 64
+
+	val textureHeight = 64
+
+	val meshWidth = 512F
+
+	val meshHeight = 512F
+
+
+
+	/*
+	Transform
+	 */
+
+
+
+	var offsetX = 0F
+
+	var offsetY = 0F
+
+	var zoom = 1F
+
+	var maxZoom = meshWidth / textureHeight
+
+	var minZoom = 0.3F
+
+
+
+	/*
+	Editing
+	 */
+
+
+
+	var displayLines = false
+
+	var erase = false
+
+	val BLACK = 0.toByte()
+
+	val WHITE = (-1).toByte()
+
+
+
+	/*
+	Mouse
+	 */
+
+
+
+	var wasPressed = false
+
+	var offsetOriginX = 0F
+
+	var offsetOriginY = 0F
+
+	var cursorOriginX = 0F
+
+	var cursorOriginY = 0F
+
+	var dragging = false
 
 
 
@@ -73,7 +139,7 @@ object FontCreator {
 		if(button == Button.LEFT_MOUSE) {
 			if(dragging) return
 
-			context.memManager.write(context.stagingBuffer) {
+			memManager.write(stagingBuffer) {
 				val meshX = ((window.cursorX - window.clientWidth / 2) + window.clientWidth / 2) * zoom - offsetX
 				val meshY = ((window.cursorY - window.clientHeight / 2) + window.clientHeight / 2) * zoom - offsetY
 				val meshXIndex = (meshX * (textureWidth.toFloat() / meshWidth)).toInt()
@@ -82,7 +148,7 @@ object FontCreator {
 				if(meshXIndex in 0 until textureWidth && meshYIndex in 0 until textureHeight) {
 					val colour = if(erase) BLACK else WHITE
 					it[meshYIndex * textureWidth + meshXIndex] = colour
-					context.memManager.updateImageForShaderRead(context.image, context.stagingBuffer)
+					memManager.updateImageForShaderRead(image, stagingBuffer)
 				}
 			}
 		}
@@ -124,45 +190,53 @@ object FontCreator {
 
 
 
-	init {
-		ShaderCreation.compileAll("res/shader/font_creator", "res/shader/font_creator/out")
-	}
+	/*
+	Pipelines
+	 */
 
-	val shaderDirectory = ShaderDirectory("res/shader/font_creator/out", context.device)
-
-	val memManager = MemManager(context.device, context.queue)
 
 
 	val transformUbo = memManager.buffer(4 * 5, BufferUsageFlags.UNIFORM_BUFFER)
 
 	val colourUbo = memManager.buffer(4 * 4, BufferUsageFlags.UNIFORM_BUFFER)
 
+	val sampler = context.device.createSampler(Filter.NEAREST, Filter.NEAREST)
 
+	val image = memManager.image(textureWidth, textureHeight, ImageUsageFlags { TRANSFER_DST + SAMPLED }, Format.R8_SRGB)
 
-	val transformDescriptor = descriptorPool.createSet(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.VERTEX).also {
-		it.bufferWrite(0, transformUbo)
-	}
+	val imageView = context.device.createImageView(image)
 
-	val textureDescriptor = descriptorPool.createSet(DescriptorType.COMBINED_IMAGE_SAMPLER, ShaderStageFlags.FRAGMENT)
-
-	val colourDescriptor = descriptorPool.createSet(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.FRAGMENT).also {
-		it.bufferWrite(0, colourUbo)
-	}
-
-	val testDescriptor = descriptorPool.createSet(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.FRAGMENT)
+	val stagingBuffer = memManager.buffer(500_000, BufferUsageFlags.TRANSFER_SRC)
 
 
 
-	fun setTexture(sampler: Sampler, imageView: ImageView) {
-		textureDescriptor.imageWrite(0, sampler, imageView, ImageLayout.SHADER_READ_ONLY_OPTIMAL)
-	}
-	
+	val transformDescriptor = context.descriptorPool.createSet(
+		DescriptorType.UNIFORM_BUFFER,
+		ShaderStageFlags.VERTEX,
+		transformUbo
+	)
+
+	val textureDescriptor = context.descriptorPool.createSet(
+		DescriptorType.COMBINED_IMAGE_SAMPLER,
+		ShaderStageFlags.FRAGMENT,
+		sampler,
+		imageView,
+		ImageLayout.SHADER_READ_ONLY_OPTIMAL
+	)
+
+	val lineColourDescriptor = context.descriptorPool.createSet(
+		DescriptorType.UNIFORM_BUFFER,
+		ShaderStageFlags.FRAGMENT,
+		colourUbo
+	)
+
+
 
 	val binaryTexturePipeline = context.device.buildGraphicsPipeline {
 		vertexBinding { vec2(); vec2() }
 		renderPass(context.renderPass)
-		descriptorSets(0 to context.transformDescriptor, 1 to context.textureDescriptor)
-		shaders(context.shaderDirectory["binary_texture"])
+		descriptorSets(0 to transformDescriptor, 1 to textureDescriptor)
+		shaders(shaderDirectory["binary_texture"])
 		triangleStrip()
 		noBlendAttachment()
 		dynamicViewportAndScissor()
@@ -173,34 +247,18 @@ object FontCreator {
 	val linePipeline = context.device.buildGraphicsPipeline {
 		vertexBinding { vec2() }
 		renderPass(context.renderPass)
-		descriptorSets(0 to context.transformDescriptor, 1 to context.colourDescriptor)
-		shaders(context.shaderDirectory["line"])
+		descriptorSets(0 to transformDescriptor, 1 to lineColourDescriptor)
+		shaders(shaderDirectory["line"])
 		lineList()
 		noBlendAttachment()
 		dynamicViewportAndScissor()
 	}
 
 
-	
-	val textureWidth = 64
-	val textureHeight = 64
-	val meshWidth = 512F
-	val meshHeight = 512F
-	var wasPressed = false
-	var offsetOriginX = 0F
-	var offsetOriginY = 0F
-	var cursorOriginX = 0F
-	var cursorOriginY = 0F
-	var dragging = false
-	var displayLines = false
-	var erase = false
-	var offsetX = 0F
-	var offsetY = 0F
-	var zoom = 1F
-	var BLACK = 0.toByte()
-	var WHITE = (-1).toByte()
-	var maxZoom = meshWidth / textureHeight
-	var minZoom = 0.3F
+
+	/*
+	Vertex buffers
+	 */
 
 
 
@@ -236,41 +294,75 @@ object FontCreator {
 
 
 
-	val sampler = device.createSampler(Filter.NEAREST, Filter.NEAREST)
-
-	val image = memManager.image(textureWidth, textureHeight, ImageUsageFlags { TRANSFER_DST + SAMPLED }, Format.R8_SRGB)
-
-	val imageView = device.createImageView(image)
-
-	val stagingBuffer = memManager.buffer(500_000, BufferUsageFlags.TRANSFER_SRC)
+	/*
+	Update
+	 */
 
 
 
-	init {
-		memManager.transitionImageForShaderRead(image, stagingBuffer)
-		setTexture(sampler, imageView)
+	fun createText(string: String) {
+		val vertexBuffer = memManager.buffer(string.length * 8, BufferUsageFlags.VERTEX_BUFFER)
+		val data = vertexBuffer.data().asFloatBuffer
+		var index = 0
+		var x = 0F
+		var y = 0F
+
+		for(c in string) {
+			val character = font.characters.first { it.char == c }
+
+			data[index++] = x
+			data[index++] = y + character.yOffset
+			data[index++] = character.width.toFloat()
+			data[index++] = character.height.toFloat()
+
+			data[index++] = character.x.toFloat() / textureWidth.toFloat()
+			data[index++] = character.y.toFloat() / textureHeight.toFloat()
+			data[index++] = character.width.toFloat() / textureWidth.toFloat()
+			data[index++] = character.height.toFloat() / textureHeight.toFloat()
+
+			// pass x, y, width, height, u, v, uvWidth, uvHeight as two vertices per character.
+		}
 	}
-
-
-
+	
 
 	fun save() {
-		Files.write(Paths.get("res/binary_font_data.bff"), context.stagingBuffer.data().asArray)
+		Files.write(Paths.get("res/binary_font_data.bff"), stagingBuffer.data().asArray)
 	}
 
 
 
 	fun load() {
 		val bytes = Files.readAllBytes(Paths.get("res/binary_font_data.bff"))
-		context.memManager.write(context.stagingBuffer) {
+		memManager.write(stagingBuffer) {
 			it[0] = bytes
 		}
-		context.memManager.updateImageForShaderRead(context.image, context.stagingBuffer)
+		memManager.updateImageForShaderRead(image, stagingBuffer)
+	}
+
+
+
+
+	private fun render() {
+		context.surfaceSystem.onRecord = {
+			it.bindPipelineAndDescriptorSets(binaryTexturePipeline)
+			it.bindVertexBuffer(vertexBuffer)
+			it.draw(4)
+
+			if(displayLines) {
+				it.bindPipelineAndDescriptorSets(linePipeline)
+				it.bindVertexBuffer(linesVertexBuffer)
+				it.draw((textureWidth - 1 + textureHeight - 1) * 2)
+			}
+		}
+
+		context.surfaceSystem.record()
+		context.surfaceSystem.present()
 	}
 
 
 
 	fun run() {
+		memManager.transitionImageForShaderRead(image, stagingBuffer)
 		context.surfaceSystem.clearValues[0].rgba(0.1F, 0.5F, 0.2F, 1.0F)
 		window.show()
 		window.onMouseHold  = ::onMouseHold
@@ -292,7 +384,7 @@ object FontCreator {
 				dragging = false
 			}
 
-			context.memManager.write(context.transformUbo) {
+			memManager.write(transformUbo) {
 				it[0] = window.clientWidth.toFloat()
 				it[4] = window.clientHeight.toFloat()
 				it[8] = offsetX
@@ -300,7 +392,7 @@ object FontCreator {
 				it[16] = zoom
 			}
 
-			context.memManager.write(context.colourUbo) {
+			memManager.write(colourUbo) {
 				val alpha = if(displayLines) 0.4F else 0.0F
 				it[0] = alpha
 				it[4] = alpha

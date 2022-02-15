@@ -79,22 +79,30 @@ class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(addres
 
 
 	fun createSet(
-		descriptor : Descriptor,
-		flags      : DescriptorSetLayoutCreateFlags = DescriptorSetLayoutCreateFlags(0),
-		stack      : MemStack = default
-	) = stack.get {
-		allocateDescriptorSet(device.createDescriptorSetLayout(listOf(descriptor), flags, stack = stack))
-	}
+		type   : DescriptorType,
+		stages : ShaderStageFlags,
+		stack  : MemStack = default
+	) = allocateDescriptorSet(device.createDescriptorSetLayout(listOf(Descriptor(0, type, 1, stages)), stack = stack))
 
 
 
 	fun createSet(
 		type   : DescriptorType,
 		stages : ShaderStageFlags,
+		buffer : Buffer,
 		stack  : MemStack = default
-	) = stack.get {
-		allocateDescriptorSet(device.createDescriptorSetLayout(listOf(Descriptor(0, type, 1, stages)), stack = stack))
-	}
+	) = createSet(type, stages, stack).also { it.bufferWrite(0, buffer) }
+
+
+
+	fun createSet(
+		type        : DescriptorType,
+		stages      : ShaderStageFlags,
+		sampler     : Sampler,
+		imageView   : ImageView,
+		imageLayout : ImageLayout,
+		stack       : MemStack = default
+	) = createSet(type, stages, stack).also { it.imageWrite(0, sampler, imageView, imageLayout) }
 
 
 
