@@ -202,18 +202,6 @@ object Context {
 
 
 
-	val textPipeline = device.buildGraphicsPipeline {
-		vertexBinding { vec2(); vec2() }
-		renderPass(this@Context.renderPass)
-		descriptorSets(0 to transformDescriptor, 1 to testDescriptor)
-		shaders(shaderDirectory["binary_texture2"])
-		triangleList()
-		noBlendAttachment()
-		dynamicViewportAndScissor()
-	}
-
-
-
 	const val textureWidth = 64
 
 	const val textureHeight = 64
@@ -253,6 +241,8 @@ object Context {
 			index += 16
 		}
 	}
+
+
 
 	val sampler = device.createSampler(Filter.NEAREST, Filter.NEAREST)
 
