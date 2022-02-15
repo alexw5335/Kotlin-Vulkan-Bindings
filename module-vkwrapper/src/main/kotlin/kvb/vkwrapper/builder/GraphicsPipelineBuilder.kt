@@ -148,9 +148,11 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 	fun VertexInputBindingDescription.vec4() = vertexAttribute(Format.R32G32B32A32_SFLOAT, 16)
 
+	fun VertexInputBindingDescription.u32() = vertexAttribute(Format.R32_UINT, 4)
+
 	fun VertexInputBindingDescription.u64() = vertexAttribute(Format.R64_UINT, 8)
 
-	fun VertexInputBindingDescription.u32() = vertexAttribute(Format.R32_UINT, 4)
+	fun VertexInputBindingDescription.uvec2() = vertexAttribute(Format.R32G32_UINT, 8)
 
 
 

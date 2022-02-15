@@ -3,10 +3,10 @@
 
 
 
-layout(location = 0) in vec4 box;
-layout(location = 1) in uint texture;
+layout(location = 0) in vec2 pos;
+layout(location = 1) in uvec2 texture;
 layout(location = 0) out vec2 size;
-layout(location = 1) out uint textureOut;
+layout(location = 1) out uvec2 textureOut;
 
 
 
@@ -19,7 +19,7 @@ layout(set = 0, binding = 0) uniform ubo {
 
 
 void main() {
-	gl_Position = vec4(2 * (box.xy + offset) / (screenSize * zoom) - 1, 0.0, 1.0);
-	size = box.zw / (screenSize * zoom);
+	gl_Position = vec4(2 * (pos + offset) / (screenSize * zoom) - 1, 0.0, 1.0);
+	size = vec2(2 * 8) / (screenSize * zoom);
 	textureOut = texture;
 }

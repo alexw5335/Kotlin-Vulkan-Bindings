@@ -258,12 +258,12 @@ object FontCreator {
 
 
 	val fontPipeline = context.device.buildGraphicsPipeline {
-		vertexBinding { vec4(); vec4() }
+		vertexBinding { vec2(); uvec2()  }
 		renderPass(context.renderPass)
 		descriptorSets(0 to transformDescriptor)
 		shaders(shaderDirectory["font"])
 		pointList()
-		noBlendAttachment()
+		simpleBlendAttachment()
 		dynamicViewportAndScissor()
 	}
 
@@ -276,22 +276,18 @@ object FontCreator {
 
 
 
-	val fontVertexBuffer = memManager.buffer(20, BufferUsageFlags.VERTEX_BUFFER) {
+	val fontVertexBuffer = memManager.buffer(16, BufferUsageFlags.VERTEX_BUFFER) {
 		it[0] = 0F
 		it[4] = 0F
-		it[8] = 400F
-		it[12] = 400F
-		it[16] = 8F
-		it[20] = 8F
-		it[24] = byteArrayOf(
-			0b01001010,
-			0b01001010,
-			0b01001010,
-			0b01001010,
-			0b01001010,
-			0b01001010,
-			0b01001010,
-			0b01001010
+		it[8] = byteArrayOf(
+			0b00011110,
+			0b00100001,
+			0b00100001,
+			0b00011110,
+			0b00100001,
+			0b00100001,
+			0b00011110,
+			0b00000000
 		)
 	}
 
