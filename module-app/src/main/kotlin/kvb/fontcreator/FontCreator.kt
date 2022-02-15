@@ -258,7 +258,7 @@ object FontCreator {
 
 
 	val fontPipeline = context.device.buildGraphicsPipeline {
-		vertexBinding { vec4(); u32() }
+		vertexBinding { vec4(); vec4() }
 		renderPass(context.renderPass)
 		descriptorSets(0 to transformDescriptor)
 		shaders(shaderDirectory["font"])
@@ -281,12 +281,17 @@ object FontCreator {
 		it[4] = 0F
 		it[8] = 400F
 		it[12] = 400F
-
-		it[16] = byteArrayOf(
-			0b00010101,
-			0b00010101,
-			0b00010101,
-			0b00010101
+		it[16] = 8F
+		it[20] = 8F
+		it[24] = byteArrayOf(
+			0b01001010,
+			0b01001010,
+			0b01001010,
+			0b01001010,
+			0b01001010,
+			0b01001010,
+			0b01001010,
+			0b01001010
 		)
 	}
 
