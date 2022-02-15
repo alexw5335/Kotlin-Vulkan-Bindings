@@ -10,14 +10,11 @@ import kvb.vkwrapper.handle.Swapchain
 import kvb.vkwrapper.shader.ShaderCreation
 import kvb.vkwrapper.shader.ShaderDirectory
 import kvb.vulkan.*
+import kvb.window.Window
 import kvb.window.WindowManager
 import kvb.window.winapi.WinApiWindow
 
-object Context {
-
-
-	val window = WindowManager.create("My window", 0, 0, 700, 700)
-
+class Context(window: Window) {
 
 
 	val instance = Vulkan.createInstance(
@@ -123,141 +120,6 @@ object Context {
 		DescriptorType.UNIFORM_BUFFER to 20,
 		DescriptorType.COMBINED_IMAGE_SAMPLER to 20
 	))
-
-
-
-	init {
-		ShaderCreation.compileAll("res/shader/font_creator", "res/shader/font_creator/out")
-	}
-
-
-
-	val shaderDirectory = ShaderDirectory("res/shader/font_creator/out", device)
-
-
-
-	val memManager = MemManager(device, queue)
-
-
-
-	/*
-	Descriptors
-	 */
-
-
-
-	val transformUbo = memManager.uniformBuffer(4 * 5)
-
-	val colourUbo = memManager.uniformBuffer(4 * 4)
-
-
-
-	val transformDescriptor = descriptorPool.createSet(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.VERTEX).also {
-		it.bufferWrite(0, transformUbo)
-	}
-
-	val textureDescriptor = descriptorPool.createSet(DescriptorType.COMBINED_IMAGE_SAMPLER, ShaderStageFlags.FRAGMENT)
-
-	val colourDescriptor = descriptorPool.createSet(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.FRAGMENT).also {
-		it.bufferWrite(0, colourUbo)
-	}
-
-	val testDescriptor = descriptorPool.createSet(DescriptorType.UNIFORM_BUFFER, ShaderStageFlags.FRAGMENT)
-
-
-
-	fun setTexture(sampler: Sampler, imageView: ImageView) {
-		textureDescriptor.imageWrite(0, sampler, imageView, ImageLayout.SHADER_READ_ONLY_OPTIMAL)
-	}
-
-
-
-	/*
-	Pipelines
-	 */
-
-
-
-	val binaryTexturePipeline = device.buildGraphicsPipeline {
-		vertexBinding { vec2(); vec2() }
-		renderPass(this@Context.renderPass)
-		descriptorSets(0 to transformDescriptor, 1 to textureDescriptor)
-		shaders(shaderDirectory["binary_texture"])
-		triangleStrip()
-		noBlendAttachment()
-		dynamicViewportAndScissor()
-	}
-
-
-
-	val linePipeline = device.buildGraphicsPipeline {
-		vertexBinding { vec2() }
-		renderPass(this@Context.renderPass)
-		descriptorSets(0 to transformDescriptor, 1 to colourDescriptor)
-		shaders(shaderDirectory["line"])
-		lineList()
-		noBlendAttachment()
-		dynamicViewportAndScissor()
-	}
-
-
-
-	const val textureWidth = 64
-
-	const val textureHeight = 64
-
-	const val meshWidth = 512F
-
-	const val meshHeight = 512F
-
-
-
-	val vertexBuffer = memManager.vertexBuffer(floatArrayOf(
-		0F, 0F, 0F, 0F,
-		meshWidth, 0F, 1F, 0F,
-		0F, meshHeight, 0F, 1F,
-		meshWidth, meshHeight, 1F, 1F
-	))
-
-
-
-	val linesVertexBuffer = memManager.vertexBuffer((textureWidth - 1 + textureHeight - 1) * 16) {
-		var index = 0
-		val scale = meshWidth / textureWidth
-
-		for(i in 1 until textureWidth) {
-			it[index] = i.toFloat() * scale
-			it[index + 4] = 0F
-			it[index + 8] = i.toFloat() * scale
-			it[index + 12] = textureHeight.toFloat() * scale
-			index += 16
-		}
-
-		for(i in 1 until textureHeight) {
-			it[index] = 0F
-			it[index + 4] = i.toFloat() * scale
-			it[index + 8] = textureWidth.toFloat() * scale
-			it[index + 12] = i.toFloat() * scale
-			index += 16
-		}
-	}
-
-
-
-	val sampler = device.createSampler(Filter.NEAREST, Filter.NEAREST)
-
-	val image = memManager.image(textureWidth, textureHeight, ImageUsageFlags { TRANSFER_DST + SAMPLED }, Format.R8_SRGB)
-
-	val imageView = device.createImageView(image)
-
-	val stagingBuffer = memManager.stagingBuffer(500_000)
-
-
-
-	init {
-		memManager.transitionImageForShaderRead(image, stagingBuffer)
-		setTexture(sampler, imageView)
-	}
 
 
 }

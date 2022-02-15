@@ -11,10 +11,10 @@ import kvb.vkwrapper.persistent.MemoryTypeP
 import kvb.vulkan.*
 
 class MemManager(
-	val device           : Device,
-	val queue            : Queue,
-	val bufferMemorySize : Long = 10_000_000,
-	val imageMemorySize  : Long = 32_000_000
+	val device       : Device,
+	val queue        : Queue,
+	bufferMemorySize : Long = 10_000_000,
+	imageMemorySize  : Long = 32_000_000
 ) {
 
 
@@ -109,6 +109,12 @@ class MemManager(
 
 
 
+	/*
+	Creation
+	 */
+
+
+
 	fun buffer(size: Int, usage: BufferUsageFlags) =
 		device.createBuffer(size.toLong(), usage).also(::allocateBuffer)
 
@@ -117,51 +123,28 @@ class MemManager(
 
 
 
-	fun stagingBuffer(size: Int) = buffer(size, BufferUsageFlags.TRANSFER_SRC)
-
-	fun vertexBuffer(size: Int) = buffer(size, BufferUsageFlags.VERTEX_BUFFER)
-
-	fun uniformBuffer(size: Int) = buffer(size, BufferUsageFlags.UNIFORM_BUFFER)
+	/*
+	Convenience creation
+	 */
 
 
 
-	fun stagingBuffer(size: Int, block: (DirectByteBuffer) -> Unit) = stagingBuffer(size).also {
-		write(it, block = block)
+	fun buffer(size: Int, usage: BufferUsageFlags, block: (DirectByteBuffer) -> Unit): Buffer {
+		val buffer = buffer(size, usage)
+		write(buffer, block = block)
+		return buffer
 	}
 
-	fun vertexBuffer(size: Int, block: (DirectByteBuffer) -> Unit) = vertexBuffer(size).also {
-		write(it, block = block)
+	fun buffer(usage: BufferUsageFlags, floats: FloatArray): Buffer {
+		val buffer = buffer(floats.size * 4, usage)
+		write(buffer) { it.setFloats(0, floats) }
+		return buffer
 	}
 
-	fun uniformBuffer(size: Int, block: (DirectByteBuffer) -> Unit) = uniformBuffer(size).also {
-		write(it, block = block)
-	}
-
-
-
-	fun vertexBuffer(floats: FloatArray) = vertexBuffer(floats.size * 4) {
-		it.setFloats(0, floats)
-	}
-
-	fun stagingBuffer(floats: FloatArray) = stagingBuffer(floats.size * 4) {
-		it.setFloats(0, floats)
-	}
-
-	fun uniformBuffer(floats: FloatArray) = uniformBuffer(floats.size * 4) {
-		it.setFloats(0, floats)
-	}
-
-
-
-	fun vertexBuffer(bytes: ByteArray) = vertexBuffer(bytes.size) {
-		it[0] = bytes
-	}
-
-	fun stagingBuffer(bytes: ByteArray) = stagingBuffer(bytes.size) {
-		it[0] = bytes
-	}
-	fun uniformBuffer(bytes: ByteArray) = uniformBuffer(bytes.size) {
-		it[0] = bytes
+	fun buffer(usage: BufferUsageFlags, bytes: ByteArray): Buffer {
+		val buffer = buffer(bytes.size, usage)
+		write(buffer) { it[0] = bytes }
+		return buffer
 	}
 
 
