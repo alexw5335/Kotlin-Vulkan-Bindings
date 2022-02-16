@@ -46,13 +46,21 @@ object FontCreator {
 	 */
 
 
-	val textureWidth = 64
+	val textureWidth = 128
 
-	val textureHeight = 64
+	val textureHeight = 128
 
 	val meshWidth = 512F
 
 	val meshHeight = 512F
+
+	val sectionWidth = 7
+
+	val sectionHeight = 9
+
+	val numSectionsX = textureWidth / sectionWidth
+
+	val numSectionsY = textureHeight / sectionHeight
 
 
 
@@ -70,7 +78,7 @@ object FontCreator {
 
 	var maxZoom = meshWidth / textureHeight
 
-	var minZoom = 0.3F
+	var minZoom = 0.1F
 
 
 
@@ -235,7 +243,8 @@ object FontCreator {
 	val binaryTexturePipeline = context.device.buildGraphicsPipeline {
 		vertexBinding { vec2(); vec2() }
 		renderPass(context.renderPass)
-		descriptorSets(0 to transformDescriptor, 1 to textureDescriptor)
+		descriptorSet(0, transformDescriptor)
+		descriptorSet(1, textureDescriptor)
 		shaders(shaderDirectory["binary_texture"])
 		triangleStrip()
 		noBlendAttachment()
@@ -247,7 +256,8 @@ object FontCreator {
 	val linePipeline = context.device.buildGraphicsPipeline {
 		vertexBinding { vec2() }
 		renderPass(context.renderPass)
-		descriptorSets(0 to transformDescriptor, 1 to lineColourDescriptor)
+		descriptorSet(0, transformDescriptor)
+		descriptorSet(1, lineColourDescriptor)
 		shaders(shaderDirectory["line"])
 		lineList()
 		noBlendAttachment()
@@ -260,7 +270,7 @@ object FontCreator {
 	val fontPipeline = context.device.buildGraphicsPipeline {
 		vertexBinding { vec2(); uvec2()  }
 		renderPass(context.renderPass)
-		descriptorSets(0 to transformDescriptor)
+		descriptorSet(0, transformDescriptor)
 		shaders(shaderDirectory["font"])
 		pointList()
 		simpleBlendAttachment()
@@ -276,19 +286,21 @@ object FontCreator {
 
 
 
-	val fontVertexBuffer = memManager.buffer(16, BufferUsageFlags.VERTEX_BUFFER) {
-		it[0] = 0F
-		it[4] = 0F
-		it[8] = byteArrayOf(
-			0b00011110,
-			0b00100001,
-			0b00100001,
-			0b00011110,
-			0b00100001,
-			0b00100001,
-			0b00011110,
-			0b00000000
-		)
+	fun createFontVertexBuffer(scale: Float, xOffset: Float, yOffset: Float, text: String) = memManager.buffer(text.length * 16, BufferUsageFlags.VERTEX_BUFFER) {
+		var index = 0
+		var x = xOffset
+		val y = yOffset
+
+		for(c in text) {
+			val char = characters.firstOrNull { it.char == c } ?: BinaryCharacter(' ', 0L, 0, 0)
+
+			it[index] = x + char.xOffset * scale
+			it[index + 4] = y + char.yOffset * scale
+			it[index + 8] = char.texture
+
+			x += 6 * scale
+			index += 16
+		}
 	}
 
 
@@ -325,14 +337,124 @@ object FontCreator {
 
 
 
+	val sectionsVertexBuffer = memManager.buffer((numSectionsX - 1 + numSectionsY - 1) * 16, BufferUsageFlags.VERTEX_BUFFER) {
+		var index = 0
+		val scale = meshWidth / textureWidth
+
+		for(i in 1 until numSectionsX) {
+			it[index] = i.toFloat() * scale * sectionWidth
+			it[index + 4] = 0F
+			it[index + 8] = i.toFloat() * scale * sectionWidth
+			it[index + 12] = textureHeight.toFloat() * scale
+			index += 16
+		}
+
+		for(i in 1 until numSectionsY) {
+			it[index] = 0F
+			it[index + 4] = i.toFloat() * scale * sectionHeight
+			it[index + 8] = textureWidth.toFloat() * scale
+			it[index + 12] = i.toFloat() * scale * sectionHeight
+			index += 16
+		}
+	}
+
+
+
 	/*
 	Update
 	 */
 
-	
+
+
+	private val order = listOf(
+		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+		'[', ']', '{', '}', '(', ')', '<', '>', '/', '\\', '|', '?', ':', ';', '"', '\'', '.', ',', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '+', '=', '`', '~'
+	)
+
+
+
+	private val xOffsets = mapOf(
+		'.' to 2,
+		',' to 2,
+		'`' to 2,
+		':' to 2,
+		';' to 1,
+		',' to 1,
+		'[' to 1,
+		']' to 1,
+		'(' to 1,
+		')' to 1,
+		'|' to 2,
+		'!' to 2,
+		'`' to 2,
+		'.' to 2,
+		',' to 1,
+		'"' to 1,
+		'\'' to 2,
+		'{' to 1,
+		'}' to 1
+	)
+
+
+
+	private val yOffsets = mapOf(
+		'g' to 2,
+		'p' to 2,
+		'q' to 2,
+		'y' to 2,
+		'.' to 6,
+		',' to 6,
+		'_' to 6,
+		'-' to 3,
+		'+' to 1,
+		'*' to 1,
+		'=' to 3,
+		'~' to 3,
+		':' to 2,
+		';' to 2
+	)
+
+
+
+	//val fontVertexBuffer = createFontVertexBuffer("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz[]{}()<>?/\\|!@#$%^&*-=_+;:'\",.")
+
+	val fontVertexBuffer = createFontVertexBuffer(1F, 0F, -100F,"Testing")
+
+
 
 	fun save() {
 		Files.write(Paths.get("res/binary_font_data.bff"), stagingBuffer.data().asArray)
+		val data = stagingBuffer.data().asArray
+
+		var v = 0L
+		for((i, b) in stagingBuffer.data().asArray.withIndex())
+			if(b != 0.toByte()) v = v or (1L shl i)
+		println(v)
+
+		var index = 0
+
+		for(yIndex in 0 until numSectionsY) {
+			for(xIndex in 0 until numSectionsX) {
+				var value = 0L
+
+				for(y in 0 until sectionHeight) {
+					for(x in 0 until sectionWidth) {
+						if(data[(yIndex * sectionHeight + y) * textureWidth + xIndex * sectionWidth + x] == WHITE) {
+							value = value or (1L shl (y * sectionWidth + x))
+						}
+					}
+				}
+
+				if(index == order.size) return
+				val char = order[index++]
+				val charString = char.let { if(it == '\'' || it == '\\') "\\$it" else "$it" }
+				val yOffset = yOffsets[char] ?: 0
+				val xOffset = xOffsets[char] ?: 0
+				println("BinaryCharacter('$charString', $value, $yOffset, $xOffset),")
+			}
+		}
 	}
 
 
@@ -350,19 +472,23 @@ object FontCreator {
 
 	private fun render() {
 		context.surfaceSystem.onRecord = {
-			//it.bindPipelineAndDescriptorSets(binaryTexturePipeline)
-			//it.bindVertexBuffer(vertexBuffer)
-			//it.draw(4)
+			it.bindPipelineAndDescriptorSets(binaryTexturePipeline)
+			it.bindVertexBuffer(vertexBuffer)
+			it.draw(4)
 
-			//if(displayLines) {
-			//	it.bindPipelineAndDescriptorSets(linePipeline)
-			//	it.bindVertexBuffer(linesVertexBuffer)
-			//	it.draw((textureWidth - 1 + textureHeight - 1) * 2)
-			//}
+			if(displayLines) {
+				it.bindPipelineAndDescriptorSets(linePipeline)
+
+				//it.bindVertexBuffer(linesVertexBuffer)
+				//it.draw((textureWidth - 1 + textureHeight - 1) * 2)
+
+				it.bindVertexBuffer(sectionsVertexBuffer)
+				it.draw((numSectionsX - 1 + numSectionsY - 1) * 2)
+			}
 
 			it.bindPipelineAndDescriptorSets(fontPipeline)
 			it.bindVertexBuffer(fontVertexBuffer)
-			it.draw(1)
+			it.draw(fontVertexBuffer.size.toInt() / 16)
 		}
 
 		context.surfaceSystem.record()

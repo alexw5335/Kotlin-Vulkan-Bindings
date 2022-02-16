@@ -1,8 +1,14 @@
 package kvb.vkwrapper.handle
 
+import kvb.vkwrapper.persistent.PushConstant
 import kvb.vulkan.PipelineLayoutH
 
-class PipelineLayout(address: Long, val device: Device) : PipelineLayoutH(address) {
+class PipelineLayout(
+	address           : Long,
+	val device        : Device,
+	val setLayouts    : List<DescriptorSetLayout>,
+	val pushConstants : List<PushConstant>
+) : PipelineLayoutH(address) {
 
 
 	/**

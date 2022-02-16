@@ -9,6 +9,7 @@ import kvb.vkwrapper.builder.RenderPassBuilder
 import kvb.vkwrapper.exception.VkCommandException
 import kvb.vkwrapper.exception.VkException
 import kvb.vkwrapper.persistent.Descriptor
+import kvb.vkwrapper.persistent.PushConstant
 import kvb.vkwrapper.persistent.QueueFamily
 
 @Suppress("unused")
@@ -342,7 +343,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	fun createGraphicsPipeline(
 		info           : GraphicsPipelineCreateInfo,
 		layout         : PipelineLayout,
-		descriptorSets : Map<Int, DescriptorSet>? = null,
+		descriptorSets : List<Pair<Int, DescriptorSet>>,
 		stack          : MemStack = default
 	) = stack.get {
 		val pointer = stack.mallocPointer(1)
@@ -514,43 +515,29 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 
 
 	/**
-	 * Implementation of vkCreatePipelineLayout.
+	 * Convenience implementation of vkCreatePipelineLayout.
 	 */
-	fun createPipelineLayout(info: PipelineLayoutCreateInfo, stack: MemStack = default) = stack.get {
+	fun createPipelineLayout(
+		setLayouts    : List<DescriptorSetLayout>,
+		pushConstants : List<PushConstant>,
+		stack         : MemStack = default
+	) = stack.get {
+		val info = PipelineLayoutCreateInfo {
+			it.setLayouts = wrapPointers(setLayouts)
+			it.pushConstantRanges = PushConstantRange(pushConstants.size) { buffer ->
+				for((i, p) in pushConstants.withIndex()) {
+					buffer[i].let { range ->
+						range.stageFlags = p.stages
+						range.offset     = p.offset
+						range.size       = p.size
+					}
+				}
+			}
+		}
+
 		val pointer = mallocPointer()
 		commands.createPipelineLayout(info, null, pointer).check()
-		PipelineLayout(pointer.value, self)
-	}
-
-
-
-	/**
-	 * Convenience implementation of vkCreatePipelineLayout. Creates an empty layout.
-	 */
-	fun createPipelineLayout(stack: MemStack = default) = stack.get {
-		createPipelineLayout(PipelineLayoutCreateInfo { }, stack)
-	}
-
-
-
-	/**
-	 * Convenience implementation of vkCreatePipelineLayout. No push constants.
-	 */
-	fun createPipelineLayout(setLayouts: List<DescriptorSetLayout>, stack: MemStack = default) = stack.get {
-		createPipelineLayout(PipelineLayoutCreateInfo {
-			it.setLayouts = wrapPointers(setLayouts)
-		}, stack)
-	}
-
-
-
-	/**
-	 * Convenience implementation of vkCreatePipelineLayout. One descriptor set, no push constant ranges.
-	 */
-	fun createPipelineLayout(setLayout: DescriptorSetLayout, stack: MemStack = default) = stack.get {
-		createPipelineLayout(PipelineLayoutCreateInfo {
-			it.setLayouts = wrapPointer(setLayout)
-		}, stack)
+		PipelineLayout(pointer.value, self, setLayouts, pushConstants)
 	}
 
 

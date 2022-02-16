@@ -4,6 +4,7 @@ import kvb.core.memory.Addressable.Companion.addressOrNULL
 import kvb.core.memory.MemStack
 import kvb.core.memory.MemStacks.default
 import kvb.core.memory.direct.DirectIntBuffer
+import kvb.core.memory.direct.DirectLong
 import kvb.core.memory.direct.DirectLongBuffer
 import kvb.vkwrapper.exception.VkException
 import kvb.vulkan.*
@@ -188,12 +189,14 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 
 
 
+	/**
+	 * Binds a pipeline and any associated descriptor sets.
+	 */
 	fun bindPipelineAndDescriptorSets(pipeline: Pipeline) {
 		bindPipeline(pipeline)
 
-		if(pipeline.descriptorSets != null)
-			for((index, set) in pipeline.descriptorSets)
-				bindDescriptorSet(pipeline, index, set)
+		for((index, set) in pipeline.descriptorSets)
+			bindDescriptorSet(pipeline, index, set)
 	}
 
 
@@ -453,6 +456,31 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 		pImageMemoryBarriers     = barrier.asBuffer
 	)
 
+
+
+	/*
+	Push constants
+	 */
+
+
+
+	/**
+	 * Implementation of vkCmdPushConstants.
+	 */
+	fun pushConstants(
+		layout  : PipelineLayout,
+		stages  : ShaderStageFlags,
+		offset  : Int,
+		size    : Int,
+		pValues : DirectLong
+	) = commands.cmdPushConstants(
+		self,
+		layout,
+		stages,
+		offset,
+		size,
+		pValues
+	)
 
 
 	/*

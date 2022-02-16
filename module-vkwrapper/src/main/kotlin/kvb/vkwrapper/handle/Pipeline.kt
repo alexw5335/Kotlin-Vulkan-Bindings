@@ -8,7 +8,7 @@ class Pipeline(
 	val device         : Device,
 	val bindPoint      : PipelineBindPoint,
 	val layout         : PipelineLayout,
-	val descriptorSets : Map<Int, DescriptorSet>? = null
+	val descriptorSets : List<Pair<Int, DescriptorSet>>
 ) : PipelineH(address) {
 
 

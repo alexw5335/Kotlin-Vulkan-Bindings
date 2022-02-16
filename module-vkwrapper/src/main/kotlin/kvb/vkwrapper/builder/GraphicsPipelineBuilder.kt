@@ -3,6 +3,7 @@ package kvb.vkwrapper.builder
 import kvb.core.memory.DirectList
 import kvb.core.memory.MemStack
 import kvb.vkwrapper.handle.*
+import kvb.vkwrapper.persistent.PushConstant
 import kvb.vkwrapper.shader.Shader
 import kvb.vulkan.*
 
@@ -47,17 +48,25 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 
 
-	private var descriptorSets: Map<Int, DescriptorSet>? = null
+	private val setLayouts = ArrayList<DescriptorSetLayout>()
 
-	fun emptyLayout() = layout(device.createPipelineLayout())
+	private val descriptorSets = ArrayList<Pair<Int, DescriptorSet>>()
 
-	fun descriptors(setLayout: DescriptorSetLayout) = layout(device.createPipelineLayout(setLayout))
+	private val pushConstants = ArrayList<PushConstant>()
 
-	fun descriptors(setLayouts: List<DescriptorSetLayout>) = layout(device.createPipelineLayout(setLayouts))
 
-	fun descriptorSets(vararg sets: Pair<Int, DescriptorSet>) {
-		descriptors(sets.map { it.second.layout })
-		this.descriptorSets = mapOf(*sets)
+
+	fun descriptorSetLayout(setLayout: DescriptorSetLayout) {
+		setLayouts.add(setLayout)
+	}
+
+	fun descriptorSet(binding: Int, set: DescriptorSet) {
+		descriptorSets.add(binding to set)
+		setLayouts.add(set.layout)
+	}
+
+	fun pushConstant(stages: ShaderStageFlags, offset: Int, size: Int) {
+		pushConstants.add(PushConstant(stages, offset, size))
 	}
 
 
@@ -513,6 +522,8 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 
 	fun build() = stack.get {
+		val layout = layout ?: device.createPipelineLayout(setLayouts, pushConstants)
+
 		val info = GraphicsPipelineCreateInfo {
 			vertexInputState.vertexBindingDescriptionCount = vertexBindings.size
 			vertexInputState.pVertexBindingDescriptions = vertexBindings.buffer.address
@@ -533,12 +544,12 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 			it.depthStencilState 	= depthStencilState
 			it.colorBlendState 		= colourBlendState
 			it.dynamicState 		= dynamicState
-			it.layout 				= layout ?: error("Graphics pipeline must contain a pipeline layout.")
+			it.layout 				= layout
 			it.renderPass 			= renderPass ?: error("Graphics pipeline must contain a render pass.")
 			it.subpass 				= subpass
 		}
 
-		device.createGraphicsPipeline(info, layout!!, descriptorSets)
+		device.createGraphicsPipeline(info, layout, descriptorSets)
 	}
 
 
