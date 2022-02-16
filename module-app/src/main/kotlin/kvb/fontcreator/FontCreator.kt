@@ -1,6 +1,8 @@
 package kvb.fontcreator
 
 import kvb.app.MemManager
+import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectLong
 import kvb.vkwrapper.shader.ShaderCreation
 import kvb.vkwrapper.shader.ShaderDirectory
 import kvb.vulkan.*
@@ -206,8 +208,6 @@ object FontCreator {
 
 	val transformUbo = memManager.buffer(4 * 5, BufferUsageFlags.UNIFORM_BUFFER)
 
-	val colourUbo = memManager.buffer(4 * 4, BufferUsageFlags.UNIFORM_BUFFER)
-
 	val sampler = context.device.createSampler(Filter.NEAREST, Filter.NEAREST)
 
 	val image = memManager.image(textureWidth, textureHeight, ImageUsageFlags { TRANSFER_DST + SAMPLED }, Format.R8_SRGB)
@@ -232,12 +232,6 @@ object FontCreator {
 		ImageLayout.SHADER_READ_ONLY_OPTIMAL
 	)
 
-	val lineColourDescriptor = context.descriptorPool.createSet(
-		DescriptorType.UNIFORM_BUFFER,
-		ShaderStageFlags.FRAGMENT,
-		colourUbo
-	)
-
 
 
 	val binaryTexturePipeline = context.device.buildGraphicsPipeline {
@@ -257,7 +251,7 @@ object FontCreator {
 		vertexBinding { vec2() }
 		renderPass(context.renderPass)
 		descriptorSet(0, transformDescriptor)
-		descriptorSet(1, lineColourDescriptor)
+		pushConstant(ShaderStageFlags.FRAGMENT, 0, 16)
 		shaders(shaderDirectory["line"])
 		lineList()
 		noBlendAttachment()
@@ -417,10 +411,9 @@ object FontCreator {
 	)
 
 
-
 	//val fontVertexBuffer = createFontVertexBuffer("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz[]{}()<>?/\\|!@#$%^&*-=_+;:'\",.")
 
-	val fontVertexBuffer = createFontVertexBuffer(1F, 0F, -100F,"Testing")
+	val fontVertexBuffer = createFontVertexBuffer(1F, 0F, -100F, "Testing")
 
 
 
@@ -469,6 +462,9 @@ object FontCreator {
 
 
 
+	private val lineColour = Unsafe.mallocFloat(4)
+
+
 
 	private fun render() {
 		context.surfaceSystem.onRecord = {
@@ -479,9 +475,13 @@ object FontCreator {
 			if(displayLines) {
 				it.bindPipelineAndDescriptorSets(linePipeline)
 
-				//it.bindVertexBuffer(linesVertexBuffer)
-				//it.draw((textureWidth - 1 + textureHeight - 1) * 2)
+				lineColour.let { it[0] = 0.3F; it[1] = 0.3F; it[2] = 0.3F }
+				it.pushConstants(linePipeline.layout, ShaderStageFlags.FRAGMENT, 0, 16, DirectLong(lineColour.address))
+				it.bindVertexBuffer(linesVertexBuffer)
+				it.draw((textureWidth - 1 + textureHeight - 1) * 2)
 
+				lineColour.let { it[0] = 1F; it[1] = 0F; it[2] = 0F }
+				it.pushConstants(linePipeline.layout, ShaderStageFlags.FRAGMENT, 0, 16, DirectLong(lineColour.address))
 				it.bindVertexBuffer(sectionsVertexBuffer)
 				it.draw((numSectionsX - 1 + numSectionsY - 1) * 2)
 			}
@@ -526,14 +526,6 @@ object FontCreator {
 				it[8] = offsetX
 				it[12] = offsetY
 				it[16] = zoom
-			}
-
-			memManager.write(colourUbo) {
-				val alpha = if(displayLines) 0.4F else 0.0F
-				it[0] = alpha
-				it[4] = alpha
-				it[8] = alpha
-				it[12] = alpha
 			}
 
 			render()

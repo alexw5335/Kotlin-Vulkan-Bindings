@@ -7,7 +7,7 @@ layout(location = 0) out vec4 outColour;
 
 
 
-layout(set = 1, binding = 0) uniform colourUbo {
+layout(push_constant) uniform pushConstant {
 	vec4 lineColour;
 };
 
