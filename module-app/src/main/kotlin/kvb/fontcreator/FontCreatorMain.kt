@@ -115,4 +115,5 @@ var globalCharacters = listOf(
 	BinaryCharacter('`', 257, 0, 0, 2, 2),
 	BinaryCharacter('~', 133762, 0, 2, 5, 3),
 	BinaryCharacter(0.toChar(), 9188194313781141759, 0, -1, 7, 9),
+	BinaryCharacter(' ', 0L, 0, 0, 3, 0)
 )
