@@ -286,13 +286,13 @@ object FontCreator {
 		val y = yOffset
 
 		for(c in text) {
-			val char = characters.firstOrNull { it.char == c } ?: BinaryCharacter(' ', 0L, 0, 0)
+			val char = globalCharacters.firstOrNull { it.char == c } ?: BinaryCharacter(' ', 0L, 0, 0, 3, 0)
 
 			it[index] = x + char.xOffset * scale
 			it[index + 4] = y + char.yOffset * scale
 			it[index + 8] = char.texture
 
-			x += 6 * scale
+			x += (char.width + 1) * scale
 			index += 16
 		}
 	}
@@ -360,60 +360,13 @@ object FontCreator {
 
 
 
-	private val order = listOf(
-		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-		'[', ']', '{', '}', '(', ')', '<', '>', '/', '\\', '|', '?', ':', ';', '"', '\'', '.', ',', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '+', '=', '`', '~'
-	)
+	val string = "Testing ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 abcdefghijklmnopqrstuvwxyz " +
+		"[]{}();:' This is a \'test\'; \"The brown fox jumps over the lazy dog\":" +
+		" 123456789 - 10 + 14 * 15 = &myPointer - 1_000_000 + 10, although this isn't always the case." +
+		" (Test) <Test> {Test} [Test], myArray[7], @Test ~15? // This is a comment. C:\\\\Users |Test| ;test;"
 
 
-
-	private val xOffsets = mapOf(
-		'.' to 2,
-		',' to 2,
-		'`' to 2,
-		':' to 2,
-		';' to 1,
-		',' to 1,
-		'[' to 1,
-		']' to 1,
-		'(' to 1,
-		')' to 1,
-		'|' to 2,
-		'!' to 2,
-		'`' to 2,
-		'.' to 2,
-		',' to 1,
-		'"' to 1,
-		'\'' to 2,
-		'{' to 1,
-		'}' to 1
-	)
-
-
-
-	private val yOffsets = mapOf(
-		'g' to 2,
-		'p' to 2,
-		'q' to 2,
-		'y' to 2,
-		'.' to 6,
-		',' to 6,
-		'_' to 6,
-		'-' to 3,
-		'+' to 1,
-		'*' to 1,
-		'=' to 3,
-		'~' to 3,
-		':' to 2,
-		';' to 2
-	)
-
-
-	//val fontVertexBuffer = createFontVertexBuffer("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz[]{}()<>?/\\|!@#$%^&*-=_+;:'\",.")
-
-	val fontVertexBuffer = createFontVertexBuffer(1F, 0F, -100F, "Testing")
+	var fontVertexBuffer = createFontVertexBuffer(1F, 0F, -100F, string)
 
 
 
@@ -421,12 +374,9 @@ object FontCreator {
 		Files.write(Paths.get("res/binary_font_data.bff"), stagingBuffer.data().asArray)
 		val data = stagingBuffer.data().asArray
 
-		var v = 0L
-		for((i, b) in stagingBuffer.data().asArray.withIndex())
-			if(b != 0.toByte()) v = v or (1L shl i)
-		println(v)
-
 		var index = 0
+
+		val values = LongArray(numSectionsX * numSectionsY)
 
 		for(yIndex in 0 until numSectionsY) {
 			for(xIndex in 0 until numSectionsX) {
@@ -439,15 +389,130 @@ object FontCreator {
 						}
 					}
 				}
-
-				if(index == order.size) return
-				val char = order[index++]
-				val charString = char.let { if(it == '\'' || it == '\\') "\\$it" else "$it" }
-				val yOffset = yOffsets[char] ?: 0
-				val xOffset = xOffsets[char] ?: 0
-				println("BinaryCharacter('$charString', $value, $yOffset, $xOffset),")
+				
+				values[index++] = value
 			}
 		}
+		
+		var i = 0
+		fun texture() = values[i++]
+
+		val characters = listOf(
+			BinaryCharacter('A', texture(), 0, 0, 3, 7),
+			BinaryCharacter('B', texture(), 0, 0, 3, 7),
+			BinaryCharacter('C', texture(), 0, 0, 3, 7),
+			BinaryCharacter('D', texture(), 0, 0, 3, 7),
+			BinaryCharacter('E', texture(), 0, 0, 3, 7),
+			BinaryCharacter('F', texture(), 0, 0, 3, 7),
+			BinaryCharacter('G', texture(), 0, 0, 3, 7),
+			BinaryCharacter('H', texture(), 0, 0, 3, 7),
+			BinaryCharacter('I', texture(), 0, 0, 3, 7),
+			BinaryCharacter('J', texture(), 0, 0, 3, 7),
+			BinaryCharacter('K', texture(), 0, 0, 3, 7),
+			BinaryCharacter('L', texture(), 0, 0, 3, 7),
+			BinaryCharacter('M', texture(), 0, 0, 5, 7),
+			BinaryCharacter('N', texture(), 0, 0, 3, 7),
+			BinaryCharacter('O', texture(), 0, 0, 3, 7),
+			BinaryCharacter('P', texture(), 0, 0, 3, 7),
+			BinaryCharacter('Q', texture(), 0, 0, 3, 9),
+			BinaryCharacter('R', texture(), 0, 0, 3, 7),
+			BinaryCharacter('S', texture(), 0, 0, 3, 7),
+			BinaryCharacter('T', texture(), 0, 0, 3, 7),
+			BinaryCharacter('U', texture(), 0, 0, 3, 7),
+			BinaryCharacter('V', texture(), 0, 0, 3, 7),
+			BinaryCharacter('W', texture(), 0, 0, 5, 7),
+			BinaryCharacter('X', texture(), 0, 0, 3, 7),
+			BinaryCharacter('Y', texture(), 0, 0, 3, 7),
+			BinaryCharacter('Z', texture(), 0, 0, 3, 7),
+
+			BinaryCharacter('0', texture(), 0, 0, 3, 7),
+			BinaryCharacter('1', texture(), 0, 0, 3, 7),
+			BinaryCharacter('2', texture(), 0, 0, 3, 7),
+			BinaryCharacter('3', texture(), 0, 0, 3, 7),
+			BinaryCharacter('4', texture(), 0, 0, 3, 7),
+			BinaryCharacter('5', texture(), 0, 0, 3, 7),
+			BinaryCharacter('6', texture(), 0, 0, 3, 7),
+			BinaryCharacter('7', texture(), 0, 0, 3, 7),
+			BinaryCharacter('8', texture(), 0, 0, 3, 7),
+			BinaryCharacter('9', texture(), 0, 0, 3, 7),
+
+			BinaryCharacter('a', texture(), 0, 2, 3, 5),
+			BinaryCharacter('b', texture(), 0, 0, 3, 7),
+			BinaryCharacter('c', texture(), 0, 2, 3, 5),
+			BinaryCharacter('d', texture(), 0, 0, 3, 7),
+			BinaryCharacter('e', texture(), 0, 2, 3, 5),
+			BinaryCharacter('f', texture(), 0, 0, 3, 7),
+			BinaryCharacter('g', texture(), 0, 2, 3, 7),
+			BinaryCharacter('h', texture(), 0, 0, 3, 7),
+			BinaryCharacter('i', texture(), 0, 0, 1, 7),
+			BinaryCharacter('j', texture(), 0, 0, 3, 9),
+			BinaryCharacter('k', texture(), 0, 0, 3, 7),
+			BinaryCharacter('l', texture(), 0, 0, 1, 7),
+			BinaryCharacter('m', texture(), 0, 2, 5, 5),
+			BinaryCharacter('n', texture(), 0, 2, 3, 5),
+			BinaryCharacter('o', texture(), 0, 2, 3, 5),
+			BinaryCharacter('p', texture(), 0, 2, 3, 7),
+			BinaryCharacter('q', texture(), 0, 2, 3, 7),
+			BinaryCharacter('r', texture(), 0, 2, 3, 5),
+			BinaryCharacter('s', texture(), 0, 2, 3, 5),
+			BinaryCharacter('t', texture(), 0, 0, 3, 7),
+			BinaryCharacter('u', texture(), 0, 2, 3, 5),
+			BinaryCharacter('v', texture(), 0, 2, 3, 5),
+			BinaryCharacter('w', texture(), 0, 2, 5, 5),
+			BinaryCharacter('x', texture(), 0, 2, 3, 5),
+			BinaryCharacter('y', texture(), 0, 2, 3, 7),
+			BinaryCharacter('z', texture(), 0, 2, 3, 5),
+
+			BinaryCharacter('[', texture(), 0, 0, 3, 9),
+			BinaryCharacter(']', texture(), 0, 0, 3, 9),
+			BinaryCharacter('{', texture(), 0, 0, 3, 9),
+			BinaryCharacter('}', texture(), 0, 0, 3, 9),
+			BinaryCharacter('(', texture(), 0, 0, 3, 9),
+			BinaryCharacter(')', texture(), 0, 0, 3, 9),
+			BinaryCharacter('<', texture(), 0, 2, 3, 5),
+			BinaryCharacter('>', texture(), 0, 2, 3, 5),
+			BinaryCharacter('/', texture(), 0, 0, 3, 9),
+			BinaryCharacter('\\', texture(), 0, 0, 3, 9),
+			BinaryCharacter('|', texture(), 0, 0, 1, 9),
+			BinaryCharacter('?', texture(), 0, 0, 3, 7),
+			BinaryCharacter(':', texture(), 0, 2, 1, 5),
+			BinaryCharacter(';', texture(), 0, 2, 2, 6),
+			BinaryCharacter('"', texture(), 0, 0, 3, 2),
+			BinaryCharacter('\'', texture(), 0, 0, 1, 2),
+			BinaryCharacter('.', texture(), 0, 6, 1, 1),
+			BinaryCharacter(',', texture(), 0, 6, 2, 3),
+			BinaryCharacter('!', texture(), 0, 0, 1, 7),
+			BinaryCharacter('@', texture(), 0, 0, 7, 9),
+			BinaryCharacter('#', texture(), 0, 0, 5, 7),
+			BinaryCharacter('$', texture(), 0, 0, 5, 9),
+			BinaryCharacter('%', texture(), 0, 0, 5, 7),
+			BinaryCharacter('^', texture(), 0, 0, 3, 3),
+			BinaryCharacter('&', texture(), 0, 0, 5, 7),
+			BinaryCharacter('*', texture(), 0, 0, 5, 5),
+			BinaryCharacter('-', texture(), 0, 3, 3, 1),
+			BinaryCharacter('_', texture(), 0, 6, 5, 1),
+			BinaryCharacter('+', texture(), 0, 2, 3, 3),
+			BinaryCharacter('=', texture(), 0, 2, 3, 3),
+			BinaryCharacter('`', texture(), 0, 0, 2, 2),
+			BinaryCharacter('~', texture(), 0, 2, 5, 3),
+			BinaryCharacter(0.toChar(), texture(), 0, 0, 7, 9)
+		)
+
+		for(c in characters) {
+			val char = when(c.char) {
+				0.toChar() -> "0.toChar()"
+				'\''       -> "'\\''"
+				'\\'       -> "'\\\\'"
+				else       -> "'${c.char}'"
+			}
+
+			with(c) {
+				println("BinaryCharacter($char, $texture, $xOffset, $yOffset, $width, $height),")
+			}
+		}
+
+		globalCharacters = characters
+		fontVertexBuffer = createFontVertexBuffer(1F, 0F, -100F, string)
 	}
 
 

@@ -26,19 +26,19 @@ void main() {
 
 	// Vertex 2 - top right.
 	gl_Position = pos + vec4(width, 0, 0, 0);
-	texCoords = vec2(8, 0);
+	texCoords = vec2(7, 0);
 	outTexture = texture[0];
 	EmitVertex();
 
 	// Vertex 3 - bottom left.
 	gl_Position = pos + vec4(0, height, 0.0, 0.0);
-	texCoords = vec2(0, 8);
+	texCoords = vec2(0, 9);
 	outTexture = texture[0];
 	EmitVertex();
 
 	// Vertex 4 - bottom right.
 	gl_Position = pos + vec4(width, height, 0.0, 0.0);
-	texCoords = vec2(8, 8);
+	texCoords = vec2(7, 9);
 	outTexture = texture[0];
 	EmitVertex();
 
