@@ -366,7 +366,7 @@ object FontCreator {
 		" (Test) <Test> {Test} [Test], myArray[7], @Test ~15? // This is a comment. C:\\\\Users |Test| ;test;"
 
 
-	var fontVertexBuffer = createFontVertexBuffer(1F, 0F, -100F, string)
+	var fontVertexBuffer = createFontVertexBuffer(2F, 0F, -100F, string)
 
 
 

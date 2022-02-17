@@ -20,6 +20,6 @@ layout(set = 0, binding = 0) uniform ubo {
 
 void main() {
 	gl_Position = vec4(2 * (pos + offset) / (screenSize * zoom) - 1, 0.0, 1.0);
-	size = vec2(2 * 7 * 1, 2 * 9 * 1) / (screenSize * zoom);
+	size = vec2(2 * 7 * 2, 2 * 9 * 2) / (screenSize * zoom);
 	textureOut = texture;
 }
