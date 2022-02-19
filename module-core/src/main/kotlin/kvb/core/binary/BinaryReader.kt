@@ -1,13 +1,6 @@
 package kvb.core.binary
 
-import java.nio.file.Files
-import java.nio.file.Path
-
 class BinaryReader(val bytes: ByteArray, var endianness: Endianness) {
-
-
-	constructor(path: Path, endianness: Endianness) : this(Files.readAllBytes(path), endianness)
-
 
 
 	/*

@@ -3,27 +3,9 @@ package kvb.core.binary
 class BinaryWriter(bytes: ByteArray, var endianness: Endianness) {
 
 
-	constructor(initialCapacity: Int, endianness: Endianness) : this(ByteArray(initialCapacity), endianness)
+	var bytes = bytes; private set
 
-	constructor(endianness: Endianness) : this(8192, endianness)
-
-	constructor() : this(LittleEndian)
-
-
-
-	/*
-	Position
-	 */
-
-
-
-	var pos = 0; private set
-
-	fun seek(pos: Int) { this.pos = pos; ensureCapacity() }
-
-	fun advance(num: Int) { pos += num; ensureCapacity() }
-
-	fun retreat(num: Int) { pos += num; ensureCapacity() }
+	var pos = 0
 
 
 
@@ -33,13 +15,9 @@ class BinaryWriter(bytes: ByteArray, var endianness: Endianness) {
 
 
 
-	var bytes = bytes; private set
-
-
-
 	private fun ensureCapacity() {
 		if(pos >= bytes.size)
-			bytes = bytes.copyOf(bytes.size * 2)
+			bytes = bytes.copyOf(pos * 2)
 	}
 
 
