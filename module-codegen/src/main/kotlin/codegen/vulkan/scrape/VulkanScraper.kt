@@ -8,7 +8,7 @@ import codegen.vulkan.scrape.ScraperUtils.camelToSnakeCase
 import codegen.writer.Primitive
 import java.nio.file.Path
 
-class VulkanScraper private constructor(private val registry: ParsedRegistry) {
+class VulkanScraper(private val registry: ParsedRegistry) {
 
 
 	companion object {

@@ -27,7 +27,9 @@ enum class MessageType(val value: Int) {
 
 	RBUTTON_UP(0x0205),
 
-	SIZE(0x0005);
+	SIZE(0x0005),
+
+	CHAR(0x0102);
 
 
 

@@ -67,5 +67,7 @@ abstract class Window {
 
 	var onMouseRelease: (Button) -> Unit = { }
 
+	var onChar: (Char) -> Unit = { }
+
 
 }

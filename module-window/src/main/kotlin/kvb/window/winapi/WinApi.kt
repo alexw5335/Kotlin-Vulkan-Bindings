@@ -145,6 +145,7 @@ object WinApi : WindowManager {
 			MessageType.LBUTTON_UP   -> message.handleMouseButtonUp(Button.LEFT_MOUSE)
 			MessageType.RBUTTON_DOWN -> message.handleMouseButtonDown(Button.RIGHT_MOUSE)
 			MessageType.RBUTTON_UP   -> message.handleMouseButtonUp(Button.RIGHT_MOUSE)
+			MessageType.CHAR         -> message.handleChar()
 			else                     -> { }
 		}
 	}
@@ -183,6 +184,12 @@ object WinApi : WindowManager {
 	private fun Message.handleMouseButtonUp(button: Button) {
 		Button.pressed.remove(button)
 		hwndWindow?.onMouseRelease?.invoke(button)
+	}
+
+
+
+	private fun Message.handleChar() {
+		hwndWindow?.onChar?.invoke(Char(wparam.toInt()))
 	}
 
 

@@ -5,7 +5,7 @@ import codegen.vulkan.xml.XmlElement
 import codegen.vulkan.xml.XmlParser
 import java.nio.file.Path
 
-class VulkanParser private constructor(private val registry: XmlElement) {
+class VulkanParser(private val registry: XmlElement) {
 
 
 	companion object {

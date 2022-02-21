@@ -1,5 +1,6 @@
 package codegen.vulkan
 
+import codegen.vulkan.parse.CommandElement
 import codegen.vulkan.scrape.*
 import codegen.writer.*
 import kvb.core.memory.*
@@ -1006,6 +1007,167 @@ class VulkanGenerator(
 			group(spacing = 1) {
 				for(c in standaloneCommands)
 					function(c.asStandaloneFunction)
+			}
+		}
+	}
+
+
+	/*
+		private val Command.jniContents get() = buildString {
+		if(returnType != null)
+			append("return (${returnType.primitive.jniName}) ")
+
+		append("((PFN_$name) address) (")
+
+		for(i in params.indices) {
+			append(params[i].castName)
+			if(i != params.lastIndex) append(", ")
+		}
+
+		append(");")
+	}
+	 */
+
+
+	private val CommandElement.isInstanceCommand get() =
+		name != "vkGetInstanceProcAddr" && (
+			params.first().type == "VkInstance" ||
+				params.first().type == "VkPhysicalDevice" ||
+				name == "vkGetDeviceProcAddr")
+
+	private val CommandElement.isDeviceCommand get() =
+		name != "vkGetDeviceProcAddr" && (
+			params.first().type == "VkDevice" ||
+				params.first().type == "VkQueue" ||
+				params.first().type == "VkCommandBuffer")
+
+	fun genCommandsC2() = CWriter.write(cDirectory, "vk") {
+		currentStyle = style(3)
+
+		includes("jni.h")
+
+		group("Command types", spacing = 0) {
+			for(command in registry.commands) {
+				write("typedef ${command.returnType?.primitive?.jniName ?: "void"} (__stdcall* PFN_${command.name})(")
+				for((index, param) in command.params.withIndex()) {
+					if(index != 0) write(' ')
+					val typeName = when {
+						command.name == "vkGetInstanceProcAddr" && param.name == "pName" -> "char*"
+						command.name == "vkGetDeviceProcAddr" && param.name == "pName" -> "char*"
+						param.isPointer -> "jlong"
+						else -> param.type.primitive.jniName
+					}
+					write("$typeName ${param.name}")
+					if(index != command.params.size - 1) write(',')
+				}
+				writeln(");")
+			}
+		}
+
+		group("Command addresses", spacing = 0) {
+			for(command in registry.commands) {
+				declaration("PFN_${command.name} ${command.name};")
+			}
+		}
+
+		declaration("jlong globalInstance;")
+		declaration("jlong globalDevice;")
+
+		function("void loadInstance(jlong instance)") {
+			writeln("globalInstance = instance;")
+			for(c in registry.commands) {
+				if(c.type == CommandType.INSTANCE) {
+					writeln("${c.name} = (PFN_${c.name}) vkGetInstanceProcAddr(instance, \"${c.name}\");")
+				}
+			}
+		}
+
+		function("void loadDevice(jlong device)") {
+			writeln("globalDevice = device;")
+			for(c in registry.commands) {
+				if(c.type == CommandType.DEVICE) {
+					writeln("${c.name} = (PFN_${c.name}) vkGetDeviceProcAddr(device, \"${c.name}\");")
+				}
+			}
+		}
+
+		multilineDeclaration("""
+			#ifdef WIN32
+				#include <windef.h>
+				#include <winbase.h>
+			#else
+				#include <dlfcn.h>
+			#endif
+		""")
+
+		multilineDeclaration("""
+			int load() {
+			#ifdef WIN32
+				HMODULE module = LoadLibrary("vulkan-1.dll");
+				vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr) GetProcAddress(module, "vkGetInstanceProcAddr");
+			#elif defined(__APPLE__)
+				void* module = dlopen("libMoltenVK.dylib", RTLD_NOW | RTLD_LOCAL);
+				vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)dlsym(module, "vkGetInstanceProcAddr");
+			#else
+				void* module = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+				vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)dlsym(module, "vkGetInstanceProcAddr");
+			#endif
+				
+				if(vkGetInstanceProcAddr == NULL) return 0;
+	
+				vkEnumerateInstanceVersion = (PFN_vkEnumerateInstanceVersion) vkGetInstanceProcAddr(0, "vkEnumerateInstanceVersion");
+				vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties) vkGetInstanceProcAddr(0, "vkEnumerateInstanceExtensionProperties");
+				vkCreateInstance = (PFN_vkCreateInstance) vkGetInstanceProcAddr(0, "vkCreateInstance");
+				vkEnumerateInstanceLayerProperties = (PFN_vkEnumerateInstanceLayerProperties) vkGetInstanceProcAddr(0, "vkEnumerateInstanceLayerProperties");
+	
+				return 1;
+			}
+		""")
+
+		function(JniGeneration.createCFunction(
+			packageName,
+			"Vk",
+			"load",
+			"jint",
+			emptyList(),
+			"return load();"
+		))
+
+		group("JNI functions", spacing = 1) {
+			for(command in registry.commands) {
+				if(command.name == "vkGetDeviceProcAddr" || command.name == "vkGetInstanceProcAddr") continue
+
+				var params = command.params.map { it.cType to it.name }
+
+				val first = command.params[0].type.name
+
+				if(first == "VkInstance" || first == "VkDevice") params = params.drop(1)
+
+				function(JniGeneration.createCFunction(
+					packageName,
+					"Vk",
+					command.genName,
+					command.returnType?.primitive?.jniName,
+					params,
+					buildString {
+						if(command.returnType != null)
+							append("return ")
+
+						append("${command.name}(")
+
+						when(first) {
+							"VkInstance"       -> { append("globalInstance"); if(params.isNotEmpty()) append(", ") }
+							"VkDevice"         -> { append("globalDevice");   if (params.isNotEmpty()) append(", ") }
+						}
+
+						for(i in params.indices) {
+							append(params[i].second)
+							if(i != params.lastIndex) append(", ")
+						}
+
+						append(");")
+					}
+				))
 			}
 		}
 	}
