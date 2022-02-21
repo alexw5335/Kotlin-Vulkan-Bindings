@@ -1012,34 +1012,26 @@ class VulkanGenerator(
 	}
 
 
-	/*
-		private val Command.jniContents get() = buildString {
-		if(returnType != null)
-			append("return (${returnType.primitive.jniName}) ")
 
-		append("((PFN_$name) address) (")
-
-		for(i in params.indices) {
-			append(params[i].castName)
-			if(i != params.lastIndex) append(", ")
+	fun genCommandsKotlin2() = write("_Vk") {
+		start {
+			autogenComment()
+			topLevelFileComment()
+			suppressFile("Unused", "FunctionName")
+			vulkanPackage()
 		}
 
-		append(");")
+		class_("object Vk") {
+			for(command in registry.commands) {
+				function(KFunction(
+					command.genName,
+					command.returnType?.primitive?.kName,
+				))
+			}
+		}
 	}
-	 */
 
 
-	private val CommandElement.isInstanceCommand get() =
-		name != "vkGetInstanceProcAddr" && (
-			params.first().type == "VkInstance" ||
-				params.first().type == "VkPhysicalDevice" ||
-				name == "vkGetDeviceProcAddr")
-
-	private val CommandElement.isDeviceCommand get() =
-		name != "vkGetDeviceProcAddr" && (
-			params.first().type == "VkDevice" ||
-				params.first().type == "VkQueue" ||
-				params.first().type == "VkCommandBuffer")
 
 	fun genCommandsC2() = CWriter.write(cDirectory, "vk") {
 		currentStyle = style(3)

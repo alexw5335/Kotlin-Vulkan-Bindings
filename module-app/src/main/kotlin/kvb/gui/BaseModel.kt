@@ -1,4 +1,19 @@
 package kvb.gui
 
-class BaseModel {
+interface BaseModel {
+
+
+	var backgroundColour: Colour
+
+	var borderColour: Colour
+
+	var pressedColour: Colour
+
+	var hoveredColour: Colour
+
+
+
+	fun render() { }
+
+
 }
