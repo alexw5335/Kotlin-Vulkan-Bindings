@@ -1,11 +1,9 @@
 package kvb.vkwrapper.builder
 
-import kvb.core.memory.Allocator
-import kvb.core.memory.DirectList
-import kvb.core.memory.Unsafe
+import kvb.core.memory.*
 import kvb.vulkan.*
 
-class RenderPassBuilder(private val allocator: Allocator) {
+class RenderPassBuilder(private val stack: MemStack) {
 
 
 	/*
@@ -14,17 +12,15 @@ class RenderPassBuilder(private val allocator: Allocator) {
 
 
 
-	var flags = RenderPassCreateFlags(0)
-
 	var bindPoint = PipelineBindPoint.GRAPHICS
 
 
 
-	private val attachments = DirectList(allocator) { AttachmentDescription(it) { } }
+	private val attachments = DirectList(stack) { AttachmentDescription(it) { } }
 
-	private val subpasses = DirectList(allocator) { SubpassDescription(it) { } }
+	private val subpasses = DirectList(stack) { SubpassDescription(it) { } }
 
-	private val dependencies = DirectList(allocator) { SubpassDependency(it) { } }
+	private val dependencies = DirectList(stack) { SubpassDependency(it) { } }
 
 
 
@@ -34,8 +30,7 @@ class RenderPassBuilder(private val allocator: Allocator) {
 
 
 
-	fun build() = allocator.RenderPassCreateInfo {
-		it.flags = flags
+	fun build() = stack.RenderPassCreateInfo {
 		it.attachmentCount  = attachments.size
 		it.pAttachments     = attachments.address
 		it.subpassCount     = subpasses.size
@@ -72,48 +67,6 @@ class RenderPassBuilder(private val allocator: Allocator) {
 
 
 
-	fun subpass(
-		inputAttachments       : List<Pair<Int, ImageLayout>>? = null,
-		colourAttachments      : List<Pair<Int, ImageLayout>>? = null,
-		resolveAttachments     : List<Pair<Int, ImageLayout>>? = null,
-		depthStencilAttachment : Pair<Int, ImageLayout>?       = null,
-		preserveAttachments    : IntArray?                     = null,
-		flags                  : SubpassDescriptionFlags       = SubpassDescriptionFlags(0)
-	) {
-		subpasses.buffer[subpasses.next].also {
-			it.flags = flags
-			it.pipelineBindPoint = bindPoint
-
-			if(inputAttachments != null) {
-				it.inputAttachmentCount = inputAttachments.size
-				it.inputAttachments = inputAttachments.toBuffer()
-			}
-
-			if(colourAttachments != null) {
-				it.colorAttachmentCount = colourAttachments.size
-				it.colorAttachments = colourAttachments.toBuffer()
-			}
-
-			if(resolveAttachments != null) {
-				it.resolveAttachments = resolveAttachments.toBuffer()
-			}
-
-			if(depthStencilAttachment != null) {
-				it.depthStencilAttachment = allocator.AttachmentReference { ref ->
-					ref.attachment = depthStencilAttachment.first
-					ref.layout = depthStencilAttachment.second
-				}
-			}
-
-			if(preserveAttachments != null) {
-				it.preserveAttachmentCount = preserveAttachments.size
-				it.preserveAttachments = allocator.wrapInts(preserveAttachments)
-			}
-		}
-	}
-
-
-
 	fun dependency(
 		srcSubpass      : Int,
 		dstSubpass      : Int,
@@ -133,23 +86,6 @@ class RenderPassBuilder(private val allocator: Allocator) {
 			it.dependencyFlags  = dependencyFlags
 		}
 	}
-
-
-
-	private fun List<Pair<Int, ImageLayout>>.toBuffer() = allocator.AttachmentReference(size) { buffer ->
-		for(i in indices) {
-			buffer[i].let {
-				it.attachment  = get(i).first
-				it.layout      = get(i).second
-			}
-		}
-	}
-
-
-
-	/*
-	Convenience builders
-	 */
 
 
 
@@ -175,10 +111,10 @@ class RenderPassBuilder(private val allocator: Allocator) {
 	/**
 	 * Creates a [SubpassDescription] with a single colour attachment.
 	 */
-	fun colourSubpass(colourAttachment: Int, colourLayout: ImageLayout) {
+	fun colourSubpass(colourAttachment: Int = 0, colourLayout: ImageLayout = ImageLayout.COLOR_ATTACHMENT_OPTIMAL) {
 		subpasses.buffer[subpasses.next].also {
 			it.pipelineBindPoint = bindPoint
-			it.colorAttachments = allocator.AttachmentReference { ref ->
+			it.colorAttachments = stack.AttachmentReference { ref ->
 				ref.attachment = colourAttachment
 				ref.layout = colourLayout
 			}.asBuffer

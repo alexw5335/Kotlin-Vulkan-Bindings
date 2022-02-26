@@ -14,7 +14,7 @@ class Instance(address: Long) : InstanceH(address) {
 	/**
 	 * Convenience variable for 'this' due to MemStack extension functions.
 	 */
-	private val self get() = this
+	private val self = this
 
 	/**
 	 * Implementation of vkDestroyInstance.

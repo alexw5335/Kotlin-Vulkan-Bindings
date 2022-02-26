@@ -16,7 +16,7 @@ class Surface(address: Long, val physicalDevice: PhysicalDevice) : SurfaceH(addr
 
 
 
-	val formats = physicalDevice.surfaceFormatsP(this)
+	val formats = physicalDevice.surfaceFormats(this)
 
 	val capabilities = Unsafe.SurfaceCapabilities { }
 

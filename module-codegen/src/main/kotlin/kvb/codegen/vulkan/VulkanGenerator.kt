@@ -205,7 +205,7 @@ class VulkanGenerator(
 							writeln("${entry.value} -> ${enum.genName}.${entry.genName}")
 						}
 
-						writeln("else -> throw RuntimeException(\"Invalid enum: \$value\")")
+						writeln("else -> throw RuntimeException(\"Invalid ${enum.name} enum value: \$value\")")
 					}
 				}
 			}

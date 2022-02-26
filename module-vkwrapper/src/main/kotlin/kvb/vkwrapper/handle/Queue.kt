@@ -1,7 +1,6 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.vkwrapper.persistent.QueueFamily
 import kvb.vulkan.*
 
@@ -33,7 +32,11 @@ class Queue(
 	/**
 	 * Implementation of vkQueueSubmit.
 	 */
-	fun submit(submits: SubmitInfo.Buffer, submitCount: Int = submits.capacity, fence: Fence? = null) = commands.queueSubmit(
+	fun submit(
+		submits     : SubmitInfo.Buffer,
+		submitCount : Int    = submits.capacity,
+		fence       : Fence? = null
+	) = commands.queueSubmit(
 		queue 		= this,
 		submitCount = submitCount,
 		pSubmits 	= submits,
@@ -50,9 +53,8 @@ class Queue(
 		waitDstStageMask : PipelineStageFlags,
 		commandBuffer    : CommandBuffer,
 		signalSemaphore  : Semaphore,
-		fence            : Fence?              = null,
-		stack            : MemStack            = default
-	) = stack.with {
+		fence            : Fence? = null
+	) = stack {
 		commands.queueSubmit(self, 1, SubmitInfo {
 			it.waitSemaphoreCount   = 1
 			it.pWaitSemaphores      = wrapPointer(waitSemaphore).address
@@ -69,11 +71,7 @@ class Queue(
 	/**
 	 * Convenience implementation of vkQueueSubmit, uses a single submit info with no semaphores.
 	 */
-	fun submit(
-		commandBuffer: CommandBuffer,
-		fence: Fence? = null,
-		stack: MemStack = default
-	) = stack.with {
+	fun submit(commandBuffer: CommandBuffer, fence: Fence? = null) = stack {
 		commands.queueSubmit(self, 1, SubmitInfo {
 			it.waitSemaphoreCount = 0
 			it.commandBuffers = wrapPointer(commandBuffer)
@@ -103,9 +101,8 @@ class Queue(
 	fun present(
 		waitSemaphore : Semaphore,
 		swapchain     : Swapchain,
-		imageIndex    : Int,
-		stack         : MemStack = default
-	) = stack.get {
+		imageIndex    : Int
+	) = stackGet {
 		val resultValue = mallocInt()
 
 		commands.queuePresent(self, PresentInfo {

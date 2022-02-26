@@ -1,11 +1,26 @@
 package kvb.vkwrapper
 
+import kvb.core.Platform
+import kvb.core.Platforms
 import kvb.core.memory.*
 import kvb.vkwrapper.handle.*
 import kvb.vkwrapper.persistent.QueueFamily
 import kvb.vulkan.*
 
-object VulkanBuilder {
+class VulkanBuilder {
+
+
+	companion object {
+
+		fun build(block: VulkanBuilder.() -> Unit): VulkanBuilder {
+			val builder = VulkanBuilder()
+			block(builder)
+			builder.build()
+			return builder
+		}
+
+	}
+
 
 
 	val instanceLayers = HashSet<String>()
@@ -22,13 +37,19 @@ object VulkanBuilder {
 
 	var apiVersion = VulkanInfo.version
 
-	var debugEnabled = false
-
 	var debugTypes = DebugUtilsMessageTypeFlags { GENERAL + VALIDATION + PERFORMANCE }
 
 	var debugSeverities = DebugUtilsMessageSeverityFlags { VERBOSE + INFO + WARNING + ERROR }
 
 	var debugCallback = DebugUtils.defaultCallbackAddress()
+
+	val deviceFeatures = Unsafe.PhysicalDeviceFeatures { }
+
+	val deviceExtensions = HashSet<String>()
+
+	var debugEnabled = false
+
+	var windowingEnabled = false
 
 
 
@@ -47,6 +68,21 @@ object VulkanBuilder {
 
 
 	fun build() {
+		if(debugEnabled) {
+			instanceLayers.add("VK_LAYER_KHRONOS_validation")
+			instanceExtensions.add("VK_EXT_debug_utils")
+		}
+
+		if(windowingEnabled) {
+			instanceExtensions.add("VK_KHR_swapchain")
+			instanceExtensions.add("VK_KHR_surface")
+
+			when(Platforms.current) {
+				Platform.WINDOWS -> instanceExtensions.add("VK_KHR_win32_surface")
+				else -> { }
+			}
+		}
+
 		instance = createInstance()
 
 		if(debugEnabled) {
@@ -54,7 +90,12 @@ object VulkanBuilder {
 		}
 
 		physicalDevice = instance.physicalDevices.firstOrNull { it.isDiscrete } ?: instance.physicalDevices[0]
-		device =
+
+		queueFamily = physicalDevice.queueFamilies.first { it.supportsGraphics && it.supportsCompute }
+
+		device = physicalDevice.createDevice(listOf(queueFamily), deviceExtensions, deviceFeatures)
+
+		queue = device.getQueue(queueFamily, 0)
 	}
 
 

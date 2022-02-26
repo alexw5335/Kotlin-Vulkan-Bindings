@@ -101,23 +101,6 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 
 
 	/*
-	Formats
-	 */
-
-
-
-	/**
-	 * Persistent implementation of vkGetPhysicalDeviceFormatProperties.
-	 */
-	fun formatProperties(format: Format) = stackGet {
-		val properties = FormatProperties { }
-		commands.getPhysicalDeviceFormatProperties(self, format, properties)
-		FormatPropertiesP(properties)
-	}
-
-
-
-	/*
 	Surface
 	 */
 
@@ -284,6 +267,23 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 		val alignment = properties.limits.nonCoherentAtomSize
 		return (value + (alignment - 1)) and -alignment
 	}
+
+
+	/*
+	Formats
+	 */
+
+
+
+	/**
+	 * Persistent implementation of vkGetPhysicalDeviceFormatProperties.
+	 */
+	fun formatProperties(format: Format) = stackGet {
+		val properties = FormatProperties { }
+		commands.getPhysicalDeviceFormatProperties(self, format, properties)
+		FormatPropertiesP(properties)
+	}
+
 
 
 }

@@ -1,7 +1,6 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.vkwrapper.persistent.Descriptor
 import kvb.vulkan.*
 
@@ -39,7 +38,7 @@ class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(addres
 	/**
 	 * Convenience implementation of vkAllocateDescriptorSets.
 	 */
-	fun allocateDescriptorSets(layouts: List<DescriptorSetLayout>, stack: MemStack = default) = stack.get {
+	fun allocateDescriptorSets(layouts: List<DescriptorSetLayout>) = stackGet {
 		val info = DescriptorSetAllocateInfo {
 			it.descriptorPool = self
 			it.setLayouts = wrapPointers(layouts)
@@ -55,7 +54,7 @@ class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(addres
 	/**
 	 * Single implementation of vkAllocateDescriptorSets.
 	 */
-	fun allocateDescriptorSet(layout: DescriptorSetLayout, stack: MemStack = default) = stack.get {
+	fun allocateDescriptorSet(layout: DescriptorSetLayout) = stackGet {
 		val info = DescriptorSetAllocateInfo {
 			it.descriptorPool = self
 			it.setLayouts = wrapPointer(layout)
@@ -70,28 +69,25 @@ class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(addres
 
 	fun createSet(
 		descriptors : List<Descriptor>,
-		flags       : DescriptorSetLayoutCreateFlags = DescriptorSetLayoutCreateFlags(0),
-		stack       : MemStack = default
-	) = stack.get {
-		allocateDescriptorSet(device.createDescriptorSetLayout(descriptors, flags, stack = stack))
+		flags       : DescriptorSetLayoutCreateFlags = DescriptorSetLayoutCreateFlags(0)
+	) = stackGet {
+		allocateDescriptorSet(device.createDescriptorSetLayout(descriptors, flags))
 	}
 
 
 
 	fun createSet(
 		type   : DescriptorType,
-		stages : ShaderStageFlags,
-		stack  : MemStack = default
-	) = allocateDescriptorSet(device.createDescriptorSetLayout(listOf(Descriptor(0, type, 1, stages)), stack = stack))
+		stages : ShaderStageFlags
+	) = allocateDescriptorSet(device.createDescriptorSetLayout(listOf(Descriptor(0, type, 1, stages))))
 
 
 
 	fun createSet(
 		type   : DescriptorType,
 		stages : ShaderStageFlags,
-		buffer : Buffer,
-		stack  : MemStack = default
-	) = createSet(type, stages, stack).also { it.bufferWrite(0, buffer) }
+		buffer : Buffer
+	) = createSet(type, stages).also { it.bufferWrite(0, buffer) }
 
 
 
@@ -100,9 +96,8 @@ class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(addres
 		stages      : ShaderStageFlags,
 		sampler     : Sampler,
 		imageView   : ImageView,
-		imageLayout : ImageLayout,
-		stack       : MemStack = default
-	) = createSet(type, stages, stack).also { it.imageWrite(0, sampler, imageView, imageLayout) }
+		imageLayout : ImageLayout
+	) = createSet(type, stages).also { it.imageWrite(0, sampler, imageView, imageLayout) }
 
 
 
@@ -114,7 +109,7 @@ class DescriptorPool(address: Long, val device: Device) : DescriptorPoolH(addres
 
 	/**
 	 * Implementation of vkResetDescriptorPool. All descriptor sets that were allocated from this pool are freed and
-	 * their resources are returned back to this pool.
+	 * their resources are returned to this pool.
 	 */
 	fun reset() = commands.resetDescriptorPool(this)
 

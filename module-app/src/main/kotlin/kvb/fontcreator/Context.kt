@@ -88,14 +88,7 @@ class Context(window: Window) {
 
 		it.colourSubpass(0, ImageLayout.COLOR_ATTACHMENT_OPTIMAL)
 
-		it.dependency(
-			srcSubpass    = VK_SUBPASS_EXTERNAL,
-			dstSubpass    = 0,
-			srcStageMask  = PipelineStageFlags { COLOR_ATTACHMENT_OUTPUT},
-			dstStageMask  = PipelineStageFlags { COLOR_ATTACHMENT_OUTPUT},
-			srcAccessMask = AccessFlags { NONE },
-			dstAccessMask = AccessFlags { COLOR_ATTACHMENT_WRITE }
-		)
+c
 	}
 
 

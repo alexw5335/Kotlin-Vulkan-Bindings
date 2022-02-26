@@ -2,7 +2,7 @@ package kvb.vkwrapper.handle
 
 import kvb.core.memory.MemStack
 import kvb.vulkan.*
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.core.memory.direct.DirectByteBuffer
 import kvb.vkwrapper.builder.GraphicsPipelineBuilder
 import kvb.vkwrapper.builder.RenderPassBuilder
@@ -24,7 +24,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Convenience variable for 'this' due to MemStack extension functions.
 	 */
-	private val self get() = this
+	private val self = this
 
 	/**
 	 * Implementation of vkDestroyDevice.
@@ -42,7 +42,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateBuffer.
 	 */
-	fun createBuffer(info: BufferCreateInfo, stack: MemStack = default) = stack.get {
+	fun createBuffer(info: BufferCreateInfo) = stackGet {
 		val buffer = mallocPointer()
 		commands.createBuffer(info, null, buffer)
 		Buffer(buffer.value, self, info.size, info.usage)
@@ -56,15 +56,14 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	fun createBuffer(
 		size	: Long,
 		usage	: BufferUsageFlags,
-		flags	: BufferCreateFlags = BufferCreateFlags(0),
-		stack   : MemStack          = default
-	) = stack.get {
+		flags	: BufferCreateFlags = BufferCreateFlags(0)
+	) = stackGet {
 		createBuffer(BufferCreateInfo {
 			it.flags = flags
 			it.size = size
 			it.usage = usage
 			it.sharingMode = SharingMode.EXCLUSIVE
-		}, stack)
+		})
 	}
 
 
@@ -78,7 +77,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateBufferView.
 	 */
-	fun createBufferView(info: BufferViewCreateInfo, stack: MemStack = default) = stack.get {
+	fun createBufferView(info: BufferViewCreateInfo) = stackGet {
 		val bufferView = mallocPointer()
 		commands.createBufferView(info, null, bufferView).check()
 		BufferView(bufferView.value, self)
@@ -87,7 +86,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 
 
 	/*
-	Command pool
+	Command pool (complete)
 	 */
 
 
@@ -97,9 +96,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 */
 	fun createCommandPool(
 		queueFamily : QueueFamily,
-		flags       : CommandPoolCreateFlags = CommandPoolCreateFlags(0),
-		stack       : MemStack = default
-	) = stack.get {
+		flags       : CommandPoolCreateFlags = CommandPoolCreateFlags(0)
+	) = stackGet {
 		val pointer = mallocPointer()
 
 		commands.createCommandPool(CommandPoolCreateInfo {
@@ -115,8 +113,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Convenience implementation of vkCreateCommandPool.
 	 */
-	fun createTransientCommandPool(queueFamily: QueueFamily, stack: MemStack = default) =
-		createCommandPool(queueFamily, CommandPoolCreateFlags.TRANSIENT, stack)
+	fun createTransientCommandPool(queueFamily: QueueFamily) =
+		createCommandPool(queueFamily, CommandPoolCreateFlags.TRANSIENT)
 
 
 
@@ -129,7 +127,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateDescriptorPool.
 	 */
-	fun createDescriptorPool(info: DescriptorPoolCreateInfo, stack: MemStack = default) = stack.get {
+	fun createDescriptorPool(info: DescriptorPoolCreateInfo) = stackGet {
 		val pointer = mallocPointer()
 		commands.createDescriptorPool(info, null, pointer).check()
 		DescriptorPool(pointer.value, self)
@@ -143,9 +141,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	fun createDescriptorPool(
 		type  : DescriptorType,
 		count : Int = 20,
-		flags : DescriptorPoolCreateFlags = DescriptorPoolCreateFlags(0),
-		stack : MemStack = default
-	) = stack.get {
+		flags : DescriptorPoolCreateFlags = DescriptorPoolCreateFlags(0)
+	) = stackGet {
 		createDescriptorPool(DescriptorPoolCreateInfo {
 			it.maxSets   = count
 			it.flags     = flags
@@ -153,7 +150,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 				sizeInfo.type = type
 				sizeInfo.descriptorCount = count
 			}.asBuffer
-		}, stack)
+		})
 	}
 
 
@@ -164,9 +161,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	fun createDescriptorPool(
 		types   : Map<DescriptorType, Int>,
 		maxSets : Int                       = types.values.sum(),
-		flags   : DescriptorPoolCreateFlags = DescriptorPoolCreateFlags(0),
-		stack   : MemStack                  = default
-	) = stack.get {
+		flags   : DescriptorPoolCreateFlags = DescriptorPoolCreateFlags(0)
+	) = stackGet {
 		createDescriptorPool(DescriptorPoolCreateInfo { ci ->
 			ci.maxSets   = maxSets
 			ci.flags     = flags
@@ -179,7 +175,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 					}
 				}
 			}
-		}, stack)
+		})
 	}
 
 
@@ -195,9 +191,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 */
 	fun createDescriptorSetLayout(
 		info        : DescriptorSetLayoutCreateInfo,
-		descriptors : List<Descriptor>,
-		stack       : MemStack = default
-	) = stack.get {
+		descriptors : List<Descriptor>
+	) = stackGet {
 		val pointer = mallocPointer()
 		commands.createDescriptorSetLayout(info, null, pointer).check()
 		DescriptorSetLayout(pointer.value, self, descriptors)
@@ -210,9 +205,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 */
 	fun createDescriptorSetLayout(
 		descriptors : List<Descriptor>,
-		flags		: DescriptorSetLayoutCreateFlags = DescriptorSetLayoutCreateFlags(0),
-		stack       : MemStack = default
-	) = stack.get {
+		flags		: DescriptorSetLayoutCreateFlags = DescriptorSetLayoutCreateFlags(0)
+	) = stackGet {
 		val bindings = DescriptorSetLayoutBinding(descriptors.size) { }
 
 		for((i, d) in descriptors.withIndex()) {
@@ -229,7 +223,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 			it.flags = flags
 		}
 
-		createDescriptorSetLayout(info, descriptors, stack)
+		createDescriptorSetLayout(info, descriptors)
 	}
 
 
@@ -241,21 +235,12 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 
 
 	/**
-	 * Implementation of vkCreateEvent.
+	 * Complete implementation of vkCreateEvent.
 	 */
-	fun createEvent(info: EventCreateInfo, stack: MemStack = default) = stack.get {
+	fun createEvent() = stackGet {
 		val pointer = mallocPointer()
-		commands.createEvent(info, null, pointer).check()
+		commands.createEvent(EventCreateInfo { }, null, pointer).check()
 		Event(pointer.value, self)
-	}
-
-
-
-	/**
-	 * Convenience version of vkCreateEvent.
-	 */
-	fun createEvent(stack: MemStack = default) = stack.get {
-		createEvent(EventCreateInfo { }, stack)
 	}
 
 
@@ -269,7 +254,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateFence.
 	 */
-	fun createFence(info: FenceCreateInfo, stack: MemStack = default) = stack.get {
+	fun createFence(info: FenceCreateInfo) = stackGet {
 		val pointer = mallocPointer()
 		commands.createFence(info, null, pointer).check()
 		Fence(pointer.value, self)
@@ -280,8 +265,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Convenience implementation of vkCreateFence.
 	 */
-	fun createFence(stack: MemStack = default) = stack.get {
-		createFence(FenceCreateInfo { }, stack)
+	fun createFence() = stackGet {
+		createFence(FenceCreateInfo { })
 	}
 
 
@@ -289,8 +274,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Convenience implementation of vkCreateFence.
 	 */
-	fun createSignalledFence(stack: MemStack = default) = stack.get {
-		createFence(FenceCreateInfo { it.flags = FenceCreateFlags.SIGNALED }, stack)
+	fun createSignalledFence() = stackGet {
+		createFence(FenceCreateInfo { it.flags = FenceCreateFlags.SIGNALED })
 	}
 
 
@@ -304,7 +289,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateFramebuffer.
 	 */
-	fun createFramebuffer(info: FramebufferCreateInfo, stack: MemStack = default) = stack.get {
+	fun createFramebuffer(info: FramebufferCreateInfo) = stackGet {
 		val pointer = mallocPointer()
 		commands.createFramebuffer(info, null, pointer).check()
 		Framebuffer(pointer.value, self, info.width, info.height, info.layers)
@@ -313,23 +298,22 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 
 
 	/**
-	 * Convenience implementation of vkCreateFramebuffer.
+	 * Convenience implementation of vkCreateFramebuffer. For framebuffers with a single attachment.
 	 */
 	fun createFramebuffer(
 		renderPass  : RenderPass,
 		attachments : List<ImageView>,
 		width       : Int,
 		height      : Int,
-		layers      : Int,
-		stack       : MemStack = default
-	) = stack.get {
+		layers      : Int
+	) = stackGet {
 		createFramebuffer(FramebufferCreateInfo {
 			it.renderPass = renderPass
 			it.attachments = wrapPointers(attachments)
 			it.width = width
 			it.height = height
 			it.layers = layers
-		}, stack)
+		})
 	}
 
 
@@ -343,10 +327,9 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	fun createGraphicsPipeline(
 		info           : GraphicsPipelineCreateInfo,
 		layout         : PipelineLayout,
-		descriptorSets : List<Pair<Int, DescriptorSet>>,
-		stack          : MemStack = default
-	) = stack.get {
-		val pointer = stack.mallocPointer(1)
+		descriptorSets : List<Pair<Int, DescriptorSet>>
+	) = stackGet {
+		val pointer = mallocPointer(1)
 		commands.createGraphicsPipelines(null, 1, info.asBuffer, null, pointer).check()
 		Pipeline(pointer[0], self, PipelineBindPoint.GRAPHICS, layout, descriptorSets)
 	}
@@ -356,10 +339,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Builder implementation of vkCreateGraphicsPipelines.
 	 */
-	fun buildGraphicsPipeline(
-		stack: MemStack = default,
-		block: GraphicsPipelineBuilder.() -> Unit,
-	) = GraphicsPipelineBuilder(this, stack).also(block).build()
+	fun buildGraphicsPipeline(block: GraphicsPipelineBuilder.() -> Unit) =
+		GraphicsPipelineBuilder(this, MemStack.current()).also(block).build()
 
 
 
@@ -372,7 +353,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateImage.
 	 */
-	fun createImage(info: ImageCreateInfo, stack: MemStack = default) = stack.get {
+	fun createImage(info: ImageCreateInfo) = stackGet {
 		val pointer = mallocPointer()
 		commands.createImage(info, null, pointer).check()
 
@@ -408,9 +389,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		usage          : ImageUsageFlags,
 		queueFamilies  : IntArray?        = null,
 		initialLayout  : ImageLayout      = ImageLayout.UNDEFINED,
-		flags          : ImageCreateFlags = ImageCreateFlags(0),
-		stack          : MemStack         = default
-	) = stack.get {
+		flags          : ImageCreateFlags = ImageCreateFlags(0)
+	) = stackGet {
 		createImage(ImageCreateInfo {
 			it.flags = flags
 			it.imageType = type
@@ -426,7 +406,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 			it.sharingMode = if(queueFamilies != null) SharingMode.CONCURRENT else SharingMode.EXCLUSIVE
 			if(queueFamilies != null) it.queueFamilyIndices = this.wrapInts(queueFamilies)
 			it.initialLayout = initialLayout
-		}, stack)
+		})
 	}
 
 
@@ -443,9 +423,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		arrayLayers   : Int               = 1,
 		samples       : SampleCountFlags  = SampleCountFlags._1,
 		initialLayout : ImageLayout       = ImageLayout.UNDEFINED,
-		flags         : ImageCreateFlags  = ImageCreateFlags(0),
-		stack         : MemStack          = default
-	) = stack.get {
+		flags         : ImageCreateFlags  = ImageCreateFlags(0)
+	) = stackGet {
 		createImage(ImageCreateInfo {
 			it.flags = flags
 			it.imageType = ImageType._2D
@@ -474,7 +453,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateImageView.
 	 */
-	fun createImageView(info: ImageViewCreateInfo, image: Image, stack: MemStack = default) = stack.get {
+	fun createImageView(info: ImageViewCreateInfo, image: Image) = stackGet {
 		val pointer = mallocPointer()
 		commands.createImageView(info, null, pointer).check()
 		ImageView(pointer.value, self, image)
@@ -491,9 +470,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		baseMipLevel    : Int              = 0,
 		mipLevelCount   : Int              = image.mipLevels,
 		baseArrayLayer  : Int              = 0,
-		arrayLayerCount : Int              = image.arrayLayers,
-		stack           : MemStack         = default
-	) = stack.get {
+		arrayLayerCount : Int              = image.arrayLayers
+	) = stackGet {
 		createImageView(ImageViewCreateInfo {
 			it.image     = image
 			it.viewType  = image.type.asImageViewType
@@ -503,7 +481,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 			it.subresourceRange.levelCount     = mipLevelCount
 			it.subresourceRange.baseArrayLayer = baseArrayLayer
 			it.subresourceRange.layerCount     = arrayLayerCount
-		}, image, stack)
+		}, image)
 	}
 
 
@@ -519,9 +497,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 */
 	fun createPipelineLayout(
 		setLayouts    : List<DescriptorSetLayout>,
-		pushConstants : List<PushConstant>,
-		stack         : MemStack = default
-	) = stack.get {
+		pushConstants : List<PushConstant>
+	) = stackGet {
 		val info = PipelineLayoutCreateInfo {
 			it.setLayouts = wrapPointers(setLayouts)
 			it.pushConstantRanges = PushConstantRange(pushConstants.size) { buffer ->
@@ -551,7 +528,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateRenderPass.
 	 */
-	fun createRenderPass(info: RenderPassCreateInfo, stack: MemStack = default) = stack.get {
+	fun createRenderPass(info: RenderPassCreateInfo) = stackGet {
 		val pointer = mallocPointer()
 		commands.createRenderPass(info, null, pointer).check()
 		RenderPass(pointer.value, self)
@@ -562,11 +539,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Builder implementation of vkCreateRenderPass.
 	 */
-	fun buildRenderPass(
-		stack: MemStack = default,
-		block: (RenderPassBuilder) -> Unit,
-	) = stack.get {
-		createRenderPass(RenderPassBuilder(this).also(block).build(), stack)
+	fun buildRenderPass(block: (RenderPassBuilder) -> Unit) = stackGet {
+		createRenderPass(RenderPassBuilder(this).also(block).build())
 	}
 
 
@@ -580,7 +554,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateSampler.
 	 */
-	fun createSampler(info: SamplerCreateInfo, stack: MemStack = default) = stack.get {
+	fun createSampler(info: SamplerCreateInfo) = stackGet {
 		val pointer = mallocPointer()
 		commands.createSampler(info, null, pointer).check()
 		Sampler(pointer.value, self)
@@ -606,12 +580,9 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		minLod                  : Float               = 0.0F,
 		maxLod                  : Float               = 0.0F,
 		borderColour            : BorderColor         = BorderColor.FLOAT_TRANSPARENT_BLACK,
-		unnormalisedCoordinates : Boolean             = false,
-		flags                   : SamplerCreateFlags  = SamplerCreateFlags(0),
-		stack                   : MemStack            = default
-	) = stack.get {
+		unnormalisedCoordinates : Boolean             = false
+	) = stackGet {
 		createSampler(SamplerCreateInfo {
-			it.flags                   = flags
 			it.magFilter               = magFilter
 			it.minFilter               = minFilter
 			it.mipmapMode              = mipmapMode
@@ -641,7 +612,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateSemaphore.
 	 */
-	fun createSemaphore(info: SemaphoreCreateInfo, stack: MemStack = default) = stack.get {
+	fun createSemaphore(info: SemaphoreCreateInfo) = stackGet {
 		val pointer = mallocPointer()
 		commands.createSemaphore(info, null, pointer).check()
 		Semaphore(pointer.value, self)
@@ -652,8 +623,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Convenience version of vkCreateSemaphore.
 	 */
-	fun createSemaphore(stack: MemStack = default) = stack.get {
-		createSemaphore(SemaphoreCreateInfo { }, stack)
+	fun createSemaphore() = stackGet {
+		createSemaphore(SemaphoreCreateInfo { })
 	}
 
 
@@ -667,7 +638,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateShaderModule.
 	 */
-	fun createShaderModule(info: ShaderModuleCreateInfo, stack: MemStack = default) = stack.get {
+	fun createShaderModule(info: ShaderModuleCreateInfo) = stackGet {
 		val pointer = mallocPointer()
 		commands.createShaderModule(info, null, pointer).check()
 		ShaderModule(pointer.value, self)
@@ -680,13 +651,12 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	 */
 	fun createShaderModule(
 		codeSize : Long,
-		pCode    : Long,
-		stack    : MemStack = default
-	) = stack.get {
+		pCode    : Long
+	) = stackGet {
 		createShaderModule(ShaderModuleCreateInfo {
 			it.codeSize = codeSize
 			it.pCode = pCode
-		}, stack)
+		})
 	}
 
 
@@ -707,7 +677,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkCreateSwapchain.
 	 */
-	fun createSwapchain(info: SwapchainCreateInfo, stack: MemStack = default) = stack.get {
+	fun createSwapchain(info: SwapchainCreateInfo) = stackGet {
 		val pointer = mallocPointer()
 		commands.createSwapchain(info, null, pointer).check()
 
@@ -741,9 +711,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		width            : Int,
 		height           : Int,
 		presentMode      : PresentMode,
-		oldSwapchain     : SwapchainH? = null,
-		stack            : MemStack = default
-	) = stack.get {
+		oldSwapchain     : SwapchainH? = null
+	) = stackGet {
 		createSwapchain(SwapchainCreateInfo {
 			it.surface = surface
 			it.minImageCount = minImageCount
@@ -774,7 +743,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkAllocateMemory.
 	 */
-	fun allocateMemory(info: MemoryAllocateInfo, stack: MemStack = default) = stack.get {
+	fun allocateMemory(info: MemoryAllocateInfo) = stackGet {
 		val pointer = mallocPointer()
 		commands.allocateMemory(info, null, pointer).check()
 		DeviceMemory(pointer.value, self, info.allocationSize, physicalDevice.memoryTypes[info.memoryTypeIndex])
@@ -785,15 +754,11 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Convenience implementation of vkAllocateMemory.
 	 */
-	fun allocateMemory(
-		allocationSize  : Long,
-		memoryTypeIndex : Int,
-		stack           : MemStack = default
-	) = stack.get {
+	fun allocateMemory(size: Long, memoryTypeIndex: Int) = stackGet {
 		allocateMemory(MemoryAllocateInfo {
-			it.allocationSize = allocationSize
+			it.allocationSize = size
 			it.memoryTypeIndex = memoryTypeIndex
-		}, stack)
+		})
 	}
 
 
@@ -806,9 +771,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 		property1      : MemoryPropertyFlags,
 		property2      : MemoryPropertyFlags  = MemoryPropertyFlags(0),
 		property3      : MemoryPropertyFlags  = MemoryPropertyFlags(0),
-		memoryTypeBits : Int                  = UInt.MAX_VALUE.toInt(),
-		stack          : MemStack             = default
-	) = stack.get {
+		memoryTypeBits : Int                  = UInt.MAX_VALUE.toInt()
+	) = stackGet {
 		var failureIndex = -1
 		var typeIndex = -1
 		var memory: DeviceMemory
@@ -828,7 +792,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 				memory = allocateMemory(MemoryAllocateInfo {
 					it.allocationSize = size
 					it.memoryTypeIndex = typeIndex
-				}, stack)
+				})
 
 				break
 			} catch(e: VkCommandException) {
@@ -857,11 +821,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkGetDeviceQueue.
 	 */
-	fun getQueue(
-		queueFamily : QueueFamily,
-		queueIndex  : Int,
-		stack       : MemStack = default
-	) = stack.get {
+	fun getQueue(queueFamily: QueueFamily, queueIndex: Int) = stackGet {
 		val queue = mallocPointer()
 		commands.getDeviceQueue(queueFamily.index, queueIndex, queue)
 		Queue(queue.value, self, queueFamily)
@@ -912,9 +872,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	fun waitForFences(
 		fences  : List<Fence>,
 		waitAll : Boolean      = true,
-		timeout : Long         = ULong.MAX_VALUE.toLong(),
-		stack   : MemStack     = default
-	) = stack.with {
+		timeout : Long         = ULong.MAX_VALUE.toLong()
+	) = stack {
 		commands.waitForFences(
 			fenceCount = fences.size,
 			pFences    = wrapPointers(fences),
@@ -928,14 +887,8 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	/**
 	 * Implementation of vkResetFences.
 	 */
-	fun resetFences(
-		fences: List<Fence>,
-		stack: MemStack = default
-	) = stack.with {
-		commands.resetFences(
-			fences.size,
-			wrapPointers(fences)
-		)
+	fun resetFences(fences: List<Fence>) = stack { 
+		commands.resetFences(fences.size, wrapPointers(fences))
 	}
 
 
