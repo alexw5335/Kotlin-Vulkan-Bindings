@@ -1,10 +1,8 @@
 package kvb.core
 
 import kvb.core.memory.Allocator
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks
-import kvb.core.memory.MemStacks.default
 import kvb.core.memory.direct.DirectByteBuffer
+import kvb.core.memory.stackGet
 
 /**
  * Reads whole files into off-heap memory. Should not be used for very large files. Reading files larger than about 4 GB
@@ -37,9 +35,9 @@ object FileUtils {
 
 
 
-	fun readFully(path: String, allocator: Allocator, stack: MemStack = default): DirectByteBuffer {
-		val file = stack.get {
-			openFileForReading(stack.encodeUtf8NT(path).address)
+	fun readFully(path: String, allocator: Allocator): DirectByteBuffer {
+		val file = stackGet {
+			openFileForReading(encodeUtf8NT(path).address)
 		}
 
 		if(file == 0L)
@@ -59,8 +57,8 @@ object FileUtils {
 
 
 
-	fun<R> readFullyAndFree(path: String, stack: MemStack = default, block: (DirectByteBuffer) -> R): R = stack.get {
-		block(readFully(path, stack, stack))
+	fun<R> readFullyAndFree(path: String, block: (DirectByteBuffer) -> R): R = stackGet {
+		block(readFully(path, this))
 	}
 
 
@@ -71,7 +69,7 @@ object FileUtils {
 
 
 
-	fun readRgba(path: String, stack: MemStack = default) = stack.get {
+	fun readRgba(path: String) = stackGet {
 		val imageBuffer = mallocByte(8 + 8 + 8)
 
 		loadImage(encodeUtf8NT(path).address, imageBuffer.address, desiredChannels = 4)
@@ -90,7 +88,7 @@ object FileUtils {
 
 
 
-	inline fun<T> readRGBA(path: String, block: (Image) -> T) = MemStacks.get {
+	inline fun<T> readRGBA(path: String, block: (Image) -> T) = stackGet {
 		val imageBuffer = mallocByte(8 + 4 + 4 + 4)
 
 		loadImage(encodeUtf8NT(path).address, imageBuffer.address, desiredChannels = 4)

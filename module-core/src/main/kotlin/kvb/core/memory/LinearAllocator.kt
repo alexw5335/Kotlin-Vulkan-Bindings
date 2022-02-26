@@ -3,7 +3,7 @@ package kvb.core.memory
 open class LinearAllocator(val address: Long, val size: Long) : Allocator {
 
 
-	constructor(allocator: Allocator, size: Long) : this(allocator.malloc(size, 8), size)
+	constructor(allocator: Allocator, size: Long) : this(allocator.calloc(size, 8), size)
 
 
 

@@ -1,13 +1,7 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.Addressable.Companion.addressOrNULL
-import kvb.core.memory.Allocator
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks
-import kvb.core.memory.MemStacks.default
-import kvb.core.memory.direct.DirectByteBuffer
-import kvb.core.memory.direct.DirectInt
-import kvb.core.memory.direct.DirectIntBuffer
+import kvb.core.memory.stackGet
+import kvb.core.memory.stackLazy
 import kvb.vkwrapper.persistent.*
 import kvb.vulkan.*
 
@@ -28,360 +22,103 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 
 
 	/*
-	Property variables
+	Info
 	 */
-
-
-
-	/*val test by MemStacks.StackLazy {
-		val count = mallocInt()
-		commands.enumerateDeviceLayerProperties(self, count, null).check()
-		val layers = LayerProperties(count.value) { }
-		commands.enumerateDeviceLayerProperties(self, count, layers).check()
-		layers.map { LayerPropertiesP(it) }
-	}*/
-
-	/**
-	 * Member implementation of vkEnumerateDeviceLayerProperties.
-	 */
-	val layers by lazy { layerPropertiesP() }
 
 
 
 	/**
 	 * Member implementation of vkEnumerateDeviceExtensionProperties.
 	 */
-	val extensions by lazy { extensionPropertiesP("") }
+	val extensions by stackLazy {
+		val count = mallocInt()
+		commands.enumerateDeviceExtensionProperties(self, null, count, null).check()
+		val extensions = ExtensionProperties(count.value) {  }
+		commands.enumerateDeviceExtensionProperties(self, null, count, extensions).check()
+		extensions.map { ExtensionPropertiesP(it) }
+	}
 
 
 
 	/**
 	 * Member variable implementation of vkGetPhysicalDeviceProperties.
 	 */
-	val properties: PhysicalDevicePropertiesP by lazy { propertiesP() }
-
-
-
-	/**
-	 * Wrapper for [PhysicalDeviceProperties.limits].
-	 */
-	val limits get() = properties.limits
+	val properties by stackLazy {
+		val properties = PhysicalDeviceProperties { }
+		commands.getPhysicalDeviceProperties(self, properties)
+		PhysicalDevicePropertiesP(properties)
+	}
 
 
 
 	/**
 	 * Member variable implementation of vkGetPhysicalDeviceFeatures.
 	 */
-	val features by lazy { featuresP() }
+	val features by stackLazy {
+		val features = PhysicalDeviceFeatures { }
+		commands.getPhysicalDeviceFeatures(self, features)
+		PhysicalDeviceFeaturesP(features)
+	}
 
 
 
 	/**
 	 * Member variable implementation of vkGetPhysicalDeviceMemoryProperties.
 	 */
-	val memoryProperties by lazy { memoryPropertiesP() }
+	val memoryProperties by stackLazy {
+		val properties = PhysicalDeviceMemoryProperties { }
+		commands.getPhysicalDeviceMemoryProperties(self, properties)
+		PhysicalDeviceMemoryPropertiesP(properties)
+	}
 
 
 
 	/**
 	 * Member variable implementation of vkGetPhysicalDeviceQueueFamilyProperties.
 	 */
-	val queueFamilies by lazy { queueFamilyPropertiesP() }
+	val queueFamilies by stackLazy {
+		val count = mallocInt()
+		commands.getPhysicalDeviceQueueFamilyProperties(self, count, null)
+		val queueFamilies = QueueFamilyProperties(count.value) {  }
+		commands.getPhysicalDeviceQueueFamilyProperties(self, count, queueFamilies)
+		queueFamilies.mapIndexed { i, p -> QueueFamily(i, self, p) }
+	}
 
 
 
-	/**
-	 * Wrapper for [PhysicalDeviceMemoryProperties.memoryTypes].
-	 */
-	val memoryTypes get() = memoryProperties.memoryTypes
+	val limits       get() = properties.limits
 
+	val memoryTypes  get() = memoryProperties.memoryTypes
 
-
-	val isDiscrete get() = properties.deviceType == PhysicalDeviceType.DISCRETE_GPU
+	val isDiscrete   get() = properties.deviceType == PhysicalDeviceType.DISCRETE_GPU
 
 	val isIntegrated get() = properties.deviceType == PhysicalDeviceType.INTEGRATED_GPU
 
-	val isVirtual get() = properties.deviceType == PhysicalDeviceType.VIRTUAL_GPU
+	val isVirtual    get() = properties.deviceType == PhysicalDeviceType.VIRTUAL_GPU
 
-	val isCpu get() = properties.deviceType == PhysicalDeviceType.CPU
-
-
-
-	/*
-	Layer properties
-	 */
-
-
-
-	/**
-	 * Implementation of vkEnumerateDeviceLayerProperties.
-	 */
-	fun layerProperties(count: DirectInt, properties: LayerProperties.Buffer?) {
-		commands.enumerateDeviceLayerProperties(this, count, properties).check()
-	}
-
-
-
-	/**
-	 * Allocator implementation of vkEnumerateDeviceLayerProperties.
-	 */
-	fun layerProperties(allocator: Allocator, stack: MemStack = default) = stack.get {
-		val count = mallocInt()
-		layerProperties(count, null)
-		val properties = allocator.LayerProperties(count.value) { }
-		layerProperties(count, properties)
-		properties
-	}
-
-
-
-	/**
-	 * Persistent implementation of vkEnumerateDeviceLayerProperties.
-	 */
-	fun layerPropertiesP(stack: MemStack = default) = stack.get {
-		val count = mallocInt()
-		layerProperties(count, null)
-		val properties = LayerProperties(count.value) { }
-		layerProperties(count, properties)
-		properties.map { LayerPropertiesP(it) }
-	}
+	val isCpu        get() = properties.deviceType == PhysicalDeviceType.CPU
 
 
 
 	/*
-	Extension properties
+	Formats
 	 */
-
-
-
-	/**
-	 * Implementation of vkEnumerateDeviceExtensionProperties.
-	 */
-	fun extensionProperties(layerName: DirectByteBuffer?, count: DirectInt, properties: ExtensionProperties.Buffer?) {
-		commands.enumerateDeviceExtensionProperties(this, layerName, count, properties).check()
-	}
-
-
-
-	/**
-	 * Allocator implementation of vkEnumerateDeviceExtensionProperties.
-	 */
-	fun extensionProperties(allocator: Allocator, layerName: String, stack: MemStack = default) = stack.get {
-		val pLayerName = encodeUtf8NT(layerName)
-		val count = mallocInt()
-		extensionProperties(pLayerName, count, null)
-		val properties = allocator.ExtensionProperties(count.value) { }
-		extensionProperties(pLayerName, count, properties)
-		properties
-	}
-
-
-
-	/**
-	 * Persistent implementation of vkEnumerateDeviceExtensionProperties.
-	 */
-	fun extensionPropertiesP(layerName: String, stack: MemStack = default) = stack.get {
-		val pLayerName = encodeUtf8NT(layerName)
-		val count = mallocInt()
-		extensionProperties(pLayerName, count, null)
-		val properties = ExtensionProperties(count.value) { }
-		extensionProperties(pLayerName, count, properties)
-		properties.map { ExtensionPropertiesP(it) }
-	}
-
-
-
-	/*
-	Properties
-	 */
-
-
-
-	/**
-	 * Implementation of vkGetPhysicalDeviceProperties.
-	 */
-	fun properties(properties: PhysicalDeviceProperties) {
-		commands.getPhysicalDeviceProperties(self, properties)
-	}
-
-
-
-	/**
-	 * Allocator implementation of vkGetPhysicalDeviceProperties.
-	 */
-	fun properties(allocator: Allocator): PhysicalDeviceProperties {
-		val properties = allocator.PhysicalDeviceProperties { }
-		properties(properties)
-		return properties
-	}
-
-
-
-	/**
-	 * Persistent implementation of vkGetPhysicalDeviceProperties.
-	 */
-	fun propertiesP(stack: MemStack = default) = stack.get {
-		val properties = PhysicalDeviceProperties { }
-		properties(properties)
-		PhysicalDevicePropertiesP(properties)
-	}
-
-
-
-	/*
-	Memory properties
-	 */
-
-
-
-	/**
-	 * Implementation of vkGetPhysicalDeviceMemoryProperties.
-	 */
-	fun memoryProperties(properties: PhysicalDeviceMemoryProperties) {
-		commands.getPhysicalDeviceMemoryProperties(self, properties)
-	}
-
-
-
-	/**
-	 * Allocator implementation of vkGetPhysicalDeviceMemoryProperties.
-	 */
-	fun memoryProperties(allocator: Allocator): PhysicalDeviceMemoryProperties {
-		val memoryProperties = allocator.PhysicalDeviceMemoryProperties { }
-		commands.getPhysicalDeviceMemoryProperties(self, memoryProperties)
-		return memoryProperties
-	}
-
-
-
-	/**
-	 * Persistent implementation of vkGetPhysicalDeviceMemoryProperties.
-	 */
-	fun memoryPropertiesP(stack: MemStack = default) = stack.get {
-		val memoryProperties = PhysicalDeviceMemoryProperties { }
-		commands.getPhysicalDeviceMemoryProperties(self, memoryProperties)
-		PhysicalDeviceMemoryPropertiesP(memoryProperties)
-	}
-
-
-
-	/*
-	Features
-	 */
-
-
-
-	/**
-	 * Implementation of vkGetPhysicalDeviceFeatures.
-	 */
-	fun features(features: PhysicalDeviceFeatures) {
-		commands.getPhysicalDeviceFeatures(self, features)
-	}
-
-
-
-	/**
-	 * Allocator implementation of vkGetPhysicalDeviceFeatures.
-	 */
-	fun features(allocator: Allocator): PhysicalDeviceFeatures {
-		val features = allocator.PhysicalDeviceFeatures { }
-		features(features)
-		return features
-	}
-
-
-
-	/**
-	 * Persistent implementation of vkGetPhysicalDeviceFeatures.
-	 */
-	fun featuresP(stack: MemStack = default) = stack.get {
-		val features = PhysicalDeviceFeatures { }
-		features(features)
-		PhysicalDeviceFeaturesP(features)
-	}
-
-
-
-	/*
-	Queue family properties
-	 */
-
-
-
-	/**
-	 * Implementation of vkGetPhysicalDeviceQueueFamilyProperties.
-	 */
-	fun queueFamilyProperties(count: DirectInt, properties: QueueFamilyProperties.Buffer?) {
-		commands.getPhysicalDeviceQueueFamilyProperties(this, count, properties)
-	}
-
-
-
-	/**
-	 * Allocator implementation of vkGetPhysicalDeviceQueueFamilyProperties.
-	 */
-	fun queueFamilyProperties(allocator: Allocator, stack: MemStack) = stack.get {
-		val count = stack.mallocInt()
-		queueFamilyProperties(count, null)
-		val properties = allocator.QueueFamilyProperties(count.value) { }
-		queueFamilyProperties(count, properties)
-		properties
-	}
-
-
-
-	/**
-	 * Persistent implementation of vkGetPhysicalDeviceQueueFamilyProperties.
-	 */
-	fun queueFamilyPropertiesP(stack: MemStack = default) = stack.get {
-		val count = mallocInt()
-		queueFamilyProperties(count, null)
-		val properties = QueueFamilyProperties(count.value) { }
-		queueFamilyProperties(count, properties)
-		properties.asList.mapIndexed { i, p -> QueueFamily(i, self, p) }
-	}
-
-
-
-	/*
-	Format properties
-	 */
-
-
-
-	/**
-	 * Implementation of vkGetPhysicalDeviceFormatProperties.
-	 */
-	fun formatProperties(format: Format, properties: FormatProperties) {
-		commands.getPhysicalDeviceFormatProperties(this, format, properties)
-	}
-
-
-
-	/**
-	 * Allocator implementation of vkGetPhysicalDeviceFormatProperties.
-	 */
-	fun formatFeatures(allocator: Allocator, format: Format): FormatProperties {
-		val properties = allocator.FormatProperties { }
-		formatProperties(format, properties)
-		return properties
-	}
 
 
 
 	/**
 	 * Persistent implementation of vkGetPhysicalDeviceFormatProperties.
 	 */
-	fun formatFeaturesP(format: Format, stack: MemStack = default) = stack.get {
+	fun formatProperties(format: Format) = stackGet {
 		val properties = FormatProperties { }
-		formatProperties(format, properties)
+		commands.getPhysicalDeviceFormatProperties(self, format, properties)
 		FormatPropertiesP(properties)
 	}
 
 
 
 	/*
-	Surface formats
+	Surface
 	 */
 
 
@@ -389,60 +126,18 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 	/**
 	 * Implementation of vkGetPhysicalDeviceSurfaceFormatsKHR.
 	 */
-	fun surfaceFormats(surface: Surface, count: DirectInt, formats: SurfaceFormat.Buffer?) {
-		commands.getPhysicalDeviceSurfaceFormats(self, surface, count, formats).check()
-	}
-
-
-
-	/**
-	 * Allocator implementation of vkGetPhysicalDeviceSurfaceFormatsKHR.
-	 */
-	fun surfaceFormats(allocator: Allocator, surface: Surface, stack: MemStack) = stack.get {
-		val count = stack.mallocInt()
-		surfaceFormats(surface, count, null)
-		val formats = allocator.SurfaceFormat(count.value) { }
-		surfaceFormats(surface, count, formats)
-		formats
-	}
-
-
-
-	/**
-	 * Persistent implementation of vkGetPhysicalDeviceSurfaceFormatsKHR.
-	 */
-	fun surfaceFormatsP(surface: Surface, stack: MemStack = default) = stack.get {
+	fun surfaceFormats(surface: Surface) = stackGet {
 		val count = mallocInt()
-		surfaceFormats(surface, count, null)
+		commands.getPhysicalDeviceSurfaceFormats(self, surface, count, null).check()
 		val formats = SurfaceFormat(count.value) { }
-		surfaceFormats(surface, count, formats)
+		commands.getPhysicalDeviceSurfaceFormats(self, surface, count, formats).check()
 		formats.map(::SurfaceFormatP)
 	}
 
 
 
 	/**
-	 * Convenience implementation of vkGetPhysicalDeviceSurfaceFormatsKHR that returns a list of [VkFormat][Format]
-	 * rather than a list of [VkSurfaceFormatKHR][SurfaceFormat].
-	 */
-	fun surfaceFormatsCondensed(surface: Surface, stack: MemStack = default) = stack.get {
-		val count = mallocInt()
-		surfaceFormats(surface, count, null)
-		val formats = SurfaceFormat(count.value) { }
-		surfaceFormats(surface, count, formats)
-		formats.map { it.format }
-	}
-
-
-
-	/*
-	Surface capabilities
-	 */
-
-
-
-	/**
-	 * Implementation of vkGetPhysicalDeviceSurfaceCapabilities
+	 * Implementation of vkGetPhysicalDeviceSurfaceCapabilities.
 	 */
 	fun surfaceCapabilities(surface: Surface, capabilities: SurfaceCapabilities) {
 		commands.getPhysicalDeviceSurfaceCapabilities(this, surface, capabilities).check()
@@ -451,90 +146,36 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 
 
 	/**
-	 * Allocator implementation of vkGetPhysicalDeviceSurfaceCapabilities
+	 * Implementation of vkGetPhysicalDeviceSurfaceCapabilities.
 	 */
-	fun surfaceCapabilities(allocator: Allocator, surface: Surface): SurfaceCapabilities {
-		val capabilities = allocator.SurfaceCapabilities { }
-		surfaceCapabilities(surface, capabilities)
-		return capabilities
-	}
-
-
-
-	/**
-	 * Persistent implementation of vkGetPhysicalDeviceSurfaceCapabilities.
-	 */
-	fun surfaceCapabilitiesP(surface: Surface, stack: MemStack = default) = stack.get {
+	fun surfaceCapabilities(surface: Surface) = stackGet {
 		val capabilities = SurfaceCapabilities { }
-		surfaceCapabilities(surface, capabilities)
+		commands.getPhysicalDeviceSurfaceCapabilities(self, surface, capabilities).check()
 		SurfaceCapabilitiesP(capabilities)
 	}
-
-
-
-	/*
-	Surface present modes
-	 */
 
 
 
 	/**
 	 * Implementation of vkGetPhysicalDeviceSurfacePresentModesKHR.
 	 */
-	fun surfacePresentModes(surface: Surface, count: DirectInt, presentModes: DirectIntBuffer?) {
-		commands.getPhysicalDeviceSurfacePresentModes(self, surface, count, presentModes).check()
-	}
-
-
-
-	/**
-	 * Allocator implementation of vkGetPhysicalDeviceSurfacePresentModesKHR.
-	 */
-	fun surfacePresentModes(allocator: Allocator, surface: Surface, stack: MemStack) = stack.get {
-		val count = stack.mallocInt()
-		surfacePresentModes(surface, count, null)
-		val presentModes = allocator.mallocInt(count.value)
-		surfacePresentModes(surface, count, presentModes)
-		presentModes
-	}
-
-
-
-	/**
-	 * Persistent implementation of vkGetPhysicalDeviceSurfacePresentModesKHR.
-	 */
-	fun surfacePresentModesP(surface: Surface, stack: MemStack = default) = stack.get {
+	fun surfacePresentModes(surface: Surface) = stackGet {
 		val count = mallocInt()
-		surfacePresentModes(surface, count, null)
+		commands.getPhysicalDeviceSurfacePresentModes(self, surface, count, null).check()
 		val presentModes = mallocInt(count.value)
-		surfacePresentModes(surface, count, presentModes)
-		presentModes.map { mode -> PresentMode.values().first { it.value == mode } }
+		commands.getPhysicalDeviceSurfacePresentModes(self, surface, count, presentModes).check()
+		presentModes.map(::_PresentMode)
 	}
-
-
-
-	/*
-	Surface support
-	 */
 
 
 
 	/**
 	 * Implementation of vkGetPhysicalDeviceSurfaceSupportKHR.
 	 */
-	fun supportsSurface(queueFamilyIndex: Int, surface: Surface, supported: DirectInt) {
-		commands.getPhysicalDeviceSurfaceSupport(self, queueFamilyIndex, surface, supported).check()
-	}
-
-
-
-	/**
-	 * Persistent implementation of vkGetPhysicalDeviceSurfaceSupport.
-	 */
-	fun supportsSurface(queueFamilyIndex: Int, surface: Surface, stack: MemStack = default) = stack.get {
+	fun supportsSurface(queueFamily: QueueFamily, surface: Surface) = stackGet {
 		val supported = mallocInt()
-		supportsSurface(queueFamilyIndex, surface, supported)
-		supported.value != 0
+		commands.getPhysicalDeviceSurfaceSupport(self, queueFamily.index, surface, supported).check()
+		supported.value == VK_TRUE
 	}
 
 
@@ -548,24 +189,15 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 	/**
 	 * Implementation of vkCreateWin32SurfaceKHR.
 	 */
-	fun createWin32Surface(info: Win32SurfaceCreateInfo, stack: MemStack = default) = stack.get {
-		val surface = mallocPointer()
-		commands.createWin32Surface(info, null, surface).check()
-		Surface(surface.value, self)
-	}
-
-
-
-	/**
-	 * Convenience version of vkCreateWin32SurfaceKHR. Creates a [Surface] that is tied to a native Win32 window.
-	 */
-	fun createWin32Surface(hinstance: Long, hwnd: Long, stack: MemStack = default) = stack.get {
+	fun createWin32Surface(hinstance: Long, hwnd: Long) = stackGet {
 		val info = Win32SurfaceCreateInfo {
 			it.hinstance 	= hinstance
 			it.hwnd 		= hwnd
 		}
 
-		createWin32Surface(info)
+		val surface = mallocLong()
+		commands.createWin32Surface(info, null, surface).check()
+		Surface(surface.value, self)
 	}
 
 
@@ -577,39 +209,30 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 
 
 	/**
-	 * Implementation of vkCreateDevice.
-	 */
-	fun createDevice(info: DeviceCreateInfo, stack: MemStack = default) = stack.get {
-		val device = mallocPointer()
-		commands.createDevice(self, info, null, device).check()
-		Device(device.value, self)
-	}
-
-
-
-	/**
 	 * Convenience implementation of vkCreateDevice.
 	 */
 	fun createDevice(
-		queues      : Map<QueueFamily, Int>    = emptyMap(),
+		queues      : List<QueueFamily>,
 		extensions  : Collection<String>       = emptyList(),
-		features    : PhysicalDeviceFeatures?  = null,
-		stack       : MemStack                 = default
-	) = stack.get {
-		createDevice(DeviceCreateInfo { deviceCI ->
-			deviceCI.enabledExtensionNames = encodeUtf8NTList(extensions)
-			deviceCI.pEnabledFeatures = features.addressOrNULL
-			deviceCI.queueCreateInfos = DeviceQueueCreateInfo(queues.size) { queueCIs ->
-				var index = 0
-				for((family, count) in queues) {
-					queueCIs[index++].let {
-						it.queueFamilyIndex = family.index
-						it.queueCount = count
-						it.queuePriorities = mallocFloat(count).apply { fill(1.0F) }
-					}
-				}
+		features    : PhysicalDeviceFeatures?  = null
+	) = stackGet {
+		val queueInfos = DeviceQueueCreateInfo(queues.size) {
+			for((i, q) in queues.withIndex()) {
+				it[i].queueFamilyIndex = q.index
+				it[i].queueCount       = 1
+				it[i].queuePriorities  = wrapFloats(floatArrayOf(1.0F))
 			}
-		})
+		}
+
+		val info = DeviceCreateInfo {
+			it.enabledExtensionNames = encodeUtf8NTList(extensions)
+			if(features != null) it.enabledFeatures = features
+			it.queueCreateInfos = queueInfos
+		}
+
+		val device = mallocLong()
+		commands.createDevice(self, info, null, device).check()
+		Device(device.address, self)
 	}
 
 

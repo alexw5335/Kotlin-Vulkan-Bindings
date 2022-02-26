@@ -3,7 +3,7 @@ package kvb.fontcreator
 import kvb.app.SurfaceSystem
 import kvb.core.memory.Unsafe
 import kvb.vkwrapper.DebugUtils
-import kvb.vkwrapper.Vulkan
+import kvb.vkwrapper.VulkanInfo
 import kvb.vkwrapper.handle.Swapchain
 import kvb.vulkan.*
 import kvb.window.Window
@@ -12,7 +12,7 @@ import kvb.window.winapi.WinApiWindow
 class Context(window: Window) {
 
 
-	val instance = Vulkan.createInstance(
+	val instance = VulkanInfo.createInstance(
 		appName       = "My App",
 		appVersion    = Version(1, 0, 0),
 		engineName    = "My Engine",

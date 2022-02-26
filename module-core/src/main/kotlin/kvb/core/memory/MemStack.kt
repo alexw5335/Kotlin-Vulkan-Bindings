@@ -115,4 +115,44 @@ class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 	}
 
 
+
+	/*
+	Companion
+	 */
+
+
+
+	companion object {
+
+		/**
+		 * A [ThreadLocal] that stores a single 1 MB [MemStack] per thread.
+		 */
+		private val locals = ThreadLocal.withInitial { MemStack(Unsafe, 1L shl 20) }
+
+		/**
+		 * The thread-local [MemStack] associated with the current thread.
+		 */
+		private fun local() = locals.get()
+
+		/**
+		 * The thread-local [MemStack] of the main thread.
+		 */
+		private val default = locals.get()
+
+		/**
+		 * The [MemStack] that is used for global stack functions.
+		 */
+		var current: () -> MemStack = { default }
+
+		/**
+		 * If global [MemStack] functions use the main thread's stack or thread-local stacks. Must be set to true if
+		 * using the global [MemStack] functions from multiple threads.
+		 */
+		var isThreadSafe
+			get()      = current() == default
+			set(value) { current = if(value) ::local else ::default }
+
+	}
+
+
 }

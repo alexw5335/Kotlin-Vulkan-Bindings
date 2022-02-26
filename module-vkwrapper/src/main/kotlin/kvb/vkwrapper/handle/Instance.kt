@@ -1,7 +1,6 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.vulkan.*
 
 class Instance(address: Long) : InstanceH(address) {
@@ -31,16 +30,9 @@ class Instance(address: Long) : InstanceH(address) {
 
 
 	/**
-	 * Member variable implementation of vkEnumeratePhysicalDevices.
-	 */
-	val physicalDevices = physicalDevices()
-
-
-
-	/**
 	 * Implementation of vkEnumeratePhysicalDevices.
 	 */
-	fun physicalDevices(stack: MemStack = default) = stack.get {
+	val physicalDevices = stackGet {
 		val count = mallocInt()
 		commands.enumeratePhysicalDevices(count, null).check()
 		val devices = mallocPointer(count.value)
@@ -56,31 +48,24 @@ class Instance(address: Long) : InstanceH(address) {
 
 
 
+
 	/**
 	 * Implementation of vkCreateDebugUtilsMessengerEXT.
 	 */
-	fun createDebugMessenger(info: DebugUtilsMessengerCreateInfo, stack: MemStack = default) = stack.get {
-		val messenger = mallocPointer()
-		commands.createDebugUtilsMessenger(info, null, messenger).check()
-		DebugUtilsMessenger(messenger.value, self)
-	}
-
-
-
-	/**
-	 * Convenience implementation of vkCrateDebugUtilsMessengerEXT.
-	 */
 	fun createDebugMessenger(
-		callback	: Long,
 		severities	: DebugUtilsMessageSeverityFlags,
 		types		: DebugUtilsMessageTypeFlags,
-		stack       : MemStack = default
-	) = stack.get {
-		createDebugMessenger(DebugUtilsMessengerCreateInfo {
+		callback	: Long
+	) = stackGet {
+		val info = DebugUtilsMessengerCreateInfo {
 			it.messageSeverity = severities
-			it.messageType     = types
+			it.messageType = types
 			it.pfnUserCallback = callback
-		}, stack)
+		}
+
+		val messenger = mallocLong()
+		commands.createDebugUtilsMessenger(info, null, messenger).check()
+		DebugUtilsMessenger(messenger.value, self)
 	}
 
 

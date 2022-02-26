@@ -3,11 +3,10 @@ package kvb.app
 import kvb.core.memory.DirectList
 import kvb.core.memory.MemStacks
 import kvb.core.memory.direct.DirectByteBuffer
-import kvb.vkwrapper.Vulkan
+import kvb.vkwrapper.VulkanInfo
 import kvb.vkwrapper.allocation.VkLinearAllocator
 import kvb.vkwrapper.exception.VkException
 import kvb.vkwrapper.handle.*
-import kvb.vkwrapper.persistent.MemoryTypeP
 import kvb.vulkan.*
 
 class MemManager(
@@ -54,7 +53,7 @@ class MemManager(
 
 
 
-	val memoryRanges = DirectList(Vulkan.mem, 10) { MappedMemoryRange(it) { } }
+	val memoryRanges = DirectList(VulkanInfo.mem, 10) { MappedMemoryRange(it) { } }
 
 
 
