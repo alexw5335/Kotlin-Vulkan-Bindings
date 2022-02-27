@@ -120,13 +120,12 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 
 
 	private val ProviderElement.shouldGen get() =
-		this !is ExtensionElement ||
-			(	name == "VK_EXT_debug_utils" ||
+		this !is ExtensionElement || (deprecatedBy == null && !disabled && (promotedTo == null || promotedTo == "VK_VERSION_1_2"))
+			/*(	name == "VK_EXT_debug_utils" ||
 				name == "VK_KHR_swapchain" ||
 				name == "VK_KHR_surface" ||
 				name == "VK_KHR_display" ||
-				name == "VK_KHR_win32_surface")
-			//|| (deprecatedBy == null && !disabled && (promotedTo == null || promotedTo == "VK_VERSION_1_2"))
+				name == "VK_KHR_win32_surface")*/
 
 
 
