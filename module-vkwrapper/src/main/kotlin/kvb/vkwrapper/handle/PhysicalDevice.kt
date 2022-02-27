@@ -1,5 +1,6 @@
 package kvb.vkwrapper.handle
 
+import kvb.core.memory.addressOrNULL
 import kvb.core.memory.stackGet
 import kvb.core.memory.stackLazy
 import kvb.vkwrapper.persistent.*
@@ -195,27 +196,25 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 	 * Convenience implementation of vkCreateDevice.
 	 */
 	fun createDevice(
-		queues      : List<QueueFamily>,
+		queueFamily : QueueFamily,
 		extensions  : Collection<String>       = emptyList(),
 		features    : PhysicalDeviceFeatures?  = null
 	) = stackGet {
-		val queueInfos = DeviceQueueCreateInfo(queues.size) {
-			for((i, q) in queues.withIndex()) {
-				it[i].queueFamilyIndex = q.index
-				it[i].queueCount       = 1
-				it[i].queuePriorities  = wrapFloats(floatArrayOf(1.0F))
-			}
+		val queueCI = DeviceQueueCreateInfo {
+			it.queueFamilyIndex = queueFamily.index
+			it.queueCount = 1
+			it.pQueuePriorities = wrapFloat(1.0F).address
 		}
 
 		val info = DeviceCreateInfo {
+			it.queueCreateInfos = queueCI.asBuffer
+			it.pEnabledFeatures = features.addressOrNULL
 			it.enabledExtensionNames = encodeUtf8NTList(extensions)
-			if(features != null) it.enabledFeatures = features
-			it.queueCreateInfos = queueInfos
 		}
 
 		val device = mallocLong()
 		commands.createDevice(self, info, null, device).check()
-		Device(device.address, self)
+		Device(device.value, self)
 	}
 
 

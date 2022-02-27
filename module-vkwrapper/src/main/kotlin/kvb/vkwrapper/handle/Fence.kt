@@ -1,7 +1,6 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.vulkan.*
 
 class Fence(address: Long, val device: Device) : FenceH(address) {
@@ -24,21 +23,18 @@ class Fence(address: Long, val device: Device) : FenceH(address) {
 
 
 
-	fun wait(
-		timeout : Long     = ULong.MAX_VALUE.toLong(),
-		stack   : MemStack = default
-	) = stack.with {
+	fun waitFor(timeout: Long = 0L) = stack {
 		commands.waitForFences(
-			1,
-			wrapPointer(self),
-			VK_TRUE,
-			timeout,
+			fenceCount = 1,
+			pFences    = wrapPointer(self),
+			waitAll    = VK_TRUE,
+			timeout    = timeout,
 		).check()
 	}
 
 
 
-	fun reset(stack: MemStack = default) = stack.with {
+	fun reset() = stack {
 		commands.resetFences(1, wrapPointer(self))
 	}
 

@@ -1,8 +1,6 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.Allocator
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.vkwrapper.allocation.VkAllocation
 import kvb.vkwrapper.persistent.MemoryRequirementsP
 import kvb.vulkan.*
@@ -82,36 +80,10 @@ class Image(
 
 
 
-	/*
-	Memory requirements
-	 */
-
-
-
-	/**
-	 * Implementation of vkGetImageMemoryRequirements.
-	 */
-	fun memoryRequirements(requirements: MemoryRequirements) {
-		commands.getImageMemoryRequirements(this, requirements)
-	}
-
-
-
-	/**
-	 * Allocator implementation of vkGetImageMemoryRequirements.
-	 */
-	fun memoryRequirements(allocator: Allocator) : MemoryRequirements {
-		val requirements = allocator.MemoryRequirements { }
-		commands.getImageMemoryRequirements(this, requirements)
-		return requirements
-	}
-
-
-
 	/**
 	 * Persistent implementation of vkGetImageMemoryRequirements.
 	 */
-	fun memoryRequirementsP(stack: MemStack = default) = stack.get {
+	fun memoryRequirements() = stackGet {
 		val requirements = MemoryRequirements { }
 		commands.getImageMemoryRequirements(self, requirements)
 		MemoryRequirementsP(requirements)

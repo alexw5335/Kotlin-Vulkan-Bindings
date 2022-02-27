@@ -2,7 +2,8 @@ package kvb.codegen.vulkan
 
 import kvb.codegen.vulkan.scrape.*
 import kvb.codegen.writer.*
-import kvb.core.memory.*
+import kvb.core.memory.Allocator
+import kvb.core.memory.MemStack
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -21,17 +22,7 @@ class VulkanGenerator(
 
 
 
-	/*
-	Writer utils
-	 */
-
-
-
 	private fun write(name: String, block: KWriter.() -> Unit) = KWriter.write(directory, name, block)
-
-	private fun KWriter.vulkanPackage() = package_(packageName)
-
-	private val primitivePackage = "kvb.core.memory.direct"
 
 
 
@@ -150,7 +141,7 @@ class VulkanGenerator(
 		start {
 			autogenComment()
 			suppressFile("Unused")
-			vulkanPackage()
+			package_(packageName)
 		}
 
 		group(1) {
@@ -190,7 +181,7 @@ class VulkanGenerator(
 		start {
 			autogenComment()
 			suppressFile("Unused", "FunctionName")
-			vulkanPackage()
+			package_(packageName)
 		}
 
 		styled(style(1, 0)) {
@@ -260,7 +251,7 @@ class VulkanGenerator(
 		start {
 			autogenComment()
 			suppressFile("Unused", "FunctionName")
-			vulkanPackage()
+			package_(packageName)
 		}
 
 		styled(style(1, 0)) {
@@ -369,10 +360,6 @@ class VulkanGenerator(
 	/*
 	Commands - Jni
 	 */
-
-
-
-	private val Var.castName get() = "(${modifier.castName(type.name)}) $name"
 
 
 
@@ -523,11 +510,11 @@ class VulkanGenerator(
 		start {
 			autogenComment()
 			suppressFile("Unused")
-			vulkanPackage()
+			package_(packageName)
 			imports(
 				MemStack::class,
-				Addressable::class.qualifiedName + ".Companion.addressOrNULL",
-				"$primitivePackage.*"
+				"kvb.core.memory.*",
+				"kvb.core.memory.direct.*"
 			)
 		}
 
@@ -964,13 +951,10 @@ class VulkanGenerator(
 		start {
 			autogenComment()
 			suppressFile("Unused", "FunctionName")
-			vulkanPackage()
-
+			package_(packageName)
 			imports(
-				DirectBuffer::class,
-				Unsafe::class,
-				Addressable::class,
-				"$primitivePackage.*"
+				"kvb.core.memory.*",
+				"kvb.core.memory.direct.*"
 			)
 		}
 
@@ -1013,7 +997,7 @@ class VulkanGenerator(
 		start {
 			autogenComment()
 			suppressFile("Unused", "FunctionName")
-			vulkanPackage()
+			package_(packageName)
 			imports(Allocator::class)
 		}
 
@@ -1043,7 +1027,7 @@ class VulkanGenerator(
 	fun genUtils() = write("Utils") {
 		start {
 			autogenComment()
-			vulkanPackage()
+			package_(packageName)
 		}
 
 		doc("An abstraction of the macros VK_VERSION_MAJOR, VK_VERSION_MINOR, and VK_VERSION_PATCH.")

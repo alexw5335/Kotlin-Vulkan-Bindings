@@ -1,7 +1,6 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.vkwrapper.persistent.QueueFamily
 import kvb.vulkan.*
 
@@ -38,7 +37,7 @@ class CommandPool(
 	/**
 	 * Implementation of vkAllocateCommandBuffers.
 	 */
-	fun allocate(level: CommandBufferLevel, count: Int, stack: MemStack = default) = stack.get {
+	fun allocate(level: CommandBufferLevel, count: Int) = stackGet {
 		val info = CommandBufferAllocateInfo {
 			it.commandPool = self
 			it.level = level
@@ -55,7 +54,7 @@ class CommandPool(
 	/**
 	 * Single implementation of vkAllocateCommandBuffers.
 	 */
-	fun allocate(level: CommandBufferLevel, stack: MemStack = default) = stack.get {
+	fun allocate(level: CommandBufferLevel) = stackGet {
 		val info = CommandBufferAllocateInfo {
 			it.commandPool = self
 			it.level = level
@@ -72,28 +71,28 @@ class CommandPool(
 	/**
 	 * Version of vkAllocateCommandBuffers with [CommandBufferLevel.PRIMARY].
 	 */
-	fun allocatePrimary(count: Int, stack: MemStack = default) = allocate(CommandBufferLevel.PRIMARY, count, stack)
+	fun allocatePrimary(count: Int) = allocate(CommandBufferLevel.PRIMARY, count)
 
 
 
 	/**
 	 * Version of vkAllocateCommandBuffers with [CommandBufferLevel.SECONDARY].
 	 */
-	fun allocateSecondary(count: Int, stack: MemStack = default) = allocate(CommandBufferLevel.SECONDARY, count, stack)
+	fun allocateSecondary(count: Int) = allocate(CommandBufferLevel.SECONDARY, count)
 
 
 
 	/**
 	 * Single version of [allocatePrimary].
 	 */
-	fun allocatePrimary(stack: MemStack = default) = allocate(CommandBufferLevel.PRIMARY, stack)
+	fun allocatePrimary() = allocate(CommandBufferLevel.PRIMARY)
 
 
 
 	/**
 	 * Single version of [allocateSecondary].
 	 */
-	fun allocateSecondary(stack: MemStack = default) = allocate(CommandBufferLevel.SECONDARY, stack)
+	fun allocateSecondary() = allocate(CommandBufferLevel.SECONDARY)
 
 
 

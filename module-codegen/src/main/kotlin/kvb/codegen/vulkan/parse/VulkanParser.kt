@@ -399,7 +399,7 @@ class VulkanParser(private val registry: XmlElement) {
 		len == "null-terminated"			-> null
 
 		// Edge-case - refers to a variable of a variable within the struct.
-		len == "pBuildInfo-geometryCount" 	-> null
+		len == "pBuildInfo->geometryCount" 	-> null
 
 		// By this point, the length should refer to another variable in a struct.
 		// Warning: This will not catch new edge-cases.

@@ -4,8 +4,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.MemStack
 import kvb.core.memory.Addressable.Companion.addressOrNULL
+import kvb.core.memory.MemStack
 import kvb.core.memory.direct.*
 
 object Commands {
@@ -288,9 +288,9 @@ class DeviceCommands(private val device: DeviceH, private val instanceCommands: 
 	private val stack = MemStack.current()
 
 	private fun addr(name: String) = instanceCommands.getDeviceProcAddr(device, stack.encodeUtf8NT(name))
-	
-	
-	
+
+
+
 	private val stackPointer = stack.push()
 	private val destroyDeviceAddr = addr("vkDestroyDevice")
 	private val getDeviceQueueAddr = addr("vkGetDeviceQueue")

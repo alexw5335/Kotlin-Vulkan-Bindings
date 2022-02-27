@@ -1,6 +1,6 @@
 package kvb.window.winapi
 
-import kvb.core.memory.MemStacks
+import kvb.core.memory.*
 import kvb.window.Window
 import kvb.window.WindowManager
 import kvb.window.input.Button
@@ -58,7 +58,7 @@ object WinApi : WindowManager {
 
 
 	override fun create(title: String, x: Int, y: Int, width: Int, height: Int): Window {
-		val address = MemStacks.get {
+		val address = stackGet {
 			createWindow(encodeUtf16NT(title).address, x, y, width, height)
 		}
 
@@ -112,7 +112,7 @@ object WinApi : WindowManager {
 
 
 
-	private val message = Message(MemStacks.meta)
+	private val message = Message(Unsafe)
 
 	private val Message.wparamButton get() = Button.windowsMap[wparam.toInt()] ?: Button.NONE
 

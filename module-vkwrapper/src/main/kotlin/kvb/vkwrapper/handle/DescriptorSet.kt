@@ -1,7 +1,6 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.vulkan.*
 
 class DescriptorSet(
@@ -35,9 +34,8 @@ class DescriptorSet(
 		binding : Int,
 		buffer  : Buffer,
 		offset  : Long = 0L,
-		size    : Long = buffer.size,
-		stack   : MemStack = default
-	) = stack.with {
+		size    : Long = buffer.size
+	) = stack {
 		device.updateDescriptorSets(
 			WriteDescriptorSet {
 				it.dstSet = self
@@ -60,9 +58,8 @@ class DescriptorSet(
 		binding     : Int,
 		sampler     : Sampler,
 		imageView   : ImageView,
-		imageLayout : ImageLayout,
-		stack       : MemStack = default
-	) = stack.with {
+		imageLayout : ImageLayout
+	) = stack {
 		device.updateDescriptorSets(
 			WriteDescriptorSet {
 				it.dstSet = self
@@ -83,9 +80,8 @@ class DescriptorSet(
 
 	fun imageWrite(
 		binding     : Int,
-		sampler     : Sampler,
-		stack       : MemStack = default
-	) = stack.with {
+		sampler     : Sampler
+	) = stack {
 		device.updateDescriptorSets(
 			WriteDescriptorSet {
 				it.dstSet = self
@@ -105,9 +101,8 @@ class DescriptorSet(
 	fun imageWrite(
 		binding     : Int,
 		imageView   : ImageView,
-		imageLayout : ImageLayout,
-		stack       : MemStack = default
-	) = stack.with {
+		imageLayout : ImageLayout
+	) = stack {
 		device.updateDescriptorSets(
 			WriteDescriptorSet {
 				it.dstSet = self

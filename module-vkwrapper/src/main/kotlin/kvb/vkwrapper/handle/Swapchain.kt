@@ -1,8 +1,6 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.core.memory.direct.DirectInt
 import kvb.core.memory.direct.DirectLongBuffer
 import kvb.vulkan.*
@@ -64,12 +62,11 @@ class Swapchain(
 	/**
 	 * MemStack implementation of vkGetSwapchainImagesKHR.
 	 */
-	fun getImages(stack: MemStack = default) = stack.get {
-		val count = stack.mallocInt()
+	fun getImages() = stackGet {
+		val count = mallocInt()
 		getImages(count, null)
-		val images = stack.mallocPointer(count.value)
+		val images = mallocPointer(count.value)
 		getImages(count, images)
-		// Actual parameters given to Image do not matter as they will never be queried.
 		images.map { Image(it, device, ImageType._2D, format, width, height, 1, 1, 1, ImageTiling.OPTIMAL) }
 	}
 
@@ -88,8 +85,7 @@ class Swapchain(
 		timeout   : Long        = ULong.MAX_VALUE.toLong(),
 		semaphore : Semaphore?  = null,
 		fence     : Fence?      = null,
-		stack     : MemStack    = default
-	): Int = stack.get {
+	): Int = stackGet {
 		val index = mallocInt()
 
 		when(val result = commands.acquireNextImage(self, timeout, semaphore, fence, index)) {

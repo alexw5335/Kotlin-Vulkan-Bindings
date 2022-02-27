@@ -21,7 +21,7 @@ open class LinearAllocator(val address: Long, val size: Long) : Allocator {
 
 	val bytesUsed get() = pointer - address
 
-	val bytesAvailable get() = size - pointer
+	val bytesAvailable get() = size - pointer + address
 
 	val usage get() = bytesUsed.toFloat() / size.toFloat() * 100F
 

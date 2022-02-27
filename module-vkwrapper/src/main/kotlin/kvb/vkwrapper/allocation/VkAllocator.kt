@@ -1,25 +1,36 @@
 package kvb.vkwrapper.allocation
 
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.vkwrapper.handle.Buffer
 import kvb.vkwrapper.handle.Image
-import kvb.vulkan.MemoryRequirements
+import kvb.vulkan.*
 
 interface VkAllocator {
 
 
 	fun allocate(size: Long, alignment: Long): VkAllocation
 
+
+
 	fun allocate(requirements: MemoryRequirements) = allocate(requirements.size, requirements.alignment)
 
-	fun allocate(buffer: Buffer, stack: MemStack = default) = stack.get {
-		allocate(buffer.memoryRequirements(stack))
+
+
+	fun allocate(buffer: Buffer) = stackGet {
+		val requirements = MemoryRequirements { }
+		buffer.commands.getBufferMemoryRequirements(buffer, requirements)
+		allocate(requirements)
 	}
 
-	fun allocate(image: Image, stack: MemStack = default) = stack.get {
-		allocate(image.memoryRequirements(stack))
+
+
+	fun allocate(image: Image) = stackGet {
+		val requirements = MemoryRequirements { }
+		image.commands.getImageMemoryRequirements(image, requirements)
+		allocate(requirements)
 	}
+
+
 
 	fun destroy()
 

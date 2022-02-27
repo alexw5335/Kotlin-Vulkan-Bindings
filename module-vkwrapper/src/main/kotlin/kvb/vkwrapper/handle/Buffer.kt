@@ -1,8 +1,6 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.Allocator
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.core.memory.direct.DirectByteBuffer
 import kvb.vkwrapper.allocation.VkAllocation
 import kvb.vkwrapper.exception.VkException
@@ -22,14 +20,10 @@ class Buffer(
 ) : BufferH(address) {
 
 
-	/**
-	 * Convenience variable.
-	 */
 	val commands get() = device.commands
 
-	/**
-	 * Implementation of vkDestroyBuffer.
-	 */
+	private val self = this
+
 	fun destroy() = commands.destroyBuffer(this, null)
 
 
@@ -71,15 +65,15 @@ class Buffer(
 
 
 
-	fun flush(offset: Long = 0L, size: Long = this.size, stack: MemStack = default) {
-		memory.flush(this.offset + offset, min(this.size - offset, size), stack)
+	fun flush(offset: Long = 0L, size: Long = this.size) = stack {
+		memory.flush(self.offset + offset, min(this.size - offset, size))
 	}
 
 
 
-	inline fun flush(stack: MemStack = default, block: (DirectByteBuffer) -> Unit) {
+	inline fun flush(block: (DirectByteBuffer) -> Unit) {
 		block(data())
-		memory.flush(offset, size, stack)
+		memory.flush(offset, size)
 	}
 
 
@@ -111,38 +105,12 @@ class Buffer(
 
 
 
-	/*
-	Memory requirements
-	 */
-
-
-
-	/**
-	 * Implementation of vkGetBufferMemoryRequirements.
-	 */
-	fun memoryRequirements(requirements: MemoryRequirements) {
-		commands.getBufferMemoryRequirements(this, requirements)
-	}
-
-
-
-	/**
-	 * Allocator implementation of vkGetBufferMemoryRequirements.
-	 */
-	fun memoryRequirements(allocator: Allocator): MemoryRequirements {
-		val requirements = allocator.MemoryRequirements { }
-		memoryRequirements(requirements)
-		return requirements
-	}
-
-
-
 	/**
 	 * Persistent implementation of vkGetBufferMemoryRequirements.
 	 */
-	fun memoryRequirementsP(stack: MemStack = default) = stack.get {
+	fun memoryRequirements() = stackGet {
 		val requirements = MemoryRequirements { }
-		memoryRequirements(requirements)
+		commands.getBufferMemoryRequirements(self, requirements)
 		MemoryRequirementsP(requirements)
 	}
 

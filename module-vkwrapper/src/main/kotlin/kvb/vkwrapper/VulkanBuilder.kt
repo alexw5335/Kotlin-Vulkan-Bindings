@@ -35,11 +35,11 @@ class VulkanBuilder {
 
 	var engineVersion = Version(1, 0, 0)
 
-	var apiVersion = VulkanInfo.version
+	var apiVersion = Version(1, 2, 0)//VulkanInfo.version
 
 	var debugTypes = DebugUtilsMessageTypeFlags { GENERAL + VALIDATION + PERFORMANCE }
 
-	var debugSeverities = DebugUtilsMessageSeverityFlags { VERBOSE + INFO + WARNING + ERROR }
+	var debugSeverities = DebugUtilsMessageSeverityFlags { WARNING + ERROR }
 
 	var debugCallback = DebugUtils.defaultCallbackAddress()
 
@@ -93,7 +93,7 @@ class VulkanBuilder {
 
 		queueFamily = physicalDevice.queueFamilies.first { it.supportsGraphics && it.supportsCompute }
 
-		device = physicalDevice.createDevice(listOf(queueFamily), deviceExtensions, deviceFeatures)
+		device = physicalDevice.createDevice(queueFamily, deviceExtensions, deviceFeatures)
 
 		queue = device.getQueue(queueFamily, 0)
 	}

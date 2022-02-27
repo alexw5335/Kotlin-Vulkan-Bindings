@@ -1,7 +1,6 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks.default
+import kvb.core.memory.*
 import kvb.core.memory.direct.DirectByteBuffer
 import kvb.core.memory.direct.DirectLong
 import kvb.vkwrapper.exception.VkException
@@ -90,7 +89,7 @@ class DeviceMemory(
 	/**
 	 * Convenience version of vkMapMemory that returns the pData argument as a [DirectByteBuffer].
 	 */
-	fun map(offset: Long, size: Long, stack: MemStack = default) = stack.get {
+	fun map(offset: Long, size: Long) = stackGet {
 		val data = mallocPointer()
 		map(offset, size, data)
 		DirectByteBuffer(data.value, if(size == VK_WHOLE_SIZE) self.size - offset else size)
@@ -102,7 +101,7 @@ class DeviceMemory(
 	 * Convenience version of vkMapMemory that maps the entire memory range and returns a [DirectByteBuffer]
 	 * representing the mapped memory range.
 	 */
-	fun mapWhole(stack: MemStack = default) = map(0L, size, stack)
+	fun mapWhole() = map(0L, size)
 
 
 
@@ -139,14 +138,14 @@ class DeviceMemory(
 	/**
 	 * Convenience version of vkFlushMappedMemoryRanges for a single memory range.
 	 */
-	fun flush(offset: Long, size: Long, stack: MemStack = default) = stack.with {
-		if(type.isHostCoherent) return@with
-
-		device.flushMappedMemoryRanges(MappedMemoryRange {
-			it.memory = self
-			it.offset = device.alignMemOffset(offset)
-			it.size   = if(size == VK_WHOLE_SIZE) size else device.alignMemSize(size)
-		}.asBuffer)
+	fun flush(offset: Long, size: Long) = stack {
+		if(!type.isHostCoherent) {
+			device.flushMappedMemoryRanges(MappedMemoryRange {
+				it.memory = self
+				it.offset = device.alignMemOffset(offset)
+				it.size   = if(size == VK_WHOLE_SIZE) size else device.alignMemSize(size)
+			}.asBuffer)
+		}
 	}
 
 
@@ -154,7 +153,7 @@ class DeviceMemory(
 	/**
 	 * Convenience version of vkFlushMappedMemoryRanges that flushes the entire memory range.
 	 */
-	fun flushWhole(stack: MemStack) = flush(0L, VK_WHOLE_SIZE, stack)
+	fun flushWhole() = flush(0L, VK_WHOLE_SIZE)
 
 
 }

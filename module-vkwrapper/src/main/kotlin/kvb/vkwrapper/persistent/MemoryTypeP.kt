@@ -45,10 +45,6 @@ class MemoryTypeP(
 
 	val isProtected       get() = flags.contains(MemoryPropertyFlags.PROTECTED)
 
-	val isDeviceCoherent  get() = flags.contains(MemoryPropertyFlags.DEVICE_COHERENT)
-
-	val isDeviceUncached  get() = flags.contains(MemoryPropertyFlags.DEVICE_UNCACHED)
-
 	val isMultiInstance   get() = heapFlags.contains(MemoryHeapFlags.MULTI_INSTANCE)
 
 

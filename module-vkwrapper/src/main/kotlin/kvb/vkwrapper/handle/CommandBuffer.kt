@@ -1,12 +1,7 @@
 package kvb.vkwrapper.handle
 
-import kvb.core.memory.Addressable.Companion.addressOrNULL
-import kvb.core.memory.MemStack
-import kvb.core.memory.MemStacks.default
-import kvb.core.memory.direct.DirectIntBuffer
-import kvb.core.memory.direct.DirectLong
-import kvb.core.memory.direct.DirectLongBuffer
-import kvb.vkwrapper.exception.VkException
+import kvb.core.memory.*
+import kvb.core.memory.direct.*
 import kvb.vulkan.*
 
 @Suppress("unused")
@@ -60,9 +55,8 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 	 */
 	fun begin(
 		flags           : CommandBufferUsageFlags        = CommandBufferUsageFlags(0),
-		inheritanceInfo : CommandBufferInheritanceInfo?  = null,
-		stack           : MemStack                       = default
-	) = stack.with {
+		inheritanceInfo : CommandBufferInheritanceInfo?  = null
+	) = stack {
 		commands.beginCommandBuffer(self, CommandBufferBeginInfo {
 			it.flags = flags
 			it.pInheritanceInfo = inheritanceInfo.addressOrNULL
@@ -151,9 +145,8 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 		renderPass  : RenderPass,
 		framebuffer : Framebuffer,
 		clearValues : ClearValue.Buffer,
-		contents    : SubpassContents    = SubpassContents.INLINE,
-		stack       : MemStack           = default
-	) = stack.with {
+		contents    : SubpassContents    = SubpassContents.INLINE
+	) = stack {
 		commands.cmdBeginRenderPass(self, RenderPassBeginInfo {
 			it.renderPass = renderPass
 			it.framebuffer = framebuffer
@@ -230,9 +223,8 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 	 */
 	fun bindVertexBuffer(
 		buffer : Buffer,
-		offset : Long      = 0,
-		stack  : MemStack  = default
-	) = stack.with {
+		offset : Long = 0
+	) = stack {
 		commands.cmdBindVertexBuffers(
 			commandBuffer = self,
 			firstBinding  = 0,
@@ -250,10 +242,9 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 	fun bindVertexBuffers(
 		buffers      : List<Buffer>,
 		offsets      : LongArray,
-		firstBinding : Int           = 0,
-		bindingCount : Int           = buffers.size,
-		stack        : MemStack      = default
-	) = stack.with {
+		firstBinding : Int = 0,
+		bindingCount : Int = buffers.size
+	) = stack {
 		commands.cmdBindVertexBuffers(
 			commandBuffer = self,
 			firstBinding  = firstBinding,
@@ -301,9 +292,8 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 		bindPoint : PipelineBindPoint,
 		layout    : PipelineLayout,
 		binding   : Int,
-		set       : DescriptorSet,
-		stack     : MemStack = default
-	) = stack.with {
+		set       : DescriptorSet
+	) = stack {
 		commands.cmdBindDescriptorSets(
 			commandBuffer      = self,
 			pipelineBindPoint  = bindPoint,
@@ -325,9 +315,8 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 	fun bindDescriptorSet(
 		pipeline : Pipeline,
 		binding  : Int,
-		set      : DescriptorSet,
-		stack    : MemStack = default
-	) = stack.with {
+		set      : DescriptorSet
+	) = stack {
 		commands.cmdBindDescriptorSets(
 			commandBuffer      = self,
 			pipelineBindPoint  = pipeline.bindPoint,
@@ -373,9 +362,8 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 		dst       : Buffer,
 		srcOffset : Long,
 		dstOffset : Long,
-		size      : Long,
-		stack     : MemStack = default
-	) = stack.with {
+		size      : Long
+	) = stack {
 		commands.cmdCopyBuffer(
 			commandBuffer = self,
 			srcBuffer     = src,
@@ -398,9 +386,8 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 	fun copyBufferToImage2D(
 		buffer : Buffer,
 		image  : Image,
-		layout : ImageLayout,
-		stack  : MemStack = default
-	) = stack.with {
+		layout : ImageLayout
+	) = stack {
 		val region = BufferImageCopy {
 			it.bufferOffset = 0
 			it.bufferRowLength = 0

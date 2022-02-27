@@ -22,3 +22,7 @@ inline fun<T> stackGet(block: MemStack.() -> T): T {
 
 
 fun <T> stackLazy(initialiser: MemStack.() -> T) = MemStackLazy(initialiser)
+
+
+
+val Addressable?.addressOrNULL get() = this?.address ?: 0L
