@@ -9,15 +9,20 @@ class VulkanParser(private val registry: XmlElement) {
 
 
 	companion object {
-		fun parse(registry: XmlElement) = VulkanParser(registry).parse()
-		fun parse(vkxmlPath: Path) = parse(XmlParser.parse(vkxmlPath))
+		fun parse(vkxmlPath: Path) = VulkanParser(XmlParser.parse(vkxmlPath)).parse()
 	}
 
 
 
-	private class ScrapeException(message: String) : RuntimeException(message)
+	/*
+	Errors
+	 */
 
-	private fun err(message: String): Nothing = throw ScrapeException(message)
+
+
+	private class ParseException(message: String) : RuntimeException(message)
+
+	private fun err(message: String): Nothing = throw ParseException(message)
 
 	private fun err(message: String, element: XmlElement): Nothing = err("$message. element=$element")
 
@@ -74,10 +79,10 @@ class VulkanParser(private val registry: XmlElement) {
 					for(child in element)
 						if(child.type == "extension")
 							providerElements.add(parseExtensionElement(child))
-								
-				"enums"     -> parseEnumsElement(element)
 
-				"feature"   -> providerElements.add(parseFeatureElement(element))
+				"enums" -> parseEnumsElement(element)
+
+				"feature" -> providerElements.add(parseFeatureElement(element))
 			}
 		}
 
@@ -167,16 +172,16 @@ class VulkanParser(private val registry: XmlElement) {
 		var value =
 			element["value"]
 
-			?: element["bitpos"]?.let {
-				(1L shl it.toInt()).toString()
-			}
+				?: element["bitpos"]?.let {
+					(1L shl it.toInt()).toString()
+				}
 
-			// See scripts/generator.py file in the KhronosGroup/Vulkan-Docs repository for the formula.
-			?: element["offset"]?.let {
-				(1000000000 + ((element["extnumber"]?.toInt() ?: extNumber) - 1) * 1000 + it.toInt()).toString()
-			}
+				// See scripts/generator.py file in the KhronosGroup/Vulkan-Docs repository for the formula.
+				?: element["offset"]?.let {
+					(1000000000 + ((element["extnumber"]?.toInt() ?: extNumber) - 1) * 1000 + it.toInt()).toString()
+				}
 
-			?: err("Invalid enum value", element)
+				?: err("Invalid enum value", element)
 
 		if(element["dir"] == "-")
 			value = "-$value"
@@ -202,28 +207,12 @@ class VulkanParser(private val registry: XmlElement) {
 		val name = element["name"] ?: err(element)
 
 		element["alias"]?.let {
-			return ConstantElement(name, "", "", true)
+			val alias = constantElements["alias"] ?: err("No such constant alias: $it", element)
+
+			return ConstantElement(name, alias.value, it)
 		}
 
-		val cValue = element.attrib("value")
-
-		// Int literal
-		cValue.toIntOrNull()?.let {
-			return ConstantElement(name, cValue, cValue)
-		}
-
-		// Hardcoded, may need to be updated in the future.
-		return when(cValue) {
-			"(~0ULL)" 	-> ConstantElement(name, cValue, "-1L")
-			"(~0U)" 	-> ConstantElement(name, cValue, "-1")
-			"(~0U-1)" 	-> ConstantElement(name, cValue, "-2")
-			"(~0U-2)" 	-> ConstantElement(name, cValue, "-3")
-			"(~1U)"     -> ConstantElement(name, cValue, "-2")
-			"(~2U)"     -> ConstantElement(name, cValue, "-3")
-			"1000.0f"	-> ConstantElement(name, cValue, "1000.0f")
-			"1000.0F"   -> ConstantElement(name, cValue, "1000.0f")
-			else		-> err("Unrecognised api constant value: $cValue", element)
-		}
+		return ConstantElement(name, element.attrib("value"))
 	}
 
 
@@ -326,85 +315,13 @@ class VulkanParser(private val registry: XmlElement) {
 		name     = element.child("name").text ?: err(element),
 		type     = element.child("type").text ?: err(element),
 		optional = element["optional"]?.equals("true") ?: false,
-		modifier = varModifier(element.text),
+		modifier = element.text,
 		index    = index,
 		len      = element["len"],
 		altLen   = element["altlen"],
-		varLen   = variableArrayLength(element["len"]),
-		constLen = constArrayLength(element),
+		lenEnum  = element.childOrNull("enum")?.text,
 		sType    = element["values"],
 	)
-
-
-
-	/**
-	 * Determines the modifier of a C parameter or struct member.
-	 */
-	private fun varModifier(modifier: String?): Modifier {
-		if(modifier == null) return Modifier.NONE
-
-		// Edge case for VkAccelerationStructureInstanceKHR.
-		if(modifier.startsWith(':')) return Modifier.NONE
-
-		if(modifier.contains('[')) return Modifier.ARRAY
-
-		// Matching the text with a modifier relies on text being condensed in the XML parser.
-		// e.g. 'const <type>void</type>*' becomes 'const*'.
-		return Modifier.values().first { it.identifier == modifier }
-	}
-
-
-
-	/**
-	 * Determines the constant array length of a struct member.
-	 */
-	private fun constArrayLength(element: XmlElement): Int? {
-		// Edge case for VkAccelerationStructureVersionInfoKHR.
-		if(element["len"] == "2*ename:VK_UUID_SIZE") return 32
-
-		// No const array length.
-		if(element.text == null || !element.text.contains('[')) return null
-
-		// If [] with no specified array length, then the array length is given as an attribute named 'enum'.
-		// The attribute refers to an API constant.
-		return element.text.split('[').last().substringBefore(']').let {
-			if(it.isEmpty())
-				constantElements.fromName(element.child("enum").text!!).value.toInt()
-			else
-				it.toInt()
-		}
-	}
-
-
-
-	/**
-	 * Returns the name of the struct member that determines another member's array length.
-	 */
-	private fun variableArrayLength(len: String?): String? = when {
-		// No variable length
-		len == null -> null
-
-		// Of the form "variable,null-terminated". Only 3 instances where this occurs:
-		// ppEnabledLayerNames, ppEnabledExtensionNames, ppGeometries.
-		// Only the first part of the len string matters for these.
-		len.contains(',') 					-> len.split(',')[0]
-
-		// Only 2 cases, too complex to create convenience functions for these.
-		len.startsWith("latexmath") 		-> null
-
-		// Handled as a constant array length (=32)
-		len == "2*ename:VK_UUID_SIZE"		-> null
-
-		// Only for char*. These are handled separately during generation.
-		len == "null-terminated"			-> null
-
-		// Edge-case - refers to a variable of a variable within the struct.
-		len == "pBuildInfo-geometryCount" 	-> null
-
-		// By this point, the length should refer to another variable in a struct.
-		// Warning: This will not catch new edge-cases.
-		else								-> len
-	}
 
 
 }

@@ -3,8 +3,6 @@ package kvb.codegen.vulkan.parse
 import kvb.codegen.vulkan.name.Named
 import kvb.codegen.vulkan.name.NamedList
 
-
-
 class PlatformElement(
 	override val name: String,
 	val define: String
@@ -13,10 +11,9 @@ class PlatformElement(
 
 
 class ConstantElement(
-	override val name : String,
-	val cValue        : String,
-	val value         : String,
-	val aliased       : Boolean = false
+	override val name: String,
+	val value: String,
+	val alias: String? = null
 ) : Named
 
 
@@ -34,22 +31,20 @@ class VarElement(
 	override val name : String,
 	val type          : String,
 	val optional      : Boolean,
-	val modifier      : Modifier,
+	val modifier      : String?,
 	val index         : Int,
 	val len           : String?,
 	val altLen        : String?,
-	val varLen        : String?,
-	val constLen      : Int?,
+	val lenEnum       : String?,
 	val sType         : String?,
 ) : Named
-
 
 
 class CommandElement(
 	override val name : String,
 	val returnType    : String?,
 	val params        : List<VarElement>,
-	val alias         : String?
+	val alias         : String? = null
 ) : Named
 
 

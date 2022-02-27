@@ -2,7 +2,6 @@ package kvb.codegen.vulkan.scrape
 
 import kvb.codegen.vulkan.name.Named
 import kvb.codegen.vulkan.name.NamedList
-import kvb.codegen.vulkan.parse.Modifier
 import kvb.codegen.vulkan.parse.PlatformElement
 import kvb.codegen.writer.Primitive
 import kvb.core.struct.StructLayout
@@ -12,7 +11,7 @@ import kvb.core.struct.StructLayoutBuilder
 
 sealed interface Provider : Named {
 	val shouldGen : Boolean
-	val types     : NamedList<VkType>
+	val types     : NamedList<Type>
 	val commands  : NamedList<Command>
 }
 
@@ -21,7 +20,7 @@ sealed interface Provider : Named {
 class Feature(
 	override val name      : String,
 	override val shouldGen : Boolean,
-	override val types     : NamedList<VkType>,
+	override val types     : NamedList<Type>,
 	override val commands  : NamedList<Command>
 ) : Provider
 
@@ -30,7 +29,7 @@ class Feature(
 class Extension(
 	override val name      : String,
 	override val shouldGen : Boolean,
-	override val types     : NamedList<VkType>,
+	override val types     : NamedList<Type>,
 	override val commands  : NamedList<Command>,
 	val number             : Int,
 	val platform           : PlatformElement?,
@@ -52,7 +51,7 @@ class Command(
 	val genName       : String,
 	val shouldGen     : Boolean,
 	val type          : CommandType,
-	val returnType    : VkType?,
+	val returnType    : Type?,
 	val params        : List<Var>
 ) : Named
 
@@ -74,7 +73,7 @@ Type
 
 
 
-sealed interface VkType : Named {
+sealed interface Type : Named {
 
 	val genName: String
 
@@ -103,7 +102,7 @@ class EnumType(
 	val is64Bit            : Boolean,
 	val isFlagBits         : Boolean,
 	val entries            : NamedList<EnumEntry>,
-) : VkType
+) : Type
 
 
 
@@ -114,7 +113,7 @@ class BitmaskType(
 	override val primitive : Primitive,
 	val is64Bit            : Boolean,
 	val enumName           : String?
-) : VkType
+) : Type
 
 
 
@@ -123,7 +122,7 @@ class HandleType(
 	override val genName: String,
 	override val shouldGen: Boolean,
 	override val primitive: Primitive
-) : VkType
+) : Type
 
 
 
@@ -132,7 +131,7 @@ class NativeType(
 	override val genName: String,
 	override val shouldGen: Boolean,
 	override val primitive: Primitive
-) : VkType
+) : Type
 
 
 
@@ -141,7 +140,7 @@ class PrimitiveType(
 	override val genName: String,
 	override val shouldGen: Boolean,
 	override val primitive: Primitive
-) : VkType
+) : Type
 
 
 
@@ -151,7 +150,7 @@ class StructType(
 	override val shouldGen: Boolean,
 	override val primitive: Primitive,
 	val isUnion: Boolean
-) : VkType {
+) : Type {
 
 
 	val members = ArrayList<Var>()
@@ -185,7 +184,7 @@ class StructType(
 
 
 
-object VoidType : VkType {
+object VoidType : Type {
 
 	override val name = "void"
 
@@ -199,7 +198,7 @@ object VoidType : VkType {
 
 
 
-class AliasedType(override val name: String, val alias: String) : VkType {
+class AliasedType(override val name: String, val alias: String) : Type {
 
 	override val genName = name
 
@@ -211,7 +210,7 @@ class AliasedType(override val name: String, val alias: String) : VkType {
 
 
 
-class UnusedType(override val name: String) : VkType {
+class UnusedType(override val name: String) : Type {
 
 	override val genName = name
 
@@ -225,7 +224,7 @@ class UnusedType(override val name: String) : VkType {
 
 class Var(
 	val name       : String,
-	val type       : VkType,
+	val type       : Type,
 	val optional   : Boolean,
 	val modifier   : Modifier,
 	val index      : Int,
