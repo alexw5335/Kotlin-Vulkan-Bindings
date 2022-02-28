@@ -4,9 +4,7 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Unsafe
-import kvb.core.memory.Addressable
+import kvb.core.memory.*
 import kvb.core.memory.direct.*
 
 /**
@@ -108,6 +106,19 @@ enum class PresentMode(val value: Int) {
 
 
 /**
+ * Enum getter for [VkPresentModeKHR].
+ */
+fun _PresentMode(value: Int) = when(value) {
+	0 -> PresentMode.IMMEDIATE
+	1 -> PresentMode.MAILBOX
+	2 -> PresentMode.FIFO
+	3 -> PresentMode.FIFO_RELAXED
+	else -> throw RuntimeException("Invalid VkPresentModeKHR enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_KHR_surface
  *     enum VkColorSpaceKHR {
  *         VK_COLOR_SPACE_SRGB_NONLINEAR_KHR           = 0
@@ -142,6 +153,16 @@ enum class ColorSpace(val value: Int) {
 
 
 /**
+ * Enum getter for [VkColorSpaceKHR].
+ */
+fun _ColorSpace(value: Int) = when(value) {
+	0 -> ColorSpace.SRGB_NONLINEAR
+	else -> throw RuntimeException("Invalid VkColorSpaceKHR enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_KHR_surface
  *     enum VkCompositeAlphaFlagBitsKHR {
  *         VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR           = 1
@@ -150,7 +171,6 @@ enum class ColorSpace(val value: Int) {
  *         VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR          = 8
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class CompositeAlphaFlags(val value: Int) {
 	
@@ -175,6 +195,13 @@ value class CompositeAlphaFlags(val value: Int) {
 
 
 }
+
+
+
+/**
+ * Bitmask builder for [CompositeAlphaFlags].
+ */
+inline fun CompositeAlphaFlags(block: CompositeAlphaFlags.Companion.() -> CompositeAlphaFlags) = block(CompositeAlphaFlags)
 
 
 
@@ -243,6 +270,13 @@ value class SurfaceCapabilities(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [SurfaceCapabilities].
+ */
+inline fun Allocator.SurfaceCapabilities(block: (SurfaceCapabilities) -> Unit) = SurfaceCapabilities(calloc(52)).apply(block)
+
+
+
+/**
  *     // provided by VK_KHR_surface
  *     struct VkSurfaceFormatKHR {
  *         VkFormat         format
@@ -289,3 +323,17 @@ value class SurfaceFormat(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [SurfaceFormat].
+ */
+inline fun Allocator.SurfaceFormat(block: (SurfaceFormat) -> Unit) = SurfaceFormat(calloc(8)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SurfaceFormat].
+ */
+inline fun Allocator.SurfaceFormat(capacity: Int, block: (SurfaceFormat.Buffer) -> Unit) = SurfaceFormat.Buffer(calloc(capacity * 8), capacity).apply(block)

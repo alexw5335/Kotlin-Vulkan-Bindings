@@ -4,9 +4,7 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Unsafe
-import kvb.core.memory.Addressable
+import kvb.core.memory.*
 import kvb.core.memory.direct.*
 
 /**
@@ -149,7 +147,6 @@ open class DebugUtilsMessengerH(override val address: Long) : Addressable
  *         VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT    = 4096
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class DebugUtilsMessageSeverityFlags(val value: Int) {
 	
@@ -178,6 +175,13 @@ value class DebugUtilsMessageSeverityFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [DebugUtilsMessageSeverityFlags].
+ */
+inline fun DebugUtilsMessageSeverityFlags(block: DebugUtilsMessageSeverityFlags.Companion.() -> DebugUtilsMessageSeverityFlags) = block(DebugUtilsMessageSeverityFlags)
+
+
+
+/**
  *     // provided by VK_EXT_debug_utils
  *     enum VkDebugUtilsMessageTypeFlagBitsEXT {
  *         VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT      = 1
@@ -185,7 +189,6 @@ value class DebugUtilsMessageSeverityFlags(val value: Int) {
  *         VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT  = 4
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class DebugUtilsMessageTypeFlags(val value: Int) {
 	
@@ -208,6 +211,13 @@ value class DebugUtilsMessageTypeFlags(val value: Int) {
 
 
 }
+
+
+
+/**
+ * Bitmask builder for [DebugUtilsMessageTypeFlags].
+ */
+inline fun DebugUtilsMessageTypeFlags(block: DebugUtilsMessageTypeFlags.Companion.() -> DebugUtilsMessageTypeFlags) = block(DebugUtilsMessageTypeFlags)
 
 
 
@@ -274,6 +284,20 @@ value class DebugUtilsLabel(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DebugUtilsLabel].
+ */
+inline fun Allocator.DebugUtilsLabel(block: (DebugUtilsLabel) -> Unit) = DebugUtilsLabel(calloc(40)).apply(block).also { it.sType = 1000128002 }
+
+
+
+/**
+ * Struct buffer calloc function for [DebugUtilsLabel].
+ */
+inline fun Allocator.DebugUtilsLabel(capacity: Int, block: (DebugUtilsLabel.Buffer) -> Unit) = DebugUtilsLabel.Buffer(calloc(capacity * 40), capacity).apply(block).apply { forEach { it.sType = 1000128002 } }
 
 
 
@@ -374,6 +398,13 @@ value class DebugUtilsMessengerCallbackData(override val address: Long) : Addres
 
 
 /**
+ * Struct calloc function for [DebugUtilsMessengerCallbackData].
+ */
+inline fun Allocator.DebugUtilsMessengerCallbackData(block: (DebugUtilsMessengerCallbackData) -> Unit) = DebugUtilsMessengerCallbackData(calloc(96)).apply(block).also { it.sType = 1000128003 }
+
+
+
+/**
  *     // provided by VK_EXT_debug_utils
  *     struct VkDebugUtilsMessengerCreateInfoEXT {
  *         VkStructureType                       sType
@@ -419,6 +450,13 @@ value class DebugUtilsMessengerCreateInfo(override val address: Long) : Addressa
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DebugUtilsMessengerCreateInfo].
+ */
+inline fun Allocator.DebugUtilsMessengerCreateInfo(block: (DebugUtilsMessengerCreateInfo) -> Unit) = DebugUtilsMessengerCreateInfo(calloc(48)).apply(block).also { it.sType = 1000128004 }
 
 
 
@@ -494,6 +532,20 @@ value class DebugUtilsObjectNameInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [DebugUtilsObjectNameInfo].
+ */
+inline fun Allocator.DebugUtilsObjectNameInfo(block: (DebugUtilsObjectNameInfo) -> Unit) = DebugUtilsObjectNameInfo(calloc(40)).apply(block).also { it.sType = 1000128000 }
+
+
+
+/**
+ * Struct buffer calloc function for [DebugUtilsObjectNameInfo].
+ */
+inline fun Allocator.DebugUtilsObjectNameInfo(capacity: Int, block: (DebugUtilsObjectNameInfo.Buffer) -> Unit) = DebugUtilsObjectNameInfo.Buffer(calloc(capacity * 40), capacity).apply(block).apply { forEach { it.sType = 1000128000 } }
+
+
+
+/**
  *     // provided by VK_EXT_debug_utils
  *     struct VkDebugUtilsObjectTagInfoEXT {
  *         VkStructureType  sType
@@ -545,3 +597,10 @@ value class DebugUtilsObjectTagInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DebugUtilsObjectTagInfo].
+ */
+inline fun Allocator.DebugUtilsObjectTagInfo(block: (DebugUtilsObjectTagInfo) -> Unit) = DebugUtilsObjectTagInfo(calloc(56)).apply(block).also { it.sType = 1000128001 }

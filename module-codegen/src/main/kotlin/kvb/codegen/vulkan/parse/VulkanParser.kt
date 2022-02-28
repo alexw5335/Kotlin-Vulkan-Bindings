@@ -209,11 +209,30 @@ class VulkanParser(private val registry: XmlElement) {
 
 		element["alias"]?.let {
 			val alias = constantElements[it] ?: err("No such constant alias: $it", element)
-
-			return ConstantElement(name, alias.value, it)
+			return ConstantElement(name, alias.cValue, alias.value, it)
 		}
 
-		return ConstantElement(name, element.attrib("value"))
+		val cValue = element.attrib("value")
+
+		cValue.toIntOrNull()?.let {
+			return ConstantElement(name, cValue, cValue)
+		}
+
+		cValue.toFloatOrNull()?.let {
+			return ConstantElement(name, cValue, cValue)
+		}
+
+		val value = when(cValue) {
+			"(~0ULL)" -> "-1L"
+			"(~0U)"   -> "-1"
+			"(~0U-1)" -> "-2"
+			"(~0U-2)" -> "-3"
+			"(~1U)"   -> "-2"
+			"(~2U)"   -> "-3"
+			else      -> err("Unrecognised api constant value: $cValue", element)
+		}
+
+		return ConstantElement(name, cValue, value)
 	}
 
 

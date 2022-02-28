@@ -107,9 +107,20 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 
 
 
+	private val extensionsToGen = setOf(
+		"VK_EXT_debug_utils",
+		"VK_KHR_display",
+		"VK_KHR_surface",
+		"VK_KHR_win32_surface",
+		"VK_KHR_swapchain"
+	)
+
+	
+
 	private val ProviderElement.shouldGen get() =
-		this !is ExtensionElement ||
-		(deprecatedBy == null && !disabled)
+		this !is ExtensionElement || extensionsToGen.contains(name)
+		//this !is ExtensionElement ||
+		//(deprecatedBy == null && !disabled)
 
 	private val CommandElement.shouldGen get() =
 		alias == null
@@ -435,6 +446,7 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 		name      = name,
 		genName   = name,
 		shouldGen = alias == null,
+		cValue    = cValue,
 		value     = value
 	)
 

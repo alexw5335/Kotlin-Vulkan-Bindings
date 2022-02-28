@@ -4,8 +4,8 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.Addressable.Companion.addressOrNULL
 import kvb.core.memory.MemStack
+import kvb.core.memory.*
 import kvb.core.memory.direct.*
 
 object Commands {
@@ -13,10 +13,10 @@ object Commands {
 	
 	init { loadVulkan() }
 	
-	private external fun loadVulkan(): Boolean
+	external fun loadVulkan(): Boolean
 	
 	external fun getInstanceProcAddr(instance: Long, pName: Long): Long
-
+	
 	private val stack = MemStack.current()
 	
 	private fun addr(name: String) = getInstanceProcAddr(0L, stack.encodeUtf8NT(name).address)
@@ -55,9 +55,9 @@ object Commands {
 
 class InstanceCommands(private val instance: InstanceH) {
 	
-
+	
 	private val stack = MemStack.current()
-
+	
 	private fun addr(name: String) = Commands.getInstanceProcAddr(instance.address, stack.encodeUtf8NT(name).address)
 	
 	
@@ -87,6 +87,7 @@ class InstanceCommands(private val instance: InstanceH) {
 	private val getPhysicalDeviceExternalBufferPropertiesAddr = addr("vkGetPhysicalDeviceExternalBufferProperties")
 	private val getPhysicalDeviceExternalFencePropertiesAddr = addr("vkGetPhysicalDeviceExternalFenceProperties")
 	private val getPhysicalDeviceExternalSemaphorePropertiesAddr = addr("vkGetPhysicalDeviceExternalSemaphoreProperties")
+	private val getPhysicalDeviceToolPropertiesAddr = addr("vkGetPhysicalDeviceToolProperties")
 	private val destroySurfaceAddr = addr("vkDestroySurfaceKHR")
 	private val getPhysicalDeviceSurfaceSupportAddr = addr("vkGetPhysicalDeviceSurfaceSupportKHR")
 	private val getPhysicalDeviceSurfaceCapabilitiesAddr = addr("vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
@@ -205,6 +206,10 @@ class InstanceCommands(private val instance: InstanceH) {
 		getPhysicalDeviceExternalSemaphoreProperties(getPhysicalDeviceExternalSemaphorePropertiesAddr, physicalDevice.address, pExternalSemaphoreInfo.address, pExternalSemaphoreProperties.address)
 	}
 	
+	fun getPhysicalDeviceToolProperties(physicalDevice: PhysicalDeviceH, pToolCount: DirectInt, pToolProperties: PhysicalDeviceToolProperties.Buffer?): Result {
+		return Result(getPhysicalDeviceToolProperties(getPhysicalDeviceToolPropertiesAddr, physicalDevice.address, pToolCount.address, pToolProperties.addressOrNULL))
+	}
+	
 	fun destroySurface(surface: SurfaceH?, pAllocator: AllocationCallbacks?) {
 		destroySurface(destroySurfaceAddr, instance.address, surface.addressOrNULL, pAllocator.addressOrNULL)
 	}
@@ -284,13 +289,13 @@ class InstanceCommands(private val instance: InstanceH) {
 
 class DeviceCommands(private val device: DeviceH, private val instanceCommands: InstanceCommands) {
 	
-
+	
 	private val stack = MemStack.current()
-
+	
 	private fun addr(name: String) = instanceCommands.getDeviceProcAddr(device, stack.encodeUtf8NT(name))
-
-
-
+	
+	
+	
 	private val stackPointer = stack.push()
 	private val destroyDeviceAddr = addr("vkDestroyDevice")
 	private val getDeviceQueueAddr = addr("vkGetDeviceQueue")
@@ -441,6 +446,42 @@ class DeviceCommands(private val device: DeviceH, private val instanceCommands: 
 	private val getBufferDeviceAddressAddr = addr("vkGetBufferDeviceAddress")
 	private val getBufferOpaqueCaptureAddressAddr = addr("vkGetBufferOpaqueCaptureAddress")
 	private val getDeviceMemoryOpaqueCaptureAddressAddr = addr("vkGetDeviceMemoryOpaqueCaptureAddress")
+	private val createPrivateDataSlotAddr = addr("vkCreatePrivateDataSlot")
+	private val destroyPrivateDataSlotAddr = addr("vkDestroyPrivateDataSlot")
+	private val setPrivateDataAddr = addr("vkSetPrivateData")
+	private val getPrivateDataAddr = addr("vkGetPrivateData")
+	private val cmdSetEvent2Addr = addr("vkCmdSetEvent2")
+	private val cmdResetEvent2Addr = addr("vkCmdResetEvent2")
+	private val cmdWaitEvents2Addr = addr("vkCmdWaitEvents2")
+	private val cmdPipelineBarrier2Addr = addr("vkCmdPipelineBarrier2")
+	private val cmdWriteTimestamp2Addr = addr("vkCmdWriteTimestamp2")
+	private val queueSubmit2Addr = addr("vkQueueSubmit2")
+	private val cmdCopyBuffer2Addr = addr("vkCmdCopyBuffer2")
+	private val cmdCopyImage2Addr = addr("vkCmdCopyImage2")
+	private val cmdCopyBufferToImage2Addr = addr("vkCmdCopyBufferToImage2")
+	private val cmdCopyImageToBuffer2Addr = addr("vkCmdCopyImageToBuffer2")
+	private val cmdBlitImage2Addr = addr("vkCmdBlitImage2")
+	private val cmdResolveImage2Addr = addr("vkCmdResolveImage2")
+	private val cmdBeginRenderingAddr = addr("vkCmdBeginRendering")
+	private val cmdEndRenderingAddr = addr("vkCmdEndRendering")
+	private val cmdSetCullModeAddr = addr("vkCmdSetCullMode")
+	private val cmdSetFrontFaceAddr = addr("vkCmdSetFrontFace")
+	private val cmdSetPrimitiveTopologyAddr = addr("vkCmdSetPrimitiveTopology")
+	private val cmdSetViewportWithCountAddr = addr("vkCmdSetViewportWithCount")
+	private val cmdSetScissorWithCountAddr = addr("vkCmdSetScissorWithCount")
+	private val cmdBindVertexBuffers2Addr = addr("vkCmdBindVertexBuffers2")
+	private val cmdSetDepthTestEnableAddr = addr("vkCmdSetDepthTestEnable")
+	private val cmdSetDepthWriteEnableAddr = addr("vkCmdSetDepthWriteEnable")
+	private val cmdSetDepthCompareOpAddr = addr("vkCmdSetDepthCompareOp")
+	private val cmdSetDepthBoundsTestEnableAddr = addr("vkCmdSetDepthBoundsTestEnable")
+	private val cmdSetStencilTestEnableAddr = addr("vkCmdSetStencilTestEnable")
+	private val cmdSetStencilOpAddr = addr("vkCmdSetStencilOp")
+	private val cmdSetRasterizerDiscardEnableAddr = addr("vkCmdSetRasterizerDiscardEnable")
+	private val cmdSetDepthBiasEnableAddr = addr("vkCmdSetDepthBiasEnable")
+	private val cmdSetPrimitiveRestartEnableAddr = addr("vkCmdSetPrimitiveRestartEnable")
+	private val getDeviceBufferMemoryRequirementsAddr = addr("vkGetDeviceBufferMemoryRequirements")
+	private val getDeviceImageMemoryRequirementsAddr = addr("vkGetDeviceImageMemoryRequirements")
+	private val getDeviceImageSparseMemoryRequirementsAddr = addr("vkGetDeviceImageSparseMemoryRequirements")
 	private val createSwapchainAddr = addr("vkCreateSwapchainKHR")
 	private val destroySwapchainAddr = addr("vkDestroySwapchainKHR")
 	private val getSwapchainImagesAddr = addr("vkGetSwapchainImagesKHR")
@@ -1055,6 +1096,150 @@ class DeviceCommands(private val device: DeviceH, private val instanceCommands: 
 	
 	fun getDeviceMemoryOpaqueCaptureAddress(pInfo: DeviceMemoryOpaqueCaptureAddressInfo): Long {
 		return getDeviceMemoryOpaqueCaptureAddress(getDeviceMemoryOpaqueCaptureAddressAddr, device.address, pInfo.address)
+	}
+	
+	fun createPrivateDataSlot(pCreateInfo: PrivateDataSlotCreateInfo, pAllocator: AllocationCallbacks?, pPrivateDataSlot: DirectLong): Result {
+		return Result(createPrivateDataSlot(createPrivateDataSlotAddr, device.address, pCreateInfo.address, pAllocator.addressOrNULL, pPrivateDataSlot.address))
+	}
+	
+	fun destroyPrivateDataSlot(privateDataSlot: PrivateDataSlotH?, pAllocator: AllocationCallbacks?) {
+		destroyPrivateDataSlot(destroyPrivateDataSlotAddr, device.address, privateDataSlot.addressOrNULL, pAllocator.addressOrNULL)
+	}
+	
+	fun setPrivateData(objectType: ObjectType, objectHandle: Long, privateDataSlot: PrivateDataSlotH, data: Long): Result {
+		return Result(setPrivateData(setPrivateDataAddr, device.address, objectType.value, objectHandle, privateDataSlot.address, data))
+	}
+	
+	fun getPrivateData(objectType: ObjectType, objectHandle: Long, privateDataSlot: PrivateDataSlotH, pData: DirectLong) {
+		getPrivateData(getPrivateDataAddr, device.address, objectType.value, objectHandle, privateDataSlot.address, pData.address)
+	}
+	
+	fun cmdSetEvent2(commandBuffer: CommandBufferH, event: EventH, pDependencyInfo: DependencyInfo) {
+		cmdSetEvent2(cmdSetEvent2Addr, commandBuffer.address, event.address, pDependencyInfo.address)
+	}
+	
+	fun cmdResetEvent2(commandBuffer: CommandBufferH, event: EventH, stageMask: PipelineStageFlags2) {
+		cmdResetEvent2(cmdResetEvent2Addr, commandBuffer.address, event.address, stageMask.value)
+	}
+	
+	fun cmdWaitEvents2(commandBuffer: CommandBufferH, eventCount: Int, pEvents: DirectLongBuffer, pDependencyInfos: DependencyInfo.Buffer) {
+		cmdWaitEvents2(cmdWaitEvents2Addr, commandBuffer.address, eventCount, pEvents.address, pDependencyInfos.address)
+	}
+	
+	fun cmdPipelineBarrier2(commandBuffer: CommandBufferH, pDependencyInfo: DependencyInfo) {
+		cmdPipelineBarrier2(cmdPipelineBarrier2Addr, commandBuffer.address, pDependencyInfo.address)
+	}
+	
+	fun cmdWriteTimestamp2(commandBuffer: CommandBufferH, stage: PipelineStageFlags2, queryPool: QueryPoolH, query: Int) {
+		cmdWriteTimestamp2(cmdWriteTimestamp2Addr, commandBuffer.address, stage.value, queryPool.address, query)
+	}
+	
+	fun queueSubmit2(queue: QueueH, submitCount: Int, pSubmits: SubmitInfo2.Buffer, fence: FenceH?): Result {
+		return Result(queueSubmit2(queueSubmit2Addr, queue.address, submitCount, pSubmits.address, fence.addressOrNULL))
+	}
+	
+	fun cmdCopyBuffer2(commandBuffer: CommandBufferH, pCopyBufferInfo: CopyBufferInfo2) {
+		cmdCopyBuffer2(cmdCopyBuffer2Addr, commandBuffer.address, pCopyBufferInfo.address)
+	}
+	
+	fun cmdCopyImage2(commandBuffer: CommandBufferH, pCopyImageInfo: CopyImageInfo2) {
+		cmdCopyImage2(cmdCopyImage2Addr, commandBuffer.address, pCopyImageInfo.address)
+	}
+	
+	fun cmdCopyBufferToImage2(commandBuffer: CommandBufferH, pCopyBufferToImageInfo: CopyBufferToImageInfo2) {
+		cmdCopyBufferToImage2(cmdCopyBufferToImage2Addr, commandBuffer.address, pCopyBufferToImageInfo.address)
+	}
+	
+	fun cmdCopyImageToBuffer2(commandBuffer: CommandBufferH, pCopyImageToBufferInfo: CopyImageToBufferInfo2) {
+		cmdCopyImageToBuffer2(cmdCopyImageToBuffer2Addr, commandBuffer.address, pCopyImageToBufferInfo.address)
+	}
+	
+	fun cmdBlitImage2(commandBuffer: CommandBufferH, pBlitImageInfo: BlitImageInfo2) {
+		cmdBlitImage2(cmdBlitImage2Addr, commandBuffer.address, pBlitImageInfo.address)
+	}
+	
+	fun cmdResolveImage2(commandBuffer: CommandBufferH, pResolveImageInfo: ResolveImageInfo2) {
+		cmdResolveImage2(cmdResolveImage2Addr, commandBuffer.address, pResolveImageInfo.address)
+	}
+	
+	fun cmdBeginRendering(commandBuffer: CommandBufferH, pRenderingInfo: RenderingInfo) {
+		cmdBeginRendering(cmdBeginRenderingAddr, commandBuffer.address, pRenderingInfo.address)
+	}
+	
+	fun cmdEndRendering(commandBuffer: CommandBufferH) {
+		cmdEndRendering(cmdEndRenderingAddr, commandBuffer.address)
+	}
+	
+	fun cmdSetCullMode(commandBuffer: CommandBufferH, cullMode: CullModeFlags) {
+		cmdSetCullMode(cmdSetCullModeAddr, commandBuffer.address, cullMode.value)
+	}
+	
+	fun cmdSetFrontFace(commandBuffer: CommandBufferH, frontFace: FrontFace) {
+		cmdSetFrontFace(cmdSetFrontFaceAddr, commandBuffer.address, frontFace.value)
+	}
+	
+	fun cmdSetPrimitiveTopology(commandBuffer: CommandBufferH, primitiveTopology: PrimitiveTopology) {
+		cmdSetPrimitiveTopology(cmdSetPrimitiveTopologyAddr, commandBuffer.address, primitiveTopology.value)
+	}
+	
+	fun cmdSetViewportWithCount(commandBuffer: CommandBufferH, viewportCount: Int, pViewports: Viewport.Buffer) {
+		cmdSetViewportWithCount(cmdSetViewportWithCountAddr, commandBuffer.address, viewportCount, pViewports.address)
+	}
+	
+	fun cmdSetScissorWithCount(commandBuffer: CommandBufferH, scissorCount: Int, pScissors: Rect2D.Buffer) {
+		cmdSetScissorWithCount(cmdSetScissorWithCountAddr, commandBuffer.address, scissorCount, pScissors.address)
+	}
+	
+	fun cmdBindVertexBuffers2(commandBuffer: CommandBufferH, firstBinding: Int, bindingCount: Int, pBuffers: DirectLongBuffer, pOffsets: DirectLongBuffer, pSizes: DirectLongBuffer?, pStrides: DirectLongBuffer?) {
+		cmdBindVertexBuffers2(cmdBindVertexBuffers2Addr, commandBuffer.address, firstBinding, bindingCount, pBuffers.address, pOffsets.address, pSizes.addressOrNULL, pStrides.addressOrNULL)
+	}
+	
+	fun cmdSetDepthTestEnable(commandBuffer: CommandBufferH, depthTestEnable: Int) {
+		cmdSetDepthTestEnable(cmdSetDepthTestEnableAddr, commandBuffer.address, depthTestEnable)
+	}
+	
+	fun cmdSetDepthWriteEnable(commandBuffer: CommandBufferH, depthWriteEnable: Int) {
+		cmdSetDepthWriteEnable(cmdSetDepthWriteEnableAddr, commandBuffer.address, depthWriteEnable)
+	}
+	
+	fun cmdSetDepthCompareOp(commandBuffer: CommandBufferH, depthCompareOp: CompareOp) {
+		cmdSetDepthCompareOp(cmdSetDepthCompareOpAddr, commandBuffer.address, depthCompareOp.value)
+	}
+	
+	fun cmdSetDepthBoundsTestEnable(commandBuffer: CommandBufferH, depthBoundsTestEnable: Int) {
+		cmdSetDepthBoundsTestEnable(cmdSetDepthBoundsTestEnableAddr, commandBuffer.address, depthBoundsTestEnable)
+	}
+	
+	fun cmdSetStencilTestEnable(commandBuffer: CommandBufferH, stencilTestEnable: Int) {
+		cmdSetStencilTestEnable(cmdSetStencilTestEnableAddr, commandBuffer.address, stencilTestEnable)
+	}
+	
+	fun cmdSetStencilOp(commandBuffer: CommandBufferH, faceMask: StencilFaceFlags, failOp: StencilOp, passOp: StencilOp, depthFailOp: StencilOp, compareOp: CompareOp) {
+		cmdSetStencilOp(cmdSetStencilOpAddr, commandBuffer.address, faceMask.value, failOp.value, passOp.value, depthFailOp.value, compareOp.value)
+	}
+	
+	fun cmdSetRasterizerDiscardEnable(commandBuffer: CommandBufferH, rasterizerDiscardEnable: Int) {
+		cmdSetRasterizerDiscardEnable(cmdSetRasterizerDiscardEnableAddr, commandBuffer.address, rasterizerDiscardEnable)
+	}
+	
+	fun cmdSetDepthBiasEnable(commandBuffer: CommandBufferH, depthBiasEnable: Int) {
+		cmdSetDepthBiasEnable(cmdSetDepthBiasEnableAddr, commandBuffer.address, depthBiasEnable)
+	}
+	
+	fun cmdSetPrimitiveRestartEnable(commandBuffer: CommandBufferH, primitiveRestartEnable: Int) {
+		cmdSetPrimitiveRestartEnable(cmdSetPrimitiveRestartEnableAddr, commandBuffer.address, primitiveRestartEnable)
+	}
+	
+	fun getDeviceBufferMemoryRequirements(pInfo: DeviceBufferMemoryRequirements, pMemoryRequirements: MemoryRequirements2) {
+		getDeviceBufferMemoryRequirements(getDeviceBufferMemoryRequirementsAddr, device.address, pInfo.address, pMemoryRequirements.address)
+	}
+	
+	fun getDeviceImageMemoryRequirements(pInfo: DeviceImageMemoryRequirements, pMemoryRequirements: MemoryRequirements2) {
+		getDeviceImageMemoryRequirements(getDeviceImageMemoryRequirementsAddr, device.address, pInfo.address, pMemoryRequirements.address)
+	}
+	
+	fun getDeviceImageSparseMemoryRequirements(pInfo: DeviceImageMemoryRequirements, pSparseMemoryRequirementCount: DirectInt, pSparseMemoryRequirements: SparseImageMemoryRequirements2.Buffer?) {
+		getDeviceImageSparseMemoryRequirements(getDeviceImageSparseMemoryRequirementsAddr, device.address, pInfo.address, pSparseMemoryRequirementCount.address, pSparseMemoryRequirements.addressOrNULL)
 	}
 	
 	fun createSwapchain(pCreateInfo: SwapchainCreateInfo, pAllocator: AllocationCallbacks?, pSwapchain: DirectLong): Result {

@@ -61,6 +61,7 @@ class Constant(
 	override val name : String,
 	val genName       : String,
 	val shouldGen     : Boolean,
+	val cValue        : String,
 	val value         : String
 ) : Named
 

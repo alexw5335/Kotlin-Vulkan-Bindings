@@ -4,9 +4,7 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Unsafe
-import kvb.core.memory.Addressable
+import kvb.core.memory.*
 import kvb.core.memory.direct.*
 
 /**
@@ -387,6 +385,17 @@ enum class PointClippingBehavior(val value: Int) {
 
 
 /**
+ * Enum getter for [VkPointClippingBehavior].
+ */
+fun _PointClippingBehavior(value: Int) = when(value) {
+	0 -> PointClippingBehavior.ALL_CLIP_PLANES
+	1 -> PointClippingBehavior.USER_CLIP_PLANES_ONLY
+	else -> throw RuntimeException("Invalid VkPointClippingBehavior enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkTessellationDomainOrigin {
  *         VK_TESSELLATION_DOMAIN_ORIGIN_UPPER_LEFT      = 0
@@ -404,6 +413,17 @@ enum class TessellationDomainOrigin(val value: Int) {
 	LOWER_LEFT(1);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkTessellationDomainOrigin].
+ */
+fun _TessellationDomainOrigin(value: Int) = when(value) {
+	0 -> TessellationDomainOrigin.UPPER_LEFT
+	1 -> TessellationDomainOrigin.LOWER_LEFT
+	else -> throw RuntimeException("Invalid VkTessellationDomainOrigin enum value: $value")
 }
 
 
@@ -443,6 +463,20 @@ enum class SamplerYcbcrModelConversion(val value: Int) {
 
 
 /**
+ * Enum getter for [VkSamplerYcbcrModelConversion].
+ */
+fun _SamplerYcbcrModelConversion(value: Int) = when(value) {
+	0 -> SamplerYcbcrModelConversion.RGB_IDENTITY
+	1 -> SamplerYcbcrModelConversion.YCBCR_IDENTITY
+	2 -> SamplerYcbcrModelConversion.YCBCR_709
+	3 -> SamplerYcbcrModelConversion.YCBCR_601
+	4 -> SamplerYcbcrModelConversion.YCBCR_2020
+	else -> throw RuntimeException("Invalid VkSamplerYcbcrModelConversion enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkSamplerYcbcrRange {
  *         VK_SAMPLER_YCBCR_RANGE_ITU_FULL        = 0
@@ -460,6 +494,17 @@ enum class SamplerYcbcrRange(val value: Int) {
 	ITU_NARROW(1);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkSamplerYcbcrRange].
+ */
+fun _SamplerYcbcrRange(value: Int) = when(value) {
+	0 -> SamplerYcbcrRange.ITU_FULL
+	1 -> SamplerYcbcrRange.ITU_NARROW
+	else -> throw RuntimeException("Invalid VkSamplerYcbcrRange enum value: $value")
 }
 
 
@@ -487,6 +532,17 @@ enum class ChromaLocation(val value: Int) {
 
 
 /**
+ * Enum getter for [VkChromaLocation].
+ */
+fun _ChromaLocation(value: Int) = when(value) {
+	0 -> ChromaLocation.COSITED_EVEN
+	1 -> ChromaLocation.MIDPOINT
+	else -> throw RuntimeException("Invalid VkChromaLocation enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkDescriptorUpdateTemplateType {
  *         VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_DESCRIPTOR_SET        = 0
@@ -506,6 +562,16 @@ enum class DescriptorUpdateTemplateType(val value: Int) {
 
 
 /**
+ * Enum getter for [VkDescriptorUpdateTemplateType].
+ */
+fun _DescriptorUpdateTemplateType(value: Int) = when(value) {
+	0 -> DescriptorUpdateTemplateType.DESCRIPTOR_SET
+	else -> throw RuntimeException("Invalid VkDescriptorUpdateTemplateType enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkSubgroupFeatureFlagBits {
  *         VK_SUBGROUP_FEATURE_BASIC_BIT             = 1
@@ -519,7 +585,6 @@ enum class DescriptorUpdateTemplateType(val value: Int) {
  *         VK_SUBGROUP_FEATURE_PARTITIONED_BIT_NV    = 256
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class SubgroupFeatureFlags(val value: Int) {
 	
@@ -556,6 +621,13 @@ value class SubgroupFeatureFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [SubgroupFeatureFlags].
+ */
+inline fun SubgroupFeatureFlags(block: SubgroupFeatureFlags.Companion.() -> SubgroupFeatureFlags) = block(SubgroupFeatureFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkPeerMemoryFeatureFlagBits {
  *         VK_PEER_MEMORY_FEATURE_COPY_SRC_BIT         = 1
@@ -568,7 +640,6 @@ value class SubgroupFeatureFlags(val value: Int) {
  *         VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT_KHR  = 8
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class PeerMemoryFeatureFlags(val value: Int) {
 	
@@ -597,6 +668,13 @@ value class PeerMemoryFeatureFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [PeerMemoryFeatureFlags].
+ */
+inline fun PeerMemoryFeatureFlags(block: PeerMemoryFeatureFlags.Companion.() -> PeerMemoryFeatureFlags) = block(PeerMemoryFeatureFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkMemoryAllocateFlagBits {
  *         VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT                        = 1
@@ -607,7 +685,6 @@ value class PeerMemoryFeatureFlags(val value: Int) {
  *         VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR  = 4
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class MemoryAllocateFlags(val value: Int) {
 	
@@ -630,6 +707,13 @@ value class MemoryAllocateFlags(val value: Int) {
 
 
 }
+
+
+
+/**
+ * Bitmask builder for [MemoryAllocateFlags].
+ */
+inline fun MemoryAllocateFlags(block: MemoryAllocateFlags.Companion.() -> MemoryAllocateFlags) = block(MemoryAllocateFlags)
 
 
 
@@ -659,7 +743,6 @@ value class MemoryAllocateFlags(val value: Int) {
  *         VK_EXTERNAL_MEMORY_HANDLE_TYPE_RESERVED_13_BIT_NV                   = 8192
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class ExternalMemoryHandleTypeFlags(val value: Int) {
 	
@@ -694,6 +777,13 @@ value class ExternalMemoryHandleTypeFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [ExternalMemoryHandleTypeFlags].
+ */
+inline fun ExternalMemoryHandleTypeFlags(block: ExternalMemoryHandleTypeFlags.Companion.() -> ExternalMemoryHandleTypeFlags) = block(ExternalMemoryHandleTypeFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkExternalMemoryFeatureFlagBits {
  *         VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT      = 1
@@ -704,7 +794,6 @@ value class ExternalMemoryHandleTypeFlags(val value: Int) {
  *         VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_KHR      = 4
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class ExternalMemoryFeatureFlags(val value: Int) {
 	
@@ -731,6 +820,13 @@ value class ExternalMemoryFeatureFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [ExternalMemoryFeatureFlags].
+ */
+inline fun ExternalMemoryFeatureFlags(block: ExternalMemoryFeatureFlags.Companion.() -> ExternalMemoryFeatureFlags) = block(ExternalMemoryFeatureFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkExternalFenceHandleTypeFlagBits {
  *         VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT             = 1
@@ -745,7 +841,6 @@ value class ExternalMemoryFeatureFlags(val value: Int) {
  *         VK_EXTERNAL_FENCE_HANDLE_TYPE_RESERVED_5_BIT_NV         = 32
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class ExternalFenceHandleTypeFlags(val value: Int) {
 	
@@ -774,6 +869,13 @@ value class ExternalFenceHandleTypeFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [ExternalFenceHandleTypeFlags].
+ */
+inline fun ExternalFenceHandleTypeFlags(block: ExternalFenceHandleTypeFlags.Companion.() -> ExternalFenceHandleTypeFlags) = block(ExternalFenceHandleTypeFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkExternalFenceFeatureFlagBits {
  *         VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT      = 1
@@ -782,7 +884,6 @@ value class ExternalFenceHandleTypeFlags(val value: Int) {
  *         VK_EXTERNAL_FENCE_FEATURE_IMPORTABLE_BIT_KHR  = 2
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class ExternalFenceFeatureFlags(val value: Int) {
 	
@@ -807,13 +908,19 @@ value class ExternalFenceFeatureFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [ExternalFenceFeatureFlags].
+ */
+inline fun ExternalFenceFeatureFlags(block: ExternalFenceFeatureFlags.Companion.() -> ExternalFenceFeatureFlags) = block(ExternalFenceFeatureFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkFenceImportFlagBits {
  *         VK_FENCE_IMPORT_TEMPORARY_BIT      = 1
  *         VK_FENCE_IMPORT_TEMPORARY_BIT_KHR  = 1
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class FenceImportFlags(val value: Int) {
 	
@@ -836,13 +943,19 @@ value class FenceImportFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [FenceImportFlags].
+ */
+inline fun FenceImportFlags(block: FenceImportFlags.Companion.() -> FenceImportFlags) = block(FenceImportFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkSemaphoreImportFlagBits {
  *         VK_SEMAPHORE_IMPORT_TEMPORARY_BIT      = 1
  *         VK_SEMAPHORE_IMPORT_TEMPORARY_BIT_KHR  = 1
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class SemaphoreImportFlags(val value: Int) {
 	
@@ -865,6 +978,13 @@ value class SemaphoreImportFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [SemaphoreImportFlags].
+ */
+inline fun SemaphoreImportFlags(block: SemaphoreImportFlags.Companion.() -> SemaphoreImportFlags) = block(SemaphoreImportFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkExternalSemaphoreHandleTypeFlagBits {
  *         VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT             = 1
@@ -883,7 +1003,6 @@ value class SemaphoreImportFlags(val value: Int) {
  *         VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_RESERVED_6_BIT_NV         = 64
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class ExternalSemaphoreHandleTypeFlags(val value: Int) {
 	
@@ -914,6 +1033,13 @@ value class ExternalSemaphoreHandleTypeFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [ExternalSemaphoreHandleTypeFlags].
+ */
+inline fun ExternalSemaphoreHandleTypeFlags(block: ExternalSemaphoreHandleTypeFlags.Companion.() -> ExternalSemaphoreHandleTypeFlags) = block(ExternalSemaphoreHandleTypeFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkExternalSemaphoreFeatureFlagBits {
  *         VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT      = 1
@@ -922,7 +1048,6 @@ value class ExternalSemaphoreHandleTypeFlags(val value: Int) {
  *         VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT_KHR  = 2
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class ExternalSemaphoreFeatureFlags(val value: Int) {
 	
@@ -943,6 +1068,13 @@ value class ExternalSemaphoreFeatureFlags(val value: Int) {
 
 
 }
+
+
+
+/**
+ * Bitmask builder for [ExternalSemaphoreFeatureFlags].
+ */
+inline fun ExternalSemaphoreFeatureFlags(block: ExternalSemaphoreFeatureFlags.Companion.() -> ExternalSemaphoreFeatureFlags) = block(ExternalSemaphoreFeatureFlags)
 
 
 
@@ -987,6 +1119,13 @@ value class PhysicalDeviceSubgroupProperties(override val address: Long) : Addre
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDeviceSubgroupProperties].
+ */
+inline fun Allocator.PhysicalDeviceSubgroupProperties(block: (PhysicalDeviceSubgroupProperties) -> Unit) = PhysicalDeviceSubgroupProperties(calloc(32)).apply(block).also { it.sType = 1000094000 }
 
 
 
@@ -1055,6 +1194,20 @@ value class BindBufferMemoryInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [BindBufferMemoryInfo].
+ */
+inline fun Allocator.BindBufferMemoryInfo(block: (BindBufferMemoryInfo) -> Unit) = BindBufferMemoryInfo(calloc(40)).apply(block).also { it.sType = 1000157000 }
+
+
+
+/**
+ * Struct buffer calloc function for [BindBufferMemoryInfo].
+ */
+inline fun Allocator.BindBufferMemoryInfo(capacity: Int, block: (BindBufferMemoryInfo.Buffer) -> Unit) = BindBufferMemoryInfo.Buffer(calloc(capacity * 40), capacity).apply(block).apply { forEach { it.sType = 1000157000 } }
 
 
 
@@ -1129,6 +1282,20 @@ value class BindImageMemoryInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [BindImageMemoryInfo].
+ */
+inline fun Allocator.BindImageMemoryInfo(block: (BindImageMemoryInfo) -> Unit) = BindImageMemoryInfo(calloc(40)).apply(block).also { it.sType = 1000157001 }
+
+
+
+/**
+ * Struct buffer calloc function for [BindImageMemoryInfo].
+ */
+inline fun Allocator.BindImageMemoryInfo(capacity: Int, block: (BindImageMemoryInfo.Buffer) -> Unit) = BindImageMemoryInfo.Buffer(calloc(capacity * 40), capacity).apply(block).apply { forEach { it.sType = 1000157001 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDevice16BitStorageFeatures {
  *         VkStructureType  sType
@@ -1173,6 +1340,13 @@ value class PhysicalDevice16BitStorageFeatures(override val address: Long) : Add
 
 
 /**
+ * Struct calloc function for [PhysicalDevice16BitStorageFeatures].
+ */
+inline fun Allocator.PhysicalDevice16BitStorageFeatures(block: (PhysicalDevice16BitStorageFeatures) -> Unit) = PhysicalDevice16BitStorageFeatures(calloc(32)).apply(block).also { it.sType = 1000083000 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkMemoryDedicatedRequirements {
  *         VkStructureType  sType
@@ -1203,6 +1377,13 @@ value class MemoryDedicatedRequirements(override val address: Long) : Addressabl
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [MemoryDedicatedRequirements].
+ */
+inline fun Allocator.MemoryDedicatedRequirements(block: (MemoryDedicatedRequirements) -> Unit) = MemoryDedicatedRequirements(calloc(24)).apply(block).also { it.sType = 1000127000 }
 
 
 
@@ -1241,6 +1422,13 @@ value class MemoryDedicatedAllocateInfo(override val address: Long) : Addressabl
 
 
 /**
+ * Struct calloc function for [MemoryDedicatedAllocateInfo].
+ */
+inline fun Allocator.MemoryDedicatedAllocateInfo(block: (MemoryDedicatedAllocateInfo) -> Unit) = MemoryDedicatedAllocateInfo(calloc(32)).apply(block).also { it.sType = 1000127001 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkMemoryAllocateFlagsInfo {
  *         VkStructureType        sType
@@ -1271,6 +1459,13 @@ value class MemoryAllocateFlagsInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [MemoryAllocateFlagsInfo].
+ */
+inline fun Allocator.MemoryAllocateFlagsInfo(block: (MemoryAllocateFlagsInfo) -> Unit) = MemoryAllocateFlagsInfo(calloc(24)).apply(block).also { it.sType = 1000060000 }
 
 
 
@@ -1320,6 +1515,13 @@ value class DeviceGroupRenderPassBeginInfo(override val address: Long) : Address
 
 
 /**
+ * Struct calloc function for [DeviceGroupRenderPassBeginInfo].
+ */
+inline fun Allocator.DeviceGroupRenderPassBeginInfo(block: (DeviceGroupRenderPassBeginInfo) -> Unit) = DeviceGroupRenderPassBeginInfo(calloc(32)).apply(block).also { it.sType = 1000060003 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkDeviceGroupCommandBufferBeginInfo {
  *         VkStructureType  sType
@@ -1345,6 +1547,13 @@ value class DeviceGroupCommandBufferBeginInfo(override val address: Long) : Addr
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DeviceGroupCommandBufferBeginInfo].
+ */
+inline fun Allocator.DeviceGroupCommandBufferBeginInfo(block: (DeviceGroupCommandBufferBeginInfo) -> Unit) = DeviceGroupCommandBufferBeginInfo(calloc(24)).apply(block).also { it.sType = 1000060004 }
 
 
 
@@ -1417,6 +1626,13 @@ value class DeviceGroupSubmitInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [DeviceGroupSubmitInfo].
+ */
+inline fun Allocator.DeviceGroupSubmitInfo(block: (DeviceGroupSubmitInfo) -> Unit) = DeviceGroupSubmitInfo(calloc(64)).apply(block).also { it.sType = 1000060005 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkDeviceGroupBindSparseInfo {
  *         VkStructureType  sType
@@ -1447,6 +1663,13 @@ value class DeviceGroupBindSparseInfo(override val address: Long) : Addressable 
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DeviceGroupBindSparseInfo].
+ */
+inline fun Allocator.DeviceGroupBindSparseInfo(block: (DeviceGroupBindSparseInfo) -> Unit) = DeviceGroupBindSparseInfo(calloc(24)).apply(block).also { it.sType = 1000060006 }
 
 
 
@@ -1487,6 +1710,13 @@ value class BindBufferMemoryDeviceGroupInfo(override val address: Long) : Addres
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [BindBufferMemoryDeviceGroupInfo].
+ */
+inline fun Allocator.BindBufferMemoryDeviceGroupInfo(block: (BindBufferMemoryDeviceGroupInfo) -> Unit) = BindBufferMemoryDeviceGroupInfo(calloc(32)).apply(block).also { it.sType = 1000060013 }
 
 
 
@@ -1541,6 +1771,13 @@ value class BindImageMemoryDeviceGroupInfo(override val address: Long) : Address
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [BindImageMemoryDeviceGroupInfo].
+ */
+inline fun Allocator.BindImageMemoryDeviceGroupInfo(block: (BindImageMemoryDeviceGroupInfo) -> Unit) = BindImageMemoryDeviceGroupInfo(calloc(48)).apply(block).also { it.sType = 1000060014 }
 
 
 
@@ -1610,6 +1847,20 @@ value class PhysicalDeviceGroupProperties(override val address: Long) : Addressa
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceGroupProperties].
+ */
+inline fun Allocator.PhysicalDeviceGroupProperties(block: (PhysicalDeviceGroupProperties) -> Unit) = PhysicalDeviceGroupProperties(calloc(288)).apply(block).also { it.sType = 1000070000 }
+
+
+
+/**
+ * Struct buffer calloc function for [PhysicalDeviceGroupProperties].
+ */
+inline fun Allocator.PhysicalDeviceGroupProperties(capacity: Int, block: (PhysicalDeviceGroupProperties.Buffer) -> Unit) = PhysicalDeviceGroupProperties.Buffer(calloc(capacity * 288), capacity).apply(block).apply { forEach { it.sType = 1000070000 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkDeviceGroupDeviceCreateInfo {
  *         VkStructureType    sType
@@ -1650,6 +1901,13 @@ value class DeviceGroupDeviceCreateInfo(override val address: Long) : Addressabl
 
 
 /**
+ * Struct calloc function for [DeviceGroupDeviceCreateInfo].
+ */
+inline fun Allocator.DeviceGroupDeviceCreateInfo(block: (DeviceGroupDeviceCreateInfo) -> Unit) = DeviceGroupDeviceCreateInfo(calloc(32)).apply(block).also { it.sType = 1000070001 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkBufferMemoryRequirementsInfo2 {
  *         VkStructureType  sType
@@ -1675,6 +1933,13 @@ value class BufferMemoryRequirementsInfo2(override val address: Long) : Addressa
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [BufferMemoryRequirementsInfo2].
+ */
+inline fun Allocator.BufferMemoryRequirementsInfo2(block: (BufferMemoryRequirementsInfo2) -> Unit) = BufferMemoryRequirementsInfo2(calloc(24)).apply(block).also { it.sType = 1000146000 }
 
 
 
@@ -1711,6 +1976,13 @@ value class ImageMemoryRequirementsInfo2(override val address: Long) : Addressab
 
 
 /**
+ * Struct calloc function for [ImageMemoryRequirementsInfo2].
+ */
+inline fun Allocator.ImageMemoryRequirementsInfo2(block: (ImageMemoryRequirementsInfo2) -> Unit) = ImageMemoryRequirementsInfo2(calloc(24)).apply(block).also { it.sType = 1000146001 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkImageSparseMemoryRequirementsInfo2 {
  *         VkStructureType  sType
@@ -1736,6 +2008,13 @@ value class ImageSparseMemoryRequirementsInfo2(override val address: Long) : Add
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ImageSparseMemoryRequirementsInfo2].
+ */
+inline fun Allocator.ImageSparseMemoryRequirementsInfo2(block: (ImageSparseMemoryRequirementsInfo2) -> Unit) = ImageSparseMemoryRequirementsInfo2(calloc(24)).apply(block).also { it.sType = 1000146002 }
 
 
 
@@ -1768,6 +2047,13 @@ value class MemoryRequirements2(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [MemoryRequirements2].
+ */
+inline fun Allocator.MemoryRequirements2(block: (MemoryRequirements2) -> Unit) = MemoryRequirements2(calloc(40)).apply(block).also { it.sType = 1000146003 }
 
 
 
@@ -1827,6 +2113,20 @@ value class SparseImageMemoryRequirements2(override val address: Long) : Address
 
 
 /**
+ * Struct calloc function for [SparseImageMemoryRequirements2].
+ */
+inline fun Allocator.SparseImageMemoryRequirements2(block: (SparseImageMemoryRequirements2) -> Unit) = SparseImageMemoryRequirements2(calloc(64)).apply(block).also { it.sType = 1000146004 }
+
+
+
+/**
+ * Struct buffer calloc function for [SparseImageMemoryRequirements2].
+ */
+inline fun Allocator.SparseImageMemoryRequirements2(capacity: Int, block: (SparseImageMemoryRequirements2.Buffer) -> Unit) = SparseImageMemoryRequirements2.Buffer(calloc(capacity * 64), capacity).apply(block).apply { forEach { it.sType = 1000146004 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceFeatures2 {
  *         VkStructureType           sType
@@ -1836,7 +2136,7 @@ value class SparseImageMemoryRequirements2(override val address: Long) : Address
  * 
  *     Valid pNext types:
  *         - VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV
- *         - VkPhysicalDevicePrivateDataFeaturesEXT
+ *         - VkPhysicalDevicePrivateDataFeatures
  *         - VkPhysicalDeviceVariablePointersFeatures
  *         - VkPhysicalDeviceMultiviewFeatures
  *         - VkPhysicalDevicePresentIdFeaturesKHR
@@ -1847,12 +2147,12 @@ value class SparseImageMemoryRequirements2(override val address: Long) : Address
  *         - VkPhysicalDeviceProtectedMemoryFeatures
  *         - VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT
  *         - VkPhysicalDeviceMultiDrawFeaturesEXT
- *         - VkPhysicalDeviceInlineUniformBlockFeaturesEXT
- *         - VkPhysicalDeviceMaintenance4FeaturesKHR
+ *         - VkPhysicalDeviceInlineUniformBlockFeatures
+ *         - VkPhysicalDeviceMaintenance4Features
  *         - VkPhysicalDeviceShaderDrawParametersFeatures
  *         - VkPhysicalDeviceShaderFloat16Int8Features
  *         - VkPhysicalDeviceHostQueryResetFeatures
- *         - VkPhysicalDeviceGlobalPriorityQueryFeaturesEXT
+ *         - VkPhysicalDeviceGlobalPriorityQueryFeaturesKHR
  *         - VkPhysicalDeviceDeviceMemoryReportFeaturesEXT
  *         - VkPhysicalDeviceDescriptorIndexingFeatures
  *         - VkPhysicalDeviceTimelineSemaphoreFeatures
@@ -1889,7 +2189,7 @@ value class SparseImageMemoryRequirements2(override val address: Long) : Address
  *         - VkPhysicalDeviceBufferDeviceAddressFeatures
  *         - VkPhysicalDeviceBufferDeviceAddressFeaturesEXT
  *         - VkPhysicalDeviceImagelessFramebufferFeatures
- *         - VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT
+ *         - VkPhysicalDeviceTextureCompressionASTCHDRFeatures
  *         - VkPhysicalDeviceCooperativeMatrixFeaturesNV
  *         - VkPhysicalDeviceYcbcrImageArraysFeaturesEXT
  *         - VkPhysicalDevicePerformanceQueryFeaturesKHR
@@ -1902,44 +2202,45 @@ value class SparseImageMemoryRequirements2(override val address: Long) : Address
  *         - VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures
  *         - VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT
  *         - VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR
- *         - VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT
+ *         - VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures
  *         - VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT
- *         - VkPhysicalDeviceSubgroupSizeControlFeaturesEXT
+ *         - VkPhysicalDeviceSubgroupSizeControlFeatures
  *         - VkPhysicalDeviceLineRasterizationFeaturesEXT
- *         - VkPhysicalDevicePipelineCreationCacheControlFeaturesEXT
+ *         - VkPhysicalDevicePipelineCreationCacheControlFeatures
  *         - VkPhysicalDeviceVulkan11Features
  *         - VkPhysicalDeviceVulkan12Features
+ *         - VkPhysicalDeviceVulkan13Features
  *         - VkPhysicalDeviceCoherentMemoryFeaturesAMD
  *         - VkPhysicalDeviceCustomBorderColorFeaturesEXT
  *         - VkPhysicalDeviceBorderColorSwizzleFeaturesEXT
  *         - VkPhysicalDeviceExtendedDynamicStateFeaturesEXT
  *         - VkPhysicalDeviceExtendedDynamicState2FeaturesEXT
  *         - VkPhysicalDeviceDiagnosticsConfigFeaturesNV
- *         - VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR
+ *         - VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures
  *         - VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR
  *         - VkPhysicalDeviceRobustness2FeaturesEXT
- *         - VkPhysicalDeviceImageRobustnessFeaturesEXT
+ *         - VkPhysicalDeviceImageRobustnessFeatures
  *         - VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR
  *         - VkPhysicalDevicePortabilitySubsetFeaturesKHR
  *         - VkPhysicalDevice4444FormatsFeaturesEXT
  *         - VkPhysicalDeviceSubpassShadingFeaturesHUAWEI
  *         - VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT
  *         - VkPhysicalDeviceFragmentShadingRateFeaturesKHR
- *         - VkPhysicalDeviceShaderTerminateInvocationFeaturesKHR
+ *         - VkPhysicalDeviceShaderTerminateInvocationFeatures
  *         - VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV
  *         - VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE
  *         - VkPhysicalDeviceDepthClipControlFeaturesEXT
  *         - VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT
  *         - VkPhysicalDeviceExternalMemoryRDMAFeaturesNV
  *         - VkPhysicalDeviceColorWriteEnableFeaturesEXT
- *         - VkPhysicalDeviceSynchronization2FeaturesKHR
+ *         - VkPhysicalDeviceSynchronization2Features
  *         - VkPhysicalDeviceInheritedViewportScissorFeaturesNV
  *         - VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT
  *         - VkPhysicalDeviceProvokingVertexFeaturesEXT
- *         - VkPhysicalDeviceShaderIntegerDotProductFeaturesKHR
+ *         - VkPhysicalDeviceShaderIntegerDotProductFeatures
  *         - VkPhysicalDeviceRayTracingMotionBlurFeaturesNV
  *         - VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT
- *         - VkPhysicalDeviceDynamicRenderingFeaturesKHR
+ *         - VkPhysicalDeviceDynamicRenderingFeatures
  *         - VkPhysicalDeviceImageViewMinLodFeaturesEXT
  *         - VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM
  *         - VkPhysicalDeviceLinearColorAttachmentFeaturesNV
@@ -1966,6 +2267,13 @@ value class PhysicalDeviceFeatures2(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceFeatures2].
+ */
+inline fun Allocator.PhysicalDeviceFeatures2(block: (PhysicalDeviceFeatures2) -> Unit) = PhysicalDeviceFeatures2(calloc(240)).apply(block).also { it.sType = 1000059000 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceProperties2 {
  *         VkStructureType             sType
@@ -1988,9 +2296,9 @@ value class PhysicalDeviceFeatures2(override val address: Long) : Addressable {
  *         - VkPhysicalDeviceSamplerFilterMinmaxProperties
  *         - VkPhysicalDeviceSampleLocationsPropertiesEXT
  *         - VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT
- *         - VkPhysicalDeviceInlineUniformBlockPropertiesEXT
+ *         - VkPhysicalDeviceInlineUniformBlockProperties
  *         - VkPhysicalDeviceMaintenance3Properties
- *         - VkPhysicalDeviceMaintenance4PropertiesKHR
+ *         - VkPhysicalDeviceMaintenance4Properties
  *         - VkPhysicalDeviceFloatControlsProperties
  *         - VkPhysicalDeviceExternalMemoryHostPropertiesEXT
  *         - VkPhysicalDeviceConservativeRasterizationPropertiesEXT
@@ -2013,19 +2321,20 @@ value class PhysicalDeviceFeatures2(override val address: Long) : Addressable {
  *         - VkPhysicalDeviceCooperativeMatrixPropertiesNV
  *         - VkPhysicalDevicePerformanceQueryPropertiesKHR
  *         - VkPhysicalDeviceShaderSMBuiltinsPropertiesNV
- *         - VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT
- *         - VkPhysicalDeviceSubgroupSizeControlPropertiesEXT
+ *         - VkPhysicalDeviceTexelBufferAlignmentProperties
+ *         - VkPhysicalDeviceSubgroupSizeControlProperties
  *         - VkPhysicalDeviceSubpassShadingPropertiesHUAWEI
  *         - VkPhysicalDeviceLineRasterizationPropertiesEXT
  *         - VkPhysicalDeviceVulkan11Properties
  *         - VkPhysicalDeviceVulkan12Properties
+ *         - VkPhysicalDeviceVulkan13Properties
  *         - VkPhysicalDeviceCustomBorderColorPropertiesEXT
  *         - VkPhysicalDeviceRobustness2PropertiesEXT
  *         - VkPhysicalDevicePortabilitySubsetPropertiesKHR
  *         - VkPhysicalDeviceFragmentShadingRatePropertiesKHR
  *         - VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNV
  *         - VkPhysicalDeviceProvokingVertexPropertiesEXT
- *         - VkPhysicalDeviceShaderIntegerDotProductPropertiesKHR
+ *         - VkPhysicalDeviceShaderIntegerDotProductProperties
  *         - VkPhysicalDeviceDrmPropertiesEXT
  */
 @JvmInline
@@ -2050,6 +2359,13 @@ value class PhysicalDeviceProperties2(override val address: Long) : Addressable 
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceProperties2].
+ */
+inline fun Allocator.PhysicalDeviceProperties2(block: (PhysicalDeviceProperties2) -> Unit) = PhysicalDeviceProperties2(calloc(840)).apply(block).also { it.sType = 1000059001 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkFormatProperties2 {
  *         VkStructureType     sType
@@ -2065,7 +2381,7 @@ value class PhysicalDeviceProperties2(override val address: Long) : Addressable 
  *         - VkVideoDecodeH265ProfileEXT
  *         - VkVideoEncodeH264ProfileEXT
  *         - VkVideoEncodeH265ProfileEXT
- *         - VkFormatProperties3KHR
+ *         - VkFormatProperties3
  *         - VkDrmFormatModifierPropertiesList2EXT
  */
 @JvmInline
@@ -2086,6 +2402,13 @@ value class FormatProperties2(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [FormatProperties2].
+ */
+inline fun Allocator.FormatProperties2(block: (FormatProperties2) -> Unit) = FormatProperties2(calloc(32)).apply(block).also { it.sType = 1000059002 }
 
 
 
@@ -2122,6 +2445,13 @@ value class ImageFormatProperties2(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ImageFormatProperties2].
+ */
+inline fun Allocator.ImageFormatProperties2(block: (ImageFormatProperties2) -> Unit) = ImageFormatProperties2(calloc(48)).apply(block).also { it.sType = 1000059003 }
 
 
 
@@ -2182,6 +2512,13 @@ value class PhysicalDeviceImageFormatInfo2(override val address: Long) : Address
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceImageFormatInfo2].
+ */
+inline fun Allocator.PhysicalDeviceImageFormatInfo2(block: (PhysicalDeviceImageFormatInfo2) -> Unit) = PhysicalDeviceImageFormatInfo2(calloc(40)).apply(block).also { it.sType = 1000059004 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkQueueFamilyProperties2 {
  *         VkStructureType          sType
@@ -2190,7 +2527,7 @@ value class PhysicalDeviceImageFormatInfo2(override val address: Long) : Address
  *     }
  * 
  *     Valid pNext types:
- *         - VkQueueFamilyGlobalPriorityPropertiesEXT
+ *         - VkQueueFamilyGlobalPriorityPropertiesKHR
  *         - VkQueueFamilyCheckpointPropertiesNV
  *         - VkQueueFamilyCheckpointProperties2NV
  *         - VkVideoQueueFamilyProperties2KHR
@@ -2244,6 +2581,20 @@ value class QueueFamilyProperties2(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [QueueFamilyProperties2].
+ */
+inline fun Allocator.QueueFamilyProperties2(block: (QueueFamilyProperties2) -> Unit) = QueueFamilyProperties2(calloc(40)).apply(block).also { it.sType = 1000059005 }
+
+
+
+/**
+ * Struct buffer calloc function for [QueueFamilyProperties2].
+ */
+inline fun Allocator.QueueFamilyProperties2(capacity: Int, block: (QueueFamilyProperties2.Buffer) -> Unit) = QueueFamilyProperties2.Buffer(calloc(capacity * 40), capacity).apply(block).apply { forEach { it.sType = 1000059005 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceMemoryProperties2 {
  *         VkStructureType                   sType
@@ -2272,6 +2623,13 @@ value class PhysicalDeviceMemoryProperties2(override val address: Long) : Addres
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDeviceMemoryProperties2].
+ */
+inline fun Allocator.PhysicalDeviceMemoryProperties2(block: (PhysicalDeviceMemoryProperties2) -> Unit) = PhysicalDeviceMemoryProperties2(calloc(536)).apply(block).also { it.sType = 1000059006 }
 
 
 
@@ -2331,6 +2689,20 @@ value class SparseImageFormatProperties2(override val address: Long) : Addressab
 
 
 /**
+ * Struct calloc function for [SparseImageFormatProperties2].
+ */
+inline fun Allocator.SparseImageFormatProperties2(block: (SparseImageFormatProperties2) -> Unit) = SparseImageFormatProperties2(calloc(40)).apply(block).also { it.sType = 1000059007 }
+
+
+
+/**
+ * Struct buffer calloc function for [SparseImageFormatProperties2].
+ */
+inline fun Allocator.SparseImageFormatProperties2(capacity: Int, block: (SparseImageFormatProperties2.Buffer) -> Unit) = SparseImageFormatProperties2.Buffer(calloc(capacity * 40), capacity).apply(block).apply { forEach { it.sType = 1000059007 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceSparseImageFormatInfo2 {
  *         VkStructureType        sType
@@ -2380,6 +2752,13 @@ value class PhysicalDeviceSparseImageFormatInfo2(override val address: Long) : A
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceSparseImageFormatInfo2].
+ */
+inline fun Allocator.PhysicalDeviceSparseImageFormatInfo2(block: (PhysicalDeviceSparseImageFormatInfo2) -> Unit) = PhysicalDeviceSparseImageFormatInfo2(calloc(40)).apply(block).also { it.sType = 1000059008 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDevicePointClippingProperties {
  *         VkStructureType          sType
@@ -2405,6 +2784,13 @@ value class PhysicalDevicePointClippingProperties(override val address: Long) : 
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDevicePointClippingProperties].
+ */
+inline fun Allocator.PhysicalDevicePointClippingProperties(block: (PhysicalDevicePointClippingProperties) -> Unit) = PhysicalDevicePointClippingProperties(calloc(24)).apply(block).also { it.sType = 1000117000 }
 
 
 
@@ -2445,6 +2831,13 @@ value class RenderPassInputAttachmentAspectCreateInfo(override val address: Long
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [RenderPassInputAttachmentAspectCreateInfo].
+ */
+inline fun Allocator.RenderPassInputAttachmentAspectCreateInfo(block: (RenderPassInputAttachmentAspectCreateInfo) -> Unit) = RenderPassInputAttachmentAspectCreateInfo(calloc(32)).apply(block).also { it.sType = 1000117001 }
 
 
 
@@ -2504,6 +2897,20 @@ value class InputAttachmentAspectReference(override val address: Long) : Address
 
 
 /**
+ * Struct calloc function for [InputAttachmentAspectReference].
+ */
+inline fun Allocator.InputAttachmentAspectReference(block: (InputAttachmentAspectReference) -> Unit) = InputAttachmentAspectReference(calloc(12)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [InputAttachmentAspectReference].
+ */
+inline fun Allocator.InputAttachmentAspectReference(capacity: Int, block: (InputAttachmentAspectReference.Buffer) -> Unit) = InputAttachmentAspectReference.Buffer(calloc(capacity * 12), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkImageViewUsageCreateInfo {
  *         VkStructureType    sType
@@ -2533,6 +2940,13 @@ value class ImageViewUsageCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ImageViewUsageCreateInfo].
+ */
+inline fun Allocator.ImageViewUsageCreateInfo(block: (ImageViewUsageCreateInfo) -> Unit) = ImageViewUsageCreateInfo(calloc(24)).apply(block).also { it.sType = 1000117002 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPipelineTessellationDomainOriginStateCreateInfo {
  *         VkStructureType             sType
@@ -2558,6 +2972,13 @@ value class PipelineTessellationDomainOriginStateCreateInfo(override val address
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PipelineTessellationDomainOriginStateCreateInfo].
+ */
+inline fun Allocator.PipelineTessellationDomainOriginStateCreateInfo(block: (PipelineTessellationDomainOriginStateCreateInfo) -> Unit) = PipelineTessellationDomainOriginStateCreateInfo(calloc(24)).apply(block).also { it.sType = 1000117003 }
 
 
 
@@ -2630,6 +3051,13 @@ value class RenderPassMultiviewCreateInfo(override val address: Long) : Addressa
 
 
 /**
+ * Struct calloc function for [RenderPassMultiviewCreateInfo].
+ */
+inline fun Allocator.RenderPassMultiviewCreateInfo(block: (RenderPassMultiviewCreateInfo) -> Unit) = RenderPassMultiviewCreateInfo(calloc(64)).apply(block).also { it.sType = 1000053000 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceMultiviewFeatures {
  *         VkStructureType  sType
@@ -2669,6 +3097,13 @@ value class PhysicalDeviceMultiviewFeatures(override val address: Long) : Addres
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceMultiviewFeatures].
+ */
+inline fun Allocator.PhysicalDeviceMultiviewFeatures(block: (PhysicalDeviceMultiviewFeatures) -> Unit) = PhysicalDeviceMultiviewFeatures(calloc(32)).apply(block).also { it.sType = 1000053001 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceMultiviewProperties {
  *         VkStructureType  sType
@@ -2699,6 +3134,13 @@ value class PhysicalDeviceMultiviewProperties(override val address: Long) : Addr
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDeviceMultiviewProperties].
+ */
+inline fun Allocator.PhysicalDeviceMultiviewProperties(block: (PhysicalDeviceMultiviewProperties) -> Unit) = PhysicalDeviceMultiviewProperties(calloc(24)).apply(block).also { it.sType = 1000053002 }
 
 
 
@@ -2737,6 +3179,13 @@ value class PhysicalDeviceVariablePointersFeatures(override val address: Long) :
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceVariablePointersFeatures].
+ */
+inline fun Allocator.PhysicalDeviceVariablePointersFeatures(block: (PhysicalDeviceVariablePointersFeatures) -> Unit) = PhysicalDeviceVariablePointersFeatures(calloc(24)).apply(block).also { it.sType = 1000120000 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceProtectedMemoryFeatures {
  *         VkStructureType  sType
@@ -2766,6 +3215,13 @@ value class PhysicalDeviceProtectedMemoryFeatures(override val address: Long) : 
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceProtectedMemoryFeatures].
+ */
+inline fun Allocator.PhysicalDeviceProtectedMemoryFeatures(block: (PhysicalDeviceProtectedMemoryFeatures) -> Unit) = PhysicalDeviceProtectedMemoryFeatures(calloc(24)).apply(block).also { it.sType = 1000145001 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceProtectedMemoryProperties {
  *         VkStructureType  sType
@@ -2791,6 +3247,13 @@ value class PhysicalDeviceProtectedMemoryProperties(override val address: Long) 
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDeviceProtectedMemoryProperties].
+ */
+inline fun Allocator.PhysicalDeviceProtectedMemoryProperties(block: (PhysicalDeviceProtectedMemoryProperties) -> Unit) = PhysicalDeviceProtectedMemoryProperties(calloc(24)).apply(block).also { it.sType = 1000145002 }
 
 
 
@@ -2834,6 +3297,13 @@ value class DeviceQueueInfo2(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [DeviceQueueInfo2].
+ */
+inline fun Allocator.DeviceQueueInfo2(block: (DeviceQueueInfo2) -> Unit) = DeviceQueueInfo2(calloc(32)).apply(block).also { it.sType = 1000145003 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkProtectedSubmitInfo {
  *         VkStructureType  sType
@@ -2859,6 +3329,13 @@ value class ProtectedSubmitInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ProtectedSubmitInfo].
+ */
+inline fun Allocator.ProtectedSubmitInfo(block: (ProtectedSubmitInfo) -> Unit) = ProtectedSubmitInfo(calloc(24)).apply(block).also { it.sType = 1000145000 }
 
 
 
@@ -2930,6 +3407,13 @@ value class SamplerYcbcrConversionCreateInfo(override val address: Long) : Addre
 
 
 /**
+ * Struct calloc function for [SamplerYcbcrConversionCreateInfo].
+ */
+inline fun Allocator.SamplerYcbcrConversionCreateInfo(block: (SamplerYcbcrConversionCreateInfo) -> Unit) = SamplerYcbcrConversionCreateInfo(calloc(64)).apply(block).also { it.sType = 1000156000 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkSamplerYcbcrConversionInfo {
  *         VkStructureType           sType
@@ -2955,6 +3439,13 @@ value class SamplerYcbcrConversionInfo(override val address: Long) : Addressable
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [SamplerYcbcrConversionInfo].
+ */
+inline fun Allocator.SamplerYcbcrConversionInfo(block: (SamplerYcbcrConversionInfo) -> Unit) = SamplerYcbcrConversionInfo(calloc(24)).apply(block).also { it.sType = 1000156001 }
 
 
 
@@ -2988,6 +3479,13 @@ value class BindImagePlaneMemoryInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [BindImagePlaneMemoryInfo].
+ */
+inline fun Allocator.BindImagePlaneMemoryInfo(block: (BindImagePlaneMemoryInfo) -> Unit) = BindImagePlaneMemoryInfo(calloc(24)).apply(block).also { it.sType = 1000156002 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkImagePlaneMemoryRequirementsInfo {
  *         VkStructureType        sType
@@ -3013,6 +3511,13 @@ value class ImagePlaneMemoryRequirementsInfo(override val address: Long) : Addre
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ImagePlaneMemoryRequirementsInfo].
+ */
+inline fun Allocator.ImagePlaneMemoryRequirementsInfo(block: (ImagePlaneMemoryRequirementsInfo) -> Unit) = ImagePlaneMemoryRequirementsInfo(calloc(24)).apply(block).also { it.sType = 1000156003 }
 
 
 
@@ -3046,6 +3551,13 @@ value class PhysicalDeviceSamplerYcbcrConversionFeatures(override val address: L
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceSamplerYcbcrConversionFeatures].
+ */
+inline fun Allocator.PhysicalDeviceSamplerYcbcrConversionFeatures(block: (PhysicalDeviceSamplerYcbcrConversionFeatures) -> Unit) = PhysicalDeviceSamplerYcbcrConversionFeatures(calloc(24)).apply(block).also { it.sType = 1000156004 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkSamplerYcbcrConversionImageFormatProperties {
  *         VkStructureType  sType
@@ -3071,6 +3583,13 @@ value class SamplerYcbcrConversionImageFormatProperties(override val address: Lo
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [SamplerYcbcrConversionImageFormatProperties].
+ */
+inline fun Allocator.SamplerYcbcrConversionImageFormatProperties(block: (SamplerYcbcrConversionImageFormatProperties) -> Unit) = SamplerYcbcrConversionImageFormatProperties(calloc(24)).apply(block).also { it.sType = 1000156005 }
 
 
 
@@ -3145,6 +3664,20 @@ value class DescriptorUpdateTemplateEntry(override val address: Long) : Addressa
 
 
 /**
+ * Struct calloc function for [DescriptorUpdateTemplateEntry].
+ */
+inline fun Allocator.DescriptorUpdateTemplateEntry(block: (DescriptorUpdateTemplateEntry) -> Unit) = DescriptorUpdateTemplateEntry(calloc(32)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [DescriptorUpdateTemplateEntry].
+ */
+inline fun Allocator.DescriptorUpdateTemplateEntry(capacity: Int, block: (DescriptorUpdateTemplateEntry.Buffer) -> Unit) = DescriptorUpdateTemplateEntry.Buffer(calloc(capacity * 32), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkDescriptorUpdateTemplateCreateInfo {
  *         VkStructureType                        sType
@@ -3215,6 +3748,13 @@ value class DescriptorUpdateTemplateCreateInfo(override val address: Long) : Add
 
 
 /**
+ * Struct calloc function for [DescriptorUpdateTemplateCreateInfo].
+ */
+inline fun Allocator.DescriptorUpdateTemplateCreateInfo(block: (DescriptorUpdateTemplateCreateInfo) -> Unit) = DescriptorUpdateTemplateCreateInfo(calloc(72)).apply(block).also { it.sType = 1000085000 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkExternalMemoryProperties {
  *         VkExternalMemoryFeatureFlags     externalMemoryFeatures
@@ -3240,6 +3780,13 @@ value class ExternalMemoryProperties(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ExternalMemoryProperties].
+ */
+inline fun Allocator.ExternalMemoryProperties(block: (ExternalMemoryProperties) -> Unit) = ExternalMemoryProperties(calloc(12)).apply(block)
 
 
 
@@ -3273,6 +3820,13 @@ value class PhysicalDeviceExternalImageFormatInfo(override val address: Long) : 
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceExternalImageFormatInfo].
+ */
+inline fun Allocator.PhysicalDeviceExternalImageFormatInfo(block: (PhysicalDeviceExternalImageFormatInfo) -> Unit) = PhysicalDeviceExternalImageFormatInfo(calloc(24)).apply(block).also { it.sType = 1000071000 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkExternalImageFormatProperties {
  *         VkStructureType             sType
@@ -3298,6 +3852,13 @@ value class ExternalImageFormatProperties(override val address: Long) : Addressa
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ExternalImageFormatProperties].
+ */
+inline fun Allocator.ExternalImageFormatProperties(block: (ExternalImageFormatProperties) -> Unit) = ExternalImageFormatProperties(calloc(32)).apply(block).also { it.sType = 1000071001 }
 
 
 
@@ -3341,6 +3902,13 @@ value class PhysicalDeviceExternalBufferInfo(override val address: Long) : Addre
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceExternalBufferInfo].
+ */
+inline fun Allocator.PhysicalDeviceExternalBufferInfo(block: (PhysicalDeviceExternalBufferInfo) -> Unit) = PhysicalDeviceExternalBufferInfo(calloc(32)).apply(block).also { it.sType = 1000071002 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkExternalBufferProperties {
  *         VkStructureType             sType
@@ -3366,6 +3934,13 @@ value class ExternalBufferProperties(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ExternalBufferProperties].
+ */
+inline fun Allocator.ExternalBufferProperties(block: (ExternalBufferProperties) -> Unit) = ExternalBufferProperties(calloc(32)).apply(block).also { it.sType = 1000071003 }
 
 
 
@@ -3419,6 +3994,13 @@ value class PhysicalDeviceIDProperties(override val address: Long) : Addressable
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceIDProperties].
+ */
+inline fun Allocator.PhysicalDeviceIDProperties(block: (PhysicalDeviceIDProperties) -> Unit) = PhysicalDeviceIDProperties(calloc(64)).apply(block).also { it.sType = 1000071004 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkExternalMemoryImageCreateInfo {
  *         VkStructureType                  sType
@@ -3444,6 +4026,13 @@ value class ExternalMemoryImageCreateInfo(override val address: Long) : Addressa
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ExternalMemoryImageCreateInfo].
+ */
+inline fun Allocator.ExternalMemoryImageCreateInfo(block: (ExternalMemoryImageCreateInfo) -> Unit) = ExternalMemoryImageCreateInfo(calloc(24)).apply(block).also { it.sType = 1000072001 }
 
 
 
@@ -3477,6 +4066,13 @@ value class ExternalMemoryBufferCreateInfo(override val address: Long) : Address
 
 
 /**
+ * Struct calloc function for [ExternalMemoryBufferCreateInfo].
+ */
+inline fun Allocator.ExternalMemoryBufferCreateInfo(block: (ExternalMemoryBufferCreateInfo) -> Unit) = ExternalMemoryBufferCreateInfo(calloc(24)).apply(block).also { it.sType = 1000072000 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkExportMemoryAllocateInfo {
  *         VkStructureType                  sType
@@ -3506,6 +4102,13 @@ value class ExportMemoryAllocateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ExportMemoryAllocateInfo].
+ */
+inline fun Allocator.ExportMemoryAllocateInfo(block: (ExportMemoryAllocateInfo) -> Unit) = ExportMemoryAllocateInfo(calloc(24)).apply(block).also { it.sType = 1000072002 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceExternalFenceInfo {
  *         VkStructureType                    sType
@@ -3531,6 +4134,13 @@ value class PhysicalDeviceExternalFenceInfo(override val address: Long) : Addres
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDeviceExternalFenceInfo].
+ */
+inline fun Allocator.PhysicalDeviceExternalFenceInfo(block: (PhysicalDeviceExternalFenceInfo) -> Unit) = PhysicalDeviceExternalFenceInfo(calloc(24)).apply(block).also { it.sType = 1000112000 }
 
 
 
@@ -3574,6 +4184,13 @@ value class ExternalFenceProperties(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ExternalFenceProperties].
+ */
+inline fun Allocator.ExternalFenceProperties(block: (ExternalFenceProperties) -> Unit) = ExternalFenceProperties(calloc(32)).apply(block).also { it.sType = 1000112001 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkExportFenceCreateInfo {
  *         VkStructureType                 sType
@@ -3599,6 +4216,13 @@ value class ExportFenceCreateInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ExportFenceCreateInfo].
+ */
+inline fun Allocator.ExportFenceCreateInfo(block: (ExportFenceCreateInfo) -> Unit) = ExportFenceCreateInfo(calloc(24)).apply(block).also { it.sType = 1000113000 }
 
 
 
@@ -3632,6 +4256,13 @@ value class ExportSemaphoreCreateInfo(override val address: Long) : Addressable 
 
 
 /**
+ * Struct calloc function for [ExportSemaphoreCreateInfo].
+ */
+inline fun Allocator.ExportSemaphoreCreateInfo(block: (ExportSemaphoreCreateInfo) -> Unit) = ExportSemaphoreCreateInfo(calloc(24)).apply(block).also { it.sType = 1000077000 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceExternalSemaphoreInfo {
  *         VkStructureType                        sType
@@ -3660,6 +4291,13 @@ value class PhysicalDeviceExternalSemaphoreInfo(override val address: Long) : Ad
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDeviceExternalSemaphoreInfo].
+ */
+inline fun Allocator.PhysicalDeviceExternalSemaphoreInfo(block: (PhysicalDeviceExternalSemaphoreInfo) -> Unit) = PhysicalDeviceExternalSemaphoreInfo(calloc(24)).apply(block).also { it.sType = 1000076000 }
 
 
 
@@ -3703,6 +4341,13 @@ value class ExternalSemaphoreProperties(override val address: Long) : Addressabl
 
 
 /**
+ * Struct calloc function for [ExternalSemaphoreProperties].
+ */
+inline fun Allocator.ExternalSemaphoreProperties(block: (ExternalSemaphoreProperties) -> Unit) = ExternalSemaphoreProperties(calloc(32)).apply(block).also { it.sType = 1000076001 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceMaintenance3Properties {
  *         VkStructureType  sType
@@ -3733,6 +4378,13 @@ value class PhysicalDeviceMaintenance3Properties(override val address: Long) : A
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDeviceMaintenance3Properties].
+ */
+inline fun Allocator.PhysicalDeviceMaintenance3Properties(block: (PhysicalDeviceMaintenance3Properties) -> Unit) = PhysicalDeviceMaintenance3Properties(calloc(32)).apply(block).also { it.sType = 1000168000 }
 
 
 
@@ -3769,6 +4421,13 @@ value class DescriptorSetLayoutSupport(override val address: Long) : Addressable
 
 
 /**
+ * Struct calloc function for [DescriptorSetLayoutSupport].
+ */
+inline fun Allocator.DescriptorSetLayoutSupport(block: (DescriptorSetLayoutSupport) -> Unit) = DescriptorSetLayoutSupport(calloc(24)).apply(block).also { it.sType = 1000168001 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     struct VkPhysicalDeviceShaderDrawParametersFeatures {
  *         VkStructureType  sType
@@ -3794,3 +4453,10 @@ value class PhysicalDeviceShaderDrawParametersFeatures(override val address: Lon
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDeviceShaderDrawParametersFeatures].
+ */
+inline fun Allocator.PhysicalDeviceShaderDrawParametersFeatures(block: (PhysicalDeviceShaderDrawParametersFeatures) -> Unit) = PhysicalDeviceShaderDrawParametersFeatures(calloc(24)).apply(block).also { it.sType = 1000063000 }

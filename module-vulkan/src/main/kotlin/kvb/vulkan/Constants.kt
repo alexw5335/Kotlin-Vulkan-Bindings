@@ -18,7 +18,7 @@ const val VK_MAX_MEMORY_TYPES = 32
 
 const val VK_MAX_MEMORY_HEAPS = 16
 
-const val VK_LOD_CLAMP_NONE = 1000.0f
+const val VK_LOD_CLAMP_NONE = 1000.0F
 
 const val VK_REMAINING_MIP_LEVELS = -1
 
@@ -48,6 +48,6 @@ const val VK_MAX_DRIVER_INFO_SIZE = 256
 
 const val VK_SHADER_UNUSED_KHR = -1
 
-const val VK_MAX_GLOBAL_PRIORITY_SIZE_EXT = 16
+const val VK_MAX_GLOBAL_PRIORITY_SIZE_KHR = 16
 
 fun VK_BOOL(value: Boolean) = if(value) VK_TRUE else VK_FALSE

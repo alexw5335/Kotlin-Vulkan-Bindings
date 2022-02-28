@@ -4,9 +4,7 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Unsafe
-import kvb.core.memory.Addressable
+import kvb.core.memory.*
 import kvb.core.memory.direct.*
 
 /**
@@ -74,7 +72,7 @@ internal external fun queuePresent(address: Long, queue: Long, pPresentInfo: Lon
 
 
 /**
- *     // provided by VK_KHR_device_group
+ *     // provided by VK_KHR_swapchain
  *     VkResult vkGetDeviceGroupPresentCapabilitiesKHR(
  *         VkDevice                              device
  *         VkDeviceGroupPresentCapabilitiesKHR*  pDeviceGroupPresentCapabilities
@@ -85,7 +83,7 @@ internal external fun getDeviceGroupPresentCapabilities(address: Long, device: L
 
 
 /**
- *     // provided by VK_KHR_device_group
+ *     // provided by VK_KHR_swapchain
  *     VkResult vkGetDeviceGroupSurfacePresentModesKHR(
  *         VkDevice                           device
  *         VkSurfaceKHR                       surface
@@ -97,7 +95,7 @@ internal external fun getDeviceGroupSurfacePresentModes(address: Long, device: L
 
 
 /**
- *     // provided by VK_KHR_device_group
+ *     // provided by VK_KHR_swapchain
  *     VkResult vkGetPhysicalDevicePresentRectanglesKHR(
  *         VkPhysicalDevice  physicalDevice
  *         VkSurfaceKHR      surface
@@ -110,7 +108,7 @@ internal external fun getPhysicalDevicePresentRectangles(address: Long, physical
 
 
 /**
- *     // provided by VK_KHR_device_group
+ *     // provided by VK_KHR_swapchain
  *     VkResult vkAcquireNextImage2KHR(
  *         VkDevice                    device
  *         VkAcquireNextImageInfoKHR*  pAcquireInfo
@@ -136,7 +134,6 @@ open class SwapchainH(override val address: Long) : Addressable
  *         VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR               = 4
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class SwapchainCreateFlags(val value: Int) {
 	
@@ -159,7 +156,14 @@ value class SwapchainCreateFlags(val value: Int) {
 
 
 /**
- *     // provided by VK_KHR_device_group
+ * Bitmask builder for [SwapchainCreateFlags].
+ */
+inline fun SwapchainCreateFlags(block: SwapchainCreateFlags.Companion.() -> SwapchainCreateFlags) = block(SwapchainCreateFlags)
+
+
+
+/**
+ *     // provided by VK_KHR_swapchain
  *     enum VkDeviceGroupPresentModeFlagBitsKHR {
  *         VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR               = 1
  *         VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR              = 2
@@ -167,7 +171,6 @@ value class SwapchainCreateFlags(val value: Int) {
  *         VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR  = 8
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class DeviceGroupPresentModeFlags(val value: Int) {
 	
@@ -192,6 +195,13 @@ value class DeviceGroupPresentModeFlags(val value: Int) {
 
 
 }
+
+
+
+/**
+ * Bitmask builder for [DeviceGroupPresentModeFlags].
+ */
+inline fun DeviceGroupPresentModeFlags(block: DeviceGroupPresentModeFlags.Companion.() -> DeviceGroupPresentModeFlags) = block(DeviceGroupPresentModeFlags)
 
 
 
@@ -340,6 +350,20 @@ value class SwapchainCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [SwapchainCreateInfo].
+ */
+inline fun Allocator.SwapchainCreateInfo(block: (SwapchainCreateInfo) -> Unit) = SwapchainCreateInfo(calloc(104)).apply(block).also { it.sType = 1000001000 }
+
+
+
+/**
+ * Struct buffer calloc function for [SwapchainCreateInfo].
+ */
+inline fun Allocator.SwapchainCreateInfo(capacity: Int, block: (SwapchainCreateInfo.Buffer) -> Unit) = SwapchainCreateInfo.Buffer(calloc(capacity * 104), capacity).apply(block).apply { forEach { it.sType = 1000001000 } }
+
+
+
+/**
  *     // provided by VK_KHR_swapchain
  *     struct VkPresentInfoKHR {
  *         VkStructureType  sType
@@ -420,7 +444,14 @@ value class PresentInfo(override val address: Long) : Addressable {
 
 
 /**
- *     // provided by VK_KHR_device_group
+ * Struct calloc function for [PresentInfo].
+ */
+inline fun Allocator.PresentInfo(block: (PresentInfo) -> Unit) = PresentInfo(calloc(64)).apply(block).also { it.sType = 1000001001 }
+
+
+
+/**
+ *     // provided by VK_KHR_swapchain
  *     struct VkImageSwapchainCreateInfoKHR {
  *         VkStructureType  sType
  *         void*            pNext (must be null)
@@ -449,7 +480,14 @@ value class ImageSwapchainCreateInfo(override val address: Long) : Addressable {
 
 
 /**
- *     // provided by VK_KHR_device_group
+ * Struct calloc function for [ImageSwapchainCreateInfo].
+ */
+inline fun Allocator.ImageSwapchainCreateInfo(block: (ImageSwapchainCreateInfo) -> Unit) = ImageSwapchainCreateInfo(calloc(24)).apply(block).also { it.sType = 1000060008 }
+
+
+
+/**
+ *     // provided by VK_KHR_swapchain
  *     struct VkBindImageMemorySwapchainInfoKHR {
  *         VkStructureType  sType
  *         void*            pNext (must be null)
@@ -483,7 +521,14 @@ value class BindImageMemorySwapchainInfo(override val address: Long) : Addressab
 
 
 /**
- *     // provided by VK_KHR_device_group
+ * Struct calloc function for [BindImageMemorySwapchainInfo].
+ */
+inline fun Allocator.BindImageMemorySwapchainInfo(block: (BindImageMemorySwapchainInfo) -> Unit) = BindImageMemorySwapchainInfo(calloc(32)).apply(block).also { it.sType = 1000060009 }
+
+
+
+/**
+ *     // provided by VK_KHR_swapchain
  *     struct VkAcquireNextImageInfoKHR {
  *         VkStructureType  sType
  *         void*            pNext (must be null)
@@ -532,7 +577,14 @@ value class AcquireNextImageInfo(override val address: Long) : Addressable {
 
 
 /**
- *     // provided by VK_KHR_device_group
+ * Struct calloc function for [AcquireNextImageInfo].
+ */
+inline fun Allocator.AcquireNextImageInfo(block: (AcquireNextImageInfo) -> Unit) = AcquireNextImageInfo(calloc(56)).apply(block).also { it.sType = 1000060010 }
+
+
+
+/**
+ *     // provided by VK_KHR_swapchain
  *     struct VkDeviceGroupPresentCapabilitiesKHR {
  *         VkStructureType                   sType
  *         void*                             pNext (must be null)
@@ -566,7 +618,14 @@ value class DeviceGroupPresentCapabilities(override val address: Long) : Address
 
 
 /**
- *     // provided by VK_KHR_device_group
+ * Struct calloc function for [DeviceGroupPresentCapabilities].
+ */
+inline fun Allocator.DeviceGroupPresentCapabilities(block: (DeviceGroupPresentCapabilities) -> Unit) = DeviceGroupPresentCapabilities(calloc(152)).apply(block).also { it.sType = 1000060007 }
+
+
+
+/**
+ *     // provided by VK_KHR_swapchain
  *     struct VkDeviceGroupPresentInfoKHR {
  *         VkStructureType                      sType
  *         void*                                pNext (must be null)
@@ -611,7 +670,14 @@ value class DeviceGroupPresentInfo(override val address: Long) : Addressable {
 
 
 /**
- *     // provided by VK_KHR_device_group
+ * Struct calloc function for [DeviceGroupPresentInfo].
+ */
+inline fun Allocator.DeviceGroupPresentInfo(block: (DeviceGroupPresentInfo) -> Unit) = DeviceGroupPresentInfo(calloc(40)).apply(block).also { it.sType = 1000060011 }
+
+
+
+/**
+ *     // provided by VK_KHR_swapchain
  *     struct VkDeviceGroupSwapchainCreateInfoKHR {
  *         VkStructureType                   sType
  *         void*                             pNext (must be null)
@@ -636,3 +702,10 @@ value class DeviceGroupSwapchainCreateInfo(override val address: Long) : Address
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DeviceGroupSwapchainCreateInfo].
+ */
+inline fun Allocator.DeviceGroupSwapchainCreateInfo(block: (DeviceGroupSwapchainCreateInfo) -> Unit) = DeviceGroupSwapchainCreateInfo(calloc(24)).apply(block).also { it.sType = 1000060012 }

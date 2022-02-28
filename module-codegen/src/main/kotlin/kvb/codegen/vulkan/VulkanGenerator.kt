@@ -188,8 +188,7 @@ class VulkanGenerator(
 			})
 		}
 
-		spacing = 1
-
+		doc("Enum getter for [${enum.name}].")
 		declaration {
 			write("fun _${enum.genName}(value: Int) = when(value)")
 			braced {
@@ -235,12 +234,22 @@ class VulkanGenerator(
 
 	private fun KWriter.writeBitmask(bitmask: BitmaskType) {
 		val name = bitmask.genName
-		val enum = registry.types.first { it.name == bitmask.enumName } as EnumType
+		val enum = registry.types.firstOrNull { it.name == bitmask.enumName } as? EnumType
+
+		if(enum == null || enum.entries.isEmpty()) {
+			doc(listOf(
+				"    // Provided by ${registry.getProvider(bitmask.name).name}",
+				"    typedef VkFlags ${bitmask.name}",
+			    "    // This bitmask's flag bits are empty or are part of an extension that has not been generated."
+			))
+			annotation("JvmInline")
+			declaration("value class $name(val value: ${bitmask.primitive.kName})")
+			return
+		}
 
 		val entries = enum.entries.filter { it.shouldGen }
 
 		doc(enum.docStrings)
-		suppress("unused")
 		annotation("JvmInline")
 		class_("value class $name(val value: ${bitmask.primitive.kName})") {
 			companion_ {
@@ -254,8 +263,7 @@ class VulkanGenerator(
 			}
 		}
 
-		spacing = 1
-
+		doc("Bitmask builder for [$name].")
 		declaration("inline fun $name(block: $name.Companion.() -> $name) = block($name)")
 	}
 
@@ -907,15 +915,21 @@ class VulkanGenerator(
 		}
 
 		if(struct.sType != null) {
+			doc("Struct calloc function for [$name].")
 			declaration("inline fun Allocator.$name(block: ($name) -> Unit) = $name(calloc(${struct.size64})).apply(block).also { it.sType = ${struct.sType} }")
 
-			if(struct.requiresBuffer)
+			if(struct.requiresBuffer) {
+				doc("Struct buffer calloc function for [$name].")
 				declaration("inline fun Allocator.$name(capacity: Int, block: ($name.Buffer) -> Unit) = $name.Buffer(calloc(capacity * ${struct.size64}), capacity).apply(block).apply { forEach { it.sType = ${struct.sType} } }")
+			}
 		} else {
+			doc("Struct calloc function for [$name].")
 			declaration("inline fun Allocator.$name(block: ($name) -> Unit) = $name(calloc(${struct.size64})).apply(block)")
 
-			if(struct.requiresBuffer)
+			if(struct.requiresBuffer) {
+				doc("Struct buffer calloc function for [$name].")
 				declaration("inline fun Allocator.$name(capacity: Int, block: ($name.Buffer) -> Unit) = $name.Buffer(calloc(capacity * ${struct.size64}), capacity).apply(block)")
+			}
 		}
 	}
 

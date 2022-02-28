@@ -4,9 +4,7 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Unsafe
-import kvb.core.memory.Addressable
+import kvb.core.memory.*
 import kvb.core.memory.direct.*
 
 /**
@@ -122,7 +120,6 @@ open class DisplayModeH(override val address: Long) : Addressable
  *         VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR  = 8
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class DisplayPlaneAlphaFlags(val value: Int) {
 	
@@ -151,6 +148,13 @@ value class DisplayPlaneAlphaFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [DisplayPlaneAlphaFlags].
+ */
+inline fun DisplayPlaneAlphaFlags(block: DisplayPlaneAlphaFlags.Companion.() -> DisplayPlaneAlphaFlags) = block(DisplayPlaneAlphaFlags)
+
+
+
+/**
  *     // provided by VK_KHR_surface
  *     enum VkSurfaceTransformFlagBitsKHR {
  *         VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR                      = 1
@@ -164,7 +168,6 @@ value class DisplayPlaneAlphaFlags(val value: Int) {
  *         VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR                       = 256
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class SurfaceTransformFlags(val value: Int) {
 	
@@ -203,6 +206,13 @@ value class SurfaceTransformFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [SurfaceTransformFlags].
+ */
+inline fun SurfaceTransformFlags(block: SurfaceTransformFlags.Companion.() -> SurfaceTransformFlags) = block(SurfaceTransformFlags)
+
+
+
+/**
  *     // provided by VK_KHR_display
  *     struct VkDisplayModeCreateInfoKHR {
  *         VkStructureType              sType
@@ -237,6 +247,13 @@ value class DisplayModeCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [DisplayModeCreateInfo].
+ */
+inline fun Allocator.DisplayModeCreateInfo(block: (DisplayModeCreateInfo) -> Unit) = DisplayModeCreateInfo(calloc(32)).apply(block).also { it.sType = 1000002000 }
+
+
+
+/**
  *     // provided by VK_KHR_display
  *     struct VkDisplayModeParametersKHR {
  *         VkExtent2D  visibleRegion
@@ -257,6 +274,13 @@ value class DisplayModeParameters(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DisplayModeParameters].
+ */
+inline fun Allocator.DisplayModeParameters(block: (DisplayModeParameters) -> Unit) = DisplayModeParameters(calloc(12)).apply(block)
 
 
 
@@ -307,6 +331,20 @@ value class DisplayModeProperties(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DisplayModeProperties].
+ */
+inline fun Allocator.DisplayModeProperties(block: (DisplayModeProperties) -> Unit) = DisplayModeProperties(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [DisplayModeProperties].
+ */
+inline fun Allocator.DisplayModeProperties(capacity: Int, block: (DisplayModeProperties.Buffer) -> Unit) = DisplayModeProperties.Buffer(calloc(capacity * 24), capacity).apply(block)
 
 
 
@@ -370,6 +408,13 @@ value class DisplayPlaneCapabilities(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [DisplayPlaneCapabilities].
+ */
+inline fun Allocator.DisplayPlaneCapabilities(block: (DisplayPlaneCapabilities) -> Unit) = DisplayPlaneCapabilities(calloc(68)).apply(block)
+
+
+
+/**
  *     // provided by VK_KHR_display
  *     struct VkDisplayPlanePropertiesKHR {
  *         VkDisplayKHR  currentDisplay
@@ -416,6 +461,20 @@ value class DisplayPlaneProperties(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DisplayPlaneProperties].
+ */
+inline fun Allocator.DisplayPlaneProperties(block: (DisplayPlaneProperties) -> Unit) = DisplayPlaneProperties(calloc(16)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [DisplayPlaneProperties].
+ */
+inline fun Allocator.DisplayPlaneProperties(capacity: Int, block: (DisplayPlaneProperties.Buffer) -> Unit) = DisplayPlaneProperties.Buffer(calloc(capacity * 16), capacity).apply(block)
 
 
 
@@ -495,6 +554,20 @@ value class DisplayProperties(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [DisplayProperties].
+ */
+inline fun Allocator.DisplayProperties(block: (DisplayProperties) -> Unit) = DisplayProperties(calloc(48)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [DisplayProperties].
+ */
+inline fun Allocator.DisplayProperties(capacity: Int, block: (DisplayProperties.Buffer) -> Unit) = DisplayProperties.Buffer(calloc(capacity * 48), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_KHR_display
  *     struct VkDisplaySurfaceCreateInfoKHR {
  *         VkStructureType                 sType
@@ -555,3 +628,10 @@ value class DisplaySurfaceCreateInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DisplaySurfaceCreateInfo].
+ */
+inline fun Allocator.DisplaySurfaceCreateInfo(block: (DisplaySurfaceCreateInfo) -> Unit) = DisplaySurfaceCreateInfo(calloc(64)).apply(block).also { it.sType = 1000002001 }

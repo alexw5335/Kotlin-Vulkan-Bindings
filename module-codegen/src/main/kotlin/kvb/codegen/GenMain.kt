@@ -17,7 +17,6 @@ private fun genVulkan() {
 	generator.genCommands()
 	generator.genCommandsC()
 	generator.genConstants()
-	generator.genEnumConstructors()
 	generator.genProviders()
 	generator.genUtils()
 }

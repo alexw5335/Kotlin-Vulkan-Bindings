@@ -4,9 +4,7 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Unsafe
-import kvb.core.memory.Addressable
+import kvb.core.memory.*
 import kvb.core.memory.direct.*
 
 /**
@@ -1966,6 +1964,7 @@ open class CommandBufferH(override val address: Long) : Addressable
  *         VK_ERROR_INVALID_EXTERNAL_HANDLE                       = -1000072003
  *         VK_ERROR_FRAGMENTATION                                 = -1000161000
  *         VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS                = -1000257000
+ *         VK_PIPELINE_COMPILE_REQUIRED                           = 1000297000
  *         VK_ERROR_SURFACE_LOST_KHR                              = -1000000000
  *         VK_ERROR_NATIVE_WINDOW_IN_USE_KHR                      = -1000000001
  *         VK_SUBOPTIMAL_KHR                                      = 1000001003
@@ -1978,6 +1977,7 @@ open class CommandBufferH(override val address: Long) : Addressable
  *         VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT  = -1000158000
  *         VK_ERROR_FRAGMENTATION_EXT                             = -1000161000
  *         VK_ERROR_NOT_PERMITTED_EXT                             = -1000174001
+ *         VK_ERROR_NOT_PERMITTED_KHR                             = -1000174001
  *         VK_ERROR_INVALID_DEVICE_ADDRESS_EXT                    = -1000257000
  *         VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT           = -1000255000
  *         VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS_KHR            = -1000257000
@@ -2042,6 +2042,8 @@ value class Result(val value: Int) {
 		
 		val ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS = Result(-1000257000)
 		
+		val PIPELINE_COMPILE_REQUIRED = Result(1000297000)
+		
 		val ERROR_SURFACE_LOST = Result(-1000000000)
 		
 		val ERROR_NATIVE_WINDOW_IN_USE = Result(-1000000001)
@@ -2078,6 +2080,7 @@ value class Result(val value: Int) {
 		-1000072003 -> "ERROR_INVALID_EXTERNAL_HANDLE"
 		-1000161000 -> "ERROR_FRAGMENTATION"
 		-1000257000 -> "ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS"
+		1000297000 -> "PIPELINE_COMPILE_REQUIRED"
 		-1000000000 -> "ERROR_SURFACE_LOST"
 		-1000000001 -> "ERROR_NATIVE_WINDOW_IN_USE"
 		1000001003 -> "SUBOPTIMAL"
@@ -2121,6 +2124,7 @@ value class Result(val value: Int) {
  *         VK_OBJECT_TYPE_COMMAND_POOL                     = 25
  *         VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION         = 1000156000
  *         VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE       = 1000085000
+ *         VK_OBJECT_TYPE_PRIVATE_DATA_SLOT                = 1000295000
  *         VK_OBJECT_TYPE_SURFACE_KHR                      = 1000000000
  *         VK_OBJECT_TYPE_SWAPCHAIN_KHR                    = 1000001000
  *         VK_OBJECT_TYPE_DISPLAY_KHR                      = 1000002000
@@ -2206,6 +2210,8 @@ value class ObjectType(val value: Int) {
 		
 		val DESCRIPTOR_UPDATE_TEMPLATE = ObjectType(1000085000)
 		
+		val PRIVATE_DATA_SLOT = ObjectType(1000295000)
+		
 		val SURFACE = ObjectType(1000000000)
 		
 		val SWAPCHAIN = ObjectType(1000001000)
@@ -2249,6 +2255,7 @@ value class ObjectType(val value: Int) {
 		25 -> "COMMAND_POOL"
 		1000156000 -> "SAMPLER_YCBCR_CONVERSION"
 		1000085000 -> "DESCRIPTOR_UPDATE_TEMPLATE"
+		1000295000 -> "PRIVATE_DATA_SLOT"
 		1000000000 -> "SURFACE"
 		1000001000 -> "SWAPCHAIN"
 		1000002000 -> "DISPLAY"
@@ -2295,6 +2302,21 @@ enum class VendorId(val value: Int) {
 
 
 /**
+ * Enum getter for [VkVendorId].
+ */
+fun _VendorId(value: Int) = when(value) {
+	0x10001 -> VendorId.VIV
+	0x10002 -> VendorId.VSI
+	0x10003 -> VendorId.KAZAN
+	0x10004 -> VendorId.CODEPLAY
+	0x10005 -> VendorId.MESA
+	0x10006 -> VendorId.POCL
+	else -> throw RuntimeException("Invalid VkVendorId enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkPipelineCacheHeaderVersion {
  *         VK_PIPELINE_CACHE_HEADER_VERSION_ONE  = 1
@@ -2307,6 +2329,16 @@ enum class PipelineCacheHeaderVersion(val value: Int) {
 	ONE(1);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkPipelineCacheHeaderVersion].
+ */
+fun _PipelineCacheHeaderVersion(value: Int) = when(value) {
+	1 -> PipelineCacheHeaderVersion.ONE
+	else -> throw RuntimeException("Invalid VkPipelineCacheHeaderVersion enum value: $value")
 }
 
 
@@ -2533,6 +2565,26 @@ enum class PipelineCacheHeaderVersion(val value: Int) {
  *         VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM                    = 1000156031
  *         VK_FORMAT_G16_B16R16_2PLANE_422_UNORM                     = 1000156032
  *         VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM                    = 1000156033
+ *         VK_FORMAT_G8_B8R8_2PLANE_444_UNORM                        = 1000330000
+ *         VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16       = 1000330001
+ *         VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16       = 1000330002
+ *         VK_FORMAT_G16_B16R16_2PLANE_444_UNORM                     = 1000330003
+ *         VK_FORMAT_A4R4G4B4_UNORM_PACK16                           = 1000340000
+ *         VK_FORMAT_A4B4G4R4_UNORM_PACK16                           = 1000340001
+ *         VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK                           = 1000066000
+ *         VK_FORMAT_ASTC_5x4_SFLOAT_BLOCK                           = 1000066001
+ *         VK_FORMAT_ASTC_5x5_SFLOAT_BLOCK                           = 1000066002
+ *         VK_FORMAT_ASTC_6x5_SFLOAT_BLOCK                           = 1000066003
+ *         VK_FORMAT_ASTC_6x6_SFLOAT_BLOCK                           = 1000066004
+ *         VK_FORMAT_ASTC_8x5_SFLOAT_BLOCK                           = 1000066005
+ *         VK_FORMAT_ASTC_8x6_SFLOAT_BLOCK                           = 1000066006
+ *         VK_FORMAT_ASTC_8x8_SFLOAT_BLOCK                           = 1000066007
+ *         VK_FORMAT_ASTC_10x5_SFLOAT_BLOCK                          = 1000066008
+ *         VK_FORMAT_ASTC_10x6_SFLOAT_BLOCK                          = 1000066009
+ *         VK_FORMAT_ASTC_10x8_SFLOAT_BLOCK                          = 1000066010
+ *         VK_FORMAT_ASTC_10x10_SFLOAT_BLOCK                         = 1000066011
+ *         VK_FORMAT_ASTC_12x10_SFLOAT_BLOCK                         = 1000066012
+ *         VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK                         = 1000066013
  *         VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG                     = 1000054000
  *         VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG                     = 1000054001
  *         VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG                     = 1000054002
@@ -3071,6 +3123,46 @@ value class Format(val value: Int) {
 		val G16_B16R16_2PLANE_422_UNORM = Format(1000156032)
 		
 		val G16_B16_R16_3PLANE_444_UNORM = Format(1000156033)
+		
+		val G8_B8R8_2PLANE_444_UNORM = Format(1000330000)
+		
+		val G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16 = Format(1000330001)
+		
+		val G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16 = Format(1000330002)
+		
+		val G16_B16R16_2PLANE_444_UNORM = Format(1000330003)
+		
+		val A4R4G4B4_UNORM_PACK16 = Format(1000340000)
+		
+		val A4B4G4R4_UNORM_PACK16 = Format(1000340001)
+		
+		val ASTC_4x4_SFLOAT_BLOCK = Format(1000066000)
+		
+		val ASTC_5x4_SFLOAT_BLOCK = Format(1000066001)
+		
+		val ASTC_5x5_SFLOAT_BLOCK = Format(1000066002)
+		
+		val ASTC_6x5_SFLOAT_BLOCK = Format(1000066003)
+		
+		val ASTC_6x6_SFLOAT_BLOCK = Format(1000066004)
+		
+		val ASTC_8x5_SFLOAT_BLOCK = Format(1000066005)
+		
+		val ASTC_8x6_SFLOAT_BLOCK = Format(1000066006)
+		
+		val ASTC_8x8_SFLOAT_BLOCK = Format(1000066007)
+		
+		val ASTC_10x5_SFLOAT_BLOCK = Format(1000066008)
+		
+		val ASTC_10x6_SFLOAT_BLOCK = Format(1000066009)
+		
+		val ASTC_10x8_SFLOAT_BLOCK = Format(1000066010)
+		
+		val ASTC_10x10_SFLOAT_BLOCK = Format(1000066011)
+		
+		val ASTC_12x10_SFLOAT_BLOCK = Format(1000066012)
+		
+		val ASTC_12x12_SFLOAT_BLOCK = Format(1000066013)
 	
 	}
 	
@@ -3296,6 +3388,26 @@ value class Format(val value: Int) {
 		1000156031 -> "G16_B16_R16_3PLANE_422_UNORM"
 		1000156032 -> "G16_B16R16_2PLANE_422_UNORM"
 		1000156033 -> "G16_B16_R16_3PLANE_444_UNORM"
+		1000330000 -> "G8_B8R8_2PLANE_444_UNORM"
+		1000330001 -> "G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16"
+		1000330002 -> "G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16"
+		1000330003 -> "G16_B16R16_2PLANE_444_UNORM"
+		1000340000 -> "A4R4G4B4_UNORM_PACK16"
+		1000340001 -> "A4B4G4R4_UNORM_PACK16"
+		1000066000 -> "ASTC_4x4_SFLOAT_BLOCK"
+		1000066001 -> "ASTC_5x4_SFLOAT_BLOCK"
+		1000066002 -> "ASTC_5x5_SFLOAT_BLOCK"
+		1000066003 -> "ASTC_6x5_SFLOAT_BLOCK"
+		1000066004 -> "ASTC_6x6_SFLOAT_BLOCK"
+		1000066005 -> "ASTC_8x5_SFLOAT_BLOCK"
+		1000066006 -> "ASTC_8x6_SFLOAT_BLOCK"
+		1000066007 -> "ASTC_8x8_SFLOAT_BLOCK"
+		1000066008 -> "ASTC_10x5_SFLOAT_BLOCK"
+		1000066009 -> "ASTC_10x6_SFLOAT_BLOCK"
+		1000066010 -> "ASTC_10x8_SFLOAT_BLOCK"
+		1000066011 -> "ASTC_10x10_SFLOAT_BLOCK"
+		1000066012 -> "ASTC_12x10_SFLOAT_BLOCK"
+		1000066013 -> "ASTC_12x12_SFLOAT_BLOCK"
 		else -> "*INVALID*"
 	}
 
@@ -3326,6 +3438,17 @@ enum class ImageTiling(val value: Int) {
 
 
 /**
+ * Enum getter for [VkImageTiling].
+ */
+fun _ImageTiling(value: Int) = when(value) {
+	0 -> ImageTiling.OPTIMAL
+	1 -> ImageTiling.LINEAR
+	else -> throw RuntimeException("Invalid VkImageTiling enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkImageType {
  *         VK_IMAGE_TYPE_1D  = 0
@@ -3349,6 +3472,18 @@ enum class ImageType(val value: Int) {
 
 
 /**
+ * Enum getter for [VkImageType].
+ */
+fun _ImageType(value: Int) = when(value) {
+	0 -> ImageType._1D
+	1 -> ImageType._2D
+	2 -> ImageType._3D
+	else -> throw RuntimeException("Invalid VkImageType enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkInternalAllocationType {
  *         VK_INTERNAL_ALLOCATION_TYPE_EXECUTABLE  = 0
@@ -3361,6 +3496,16 @@ enum class InternalAllocationType(val value: Int) {
 	EXECUTABLE(0);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkInternalAllocationType].
+ */
+fun _InternalAllocationType(value: Int) = when(value) {
+	0 -> InternalAllocationType.EXECUTABLE
+	else -> throw RuntimeException("Invalid VkInternalAllocationType enum value: $value")
 }
 
 
@@ -3395,6 +3540,20 @@ enum class PhysicalDeviceType(val value: Int) {
 
 
 /**
+ * Enum getter for [VkPhysicalDeviceType].
+ */
+fun _PhysicalDeviceType(value: Int) = when(value) {
+	0 -> PhysicalDeviceType.OTHER
+	1 -> PhysicalDeviceType.INTEGRATED_GPU
+	2 -> PhysicalDeviceType.DISCRETE_GPU
+	3 -> PhysicalDeviceType.VIRTUAL_GPU
+	4 -> PhysicalDeviceType.CPU
+	else -> throw RuntimeException("Invalid VkPhysicalDeviceType enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkSystemAllocationScope {
  *         VK_SYSTEM_ALLOCATION_SCOPE_COMMAND   = 0
@@ -3419,6 +3578,20 @@ enum class SystemAllocationScope(val value: Int) {
 	INSTANCE(4);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkSystemAllocationScope].
+ */
+fun _SystemAllocationScope(value: Int) = when(value) {
+	0 -> SystemAllocationScope.COMMAND
+	1 -> SystemAllocationScope.OBJECT
+	2 -> SystemAllocationScope.CACHE
+	3 -> SystemAllocationScope.DEVICE
+	4 -> SystemAllocationScope.INSTANCE
+	else -> throw RuntimeException("Invalid VkSystemAllocationScope enum value: $value")
 }
 
 
@@ -3455,6 +3628,18 @@ enum class QueryType(val value: Int) {
 
 
 /**
+ * Enum getter for [VkQueryType].
+ */
+fun _QueryType(value: Int) = when(value) {
+	0 -> QueryType.OCCLUSION
+	1 -> QueryType.PIPELINE_STATISTICS
+	2 -> QueryType.TIMESTAMP
+	else -> throw RuntimeException("Invalid VkQueryType enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkSharingMode {
  *         VK_SHARING_MODE_EXCLUSIVE   = 0
@@ -3470,6 +3655,17 @@ enum class SharingMode(val value: Int) {
 	CONCURRENT(1);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkSharingMode].
+ */
+fun _SharingMode(value: Int) = when(value) {
+	0 -> SharingMode.EXCLUSIVE
+	1 -> SharingMode.CONCURRENT
+	else -> throw RuntimeException("Invalid VkSharingMode enum value: $value")
 }
 
 
@@ -3492,6 +3688,8 @@ enum class SharingMode(val value: Int) {
  *         VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL                         = 1000241001
  *         VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL                      = 1000241002
  *         VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL                       = 1000241003
+ *         VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL                               = 1000314000
+ *         VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL                              = 1000314001
  *         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR                                 = 1000001002
  *         VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR                            = 1000024000
  *         VK_IMAGE_LAYOUT_VIDEO_DECODE_SRC_KHR                            = 1000024001
@@ -3547,9 +3745,40 @@ enum class ImageLayout(val value: Int) {
 	
 	STENCIL_READ_ONLY_OPTIMAL(1000241003),
 	
+	READ_ONLY_OPTIMAL(1000314000),
+	
+	ATTACHMENT_OPTIMAL(1000314001),
+	
 	PRESENT_SRC(1000001002);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkImageLayout].
+ */
+fun _ImageLayout(value: Int) = when(value) {
+	0 -> ImageLayout.UNDEFINED
+	1 -> ImageLayout.GENERAL
+	2 -> ImageLayout.COLOR_ATTACHMENT_OPTIMAL
+	3 -> ImageLayout.DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+	4 -> ImageLayout.DEPTH_STENCIL_READ_ONLY_OPTIMAL
+	5 -> ImageLayout.SHADER_READ_ONLY_OPTIMAL
+	6 -> ImageLayout.TRANSFER_SRC_OPTIMAL
+	7 -> ImageLayout.TRANSFER_DST_OPTIMAL
+	8 -> ImageLayout.PREINITIALIZED
+	1000117000 -> ImageLayout.DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL
+	1000117001 -> ImageLayout.DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL
+	1000241000 -> ImageLayout.DEPTH_ATTACHMENT_OPTIMAL
+	1000241001 -> ImageLayout.DEPTH_READ_ONLY_OPTIMAL
+	1000241002 -> ImageLayout.STENCIL_ATTACHMENT_OPTIMAL
+	1000241003 -> ImageLayout.STENCIL_READ_ONLY_OPTIMAL
+	1000314000 -> ImageLayout.READ_ONLY_OPTIMAL
+	1000314001 -> ImageLayout.ATTACHMENT_OPTIMAL
+	1000001002 -> ImageLayout.PRESENT_SRC
+	else -> throw RuntimeException("Invalid VkImageLayout enum value: $value")
 }
 
 
@@ -3590,6 +3819,22 @@ enum class ComponentSwizzle(val value: Int) {
 
 
 /**
+ * Enum getter for [VkComponentSwizzle].
+ */
+fun _ComponentSwizzle(value: Int) = when(value) {
+	0 -> ComponentSwizzle.IDENTITY
+	1 -> ComponentSwizzle.ZERO
+	2 -> ComponentSwizzle.ONE
+	3 -> ComponentSwizzle.R
+	4 -> ComponentSwizzle.G
+	5 -> ComponentSwizzle.B
+	6 -> ComponentSwizzle.A
+	else -> throw RuntimeException("Invalid VkComponentSwizzle enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkImageViewType {
  *         VK_IMAGE_VIEW_TYPE_1D          = 0
@@ -3620,6 +3865,22 @@ enum class ImageViewType(val value: Int) {
 	CUBE_ARRAY(6);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkImageViewType].
+ */
+fun _ImageViewType(value: Int) = when(value) {
+	0 -> ImageViewType._1D
+	1 -> ImageViewType._2D
+	2 -> ImageViewType._3D
+	3 -> ImageViewType.CUBE
+	4 -> ImageViewType._1D_ARRAY
+	5 -> ImageViewType._2D_ARRAY
+	6 -> ImageViewType.CUBE_ARRAY
+	else -> throw RuntimeException("Invalid VkImageViewType enum value: $value")
 }
 
 
@@ -3691,6 +3952,34 @@ enum class BlendFactor(val value: Int) {
 	ONE_MINUS_SRC1_ALPHA(18);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkBlendFactor].
+ */
+fun _BlendFactor(value: Int) = when(value) {
+	0 -> BlendFactor.ZERO
+	1 -> BlendFactor.ONE
+	2 -> BlendFactor.SRC_COLOR
+	3 -> BlendFactor.ONE_MINUS_SRC_COLOR
+	4 -> BlendFactor.DST_COLOR
+	5 -> BlendFactor.ONE_MINUS_DST_COLOR
+	6 -> BlendFactor.SRC_ALPHA
+	7 -> BlendFactor.ONE_MINUS_SRC_ALPHA
+	8 -> BlendFactor.DST_ALPHA
+	9 -> BlendFactor.ONE_MINUS_DST_ALPHA
+	10 -> BlendFactor.CONSTANT_COLOR
+	11 -> BlendFactor.ONE_MINUS_CONSTANT_COLOR
+	12 -> BlendFactor.CONSTANT_ALPHA
+	13 -> BlendFactor.ONE_MINUS_CONSTANT_ALPHA
+	14 -> BlendFactor.SRC_ALPHA_SATURATE
+	15 -> BlendFactor.SRC1_COLOR
+	16 -> BlendFactor.ONE_MINUS_SRC1_COLOR
+	17 -> BlendFactor.SRC1_ALPHA
+	18 -> BlendFactor.ONE_MINUS_SRC1_ALPHA
+	else -> throw RuntimeException("Invalid VkBlendFactor enum value: $value")
 }
 
 
@@ -3771,6 +4060,20 @@ enum class BlendOp(val value: Int) {
 
 
 /**
+ * Enum getter for [VkBlendOp].
+ */
+fun _BlendOp(value: Int) = when(value) {
+	0 -> BlendOp.ADD
+	1 -> BlendOp.SUBTRACT
+	2 -> BlendOp.REVERSE_SUBTRACT
+	3 -> BlendOp.MIN
+	4 -> BlendOp.MAX
+	else -> throw RuntimeException("Invalid VkBlendOp enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkCompareOp {
  *         VK_COMPARE_OP_NEVER             = 0
@@ -3809,6 +4112,23 @@ enum class CompareOp(val value: Int) {
 
 
 /**
+ * Enum getter for [VkCompareOp].
+ */
+fun _CompareOp(value: Int) = when(value) {
+	0 -> CompareOp.NEVER
+	1 -> CompareOp.LESS
+	2 -> CompareOp.EQUAL
+	3 -> CompareOp.LESS_OR_EQUAL
+	4 -> CompareOp.GREATER
+	5 -> CompareOp.NOT_EQUAL
+	6 -> CompareOp.GREATER_OR_EQUAL
+	7 -> CompareOp.ALWAYS
+	else -> throw RuntimeException("Invalid VkCompareOp enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkDynamicState {
  *         VK_DYNAMIC_STATE_VIEWPORT                             = 0
@@ -3820,6 +4140,21 @@ enum class CompareOp(val value: Int) {
  *         VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK                 = 6
  *         VK_DYNAMIC_STATE_STENCIL_WRITE_MASK                   = 7
  *         VK_DYNAMIC_STATE_STENCIL_REFERENCE                    = 8
+ *         VK_DYNAMIC_STATE_CULL_MODE                            = 1000267000
+ *         VK_DYNAMIC_STATE_FRONT_FACE                           = 1000267001
+ *         VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY                   = 1000267002
+ *         VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT                  = 1000267003
+ *         VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT                   = 1000267004
+ *         VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE          = 1000267005
+ *         VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE                    = 1000267006
+ *         VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE                   = 1000267007
+ *         VK_DYNAMIC_STATE_DEPTH_COMPARE_OP                     = 1000267008
+ *         VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE             = 1000267009
+ *         VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE                  = 1000267010
+ *         VK_DYNAMIC_STATE_STENCIL_OP                           = 1000267011
+ *         VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLE            = 1000377001
+ *         VK_DYNAMIC_STATE_DEPTH_BIAS_ENABLE                    = 1000377002
+ *         VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE             = 1000377004
  *         VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_NV                = 1000087000
  *         VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT                = 1000099000
  *         VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT                 = 1000143000
@@ -3870,9 +4205,72 @@ enum class DynamicState(val value: Int) {
 	
 	STENCIL_WRITE_MASK(7),
 	
-	STENCIL_REFERENCE(8);
+	STENCIL_REFERENCE(8),
+	
+	CULL_MODE(1000267000),
+	
+	FRONT_FACE(1000267001),
+	
+	PRIMITIVE_TOPOLOGY(1000267002),
+	
+	VIEWPORT_WITH_COUNT(1000267003),
+	
+	SCISSOR_WITH_COUNT(1000267004),
+	
+	VERTEX_INPUT_BINDING_STRIDE(1000267005),
+	
+	DEPTH_TEST_ENABLE(1000267006),
+	
+	DEPTH_WRITE_ENABLE(1000267007),
+	
+	DEPTH_COMPARE_OP(1000267008),
+	
+	DEPTH_BOUNDS_TEST_ENABLE(1000267009),
+	
+	STENCIL_TEST_ENABLE(1000267010),
+	
+	STENCIL_OP(1000267011),
+	
+	RASTERIZER_DISCARD_ENABLE(1000377001),
+	
+	DEPTH_BIAS_ENABLE(1000377002),
+	
+	PRIMITIVE_RESTART_ENABLE(1000377004);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkDynamicState].
+ */
+fun _DynamicState(value: Int) = when(value) {
+	0 -> DynamicState.VIEWPORT
+	1 -> DynamicState.SCISSOR
+	2 -> DynamicState.LINE_WIDTH
+	3 -> DynamicState.DEPTH_BIAS
+	4 -> DynamicState.BLEND_CONSTANTS
+	5 -> DynamicState.DEPTH_BOUNDS
+	6 -> DynamicState.STENCIL_COMPARE_MASK
+	7 -> DynamicState.STENCIL_WRITE_MASK
+	8 -> DynamicState.STENCIL_REFERENCE
+	1000267000 -> DynamicState.CULL_MODE
+	1000267001 -> DynamicState.FRONT_FACE
+	1000267002 -> DynamicState.PRIMITIVE_TOPOLOGY
+	1000267003 -> DynamicState.VIEWPORT_WITH_COUNT
+	1000267004 -> DynamicState.SCISSOR_WITH_COUNT
+	1000267005 -> DynamicState.VERTEX_INPUT_BINDING_STRIDE
+	1000267006 -> DynamicState.DEPTH_TEST_ENABLE
+	1000267007 -> DynamicState.DEPTH_WRITE_ENABLE
+	1000267008 -> DynamicState.DEPTH_COMPARE_OP
+	1000267009 -> DynamicState.DEPTH_BOUNDS_TEST_ENABLE
+	1000267010 -> DynamicState.STENCIL_TEST_ENABLE
+	1000267011 -> DynamicState.STENCIL_OP
+	1000377001 -> DynamicState.RASTERIZER_DISCARD_ENABLE
+	1000377002 -> DynamicState.DEPTH_BIAS_ENABLE
+	1000377004 -> DynamicState.PRIMITIVE_RESTART_ENABLE
+	else -> throw RuntimeException("Invalid VkDynamicState enum value: $value")
 }
 
 
@@ -3893,6 +4291,17 @@ enum class FrontFace(val value: Int) {
 	CLOCKWISE(1);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkFrontFace].
+ */
+fun _FrontFace(value: Int) = when(value) {
+	0 -> FrontFace.COUNTER_CLOCKWISE
+	1 -> FrontFace.CLOCKWISE
+	else -> throw RuntimeException("Invalid VkFrontFace enum value: $value")
 }
 
 
@@ -3960,6 +4369,31 @@ enum class LogicOp(val value: Int) {
 
 
 /**
+ * Enum getter for [VkLogicOp].
+ */
+fun _LogicOp(value: Int) = when(value) {
+	0 -> LogicOp.CLEAR
+	1 -> LogicOp.AND
+	2 -> LogicOp.AND_REVERSE
+	3 -> LogicOp.COPY
+	4 -> LogicOp.AND_INVERTED
+	5 -> LogicOp.NO_OP
+	6 -> LogicOp.XOR
+	7 -> LogicOp.OR
+	8 -> LogicOp.NOR
+	9 -> LogicOp.EQUIVALENT
+	10 -> LogicOp.INVERT
+	11 -> LogicOp.OR_REVERSE
+	12 -> LogicOp.COPY_INVERTED
+	13 -> LogicOp.OR_INVERTED
+	14 -> LogicOp.NAND
+	15 -> LogicOp.SET
+	else -> throw RuntimeException("Invalid VkLogicOp enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkPolygonMode {
  *         VK_POLYGON_MODE_FILL               = 0
@@ -3979,6 +4413,18 @@ enum class PolygonMode(val value: Int) {
 	POINT(2);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkPolygonMode].
+ */
+fun _PolygonMode(value: Int) = when(value) {
+	0 -> PolygonMode.FILL
+	1 -> PolygonMode.LINE
+	2 -> PolygonMode.POINT
+	else -> throw RuntimeException("Invalid VkPolygonMode enum value: $value")
 }
 
 
@@ -4031,6 +4477,26 @@ enum class PrimitiveTopology(val value: Int) {
 
 
 /**
+ * Enum getter for [VkPrimitiveTopology].
+ */
+fun _PrimitiveTopology(value: Int) = when(value) {
+	0 -> PrimitiveTopology.POINT_LIST
+	1 -> PrimitiveTopology.LINE_LIST
+	2 -> PrimitiveTopology.LINE_STRIP
+	3 -> PrimitiveTopology.TRIANGLE_LIST
+	4 -> PrimitiveTopology.TRIANGLE_STRIP
+	5 -> PrimitiveTopology.TRIANGLE_FAN
+	6 -> PrimitiveTopology.LINE_LIST_WITH_ADJACENCY
+	7 -> PrimitiveTopology.LINE_STRIP_WITH_ADJACENCY
+	8 -> PrimitiveTopology.TRIANGLE_LIST_WITH_ADJACENCY
+	9 -> PrimitiveTopology.TRIANGLE_STRIP_WITH_ADJACENCY
+	10 -> PrimitiveTopology.PATCH_LIST
+	else -> throw RuntimeException("Invalid VkPrimitiveTopology enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkStencilOp {
  *         VK_STENCIL_OP_KEEP                 = 0
@@ -4069,6 +4535,23 @@ enum class StencilOp(val value: Int) {
 
 
 /**
+ * Enum getter for [VkStencilOp].
+ */
+fun _StencilOp(value: Int) = when(value) {
+	0 -> StencilOp.KEEP
+	1 -> StencilOp.ZERO
+	2 -> StencilOp.REPLACE
+	3 -> StencilOp.INCREMENT_AND_CLAMP
+	4 -> StencilOp.DECREMENT_AND_CLAMP
+	5 -> StencilOp.INVERT
+	6 -> StencilOp.INCREMENT_AND_WRAP
+	7 -> StencilOp.DECREMENT_AND_WRAP
+	else -> throw RuntimeException("Invalid VkStencilOp enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkVertexInputRate {
  *         VK_VERTEX_INPUT_RATE_VERTEX    = 0
@@ -4084,6 +4567,17 @@ enum class VertexInputRate(val value: Int) {
 	INSTANCE(1);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkVertexInputRate].
+ */
+fun _VertexInputRate(value: Int) = when(value) {
+	0 -> VertexInputRate.VERTEX
+	1 -> VertexInputRate.INSTANCE
+	else -> throw RuntimeException("Invalid VkVertexInputRate enum value: $value")
 }
 
 
@@ -4123,6 +4617,21 @@ enum class BorderColor(val value: Int) {
 
 
 /**
+ * Enum getter for [VkBorderColor].
+ */
+fun _BorderColor(value: Int) = when(value) {
+	0 -> BorderColor.FLOAT_TRANSPARENT_BLACK
+	1 -> BorderColor.INT_TRANSPARENT_BLACK
+	2 -> BorderColor.FLOAT_OPAQUE_BLACK
+	3 -> BorderColor.INT_OPAQUE_BLACK
+	4 -> BorderColor.FLOAT_OPAQUE_WHITE
+	5 -> BorderColor.INT_OPAQUE_WHITE
+	else -> throw RuntimeException("Invalid VkBorderColor enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkFilter {
  *         VK_FILTER_NEAREST    = 0
@@ -4140,6 +4649,17 @@ enum class Filter(val value: Int) {
 	LINEAR(1);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkFilter].
+ */
+fun _Filter(value: Int) = when(value) {
+	0 -> Filter.NEAREST
+	1 -> Filter.LINEAR
+	else -> throw RuntimeException("Invalid VkFilter enum value: $value")
 }
 
 
@@ -4173,6 +4693,19 @@ enum class SamplerAddressMode(val value: Int) {
 
 
 /**
+ * Enum getter for [VkSamplerAddressMode].
+ */
+fun _SamplerAddressMode(value: Int) = when(value) {
+	0 -> SamplerAddressMode.REPEAT
+	1 -> SamplerAddressMode.MIRRORED_REPEAT
+	2 -> SamplerAddressMode.CLAMP_TO_EDGE
+	3 -> SamplerAddressMode.CLAMP_TO_BORDER
+	else -> throw RuntimeException("Invalid VkSamplerAddressMode enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkSamplerMipmapMode {
  *         VK_SAMPLER_MIPMAP_MODE_NEAREST  = 0
@@ -4193,6 +4726,17 @@ enum class SamplerMipmapMode(val value: Int) {
 
 
 /**
+ * Enum getter for [VkSamplerMipmapMode].
+ */
+fun _SamplerMipmapMode(value: Int) = when(value) {
+	0 -> SamplerMipmapMode.NEAREST
+	1 -> SamplerMipmapMode.LINEAR
+	else -> throw RuntimeException("Invalid VkSamplerMipmapMode enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkDescriptorType {
  *         VK_DESCRIPTOR_TYPE_SAMPLER                     = 0
@@ -4206,6 +4750,7 @@ enum class SamplerMipmapMode(val value: Int) {
  *         VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC      = 8
  *         VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC      = 9
  *         VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT            = 10
+ *         VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK        = 1000138000
  *         VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT    = 1000138000
  *         VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR  = 1000150000
  *         VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV   = 1000165000
@@ -4236,9 +4781,32 @@ enum class DescriptorType(val value: Int) {
 	
 	STORAGE_BUFFER_DYNAMIC(9),
 	
-	INPUT_ATTACHMENT(10);
+	INPUT_ATTACHMENT(10),
+	
+	INLINE_UNIFORM_BLOCK(1000138000);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkDescriptorType].
+ */
+fun _DescriptorType(value: Int) = when(value) {
+	0 -> DescriptorType.SAMPLER
+	1 -> DescriptorType.COMBINED_IMAGE_SAMPLER
+	2 -> DescriptorType.SAMPLED_IMAGE
+	3 -> DescriptorType.STORAGE_IMAGE
+	4 -> DescriptorType.UNIFORM_TEXEL_BUFFER
+	5 -> DescriptorType.STORAGE_TEXEL_BUFFER
+	6 -> DescriptorType.UNIFORM_BUFFER
+	7 -> DescriptorType.STORAGE_BUFFER
+	8 -> DescriptorType.UNIFORM_BUFFER_DYNAMIC
+	9 -> DescriptorType.STORAGE_BUFFER_DYNAMIC
+	10 -> DescriptorType.INPUT_ATTACHMENT
+	1000138000 -> DescriptorType.INLINE_UNIFORM_BLOCK
+	else -> throw RuntimeException("Invalid VkDescriptorType enum value: $value")
 }
 
 
@@ -4268,10 +4836,23 @@ enum class AttachmentLoadOp(val value: Int) {
 
 
 /**
+ * Enum getter for [VkAttachmentLoadOp].
+ */
+fun _AttachmentLoadOp(value: Int) = when(value) {
+	0 -> AttachmentLoadOp.LOAD
+	1 -> AttachmentLoadOp.CLEAR
+	2 -> AttachmentLoadOp.DONT_CARE
+	else -> throw RuntimeException("Invalid VkAttachmentLoadOp enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkAttachmentStoreOp {
  *         VK_ATTACHMENT_STORE_OP_STORE      = 0
  *         VK_ATTACHMENT_STORE_OP_DONT_CARE  = 1
+ *         VK_ATTACHMENT_STORE_OP_NONE       = 1000301000
  *         VK_ATTACHMENT_STORE_OP_NONE_KHR   = 1000301000
  *         VK_ATTACHMENT_STORE_OP_NONE_QCOM  = 1000301000
  *         VK_ATTACHMENT_STORE_OP_NONE_EXT   = 1000301000
@@ -4283,9 +4864,23 @@ enum class AttachmentStoreOp(val value: Int) {
 	
 	STORE(0),
 	
-	DONT_CARE(1);
+	DONT_CARE(1),
+	
+	NONE(1000301000);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkAttachmentStoreOp].
+ */
+fun _AttachmentStoreOp(value: Int) = when(value) {
+	0 -> AttachmentStoreOp.STORE
+	1 -> AttachmentStoreOp.DONT_CARE
+	1000301000 -> AttachmentStoreOp.NONE
+	else -> throw RuntimeException("Invalid VkAttachmentStoreOp enum value: $value")
 }
 
 
@@ -4314,6 +4909,17 @@ enum class PipelineBindPoint(val value: Int) {
 
 
 /**
+ * Enum getter for [VkPipelineBindPoint].
+ */
+fun _PipelineBindPoint(value: Int) = when(value) {
+	0 -> PipelineBindPoint.GRAPHICS
+	1 -> PipelineBindPoint.COMPUTE
+	else -> throw RuntimeException("Invalid VkPipelineBindPoint enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkCommandBufferLevel {
  *         VK_COMMAND_BUFFER_LEVEL_PRIMARY    = 0
@@ -4329,6 +4935,17 @@ enum class CommandBufferLevel(val value: Int) {
 	SECONDARY(1);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkCommandBufferLevel].
+ */
+fun _CommandBufferLevel(value: Int) = when(value) {
+	0 -> CommandBufferLevel.PRIMARY
+	1 -> CommandBufferLevel.SECONDARY
+	else -> throw RuntimeException("Invalid VkCommandBufferLevel enum value: $value")
 }
 
 
@@ -4357,6 +4974,17 @@ enum class IndexType(val value: Int) {
 
 
 /**
+ * Enum getter for [VkIndexType].
+ */
+fun _IndexType(value: Int) = when(value) {
+	0 -> IndexType.UINT16
+	1 -> IndexType.UINT32
+	else -> throw RuntimeException("Invalid VkIndexType enum value: $value")
+}
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkSubpassContents {
  *         VK_SUBPASS_CONTENTS_INLINE                     = 0
@@ -4372,6 +5000,17 @@ enum class SubpassContents(val value: Int) {
 	SECONDARY_COMMAND_BUFFERS(1);
 
 
+}
+
+
+
+/**
+ * Enum getter for [VkSubpassContents].
+ */
+fun _SubpassContents(value: Int) = when(value) {
+	0 -> SubpassContents.INLINE
+	1 -> SubpassContents.SECONDARY_COMMAND_BUFFERS
+	else -> throw RuntimeException("Invalid VkSubpassContents enum value: $value")
 }
 
 
@@ -4423,7 +5062,6 @@ enum class SubpassContents(val value: Int) {
  *         VK_FORMAT_FEATURE_VIDEO_ENCODE_DPB_BIT_KHR                                                         = 268435456
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class FormatFeatureFlags(val value: Int) {
 	
@@ -4490,6 +5128,13 @@ value class FormatFeatureFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [FormatFeatureFlags].
+ */
+inline fun FormatFeatureFlags(block: FormatFeatureFlags.Companion.() -> FormatFeatureFlags) = block(FormatFeatureFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkImageCreateFlagBits {
  *         VK_IMAGE_CREATE_SPARSE_BINDING_BIT                         = 1
@@ -4518,7 +5163,6 @@ value class FormatFeatureFlags(val value: Int) {
  *         VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM       = 32768
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class ImageCreateFlags(val value: Int) {
 	
@@ -4563,6 +5207,13 @@ value class ImageCreateFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [ImageCreateFlags].
+ */
+inline fun ImageCreateFlags(block: ImageCreateFlags.Companion.() -> ImageCreateFlags) = block(ImageCreateFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkImageUsageFlagBits {
  *         VK_IMAGE_USAGE_TRANSFER_SRC_BIT                          = 1
@@ -4590,7 +5241,6 @@ value class ImageCreateFlags(val value: Int) {
  *         VK_IMAGE_USAGE_RESERVED_21_BIT_QCOM                      = 2097152
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class ImageUsageFlags(val value: Int) {
 	
@@ -4627,6 +5277,13 @@ value class ImageUsageFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [ImageUsageFlags].
+ */
+inline fun ImageUsageFlags(block: ImageUsageFlags.Companion.() -> ImageUsageFlags) = block(ImageUsageFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkMemoryHeapFlagBits {
  *         VK_MEMORY_HEAP_DEVICE_LOCAL_BIT        = 1
@@ -4635,7 +5292,6 @@ value class ImageUsageFlags(val value: Int) {
  *         VK_MEMORY_HEAP_RESERVED_2_BIT_KHR      = 4
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class MemoryHeapFlags(val value: Int) {
 	
@@ -4660,6 +5316,13 @@ value class MemoryHeapFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [MemoryHeapFlags].
+ */
+inline fun MemoryHeapFlags(block: MemoryHeapFlags.Companion.() -> MemoryHeapFlags) = block(MemoryHeapFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkMemoryPropertyFlagBits {
  *         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT         = 1
@@ -4673,7 +5336,6 @@ value class MemoryHeapFlags(val value: Int) {
  *         VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV      = 256
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class MemoryPropertyFlags(val value: Int) {
 	
@@ -4706,6 +5368,13 @@ value class MemoryPropertyFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [MemoryPropertyFlags].
+ */
+inline fun MemoryPropertyFlags(block: MemoryPropertyFlags.Companion.() -> MemoryPropertyFlags) = block(MemoryPropertyFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkQueueFlagBits {
  *         VK_QUEUE_GRAPHICS_BIT          = 1
@@ -4718,7 +5387,6 @@ value class MemoryPropertyFlags(val value: Int) {
  *         VK_QUEUE_RESERVED_7_BIT_QCOM   = 128
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class QueueFlags(val value: Int) {
 	
@@ -4749,6 +5417,13 @@ value class QueueFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [QueueFlags].
+ */
+inline fun QueueFlags(block: QueueFlags.Companion.() -> QueueFlags) = block(QueueFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkSampleCountFlagBits {
  *         VK_SAMPLE_COUNT_1_BIT   = 1
@@ -4760,7 +5435,6 @@ value class QueueFlags(val value: Int) {
  *         VK_SAMPLE_COUNT_64_BIT  = 64
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class SampleCountFlags(val value: Int) {
 	
@@ -4795,13 +5469,19 @@ value class SampleCountFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [SampleCountFlags].
+ */
+inline fun SampleCountFlags(block: SampleCountFlags.Companion.() -> SampleCountFlags) = block(SampleCountFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_1
  *     enum VkDeviceQueueCreateFlagBits {
  *         VK_DEVICE_QUEUE_CREATE_PROTECTED_BIT        = 1
  *         VK_DEVICE_QUEUE_CREATE_RESERVED_1_BIT_QCOM  = 2
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class DeviceQueueCreateFlags(val value: Int) {
 	
@@ -4820,6 +5500,13 @@ value class DeviceQueueCreateFlags(val value: Int) {
 
 
 }
+
+
+
+/**
+ * Bitmask builder for [DeviceQueueCreateFlags].
+ */
+inline fun DeviceQueueCreateFlags(block: DeviceQueueCreateFlags.Companion.() -> DeviceQueueCreateFlags) = block(DeviceQueueCreateFlags)
 
 
 
@@ -4843,6 +5530,7 @@ value class DeviceQueueCreateFlags(val value: Int) {
  *         VK_PIPELINE_STAGE_HOST_BIT                                  = 16384
  *         VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT                          = 32768
  *         VK_PIPELINE_STAGE_ALL_COMMANDS_BIT                          = 65536
+ *         VK_PIPELINE_STAGE_NONE                                      = 0
  *         VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT                = 16777216
  *         VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT             = 262144
  *         VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR      = 33554432
@@ -4858,7 +5546,6 @@ value class DeviceQueueCreateFlags(val value: Int) {
  *         VK_PIPELINE_STAGE_NONE_KHR                                  = 0
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class PipelineStageFlags(val value: Int) {
 	
@@ -4898,6 +5585,8 @@ value class PipelineStageFlags(val value: Int) {
 		val ALL_GRAPHICS = PipelineStageFlags(32768)
 		
 		val ALL_COMMANDS = PipelineStageFlags(65536)
+		
+		val NONE = PipelineStageFlags(0)
 	
 	}
 	
@@ -4913,6 +5602,13 @@ value class PipelineStageFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [PipelineStageFlags].
+ */
+inline fun PipelineStageFlags(block: PipelineStageFlags.Companion.() -> PipelineStageFlags) = block(PipelineStageFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkImageAspectFlagBits {
  *         VK_IMAGE_ASPECT_COLOR_BIT               = 1
@@ -4922,6 +5618,7 @@ value class PipelineStageFlags(val value: Int) {
  *         VK_IMAGE_ASPECT_PLANE_0_BIT             = 16
  *         VK_IMAGE_ASPECT_PLANE_1_BIT             = 32
  *         VK_IMAGE_ASPECT_PLANE_2_BIT             = 64
+ *         VK_IMAGE_ASPECT_NONE                    = 0
  *         VK_IMAGE_ASPECT_PLANE_0_BIT_KHR         = 16
  *         VK_IMAGE_ASPECT_PLANE_1_BIT_KHR         = 32
  *         VK_IMAGE_ASPECT_PLANE_2_BIT_KHR         = 64
@@ -4932,7 +5629,6 @@ value class PipelineStageFlags(val value: Int) {
  *         VK_IMAGE_ASPECT_NONE_KHR                = 0
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class ImageAspectFlags(val value: Int) {
 	
@@ -4952,6 +5648,8 @@ value class ImageAspectFlags(val value: Int) {
 		val PLANE_1 = ImageAspectFlags(32)
 		
 		val PLANE_2 = ImageAspectFlags(64)
+		
+		val NONE = ImageAspectFlags(0)
 	
 	}
 	
@@ -4967,6 +5665,13 @@ value class ImageAspectFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [ImageAspectFlags].
+ */
+inline fun ImageAspectFlags(block: ImageAspectFlags.Companion.() -> ImageAspectFlags) = block(ImageAspectFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkSparseImageFormatFlagBits {
  *         VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT          = 1
@@ -4974,7 +5679,6 @@ value class ImageAspectFlags(val value: Int) {
  *         VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT  = 4
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class SparseImageFormatFlags(val value: Int) {
 	
@@ -5001,12 +5705,18 @@ value class SparseImageFormatFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [SparseImageFormatFlags].
+ */
+inline fun SparseImageFormatFlags(block: SparseImageFormatFlags.Companion.() -> SparseImageFormatFlags) = block(SparseImageFormatFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkSparseMemoryBindFlagBits {
  *         VK_SPARSE_MEMORY_BIND_METADATA_BIT  = 1
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class SparseMemoryBindFlags(val value: Int) {
 	
@@ -5029,12 +5739,18 @@ value class SparseMemoryBindFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [SparseMemoryBindFlags].
+ */
+inline fun SparseMemoryBindFlags(block: SparseMemoryBindFlags.Companion.() -> SparseMemoryBindFlags) = block(SparseMemoryBindFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkFenceCreateFlagBits {
  *         VK_FENCE_CREATE_SIGNALED_BIT  = 1
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class FenceCreateFlags(val value: Int) {
 	
@@ -5057,6 +5773,48 @@ value class FenceCreateFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [FenceCreateFlags].
+ */
+inline fun FenceCreateFlags(block: FenceCreateFlags.Companion.() -> FenceCreateFlags) = block(FenceCreateFlags)
+
+
+
+/**
+ *     // provided by VK_VERSION_1_0
+ *     enum VkEventCreateFlagBits {
+ *         VK_EVENT_CREATE_DEVICE_ONLY_BIT      = 1
+ *         VK_EVENT_CREATE_DEVICE_ONLY_BIT_KHR  = 1
+ *     }
+ */
+@JvmInline
+value class EventCreateFlags(val value: Int) {
+	
+	
+	companion object {
+		
+		val DEVICE_ONLY = EventCreateFlags(1)
+	
+	}
+	
+	
+	
+	operator fun plus(mask: EventCreateFlags) = EventCreateFlags(value or mask.value)
+	
+	operator fun contains(mask: EventCreateFlags) = value and mask.value == mask.value
+
+
+}
+
+
+
+/**
+ * Bitmask builder for [EventCreateFlags].
+ */
+inline fun EventCreateFlags(block: EventCreateFlags.Companion.() -> EventCreateFlags) = block(EventCreateFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkQueryPipelineStatisticFlagBits {
  *         VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT                     = 1
@@ -5072,7 +5830,6 @@ value class FenceCreateFlags(val value: Int) {
  *         VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT                  = 1024
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class QueryPipelineStatisticFlags(val value: Int) {
 	
@@ -5115,6 +5872,13 @@ value class QueryPipelineStatisticFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [QueryPipelineStatisticFlags].
+ */
+inline fun QueryPipelineStatisticFlags(block: QueryPipelineStatisticFlags.Companion.() -> QueryPipelineStatisticFlags) = block(QueryPipelineStatisticFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkQueryResultFlagBits {
  *         VK_QUERY_RESULT_64_BIT                 = 1
@@ -5124,7 +5888,6 @@ value class QueryPipelineStatisticFlags(val value: Int) {
  *         VK_QUERY_RESULT_WITH_STATUS_BIT_KHR    = 16
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class QueryResultFlags(val value: Int) {
 	
@@ -5153,6 +5916,13 @@ value class QueryResultFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [QueryResultFlags].
+ */
+inline fun QueryResultFlags(block: QueryResultFlags.Companion.() -> QueryResultFlags) = block(QueryResultFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkBufferCreateFlagBits {
  *         VK_BUFFER_CREATE_SPARSE_BINDING_BIT                     = 1
@@ -5165,7 +5935,6 @@ value class QueryResultFlags(val value: Int) {
  *         VK_BUFFER_CREATE_RESERVED_5_BIT_AMD                     = 32
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class BufferCreateFlags(val value: Int) {
 	
@@ -5192,6 +5961,13 @@ value class BufferCreateFlags(val value: Int) {
 
 
 }
+
+
+
+/**
+ * Bitmask builder for [BufferCreateFlags].
+ */
+inline fun BufferCreateFlags(block: BufferCreateFlags.Companion.() -> BufferCreateFlags) = block(BufferCreateFlags)
 
 
 
@@ -5226,7 +6002,6 @@ value class BufferCreateFlags(val value: Int) {
  *         VK_BUFFER_USAGE_RESERVED_22_BIT_AMD                                   = 4194304
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class BufferUsageFlags(val value: Int) {
 	
@@ -5267,6 +6042,57 @@ value class BufferUsageFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [BufferUsageFlags].
+ */
+inline fun BufferUsageFlags(block: BufferUsageFlags.Companion.() -> BufferUsageFlags) = block(BufferUsageFlags)
+
+
+
+/**
+ *     // provided by VK_VERSION_1_0
+ *     enum VkImageViewCreateFlagBits {
+ *         VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT   = 1
+ *         VK_IMAGE_VIEW_CREATE_RESERVED_2_BIT_AMD                     = 4
+ *         VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT  = 2
+ *     }
+ */
+@JvmInline
+value class ImageViewCreateFlags(val value: Int) {
+	
+	
+	companion object {
+	
+	}
+	
+	
+	
+	operator fun plus(mask: ImageViewCreateFlags) = ImageViewCreateFlags(value or mask.value)
+	
+	operator fun contains(mask: ImageViewCreateFlags) = value and mask.value == mask.value
+
+
+}
+
+
+
+/**
+ * Bitmask builder for [ImageViewCreateFlags].
+ */
+inline fun ImageViewCreateFlags(block: ImageViewCreateFlags.Companion.() -> ImageViewCreateFlags) = block(ImageViewCreateFlags)
+
+
+
+/**
+ *     // Provided by VK_VERSION_1_0
+ *     typedef VkFlags VkPipelineCacheCreateFlags
+ *     // This bitmask's flag bits are empty or are part of an extension that has not been generated.
+ */
+@JvmInline
+value class PipelineCacheCreateFlags(val value: Int)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkColorComponentFlagBits {
  *         VK_COLOR_COMPONENT_R_BIT  = 1
@@ -5275,7 +6101,6 @@ value class BufferUsageFlags(val value: Int) {
  *         VK_COLOR_COMPONENT_A_BIT  = 8
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class ColorComponentFlags(val value: Int) {
 	
@@ -5304,6 +6129,13 @@ value class ColorComponentFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [ColorComponentFlags].
+ */
+inline fun ColorComponentFlags(block: ColorComponentFlags.Companion.() -> ColorComponentFlags) = block(ColorComponentFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkCullModeFlagBits {
  *         VK_CULL_MODE_NONE            = 0
@@ -5312,7 +6144,6 @@ value class ColorComponentFlags(val value: Int) {
  *         VK_CULL_MODE_FRONT_AND_BACK  = 0x00000003
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class CullModeFlags(val value: Int) {
 	
@@ -5341,6 +6172,23 @@ value class CullModeFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [CullModeFlags].
+ */
+inline fun CullModeFlags(block: CullModeFlags.Companion.() -> CullModeFlags) = block(CullModeFlags)
+
+
+
+/**
+ *     // Provided by VK_VERSION_1_0
+ *     typedef VkFlags VkPipelineColorBlendStateCreateFlags
+ *     // This bitmask's flag bits are empty or are part of an extension that has not been generated.
+ */
+@JvmInline
+value class PipelineColorBlendStateCreateFlags(val value: Int)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkPipelineCreateFlagBits {
  *         VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT                                      = 1
@@ -5349,6 +6197,8 @@ value class CullModeFlags(val value: Int) {
  *         VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT                              = 8
  *         VK_PIPELINE_CREATE_DISPATCH_BASE_BIT                                             = 16
  *         VK_PIPELINE_CREATE_DISPATCH_BASE                                                 = 16
+ *         VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT                         = 256
+ *         VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT                                   = 512
  *         VK_PIPELINE_CREATE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR            = 2097152
  *         VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR  = 2097152
  *         VK_PIPELINE_CREATE_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT             = 4194304
@@ -5374,7 +6224,6 @@ value class CullModeFlags(val value: Int) {
  *         VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV                               = 1048576
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class PipelineCreateFlags(val value: Int) {
 	
@@ -5390,6 +6239,10 @@ value class PipelineCreateFlags(val value: Int) {
 		val VIEW_INDEX_FROM_DEVICE_INDEX = PipelineCreateFlags(8)
 		
 		val DISPATCH_BASE = PipelineCreateFlags(16)
+		
+		val FAIL_ON_PIPELINE_COMPILE_REQUIRED = PipelineCreateFlags(256)
+		
+		val EARLY_RETURN_ON_FAILURE = PipelineCreateFlags(512)
 	
 	}
 	
@@ -5401,6 +6254,64 @@ value class PipelineCreateFlags(val value: Int) {
 
 
 }
+
+
+
+/**
+ * Bitmask builder for [PipelineCreateFlags].
+ */
+inline fun PipelineCreateFlags(block: PipelineCreateFlags.Companion.() -> PipelineCreateFlags) = block(PipelineCreateFlags)
+
+
+
+/**
+ *     // Provided by VK_VERSION_1_0
+ *     typedef VkFlags VkPipelineDepthStencilStateCreateFlags
+ *     // This bitmask's flag bits are empty or are part of an extension that has not been generated.
+ */
+@JvmInline
+value class PipelineDepthStencilStateCreateFlags(val value: Int)
+
+
+
+/**
+ *     // provided by VK_VERSION_1_0
+ *     enum VkPipelineShaderStageCreateFlagBits {
+ *         VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT      = 1
+ *         VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT           = 2
+ *         VK_PIPELINE_SHADER_STAGE_CREATE_RESERVED_2_BIT_NV                    = 4
+ *         VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT  = 1
+ *         VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT       = 2
+ *         VK_PIPELINE_SHADER_STAGE_CREATE_RESERVED_3_BIT_KHR                   = 8
+ *     }
+ */
+@JvmInline
+value class PipelineShaderStageCreateFlags(val value: Int) {
+	
+	
+	companion object {
+		
+		val ALLOW_VARYING_SUBGROUP_SIZE = PipelineShaderStageCreateFlags(1)
+		
+		val REQUIRE_FULL_SUBGROUPS = PipelineShaderStageCreateFlags(2)
+	
+	}
+	
+	
+	
+	operator fun plus(mask: PipelineShaderStageCreateFlags) = PipelineShaderStageCreateFlags(value or mask.value)
+	
+	operator fun contains(mask: PipelineShaderStageCreateFlags) = value and mask.value == mask.value
+
+
+}
+
+
+
+/**
+ * Bitmask builder for [PipelineShaderStageCreateFlags].
+ */
+inline fun PipelineShaderStageCreateFlags(block: PipelineShaderStageCreateFlags.Companion.() -> PipelineShaderStageCreateFlags) = block(PipelineShaderStageCreateFlags)
 
 
 
@@ -5432,7 +6343,6 @@ value class PipelineCreateFlags(val value: Int) {
  *         VK_SHADER_STAGE_SUBPASS_SHADING_BIT_HUAWEI   = 16384
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class ShaderStageFlags(val value: Int) {
 	
@@ -5469,6 +6379,49 @@ value class ShaderStageFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [ShaderStageFlags].
+ */
+inline fun ShaderStageFlags(block: ShaderStageFlags.Companion.() -> ShaderStageFlags) = block(ShaderStageFlags)
+
+
+
+/**
+ *     // provided by VK_VERSION_1_0
+ *     enum VkSamplerCreateFlagBits {
+ *         VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT                        = 1
+ *         VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT  = 2
+ *         VK_SAMPLER_CREATE_RESERVED_3_BIT_AMD                        = 8
+ *         VK_SAMPLER_CREATE_RESERVED_2_BIT_EXT                        = 4
+ *         VK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM                 = 16
+ *     }
+ */
+@JvmInline
+value class SamplerCreateFlags(val value: Int) {
+	
+	
+	companion object {
+	
+	}
+	
+	
+	
+	operator fun plus(mask: SamplerCreateFlags) = SamplerCreateFlags(value or mask.value)
+	
+	operator fun contains(mask: SamplerCreateFlags) = value and mask.value == mask.value
+
+
+}
+
+
+
+/**
+ * Bitmask builder for [SamplerCreateFlags].
+ */
+inline fun SamplerCreateFlags(block: SamplerCreateFlags.Companion.() -> SamplerCreateFlags) = block(SamplerCreateFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkDescriptorPoolCreateFlagBits {
  *         VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT    = 1
@@ -5477,7 +6430,6 @@ value class ShaderStageFlags(val value: Int) {
  *         VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_VALVE        = 4
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class DescriptorPoolCreateFlags(val value: Int) {
 	
@@ -5502,6 +6454,13 @@ value class DescriptorPoolCreateFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [DescriptorPoolCreateFlags].
+ */
+inline fun DescriptorPoolCreateFlags(block: DescriptorPoolCreateFlags.Companion.() -> DescriptorPoolCreateFlags) = block(DescriptorPoolCreateFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkDescriptorSetLayoutCreateFlagBits {
  *         VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT      = 2
@@ -5512,7 +6471,6 @@ value class DescriptorPoolCreateFlags(val value: Int) {
  *         VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_VALVE        = 4
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class DescriptorSetLayoutCreateFlags(val value: Int) {
 	
@@ -5531,6 +6489,13 @@ value class DescriptorSetLayoutCreateFlags(val value: Int) {
 
 
 }
+
+
+
+/**
+ * Bitmask builder for [DescriptorSetLayoutCreateFlags].
+ */
+inline fun DescriptorSetLayoutCreateFlags(block: DescriptorSetLayoutCreateFlags.Companion.() -> DescriptorSetLayoutCreateFlags) = block(DescriptorSetLayoutCreateFlags)
 
 
 
@@ -5554,6 +6519,7 @@ value class DescriptorSetLayoutCreateFlags(val value: Int) {
  *         VK_ACCESS_HOST_WRITE_BIT                                 = 16384
  *         VK_ACCESS_MEMORY_READ_BIT                                = 32768
  *         VK_ACCESS_MEMORY_WRITE_BIT                               = 65536
+ *         VK_ACCESS_NONE                                           = 0
  *         VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT               = 33554432
  *         VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT        = 67108864
  *         VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT       = 134217728
@@ -5571,7 +6537,6 @@ value class DescriptorSetLayoutCreateFlags(val value: Int) {
  *         VK_ACCESS_NONE_KHR                                       = 0
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class AccessFlags(val value: Int) {
 	
@@ -5611,6 +6576,8 @@ value class AccessFlags(val value: Int) {
 		val MEMORY_READ = AccessFlags(32768)
 		
 		val MEMORY_WRITE = AccessFlags(65536)
+		
+		val NONE = AccessFlags(0)
 	
 	}
 	
@@ -5626,12 +6593,18 @@ value class AccessFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [AccessFlags].
+ */
+inline fun AccessFlags(block: AccessFlags.Companion.() -> AccessFlags) = block(AccessFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkAttachmentDescriptionFlagBits {
  *         VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT  = 1
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class AttachmentDescriptionFlags(val value: Int) {
 	
@@ -5654,6 +6627,13 @@ value class AttachmentDescriptionFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [AttachmentDescriptionFlags].
+ */
+inline fun AttachmentDescriptionFlags(block: AttachmentDescriptionFlags.Companion.() -> AttachmentDescriptionFlags) = block(AttachmentDescriptionFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkDependencyFlagBits {
  *         VK_DEPENDENCY_BY_REGION_BIT         = 1
@@ -5663,7 +6643,6 @@ value class AttachmentDescriptionFlags(val value: Int) {
  *         VK_DEPENDENCY_DEVICE_GROUP_BIT_KHR  = 4
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class DependencyFlags(val value: Int) {
 	
@@ -5690,13 +6669,19 @@ value class DependencyFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [DependencyFlags].
+ */
+inline fun DependencyFlags(block: DependencyFlags.Companion.() -> DependencyFlags) = block(DependencyFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkFramebufferCreateFlagBits {
  *         VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT      = 1
  *         VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT_KHR  = 1
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class FramebufferCreateFlags(val value: Int) {
 	
@@ -5719,6 +6704,84 @@ value class FramebufferCreateFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [FramebufferCreateFlags].
+ */
+inline fun FramebufferCreateFlags(block: FramebufferCreateFlags.Companion.() -> FramebufferCreateFlags) = block(FramebufferCreateFlags)
+
+
+
+/**
+ *     // provided by VK_VERSION_1_0
+ *     enum VkRenderPassCreateFlagBits {
+ *         VK_RENDER_PASS_CREATE_RESERVED_0_BIT_KHR  = 1
+ *         VK_RENDER_PASS_CREATE_TRANSFORM_BIT_QCOM  = 2
+ *     }
+ */
+@JvmInline
+value class RenderPassCreateFlags(val value: Int) {
+	
+	
+	companion object {
+	
+	}
+	
+	
+	
+	operator fun plus(mask: RenderPassCreateFlags) = RenderPassCreateFlags(value or mask.value)
+	
+	operator fun contains(mask: RenderPassCreateFlags) = value and mask.value == mask.value
+
+
+}
+
+
+
+/**
+ * Bitmask builder for [RenderPassCreateFlags].
+ */
+inline fun RenderPassCreateFlags(block: RenderPassCreateFlags.Companion.() -> RenderPassCreateFlags) = block(RenderPassCreateFlags)
+
+
+
+/**
+ *     // provided by VK_VERSION_1_0
+ *     enum VkSubpassDescriptionFlagBits {
+ *         VK_SUBPASS_DESCRIPTION_PER_VIEW_ATTRIBUTES_BIT_NVX                            = 1
+ *         VK_SUBPASS_DESCRIPTION_PER_VIEW_POSITION_X_ONLY_BIT_NVX                       = 2
+ *         VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_QCOM                               = 4
+ *         VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM                                = 8
+ *         VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS_BIT_ARM    = 16
+ *         VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_ARM    = 32
+ *         VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_ARM  = 64
+ *     }
+ */
+@JvmInline
+value class SubpassDescriptionFlags(val value: Int) {
+	
+	
+	companion object {
+	
+	}
+	
+	
+	
+	operator fun plus(mask: SubpassDescriptionFlags) = SubpassDescriptionFlags(value or mask.value)
+	
+	operator fun contains(mask: SubpassDescriptionFlags) = value and mask.value == mask.value
+
+
+}
+
+
+
+/**
+ * Bitmask builder for [SubpassDescriptionFlags].
+ */
+inline fun SubpassDescriptionFlags(block: SubpassDescriptionFlags.Companion.() -> SubpassDescriptionFlags) = block(SubpassDescriptionFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkCommandPoolCreateFlagBits {
  *         VK_COMMAND_POOL_CREATE_TRANSIENT_BIT             = 1
@@ -5726,7 +6789,6 @@ value class FramebufferCreateFlags(val value: Int) {
  *         VK_COMMAND_POOL_CREATE_PROTECTED_BIT             = 4
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class CommandPoolCreateFlags(val value: Int) {
 	
@@ -5753,13 +6815,19 @@ value class CommandPoolCreateFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [CommandPoolCreateFlags].
+ */
+inline fun CommandPoolCreateFlags(block: CommandPoolCreateFlags.Companion.() -> CommandPoolCreateFlags) = block(CommandPoolCreateFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkCommandPoolResetFlagBits {
  *         VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT   = 1
  *         VK_COMMAND_POOL_RESET_RESERVED_1_BIT_COREAVI  = 2
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class CommandPoolResetFlags(val value: Int) {
 	
@@ -5782,12 +6850,18 @@ value class CommandPoolResetFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [CommandPoolResetFlags].
+ */
+inline fun CommandPoolResetFlags(block: CommandPoolResetFlags.Companion.() -> CommandPoolResetFlags) = block(CommandPoolResetFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkCommandBufferResetFlagBits {
  *         VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT  = 1
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class CommandBufferResetFlags(val value: Int) {
 	
@@ -5810,6 +6884,13 @@ value class CommandBufferResetFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [CommandBufferResetFlags].
+ */
+inline fun CommandBufferResetFlags(block: CommandBufferResetFlags.Companion.() -> CommandBufferResetFlags) = block(CommandBufferResetFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkCommandBufferUsageFlagBits {
  *         VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT       = 1
@@ -5817,7 +6898,6 @@ value class CommandBufferResetFlags(val value: Int) {
  *         VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT      = 4
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class CommandBufferUsageFlags(val value: Int) {
 	
@@ -5844,12 +6924,18 @@ value class CommandBufferUsageFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [CommandBufferUsageFlags].
+ */
+inline fun CommandBufferUsageFlags(block: CommandBufferUsageFlags.Companion.() -> CommandBufferUsageFlags) = block(CommandBufferUsageFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkQueryControlFlagBits {
  *         VK_QUERY_CONTROL_PRECISE_BIT  = 1
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class QueryControlFlags(val value: Int) {
 	
@@ -5872,6 +6958,13 @@ value class QueryControlFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [QueryControlFlags].
+ */
+inline fun QueryControlFlags(block: QueryControlFlags.Companion.() -> QueryControlFlags) = block(QueryControlFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     enum VkStencilFaceFlagBits {
  *         VK_STENCIL_FACE_FRONT_BIT       = 1
@@ -5880,7 +6973,6 @@ value class QueryControlFlags(val value: Int) {
  *         VK_STENCIL_FRONT_AND_BACK       = 0x00000003
  *     }
  */
-@Suppress("unused")
 @JvmInline
 value class StencilFaceFlags(val value: Int) {
 	
@@ -5907,6 +6999,13 @@ value class StencilFaceFlags(val value: Int) {
 
 
 /**
+ * Bitmask builder for [StencilFaceFlags].
+ */
+inline fun StencilFaceFlags(block: StencilFaceFlags.Companion.() -> StencilFaceFlags) = block(StencilFaceFlags)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkExtent2D {
  *         uint32_t  width
@@ -5927,6 +7026,13 @@ value class Extent2D(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [Extent2D].
+ */
+inline fun Allocator.Extent2D(block: (Extent2D) -> Unit) = Extent2D(calloc(8)).apply(block)
 
 
 
@@ -5956,6 +7062,13 @@ value class Extent3D(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [Extent3D].
+ */
+inline fun Allocator.Extent3D(block: (Extent3D) -> Unit) = Extent3D(calloc(12)).apply(block)
 
 
 
@@ -6006,6 +7119,20 @@ value class Offset2D(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [Offset2D].
+ */
+inline fun Allocator.Offset2D(block: (Offset2D) -> Unit) = Offset2D(calloc(8)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [Offset2D].
+ */
+inline fun Allocator.Offset2D(capacity: Int, block: (Offset2D.Buffer) -> Unit) = Offset2D.Buffer(calloc(capacity * 8), capacity).apply(block)
 
 
 
@@ -6065,6 +7192,20 @@ value class Offset3D(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [Offset3D].
+ */
+inline fun Allocator.Offset3D(block: (Offset3D) -> Unit) = Offset3D(calloc(12)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [Offset3D].
+ */
+inline fun Allocator.Offset3D(capacity: Int, block: (Offset3D.Buffer) -> Unit) = Offset3D.Buffer(calloc(capacity * 12), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkRect2D {
  *         VkOffset2D  offset
@@ -6115,6 +7256,20 @@ value class Rect2D(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [Rect2D].
+ */
+inline fun Allocator.Rect2D(block: (Rect2D) -> Unit) = Rect2D(calloc(16)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [Rect2D].
+ */
+inline fun Allocator.Rect2D(capacity: Int, block: (Rect2D.Buffer) -> Unit) = Rect2D.Buffer(calloc(capacity * 16), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkBaseInStructure {
  *         VkStructureType     sType
@@ -6139,6 +7294,13 @@ value class BaseInStructure(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [BaseInStructure].
+ */
+inline fun Allocator.BaseInStructure(block: (BaseInStructure) -> Unit) = BaseInStructure(calloc(16)).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkBaseOutStructure {
  *         VkStructureType      sType
@@ -6159,6 +7321,13 @@ value class BaseOutStructure(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [BaseOutStructure].
+ */
+inline fun Allocator.BaseOutStructure(block: (BaseOutStructure) -> Unit) = BaseOutStructure(calloc(16)).apply(block)
 
 
 
@@ -6248,6 +7417,20 @@ value class BufferMemoryBarrier(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [BufferMemoryBarrier].
+ */
+inline fun Allocator.BufferMemoryBarrier(block: (BufferMemoryBarrier) -> Unit) = BufferMemoryBarrier(calloc(56)).apply(block).also { it.sType = 44 }
+
+
+
+/**
+ * Struct buffer calloc function for [BufferMemoryBarrier].
+ */
+inline fun Allocator.BufferMemoryBarrier(capacity: Int, block: (BufferMemoryBarrier.Buffer) -> Unit) = BufferMemoryBarrier.Buffer(calloc(capacity * 56), capacity).apply(block).apply { forEach { it.sType = 44 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkDispatchIndirectCommand {
  *         uint32_t  x
@@ -6273,6 +7456,13 @@ value class DispatchIndirectCommand(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DispatchIndirectCommand].
+ */
+inline fun Allocator.DispatchIndirectCommand(block: (DispatchIndirectCommand) -> Unit) = DispatchIndirectCommand(calloc(12)).apply(block)
 
 
 
@@ -6316,6 +7506,13 @@ value class DrawIndexedIndirectCommand(override val address: Long) : Addressable
 
 
 /**
+ * Struct calloc function for [DrawIndexedIndirectCommand].
+ */
+inline fun Allocator.DrawIndexedIndirectCommand(block: (DrawIndexedIndirectCommand) -> Unit) = DrawIndexedIndirectCommand(calloc(20)).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkDrawIndirectCommand {
  *         uint32_t  vertexCount
@@ -6346,6 +7543,13 @@ value class DrawIndirectCommand(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DrawIndirectCommand].
+ */
+inline fun Allocator.DrawIndirectCommand(block: (DrawIndirectCommand) -> Unit) = DrawIndirectCommand(calloc(16)).apply(block)
 
 
 
@@ -6443,6 +7647,20 @@ value class ImageMemoryBarrier(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ImageMemoryBarrier].
+ */
+inline fun Allocator.ImageMemoryBarrier(block: (ImageMemoryBarrier) -> Unit) = ImageMemoryBarrier(calloc(72)).apply(block).also { it.sType = 45 }
+
+
+
+/**
+ * Struct buffer calloc function for [ImageMemoryBarrier].
+ */
+inline fun Allocator.ImageMemoryBarrier(capacity: Int, block: (ImageMemoryBarrier.Buffer) -> Unit) = ImageMemoryBarrier.Buffer(calloc(capacity * 72), capacity).apply(block).apply { forEach { it.sType = 45 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkMemoryBarrier {
  *         VkStructureType  sType
@@ -6503,6 +7721,20 @@ value class MemoryBarrier(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [MemoryBarrier].
+ */
+inline fun Allocator.MemoryBarrier(block: (MemoryBarrier) -> Unit) = MemoryBarrier(calloc(24)).apply(block).also { it.sType = 46 }
+
+
+
+/**
+ * Struct buffer calloc function for [MemoryBarrier].
+ */
+inline fun Allocator.MemoryBarrier(capacity: Int, block: (MemoryBarrier.Buffer) -> Unit) = MemoryBarrier.Buffer(calloc(capacity * 24), capacity).apply(block).apply { forEach { it.sType = 46 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPipelineCacheHeaderVersionOne {
  *         uint32_t                      headerSize
@@ -6538,6 +7770,13 @@ value class PipelineCacheHeaderVersionOne(override val address: Long) : Addressa
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PipelineCacheHeaderVersionOne].
+ */
+inline fun Allocator.PipelineCacheHeaderVersionOne(block: (PipelineCacheHeaderVersionOne) -> Unit) = PipelineCacheHeaderVersionOne(calloc(32)).apply(block)
 
 
 
@@ -6582,6 +7821,13 @@ value class AllocationCallbacks(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [AllocationCallbacks].
+ */
+inline fun Allocator.AllocationCallbacks(block: (AllocationCallbacks) -> Unit) = AllocationCallbacks(calloc(48)).apply(block)
 
 
 
@@ -6645,6 +7891,13 @@ value class ApplicationInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ApplicationInfo].
+ */
+inline fun Allocator.ApplicationInfo(block: (ApplicationInfo) -> Unit) = ApplicationInfo(calloc(48)).apply(block).also { it.sType = 0 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkFormatProperties {
  *         VkFormatFeatureFlags  linearTilingFeatures
@@ -6670,6 +7923,13 @@ value class FormatProperties(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [FormatProperties].
+ */
+inline fun Allocator.FormatProperties(block: (FormatProperties) -> Unit) = FormatProperties(calloc(12)).apply(block)
 
 
 
@@ -6709,6 +7969,13 @@ value class ImageFormatProperties(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ImageFormatProperties].
+ */
+inline fun Allocator.ImageFormatProperties(block: (ImageFormatProperties) -> Unit) = ImageFormatProperties(calloc(32)).apply(block)
 
 
 
@@ -6787,6 +8054,13 @@ value class InstanceCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [InstanceCreateInfo].
+ */
+inline fun Allocator.InstanceCreateInfo(block: (InstanceCreateInfo) -> Unit) = InstanceCreateInfo(calloc(64)).apply(block).also { it.sType = 1 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkMemoryHeap {
  *         VkDeviceSize       size
@@ -6837,6 +8111,20 @@ value class MemoryHeap(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [MemoryHeap].
+ */
+inline fun Allocator.MemoryHeap(block: (MemoryHeap) -> Unit) = MemoryHeap(calloc(16)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [MemoryHeap].
+ */
+inline fun Allocator.MemoryHeap(capacity: Int, block: (MemoryHeap.Buffer) -> Unit) = MemoryHeap.Buffer(calloc(capacity * 16), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkMemoryType {
  *         VkMemoryPropertyFlags  propertyFlags
@@ -6883,6 +8171,20 @@ value class MemoryType(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [MemoryType].
+ */
+inline fun Allocator.MemoryType(block: (MemoryType) -> Unit) = MemoryType(calloc(8)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [MemoryType].
+ */
+inline fun Allocator.MemoryType(capacity: Int, block: (MemoryType.Buffer) -> Unit) = MemoryType.Buffer(calloc(capacity * 8), capacity).apply(block)
 
 
 
@@ -7172,6 +8474,13 @@ value class PhysicalDeviceFeatures(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDeviceFeatures].
+ */
+inline fun Allocator.PhysicalDeviceFeatures(block: (PhysicalDeviceFeatures) -> Unit) = PhysicalDeviceFeatures(calloc(220)).apply(block)
 
 
 
@@ -7720,6 +9029,13 @@ value class PhysicalDeviceLimits(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceLimits].
+ */
+inline fun Allocator.PhysicalDeviceLimits(block: (PhysicalDeviceLimits) -> Unit) = PhysicalDeviceLimits(calloc(504)).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPhysicalDeviceMemoryProperties {
  *         uint32_t      memoryTypeCount
@@ -7750,6 +9066,13 @@ value class PhysicalDeviceMemoryProperties(override val address: Long) : Address
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDeviceMemoryProperties].
+ */
+inline fun Allocator.PhysicalDeviceMemoryProperties(block: (PhysicalDeviceMemoryProperties) -> Unit) = PhysicalDeviceMemoryProperties(calloc(520)).apply(block)
 
 
 
@@ -7813,6 +9136,13 @@ value class PhysicalDeviceProperties(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [PhysicalDeviceProperties].
+ */
+inline fun Allocator.PhysicalDeviceProperties(block: (PhysicalDeviceProperties) -> Unit) = PhysicalDeviceProperties(calloc(824)).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPhysicalDeviceSparseProperties {
  *         VkBool32  residencyStandard2DBlockShape
@@ -7848,6 +9178,13 @@ value class PhysicalDeviceSparseProperties(override val address: Long) : Address
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PhysicalDeviceSparseProperties].
+ */
+inline fun Allocator.PhysicalDeviceSparseProperties(block: (PhysicalDeviceSparseProperties) -> Unit) = PhysicalDeviceSparseProperties(calloc(20)).apply(block)
 
 
 
@@ -7912,6 +9249,20 @@ value class QueueFamilyProperties(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [QueueFamilyProperties].
+ */
+inline fun Allocator.QueueFamilyProperties(block: (QueueFamilyProperties) -> Unit) = QueueFamilyProperties(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [QueueFamilyProperties].
+ */
+inline fun Allocator.QueueFamilyProperties(capacity: Int, block: (QueueFamilyProperties.Buffer) -> Unit) = QueueFamilyProperties.Buffer(calloc(capacity * 24), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkDeviceCreateInfo {
  *         VkStructureType            sType
@@ -7928,8 +9279,8 @@ value class QueueFamilyProperties(override val address: Long) : Addressable {
  * 
  *     Valid pNext types:
  *         - VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV
- *         - VkDevicePrivateDataCreateInfoEXT
- *         - VkPhysicalDevicePrivateDataFeaturesEXT
+ *         - VkDevicePrivateDataCreateInfo
+ *         - VkPhysicalDevicePrivateDataFeatures
  *         - VkPhysicalDeviceFeatures2
  *         - VkPhysicalDeviceVariablePointersFeatures
  *         - VkPhysicalDeviceMultiviewFeatures
@@ -7942,12 +9293,12 @@ value class QueueFamilyProperties(override val address: Long) : Addressable {
  *         - VkPhysicalDeviceProtectedMemoryFeatures
  *         - VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT
  *         - VkPhysicalDeviceMultiDrawFeaturesEXT
- *         - VkPhysicalDeviceInlineUniformBlockFeaturesEXT
- *         - VkPhysicalDeviceMaintenance4FeaturesKHR
+ *         - VkPhysicalDeviceInlineUniformBlockFeatures
+ *         - VkPhysicalDeviceMaintenance4Features
  *         - VkPhysicalDeviceShaderDrawParametersFeatures
  *         - VkPhysicalDeviceShaderFloat16Int8Features
  *         - VkPhysicalDeviceHostQueryResetFeatures
- *         - VkPhysicalDeviceGlobalPriorityQueryFeaturesEXT
+ *         - VkPhysicalDeviceGlobalPriorityQueryFeaturesKHR
  *         - VkPhysicalDeviceDeviceMemoryReportFeaturesEXT
  *         - VkDeviceDeviceMemoryReportCreateInfoEXT
  *         - VkPhysicalDeviceDescriptorIndexingFeatures
@@ -7986,7 +9337,7 @@ value class QueueFamilyProperties(override val address: Long) : Addressable {
  *         - VkPhysicalDeviceBufferDeviceAddressFeatures
  *         - VkPhysicalDeviceBufferDeviceAddressFeaturesEXT
  *         - VkPhysicalDeviceImagelessFramebufferFeatures
- *         - VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT
+ *         - VkPhysicalDeviceTextureCompressionASTCHDRFeatures
  *         - VkPhysicalDeviceCooperativeMatrixFeaturesNV
  *         - VkPhysicalDeviceYcbcrImageArraysFeaturesEXT
  *         - VkPhysicalDevicePerformanceQueryFeaturesKHR
@@ -7999,13 +9350,14 @@ value class QueueFamilyProperties(override val address: Long) : Addressable {
  *         - VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures
  *         - VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT
  *         - VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR
- *         - VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT
+ *         - VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures
  *         - VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT
- *         - VkPhysicalDeviceSubgroupSizeControlFeaturesEXT
+ *         - VkPhysicalDeviceSubgroupSizeControlFeatures
  *         - VkPhysicalDeviceLineRasterizationFeaturesEXT
- *         - VkPhysicalDevicePipelineCreationCacheControlFeaturesEXT
+ *         - VkPhysicalDevicePipelineCreationCacheControlFeatures
  *         - VkPhysicalDeviceVulkan11Features
  *         - VkPhysicalDeviceVulkan12Features
+ *         - VkPhysicalDeviceVulkan13Features
  *         - VkPhysicalDeviceCoherentMemoryFeaturesAMD
  *         - VkPhysicalDeviceCustomBorderColorFeaturesEXT
  *         - VkPhysicalDeviceBorderColorSwizzleFeaturesEXT
@@ -8013,31 +9365,31 @@ value class QueueFamilyProperties(override val address: Long) : Addressable {
  *         - VkPhysicalDeviceExtendedDynamicState2FeaturesEXT
  *         - VkPhysicalDeviceDiagnosticsConfigFeaturesNV
  *         - VkDeviceDiagnosticsConfigCreateInfoNV
- *         - VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR
+ *         - VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures
  *         - VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR
  *         - VkPhysicalDeviceRobustness2FeaturesEXT
- *         - VkPhysicalDeviceImageRobustnessFeaturesEXT
+ *         - VkPhysicalDeviceImageRobustnessFeatures
  *         - VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR
  *         - VkPhysicalDevicePortabilitySubsetFeaturesKHR
  *         - VkPhysicalDevice4444FormatsFeaturesEXT
  *         - VkPhysicalDeviceSubpassShadingFeaturesHUAWEI
  *         - VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT
  *         - VkPhysicalDeviceFragmentShadingRateFeaturesKHR
- *         - VkPhysicalDeviceShaderTerminateInvocationFeaturesKHR
+ *         - VkPhysicalDeviceShaderTerminateInvocationFeatures
  *         - VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV
  *         - VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE
  *         - VkPhysicalDeviceDepthClipControlFeaturesEXT
  *         - VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT
  *         - VkPhysicalDeviceExternalMemoryRDMAFeaturesNV
  *         - VkPhysicalDeviceColorWriteEnableFeaturesEXT
- *         - VkPhysicalDeviceSynchronization2FeaturesKHR
+ *         - VkPhysicalDeviceSynchronization2Features
  *         - VkPhysicalDeviceInheritedViewportScissorFeaturesNV
  *         - VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT
  *         - VkPhysicalDeviceProvokingVertexFeaturesEXT
- *         - VkPhysicalDeviceShaderIntegerDotProductFeaturesKHR
+ *         - VkPhysicalDeviceShaderIntegerDotProductFeatures
  *         - VkPhysicalDeviceRayTracingMotionBlurFeaturesNV
  *         - VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT
- *         - VkPhysicalDeviceDynamicRenderingFeaturesKHR
+ *         - VkPhysicalDeviceDynamicRenderingFeatures
  *         - VkPhysicalDeviceImageViewMinLodFeaturesEXT
  *         - VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM
  *         - VkPhysicalDeviceLinearColorAttachmentFeaturesNV
@@ -8110,6 +9462,13 @@ value class DeviceCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [DeviceCreateInfo].
+ */
+inline fun Allocator.DeviceCreateInfo(block: (DeviceCreateInfo) -> Unit) = DeviceCreateInfo(calloc(72)).apply(block).also { it.sType = 3 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkDeviceQueueCreateInfo {
  *         VkStructureType           sType
@@ -8121,7 +9480,7 @@ value class DeviceCreateInfo(override val address: Long) : Addressable {
  *     }
  * 
  *     Valid pNext types:
- *         - VkDeviceQueueGlobalPriorityCreateInfoEXT
+ *         - VkDeviceQueueGlobalPriorityCreateInfoKHR
  */
 @JvmInline
 value class DeviceQueueCreateInfo(override val address: Long) : Addressable {
@@ -8189,6 +9548,20 @@ value class DeviceQueueCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [DeviceQueueCreateInfo].
+ */
+inline fun Allocator.DeviceQueueCreateInfo(block: (DeviceQueueCreateInfo) -> Unit) = DeviceQueueCreateInfo(calloc(40)).apply(block).also { it.sType = 2 }
+
+
+
+/**
+ * Struct buffer calloc function for [DeviceQueueCreateInfo].
+ */
+inline fun Allocator.DeviceQueueCreateInfo(capacity: Int, block: (DeviceQueueCreateInfo.Buffer) -> Unit) = DeviceQueueCreateInfo.Buffer(calloc(capacity * 40), capacity).apply(block).apply { forEach { it.sType = 2 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkExtensionProperties {
  *         char      extensionName[256]
@@ -8235,6 +9608,20 @@ value class ExtensionProperties(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ExtensionProperties].
+ */
+inline fun Allocator.ExtensionProperties(block: (ExtensionProperties) -> Unit) = ExtensionProperties(calloc(260)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [ExtensionProperties].
+ */
+inline fun Allocator.ExtensionProperties(capacity: Int, block: (ExtensionProperties.Buffer) -> Unit) = ExtensionProperties.Buffer(calloc(capacity * 260), capacity).apply(block)
 
 
 
@@ -8295,6 +9682,20 @@ value class LayerProperties(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [LayerProperties].
+ */
+inline fun Allocator.LayerProperties(block: (LayerProperties) -> Unit) = LayerProperties(calloc(520)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [LayerProperties].
+ */
+inline fun Allocator.LayerProperties(capacity: Int, block: (LayerProperties.Buffer) -> Unit) = LayerProperties.Buffer(calloc(capacity * 520), capacity).apply(block)
 
 
 
@@ -8411,6 +9812,20 @@ value class SubmitInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [SubmitInfo].
+ */
+inline fun Allocator.SubmitInfo(block: (SubmitInfo) -> Unit) = SubmitInfo(calloc(72)).apply(block).also { it.sType = 4 }
+
+
+
+/**
+ * Struct buffer calloc function for [SubmitInfo].
+ */
+inline fun Allocator.SubmitInfo(capacity: Int, block: (SubmitInfo.Buffer) -> Unit) = SubmitInfo.Buffer(calloc(capacity * 72), capacity).apply(block).apply { forEach { it.sType = 4 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkMappedMemoryRange {
  *         VkStructureType  sType
@@ -8476,6 +9891,20 @@ value class MappedMemoryRange(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [MappedMemoryRange].
+ */
+inline fun Allocator.MappedMemoryRange(block: (MappedMemoryRange) -> Unit) = MappedMemoryRange(calloc(40)).apply(block).also { it.sType = 6 }
+
+
+
+/**
+ * Struct buffer calloc function for [MappedMemoryRange].
+ */
+inline fun Allocator.MappedMemoryRange(capacity: Int, block: (MappedMemoryRange.Buffer) -> Unit) = MappedMemoryRange.Buffer(calloc(capacity * 40), capacity).apply(block).apply { forEach { it.sType = 6 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkMemoryAllocateInfo {
  *         VkStructureType  sType
@@ -8528,6 +9957,13 @@ value class MemoryAllocateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [MemoryAllocateInfo].
+ */
+inline fun Allocator.MemoryAllocateInfo(block: (MemoryAllocateInfo) -> Unit) = MemoryAllocateInfo(calloc(32)).apply(block).also { it.sType = 5 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkMemoryRequirements {
  *         VkDeviceSize  size
@@ -8553,6 +9989,13 @@ value class MemoryRequirements(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [MemoryRequirements].
+ */
+inline fun Allocator.MemoryRequirements(block: (MemoryRequirements) -> Unit) = MemoryRequirements(calloc(24)).apply(block)
 
 
 
@@ -8683,6 +10126,20 @@ value class BindSparseInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [BindSparseInfo].
+ */
+inline fun Allocator.BindSparseInfo(block: (BindSparseInfo) -> Unit) = BindSparseInfo(calloc(96)).apply(block).also { it.sType = 7 }
+
+
+
+/**
+ * Struct buffer calloc function for [BindSparseInfo].
+ */
+inline fun Allocator.BindSparseInfo(capacity: Int, block: (BindSparseInfo.Buffer) -> Unit) = BindSparseInfo.Buffer(calloc(capacity * 96), capacity).apply(block).apply { forEach { it.sType = 7 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkImageSubresource {
  *         VkImageAspectFlags  aspectMask
@@ -8708,6 +10165,13 @@ value class ImageSubresource(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ImageSubresource].
+ */
+inline fun Allocator.ImageSubresource(block: (ImageSubresource) -> Unit) = ImageSubresource(calloc(12)).apply(block)
 
 
 
@@ -8773,6 +10237,20 @@ value class SparseBufferMemoryBindInfo(override val address: Long) : Addressable
 
 
 /**
+ * Struct calloc function for [SparseBufferMemoryBindInfo].
+ */
+inline fun Allocator.SparseBufferMemoryBindInfo(block: (SparseBufferMemoryBindInfo) -> Unit) = SparseBufferMemoryBindInfo(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SparseBufferMemoryBindInfo].
+ */
+inline fun Allocator.SparseBufferMemoryBindInfo(capacity: Int, block: (SparseBufferMemoryBindInfo.Buffer) -> Unit) = SparseBufferMemoryBindInfo.Buffer(calloc(capacity * 24), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkSparseImageFormatProperties {
  *         VkImageAspectFlags        aspectMask
@@ -8824,6 +10302,20 @@ value class SparseImageFormatProperties(override val address: Long) : Addressabl
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [SparseImageFormatProperties].
+ */
+inline fun Allocator.SparseImageFormatProperties(block: (SparseImageFormatProperties) -> Unit) = SparseImageFormatProperties(calloc(20)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SparseImageFormatProperties].
+ */
+inline fun Allocator.SparseImageFormatProperties(capacity: Int, block: (SparseImageFormatProperties.Buffer) -> Unit) = SparseImageFormatProperties.Buffer(calloc(capacity * 20), capacity).apply(block)
 
 
 
@@ -8898,6 +10390,20 @@ value class SparseImageMemoryBind(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [SparseImageMemoryBind].
+ */
+inline fun Allocator.SparseImageMemoryBind(block: (SparseImageMemoryBind) -> Unit) = SparseImageMemoryBind(calloc(64)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SparseImageMemoryBind].
+ */
+inline fun Allocator.SparseImageMemoryBind(capacity: Int, block: (SparseImageMemoryBind.Buffer) -> Unit) = SparseImageMemoryBind.Buffer(calloc(capacity * 64), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkSparseImageMemoryBindInfo {
  *         VkImage                   image
@@ -8955,6 +10461,20 @@ value class SparseImageMemoryBindInfo(override val address: Long) : Addressable 
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [SparseImageMemoryBindInfo].
+ */
+inline fun Allocator.SparseImageMemoryBindInfo(block: (SparseImageMemoryBindInfo) -> Unit) = SparseImageMemoryBindInfo(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SparseImageMemoryBindInfo].
+ */
+inline fun Allocator.SparseImageMemoryBindInfo(capacity: Int, block: (SparseImageMemoryBindInfo.Buffer) -> Unit) = SparseImageMemoryBindInfo.Buffer(calloc(capacity * 24), capacity).apply(block)
 
 
 
@@ -9024,6 +10544,20 @@ value class SparseImageMemoryRequirements(override val address: Long) : Addressa
 
 
 /**
+ * Struct calloc function for [SparseImageMemoryRequirements].
+ */
+inline fun Allocator.SparseImageMemoryRequirements(block: (SparseImageMemoryRequirements) -> Unit) = SparseImageMemoryRequirements(calloc(48)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SparseImageMemoryRequirements].
+ */
+inline fun Allocator.SparseImageMemoryRequirements(capacity: Int, block: (SparseImageMemoryRequirements.Buffer) -> Unit) = SparseImageMemoryRequirements.Buffer(calloc(capacity * 48), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkSparseImageOpaqueMemoryBindInfo {
  *         VkImage              image
@@ -9081,6 +10615,20 @@ value class SparseImageOpaqueMemoryBindInfo(override val address: Long) : Addres
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [SparseImageOpaqueMemoryBindInfo].
+ */
+inline fun Allocator.SparseImageOpaqueMemoryBindInfo(block: (SparseImageOpaqueMemoryBindInfo) -> Unit) = SparseImageOpaqueMemoryBindInfo(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SparseImageOpaqueMemoryBindInfo].
+ */
+inline fun Allocator.SparseImageOpaqueMemoryBindInfo(capacity: Int, block: (SparseImageOpaqueMemoryBindInfo.Buffer) -> Unit) = SparseImageOpaqueMemoryBindInfo.Buffer(calloc(capacity * 24), capacity).apply(block)
 
 
 
@@ -9150,6 +10698,20 @@ value class SparseMemoryBind(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [SparseMemoryBind].
+ */
+inline fun Allocator.SparseMemoryBind(block: (SparseMemoryBind) -> Unit) = SparseMemoryBind(calloc(40)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SparseMemoryBind].
+ */
+inline fun Allocator.SparseMemoryBind(capacity: Int, block: (SparseMemoryBind.Buffer) -> Unit) = SparseMemoryBind.Buffer(calloc(capacity * 40), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkFenceCreateInfo {
  *         VkStructureType     sType
@@ -9179,6 +10741,13 @@ value class FenceCreateInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [FenceCreateInfo].
+ */
+inline fun Allocator.FenceCreateInfo(block: (FenceCreateInfo) -> Unit) = FenceCreateInfo(calloc(24)).apply(block).also { it.sType = 8 }
 
 
 
@@ -9217,6 +10786,13 @@ value class SemaphoreCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [SemaphoreCreateInfo].
+ */
+inline fun Allocator.SemaphoreCreateInfo(block: (SemaphoreCreateInfo) -> Unit) = SemaphoreCreateInfo(calloc(24)).apply(block).also { it.sType = 9 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkEventCreateInfo {
  *         VkStructureType     sType
@@ -9236,12 +10812,19 @@ value class EventCreateInfo(override val address: Long) : Addressable {
 		get()      = Unsafe.getLong(address + 8)
 		set(value) = Unsafe.setLong(address + 8, value)
 	
-	var flags: Int
-		get() = Unsafe.getInt(address + 16)
-		set(value) = Unsafe.setInt(address + 16, value)
+	var flags: EventCreateFlags
+		get()      = EventCreateFlags(Unsafe.getInt(address + 16))
+		set(value) = Unsafe.setInt(address + 16, value.value)
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [EventCreateInfo].
+ */
+inline fun Allocator.EventCreateInfo(block: (EventCreateInfo) -> Unit) = EventCreateInfo(calloc(24)).apply(block).also { it.sType = 10 }
 
 
 
@@ -9295,6 +10878,13 @@ value class QueryPoolCreateInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [QueryPoolCreateInfo].
+ */
+inline fun Allocator.QueryPoolCreateInfo(block: (QueryPoolCreateInfo) -> Unit) = QueryPoolCreateInfo(calloc(32)).apply(block).also { it.sType = 11 }
 
 
 
@@ -9372,6 +10962,13 @@ value class BufferCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [BufferCreateInfo].
+ */
+inline fun Allocator.BufferCreateInfo(block: (BufferCreateInfo) -> Unit) = BufferCreateInfo(calloc(56)).apply(block).also { it.sType = 12 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkBufferViewCreateInfo {
  *         VkStructureType          sType
@@ -9417,6 +11014,13 @@ value class BufferViewCreateInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [BufferViewCreateInfo].
+ */
+inline fun Allocator.BufferViewCreateInfo(block: (BufferViewCreateInfo) -> Unit) = BufferViewCreateInfo(calloc(56)).apply(block).also { it.sType = 13 }
 
 
 
@@ -9534,6 +11138,13 @@ value class ImageCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ImageCreateInfo].
+ */
+inline fun Allocator.ImageCreateInfo(block: (ImageCreateInfo) -> Unit) = ImageCreateInfo(calloc(88)).apply(block).also { it.sType = 14 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkSubresourceLayout {
  *         VkDeviceSize  offset
@@ -9599,6 +11210,20 @@ value class SubresourceLayout(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [SubresourceLayout].
+ */
+inline fun Allocator.SubresourceLayout(block: (SubresourceLayout) -> Unit) = SubresourceLayout(calloc(40)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SubresourceLayout].
+ */
+inline fun Allocator.SubresourceLayout(capacity: Int, block: (SubresourceLayout.Buffer) -> Unit) = SubresourceLayout.Buffer(calloc(capacity * 40), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkComponentMapping {
  *         VkComponentSwizzle  r
@@ -9629,6 +11254,13 @@ value class ComponentMapping(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ComponentMapping].
+ */
+inline fun Allocator.ComponentMapping(block: (ComponentMapping) -> Unit) = ComponentMapping(calloc(16)).apply(block)
 
 
 
@@ -9698,6 +11330,20 @@ value class ImageSubresourceRange(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ImageSubresourceRange].
+ */
+inline fun Allocator.ImageSubresourceRange(block: (ImageSubresourceRange) -> Unit) = ImageSubresourceRange(calloc(20)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [ImageSubresourceRange].
+ */
+inline fun Allocator.ImageSubresourceRange(capacity: Int, block: (ImageSubresourceRange.Buffer) -> Unit) = ImageSubresourceRange.Buffer(calloc(capacity * 20), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkImageViewCreateInfo {
  *         VkStructureType          sType
@@ -9734,9 +11380,9 @@ value class ImageViewCreateInfo(override val address: Long) : Addressable {
 		get()      = Unsafe.getLong(address + 8)
 		set(value) = Unsafe.setLong(address + 8, value)
 	
-	var flags: Int
-		get() = Unsafe.getInt(address + 16)
-		set(value) = Unsafe.setInt(address + 16, value)
+	var flags: ImageViewCreateFlags
+		get()      = ImageViewCreateFlags(Unsafe.getInt(address + 16))
+		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var image: ImageH
 		get()      = ImageH(Unsafe.getLong(address + 24))
@@ -9760,6 +11406,13 @@ value class ImageViewCreateInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ImageViewCreateInfo].
+ */
+inline fun Allocator.ImageViewCreateInfo(block: (ImageViewCreateInfo) -> Unit) = ImageViewCreateInfo(calloc(80)).apply(block).also { it.sType = 15 }
 
 
 
@@ -9806,6 +11459,13 @@ value class ShaderModuleCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ShaderModuleCreateInfo].
+ */
+inline fun Allocator.ShaderModuleCreateInfo(block: (ShaderModuleCreateInfo) -> Unit) = ShaderModuleCreateInfo(calloc(40)).apply(block).also { it.sType = 16 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPipelineCacheCreateInfo {
  *         VkStructureType             sType
@@ -9827,9 +11487,9 @@ value class PipelineCacheCreateInfo(override val address: Long) : Addressable {
 		get()      = Unsafe.getLong(address + 8)
 		set(value) = Unsafe.setLong(address + 8, value)
 	
-	var flags: Int
-		get() = Unsafe.getInt(address + 16)
-		set(value) = Unsafe.setInt(address + 16, value)
+	var flags: PipelineCacheCreateFlags
+		get()      = PipelineCacheCreateFlags(Unsafe.getInt(address + 16))
+		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var initialDataSize: Long
 		get()      = Unsafe.getLong(address + 24)
@@ -9851,6 +11511,13 @@ value class PipelineCacheCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [PipelineCacheCreateInfo].
+ */
+inline fun Allocator.PipelineCacheCreateInfo(block: (PipelineCacheCreateInfo) -> Unit) = PipelineCacheCreateInfo(calloc(40)).apply(block).also { it.sType = 17 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkComputePipelineCreateInfo {
  *         VkStructureType                  sType
@@ -9863,7 +11530,7 @@ value class PipelineCacheCreateInfo(override val address: Long) : Addressable {
  *     }
  * 
  *     Valid pNext types:
- *         - VkPipelineCreationFeedbackCreateInfoEXT
+ *         - VkPipelineCreationFeedbackCreateInfo
  *         - VkSubpassShadingPipelineCreateInfoHUAWEI
  *         - VkPipelineCompilerControlCreateInfoAMD
  */
@@ -9931,6 +11598,20 @@ value class ComputePipelineCreateInfo(override val address: Long) : Addressable 
 
 
 /**
+ * Struct calloc function for [ComputePipelineCreateInfo].
+ */
+inline fun Allocator.ComputePipelineCreateInfo(block: (ComputePipelineCreateInfo) -> Unit) = ComputePipelineCreateInfo(calloc(96)).apply(block).also { it.sType = 29 }
+
+
+
+/**
+ * Struct buffer calloc function for [ComputePipelineCreateInfo].
+ */
+inline fun Allocator.ComputePipelineCreateInfo(capacity: Int, block: (ComputePipelineCreateInfo.Buffer) -> Unit) = ComputePipelineCreateInfo.Buffer(calloc(capacity * 96), capacity).apply(block).apply { forEach { it.sType = 29 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkGraphicsPipelineCreateInfo {
  *         VkStructureType                          sType
@@ -9958,11 +11639,11 @@ value class ComputePipelineCreateInfo(override val address: Long) : Addressable 
  *         - VkGraphicsPipelineShaderGroupsCreateInfoNV
  *         - VkPipelineDiscardRectangleStateCreateInfoEXT
  *         - VkPipelineRepresentativeFragmentTestStateCreateInfoNV
- *         - VkPipelineCreationFeedbackCreateInfoEXT
+ *         - VkPipelineCreationFeedbackCreateInfo
  *         - VkPipelineCompilerControlCreateInfoAMD
  *         - VkPipelineFragmentShadingRateStateCreateInfoKHR
  *         - VkPipelineFragmentShadingRateEnumStateCreateInfoNV
- *         - VkPipelineRenderingCreateInfoKHR
+ *         - VkPipelineRenderingCreateInfo
  *         - VkAttachmentSampleCountInfoAMD
  *         - VkMultiviewPerViewAttributesInfoNVX
  */
@@ -10120,6 +11801,20 @@ value class GraphicsPipelineCreateInfo(override val address: Long) : Addressable
 
 
 /**
+ * Struct calloc function for [GraphicsPipelineCreateInfo].
+ */
+inline fun Allocator.GraphicsPipelineCreateInfo(block: (GraphicsPipelineCreateInfo) -> Unit) = GraphicsPipelineCreateInfo(calloc(144)).apply(block).also { it.sType = 28 }
+
+
+
+/**
+ * Struct buffer calloc function for [GraphicsPipelineCreateInfo].
+ */
+inline fun Allocator.GraphicsPipelineCreateInfo(capacity: Int, block: (GraphicsPipelineCreateInfo.Buffer) -> Unit) = GraphicsPipelineCreateInfo.Buffer(calloc(capacity * 144), capacity).apply(block).apply { forEach { it.sType = 28 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPipelineColorBlendAttachmentState {
  *         VkBool32               blendEnable
@@ -10200,6 +11895,20 @@ value class PipelineColorBlendAttachmentState(override val address: Long) : Addr
 
 
 /**
+ * Struct calloc function for [PipelineColorBlendAttachmentState].
+ */
+inline fun Allocator.PipelineColorBlendAttachmentState(block: (PipelineColorBlendAttachmentState) -> Unit) = PipelineColorBlendAttachmentState(calloc(32)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [PipelineColorBlendAttachmentState].
+ */
+inline fun Allocator.PipelineColorBlendAttachmentState(capacity: Int, block: (PipelineColorBlendAttachmentState.Buffer) -> Unit) = PipelineColorBlendAttachmentState.Buffer(calloc(capacity * 32), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPipelineColorBlendStateCreateInfo {
  *         VkStructureType                       sType
@@ -10228,9 +11937,9 @@ value class PipelineColorBlendStateCreateInfo(override val address: Long) : Addr
 		get()      = Unsafe.getLong(address + 8)
 		set(value) = Unsafe.setLong(address + 8, value)
 	
-	var flags: Int
-		get() = Unsafe.getInt(address + 16)
-		set(value) = Unsafe.setInt(address + 16, value)
+	var flags: PipelineColorBlendStateCreateFlags
+		get()      = PipelineColorBlendStateCreateFlags(Unsafe.getInt(address + 16))
+		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var logicOpEnable: Int
 		get()      = Unsafe.getInt(address + 20)
@@ -10264,6 +11973,13 @@ value class PipelineColorBlendStateCreateInfo(override val address: Long) : Addr
 
 
 /**
+ * Struct calloc function for [PipelineColorBlendStateCreateInfo].
+ */
+inline fun Allocator.PipelineColorBlendStateCreateInfo(block: (PipelineColorBlendStateCreateInfo) -> Unit) = PipelineColorBlendStateCreateInfo(calloc(56)).apply(block).also { it.sType = 26 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPipelineDepthStencilStateCreateInfo {
  *         VkStructureType                         sType
@@ -10292,9 +12008,9 @@ value class PipelineDepthStencilStateCreateInfo(override val address: Long) : Ad
 		get()      = Unsafe.getLong(address + 8)
 		set(value) = Unsafe.setLong(address + 8, value)
 	
-	var flags: Int
-		get() = Unsafe.getInt(address + 16)
-		set(value) = Unsafe.setInt(address + 16, value)
+	var flags: PipelineDepthStencilStateCreateFlags
+		get()      = PipelineDepthStencilStateCreateFlags(Unsafe.getInt(address + 16))
+		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var depthTestEnable: Int
 		get()      = Unsafe.getInt(address + 20)
@@ -10334,6 +12050,13 @@ value class PipelineDepthStencilStateCreateInfo(override val address: Long) : Ad
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PipelineDepthStencilStateCreateInfo].
+ */
+inline fun Allocator.PipelineDepthStencilStateCreateInfo(block: (PipelineDepthStencilStateCreateInfo) -> Unit) = PipelineDepthStencilStateCreateInfo(calloc(104)).apply(block).also { it.sType = 25 }
 
 
 
@@ -10383,6 +12106,13 @@ value class PipelineDynamicStateCreateInfo(override val address: Long) : Address
 
 
 /**
+ * Struct calloc function for [PipelineDynamicStateCreateInfo].
+ */
+inline fun Allocator.PipelineDynamicStateCreateInfo(block: (PipelineDynamicStateCreateInfo) -> Unit) = PipelineDynamicStateCreateInfo(calloc(32)).apply(block).also { it.sType = 27 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPipelineInputAssemblyStateCreateInfo {
  *         VkStructureType                          sType
@@ -10418,6 +12148,13 @@ value class PipelineInputAssemblyStateCreateInfo(override val address: Long) : A
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PipelineInputAssemblyStateCreateInfo].
+ */
+inline fun Allocator.PipelineInputAssemblyStateCreateInfo(block: (PipelineInputAssemblyStateCreateInfo) -> Unit) = PipelineInputAssemblyStateCreateInfo(calloc(32)).apply(block).also { it.sType = 20 }
 
 
 
@@ -10483,6 +12220,13 @@ value class PipelineMultisampleStateCreateInfo(override val address: Long) : Add
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PipelineMultisampleStateCreateInfo].
+ */
+inline fun Allocator.PipelineMultisampleStateCreateInfo(block: (PipelineMultisampleStateCreateInfo) -> Unit) = PipelineMultisampleStateCreateInfo(calloc(48)).apply(block).also { it.sType = 24 }
 
 
 
@@ -10574,6 +12318,13 @@ value class PipelineRasterizationStateCreateInfo(override val address: Long) : A
 
 
 /**
+ * Struct calloc function for [PipelineRasterizationStateCreateInfo].
+ */
+inline fun Allocator.PipelineRasterizationStateCreateInfo(block: (PipelineRasterizationStateCreateInfo) -> Unit) = PipelineRasterizationStateCreateInfo(calloc(64)).apply(block).also { it.sType = 23 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPipelineShaderStageCreateInfo {
  *         VkStructureType                   sType
@@ -10586,7 +12337,7 @@ value class PipelineRasterizationStateCreateInfo(override val address: Long) : A
  *     }
  * 
  *     Valid pNext types:
- *         - VkPipelineShaderStageRequiredSubgroupSizeCreateInfoEXT
+ *         - VkPipelineShaderStageRequiredSubgroupSizeCreateInfo
  */
 @JvmInline
 value class PipelineShaderStageCreateInfo(override val address: Long) : Addressable {
@@ -10600,9 +12351,9 @@ value class PipelineShaderStageCreateInfo(override val address: Long) : Addressa
 		get()      = Unsafe.getLong(address + 8)
 		set(value) = Unsafe.setLong(address + 8, value)
 	
-	var flags: Int
-		get() = Unsafe.getInt(address + 16)
-		set(value) = Unsafe.setInt(address + 16, value)
+	var flags: PipelineShaderStageCreateFlags
+		get()      = PipelineShaderStageCreateFlags(Unsafe.getInt(address + 16))
+		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var stage: ShaderStageFlags
 		get()      = ShaderStageFlags(Unsafe.getInt(address + 20))
@@ -10662,6 +12413,20 @@ value class PipelineShaderStageCreateInfo(override val address: Long) : Addressa
 
 
 /**
+ * Struct calloc function for [PipelineShaderStageCreateInfo].
+ */
+inline fun Allocator.PipelineShaderStageCreateInfo(block: (PipelineShaderStageCreateInfo) -> Unit) = PipelineShaderStageCreateInfo(calloc(48)).apply(block).also { it.sType = 18 }
+
+
+
+/**
+ * Struct buffer calloc function for [PipelineShaderStageCreateInfo].
+ */
+inline fun Allocator.PipelineShaderStageCreateInfo(capacity: Int, block: (PipelineShaderStageCreateInfo.Buffer) -> Unit) = PipelineShaderStageCreateInfo.Buffer(calloc(capacity * 48), capacity).apply(block).apply { forEach { it.sType = 18 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPipelineTessellationStateCreateInfo {
  *         VkStructureType                         sType
@@ -10695,6 +12460,13 @@ value class PipelineTessellationStateCreateInfo(override val address: Long) : Ad
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PipelineTessellationStateCreateInfo].
+ */
+inline fun Allocator.PipelineTessellationStateCreateInfo(block: (PipelineTessellationStateCreateInfo) -> Unit) = PipelineTessellationStateCreateInfo(calloc(24)).apply(block).also { it.sType = 21 }
 
 
 
@@ -10757,6 +12529,13 @@ value class PipelineVertexInputStateCreateInfo(override val address: Long) : Add
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [PipelineVertexInputStateCreateInfo].
+ */
+inline fun Allocator.PipelineVertexInputStateCreateInfo(block: (PipelineVertexInputStateCreateInfo) -> Unit) = PipelineVertexInputStateCreateInfo(calloc(48)).apply(block).also { it.sType = 19 }
 
 
 
@@ -10828,6 +12607,13 @@ value class PipelineViewportStateCreateInfo(override val address: Long) : Addres
 
 
 /**
+ * Struct calloc function for [PipelineViewportStateCreateInfo].
+ */
+inline fun Allocator.PipelineViewportStateCreateInfo(block: (PipelineViewportStateCreateInfo) -> Unit) = PipelineViewportStateCreateInfo(calloc(48)).apply(block).also { it.sType = 22 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkSpecializationInfo {
  *         uint32_t                   mapEntryCount
@@ -10868,6 +12654,13 @@ value class SpecializationInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [SpecializationInfo].
+ */
+inline fun Allocator.SpecializationInfo(block: (SpecializationInfo) -> Unit) = SpecializationInfo(calloc(32)).apply(block)
 
 
 
@@ -10927,6 +12720,20 @@ value class SpecializationMapEntry(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [SpecializationMapEntry].
+ */
+inline fun Allocator.SpecializationMapEntry(block: (SpecializationMapEntry) -> Unit) = SpecializationMapEntry(calloc(16)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SpecializationMapEntry].
+ */
+inline fun Allocator.SpecializationMapEntry(capacity: Int, block: (SpecializationMapEntry.Buffer) -> Unit) = SpecializationMapEntry.Buffer(calloc(capacity * 16), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkStencilOpState {
  *         VkStencilOp  failOp
@@ -10972,6 +12779,13 @@ value class StencilOpState(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [StencilOpState].
+ */
+inline fun Allocator.StencilOpState(block: (StencilOpState) -> Unit) = StencilOpState(calloc(28)).apply(block)
 
 
 
@@ -11036,6 +12850,20 @@ value class VertexInputAttributeDescription(override val address: Long) : Addres
 
 
 /**
+ * Struct calloc function for [VertexInputAttributeDescription].
+ */
+inline fun Allocator.VertexInputAttributeDescription(block: (VertexInputAttributeDescription) -> Unit) = VertexInputAttributeDescription(calloc(16)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [VertexInputAttributeDescription].
+ */
+inline fun Allocator.VertexInputAttributeDescription(capacity: Int, block: (VertexInputAttributeDescription.Buffer) -> Unit) = VertexInputAttributeDescription.Buffer(calloc(capacity * 16), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkVertexInputBindingDescription {
  *         uint32_t           binding
@@ -11087,6 +12915,20 @@ value class VertexInputBindingDescription(override val address: Long) : Addressa
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [VertexInputBindingDescription].
+ */
+inline fun Allocator.VertexInputBindingDescription(block: (VertexInputBindingDescription) -> Unit) = VertexInputBindingDescription(calloc(12)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [VertexInputBindingDescription].
+ */
+inline fun Allocator.VertexInputBindingDescription(capacity: Int, block: (VertexInputBindingDescription.Buffer) -> Unit) = VertexInputBindingDescription.Buffer(calloc(capacity * 12), capacity).apply(block)
 
 
 
@@ -11161,6 +13003,20 @@ value class Viewport(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [Viewport].
+ */
+inline fun Allocator.Viewport(block: (Viewport) -> Unit) = Viewport(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [Viewport].
+ */
+inline fun Allocator.Viewport(capacity: Int, block: (Viewport.Buffer) -> Unit) = Viewport.Buffer(calloc(capacity * 24), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPipelineLayoutCreateInfo {
  *         VkStructureType              sType
@@ -11220,6 +13076,13 @@ value class PipelineLayoutCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [PipelineLayoutCreateInfo].
+ */
+inline fun Allocator.PipelineLayoutCreateInfo(block: (PipelineLayoutCreateInfo) -> Unit) = PipelineLayoutCreateInfo(calloc(48)).apply(block).also { it.sType = 30 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkPushConstantRange {
  *         VkShaderStageFlags  stageFlags
@@ -11275,6 +13138,20 @@ value class PushConstantRange(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [PushConstantRange].
+ */
+inline fun Allocator.PushConstantRange(block: (PushConstantRange) -> Unit) = PushConstantRange(calloc(12)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [PushConstantRange].
+ */
+inline fun Allocator.PushConstantRange(capacity: Int, block: (PushConstantRange.Buffer) -> Unit) = PushConstantRange.Buffer(calloc(capacity * 12), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkSamplerCreateInfo {
  *         VkStructureType       sType
@@ -11315,9 +13192,9 @@ value class SamplerCreateInfo(override val address: Long) : Addressable {
 		get()      = Unsafe.getLong(address + 8)
 		set(value) = Unsafe.setLong(address + 8, value)
 	
-	var flags: Int
-		get() = Unsafe.getInt(address + 16)
-		set(value) = Unsafe.setInt(address + 16, value)
+	var flags: SamplerCreateFlags
+		get()      = SamplerCreateFlags(Unsafe.getInt(address + 16))
+		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var magFilter: Filter
 		get()      = _Filter(Unsafe.getInt(address + 20))
@@ -11381,6 +13258,13 @@ value class SamplerCreateInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [SamplerCreateInfo].
+ */
+inline fun Allocator.SamplerCreateInfo(block: (SamplerCreateInfo) -> Unit) = SamplerCreateInfo(calloc(80)).apply(block).also { it.sType = 31 }
 
 
 
@@ -11470,6 +13354,20 @@ value class CopyDescriptorSet(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [CopyDescriptorSet].
+ */
+inline fun Allocator.CopyDescriptorSet(block: (CopyDescriptorSet) -> Unit) = CopyDescriptorSet(calloc(56)).apply(block).also { it.sType = 36 }
+
+
+
+/**
+ * Struct buffer calloc function for [CopyDescriptorSet].
+ */
+inline fun Allocator.CopyDescriptorSet(capacity: Int, block: (CopyDescriptorSet.Buffer) -> Unit) = CopyDescriptorSet.Buffer(calloc(capacity * 56), capacity).apply(block).apply { forEach { it.sType = 36 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkDescriptorBufferInfo {
  *         VkBuffer      buffer
@@ -11521,6 +13419,20 @@ value class DescriptorBufferInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DescriptorBufferInfo].
+ */
+inline fun Allocator.DescriptorBufferInfo(block: (DescriptorBufferInfo) -> Unit) = DescriptorBufferInfo(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [DescriptorBufferInfo].
+ */
+inline fun Allocator.DescriptorBufferInfo(capacity: Int, block: (DescriptorBufferInfo.Buffer) -> Unit) = DescriptorBufferInfo.Buffer(calloc(capacity * 24), capacity).apply(block)
 
 
 
@@ -11580,6 +13492,20 @@ value class DescriptorImageInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [DescriptorImageInfo].
+ */
+inline fun Allocator.DescriptorImageInfo(block: (DescriptorImageInfo) -> Unit) = DescriptorImageInfo(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [DescriptorImageInfo].
+ */
+inline fun Allocator.DescriptorImageInfo(capacity: Int, block: (DescriptorImageInfo.Buffer) -> Unit) = DescriptorImageInfo.Buffer(calloc(capacity * 24), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkDescriptorPoolCreateInfo {
  *         VkStructureType              sType
@@ -11591,7 +13517,7 @@ value class DescriptorImageInfo(override val address: Long) : Addressable {
  *     }
  * 
  *     Valid pNext types:
- *         - VkDescriptorPoolInlineUniformBlockCreateInfoEXT
+ *         - VkDescriptorPoolInlineUniformBlockCreateInfo
  *         - VkMutableDescriptorTypeCreateInfoVALVE
  */
 @JvmInline
@@ -11630,6 +13556,13 @@ value class DescriptorPoolCreateInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DescriptorPoolCreateInfo].
+ */
+inline fun Allocator.DescriptorPoolCreateInfo(block: (DescriptorPoolCreateInfo) -> Unit) = DescriptorPoolCreateInfo(calloc(40)).apply(block).also { it.sType = 33 }
 
 
 
@@ -11684,6 +13617,20 @@ value class DescriptorPoolSize(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [DescriptorPoolSize].
+ */
+inline fun Allocator.DescriptorPoolSize(block: (DescriptorPoolSize) -> Unit) = DescriptorPoolSize(calloc(8)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [DescriptorPoolSize].
+ */
+inline fun Allocator.DescriptorPoolSize(capacity: Int, block: (DescriptorPoolSize.Buffer) -> Unit) = DescriptorPoolSize.Buffer(calloc(capacity * 8), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkDescriptorSetAllocateInfo {
  *         VkStructureType         sType
@@ -11728,6 +13675,13 @@ value class DescriptorSetAllocateInfo(override val address: Long) : Addressable 
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [DescriptorSetAllocateInfo].
+ */
+inline fun Allocator.DescriptorSetAllocateInfo(block: (DescriptorSetAllocateInfo) -> Unit) = DescriptorSetAllocateInfo(calloc(40)).apply(block).also { it.sType = 34 }
 
 
 
@@ -11803,6 +13757,20 @@ value class DescriptorSetLayoutBinding(override val address: Long) : Addressable
 
 
 /**
+ * Struct calloc function for [DescriptorSetLayoutBinding].
+ */
+inline fun Allocator.DescriptorSetLayoutBinding(block: (DescriptorSetLayoutBinding) -> Unit) = DescriptorSetLayoutBinding(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [DescriptorSetLayoutBinding].
+ */
+inline fun Allocator.DescriptorSetLayoutBinding(capacity: Int, block: (DescriptorSetLayoutBinding.Buffer) -> Unit) = DescriptorSetLayoutBinding.Buffer(calloc(capacity * 24), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkDescriptorSetLayoutCreateInfo {
  *         VkStructureType                   sType
@@ -11852,6 +13820,13 @@ value class DescriptorSetLayoutCreateInfo(override val address: Long) : Addressa
 
 
 /**
+ * Struct calloc function for [DescriptorSetLayoutCreateInfo].
+ */
+inline fun Allocator.DescriptorSetLayoutCreateInfo(block: (DescriptorSetLayoutCreateInfo) -> Unit) = DescriptorSetLayoutCreateInfo(calloc(32)).apply(block).also { it.sType = 32 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkWriteDescriptorSet {
  *         VkStructureType          sType
@@ -11867,7 +13842,7 @@ value class DescriptorSetLayoutCreateInfo(override val address: Long) : Addressa
  *     }
  * 
  *     Valid pNext types:
- *         - VkWriteDescriptorSetInlineUniformBlockEXT
+ *         - VkWriteDescriptorSetInlineUniformBlock
  *         - VkWriteDescriptorSetAccelerationStructureKHR
  *         - VkWriteDescriptorSetAccelerationStructureNV
  */
@@ -11961,6 +13936,20 @@ value class WriteDescriptorSet(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [WriteDescriptorSet].
+ */
+inline fun Allocator.WriteDescriptorSet(block: (WriteDescriptorSet) -> Unit) = WriteDescriptorSet(calloc(64)).apply(block).also { it.sType = 35 }
+
+
+
+/**
+ * Struct buffer calloc function for [WriteDescriptorSet].
+ */
+inline fun Allocator.WriteDescriptorSet(capacity: Int, block: (WriteDescriptorSet.Buffer) -> Unit) = WriteDescriptorSet.Buffer(calloc(capacity * 64), capacity).apply(block).apply { forEach { it.sType = 35 } }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkAttachmentDescription {
  *         VkAttachmentDescriptionFlags  flags
@@ -12046,6 +14035,20 @@ value class AttachmentDescription(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [AttachmentDescription].
+ */
+inline fun Allocator.AttachmentDescription(block: (AttachmentDescription) -> Unit) = AttachmentDescription(calloc(36)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [AttachmentDescription].
+ */
+inline fun Allocator.AttachmentDescription(capacity: Int, block: (AttachmentDescription.Buffer) -> Unit) = AttachmentDescription.Buffer(calloc(capacity * 36), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkAttachmentReference {
  *         uint32_t       attachment
@@ -12092,6 +14095,20 @@ value class AttachmentReference(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [AttachmentReference].
+ */
+inline fun Allocator.AttachmentReference(block: (AttachmentReference) -> Unit) = AttachmentReference(calloc(8)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [AttachmentReference].
+ */
+inline fun Allocator.AttachmentReference(capacity: Int, block: (AttachmentReference.Buffer) -> Unit) = AttachmentReference.Buffer(calloc(capacity * 8), capacity).apply(block)
 
 
 
@@ -12164,6 +14181,13 @@ value class FramebufferCreateInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [FramebufferCreateInfo].
+ */
+inline fun Allocator.FramebufferCreateInfo(block: (FramebufferCreateInfo) -> Unit) = FramebufferCreateInfo(calloc(64)).apply(block).also { it.sType = 37 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkRenderPassCreateInfo {
  *         VkStructureType           sType
@@ -12194,9 +14218,9 @@ value class RenderPassCreateInfo(override val address: Long) : Addressable {
 		get()      = Unsafe.getLong(address + 8)
 		set(value) = Unsafe.setLong(address + 8, value)
 	
-	var flags: Int
-		get() = Unsafe.getInt(address + 16)
-		set(value) = Unsafe.setInt(address + 16, value)
+	var flags: RenderPassCreateFlags
+		get()      = RenderPassCreateFlags(Unsafe.getInt(address + 16))
+		set(value) = Unsafe.setInt(address + 16, value.value)
 	
 	var attachmentCount: Int
 		get()      = Unsafe.getInt(address + 20)
@@ -12238,6 +14262,13 @@ value class RenderPassCreateInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [RenderPassCreateInfo].
+ */
+inline fun Allocator.RenderPassCreateInfo(block: (RenderPassCreateInfo) -> Unit) = RenderPassCreateInfo(calloc(64)).apply(block).also { it.sType = 38 }
 
 
 
@@ -12317,6 +14348,20 @@ value class SubpassDependency(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [SubpassDependency].
+ */
+inline fun Allocator.SubpassDependency(block: (SubpassDependency) -> Unit) = SubpassDependency(calloc(28)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SubpassDependency].
+ */
+inline fun Allocator.SubpassDependency(capacity: Int, block: (SubpassDependency.Buffer) -> Unit) = SubpassDependency.Buffer(calloc(capacity * 28), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkSubpassDescription {
  *         VkSubpassDescriptionFlags  flags
@@ -12335,9 +14380,9 @@ value class SubpassDependency(override val address: Long) : Addressable {
 value class SubpassDescription(override val address: Long) : Addressable {
 	
 	
-	var flags: Int
-		get() = Unsafe.getInt(address + 0)
-		set(value) = Unsafe.setInt(address + 0, value)
+	var flags: SubpassDescriptionFlags
+		get()      = SubpassDescriptionFlags(Unsafe.getInt(address + 0))
+		set(value) = Unsafe.setInt(address + 0, value.value)
 	
 	var pipelineBindPoint: PipelineBindPoint
 		get()      = _PipelineBindPoint(Unsafe.getInt(address + 4))
@@ -12429,6 +14474,20 @@ value class SubpassDescription(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [SubpassDescription].
+ */
+inline fun Allocator.SubpassDescription(block: (SubpassDescription) -> Unit) = SubpassDescription(calloc(72)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [SubpassDescription].
+ */
+inline fun Allocator.SubpassDescription(capacity: Int, block: (SubpassDescription.Buffer) -> Unit) = SubpassDescription.Buffer(calloc(capacity * 72), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkCommandPoolCreateInfo {
  *         VkStructureType           sType
@@ -12459,6 +14518,13 @@ value class CommandPoolCreateInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [CommandPoolCreateInfo].
+ */
+inline fun Allocator.CommandPoolCreateInfo(block: (CommandPoolCreateInfo) -> Unit) = CommandPoolCreateInfo(calloc(24)).apply(block).also { it.sType = 39 }
 
 
 
@@ -12498,6 +14564,13 @@ value class CommandBufferAllocateInfo(override val address: Long) : Addressable 
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [CommandBufferAllocateInfo].
+ */
+inline fun Allocator.CommandBufferAllocateInfo(block: (CommandBufferAllocateInfo) -> Unit) = CommandBufferAllocateInfo(calloc(32)).apply(block).also { it.sType = 40 }
 
 
 
@@ -12545,6 +14618,13 @@ value class CommandBufferBeginInfo(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [CommandBufferBeginInfo].
+ */
+inline fun Allocator.CommandBufferBeginInfo(block: (CommandBufferBeginInfo) -> Unit) = CommandBufferBeginInfo(calloc(32)).apply(block).also { it.sType = 42 }
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkCommandBufferInheritanceInfo {
  *         VkStructureType                sType
@@ -12561,7 +14641,7 @@ value class CommandBufferBeginInfo(override val address: Long) : Addressable {
  *         - VkCommandBufferInheritanceConditionalRenderingInfoEXT
  *         - VkCommandBufferInheritanceRenderPassTransformInfoQCOM
  *         - VkCommandBufferInheritanceViewportScissorInfoNV
- *         - VkCommandBufferInheritanceRenderingInfoKHR
+ *         - VkCommandBufferInheritanceRenderingInfo
  *         - VkAttachmentSampleCountInfoAMD
  *         - VkMultiviewPerViewAttributesInfoNVX
  */
@@ -12603,6 +14683,13 @@ value class CommandBufferInheritanceInfo(override val address: Long) : Addressab
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [CommandBufferInheritanceInfo].
+ */
+inline fun Allocator.CommandBufferInheritanceInfo(block: (CommandBufferInheritanceInfo) -> Unit) = CommandBufferInheritanceInfo(calloc(56)).apply(block).also { it.sType = 41 }
 
 
 
@@ -12658,6 +14745,20 @@ value class BufferCopy(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [BufferCopy].
+ */
+inline fun Allocator.BufferCopy(block: (BufferCopy) -> Unit) = BufferCopy(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [BufferCopy].
+ */
+inline fun Allocator.BufferCopy(capacity: Int, block: (BufferCopy.Buffer) -> Unit) = BufferCopy.Buffer(calloc(capacity * 24), capacity).apply(block)
 
 
 
@@ -12732,6 +14833,20 @@ value class BufferImageCopy(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [BufferImageCopy].
+ */
+inline fun Allocator.BufferImageCopy(block: (BufferImageCopy) -> Unit) = BufferImageCopy(calloc(56)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [BufferImageCopy].
+ */
+inline fun Allocator.BufferImageCopy(capacity: Int, block: (BufferImageCopy.Buffer) -> Unit) = BufferImageCopy.Buffer(calloc(capacity * 56), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkClearAttachment {
  *         VkImageAspectFlags  aspectMask
@@ -12787,6 +14902,20 @@ value class ClearAttachment(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ClearAttachment].
+ */
+inline fun Allocator.ClearAttachment(block: (ClearAttachment) -> Unit) = ClearAttachment(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [ClearAttachment].
+ */
+inline fun Allocator.ClearAttachment(capacity: Int, block: (ClearAttachment.Buffer) -> Unit) = ClearAttachment.Buffer(calloc(capacity * 24), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     union VkClearColorValue {
  *         float     float32[4]
@@ -12816,6 +14945,13 @@ value class ClearColorValue(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ClearColorValue].
+ */
+inline fun Allocator.ClearColorValue(block: (ClearColorValue) -> Unit) = ClearColorValue(calloc(16)).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkClearDepthStencilValue {
  *         float     depth
@@ -12836,6 +14972,13 @@ value class ClearDepthStencilValue(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ClearDepthStencilValue].
+ */
+inline fun Allocator.ClearDepthStencilValue(block: (ClearDepthStencilValue) -> Unit) = ClearDepthStencilValue(calloc(8)).apply(block)
 
 
 
@@ -12895,6 +15038,20 @@ value class ClearRect(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ClearRect].
+ */
+inline fun Allocator.ClearRect(block: (ClearRect) -> Unit) = ClearRect(calloc(24)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [ClearRect].
+ */
+inline fun Allocator.ClearRect(capacity: Int, block: (ClearRect.Buffer) -> Unit) = ClearRect.Buffer(calloc(capacity * 24), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     union VkClearValue {
  *         VkClearColorValue         color
@@ -12941,6 +15098,20 @@ value class ClearValue(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ClearValue].
+ */
+inline fun Allocator.ClearValue(block: (ClearValue) -> Unit) = ClearValue(calloc(16)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [ClearValue].
+ */
+inline fun Allocator.ClearValue(capacity: Int, block: (ClearValue.Buffer) -> Unit) = ClearValue.Buffer(calloc(capacity * 16), capacity).apply(block)
 
 
 
@@ -13001,6 +15172,20 @@ value class ImageBlit(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ImageBlit].
+ */
+inline fun Allocator.ImageBlit(block: (ImageBlit) -> Unit) = ImageBlit(calloc(80)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [ImageBlit].
+ */
+inline fun Allocator.ImageBlit(capacity: Int, block: (ImageBlit.Buffer) -> Unit) = ImageBlit.Buffer(calloc(capacity * 80), capacity).apply(block)
 
 
 
@@ -13070,6 +15255,20 @@ value class ImageCopy(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ImageCopy].
+ */
+inline fun Allocator.ImageCopy(block: (ImageCopy) -> Unit) = ImageCopy(calloc(68)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [ImageCopy].
+ */
+inline fun Allocator.ImageCopy(capacity: Int, block: (ImageCopy.Buffer) -> Unit) = ImageCopy.Buffer(calloc(capacity * 68), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkImageResolve {
  *         VkImageSubresourceLayers  srcSubresource
@@ -13135,6 +15334,20 @@ value class ImageResolve(override val address: Long) : Addressable {
 
 
 /**
+ * Struct calloc function for [ImageResolve].
+ */
+inline fun Allocator.ImageResolve(block: (ImageResolve) -> Unit) = ImageResolve(calloc(68)).apply(block)
+
+
+
+/**
+ * Struct buffer calloc function for [ImageResolve].
+ */
+inline fun Allocator.ImageResolve(capacity: Int, block: (ImageResolve.Buffer) -> Unit) = ImageResolve.Buffer(calloc(capacity * 68), capacity).apply(block)
+
+
+
+/**
  *     // provided by VK_VERSION_1_0
  *     struct VkImageSubresourceLayers {
  *         VkImageAspectFlags  aspectMask
@@ -13165,6 +15378,13 @@ value class ImageSubresourceLayers(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [ImageSubresourceLayers].
+ */
+inline fun Allocator.ImageSubresourceLayers(block: (ImageSubresourceLayers) -> Unit) = ImageSubresourceLayers(calloc(16)).apply(block)
 
 
 
@@ -13226,3 +15446,10 @@ value class RenderPassBeginInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [RenderPassBeginInfo].
+ */
+inline fun Allocator.RenderPassBeginInfo(block: (RenderPassBeginInfo) -> Unit) = RenderPassBeginInfo(calloc(64)).apply(block).also { it.sType = 43 }

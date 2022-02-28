@@ -4,9 +4,7 @@
 
 package kvb.vulkan
 
-import kvb.core.memory.DirectBuffer
-import kvb.core.memory.Unsafe
-import kvb.core.memory.Addressable
+import kvb.core.memory.*
 import kvb.core.memory.direct.*
 
 /**
@@ -69,3 +67,10 @@ value class Win32SurfaceCreateInfo(override val address: Long) : Addressable {
 
 
 }
+
+
+
+/**
+ * Struct calloc function for [Win32SurfaceCreateInfo].
+ */
+inline fun Allocator.Win32SurfaceCreateInfo(block: (Win32SurfaceCreateInfo) -> Unit) = Win32SurfaceCreateInfo(calloc(40)).apply(block).also { it.sType = 1000009000 }
