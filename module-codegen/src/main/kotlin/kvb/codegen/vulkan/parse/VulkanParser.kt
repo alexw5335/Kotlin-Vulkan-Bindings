@@ -55,6 +55,7 @@ class VulkanParser(private val registry: XmlElement) {
 
 
 	fun parse(): ParsedRegistry {
+		// The first enums block contains API constants
 		for(child in registry.child("enums"))
 			constantElements.add(parseConstantElement(child))
 
@@ -207,7 +208,7 @@ class VulkanParser(private val registry: XmlElement) {
 		val name = element["name"] ?: err(element)
 
 		element["alias"]?.let {
-			val alias = constantElements["alias"] ?: err("No such constant alias: $it", element)
+			val alias = constantElements[it] ?: err("No such constant alias: $it", element)
 
 			return ConstantElement(name, alias.value, it)
 		}
@@ -319,9 +320,28 @@ class VulkanParser(private val registry: XmlElement) {
 		index    = index,
 		len      = element["len"],
 		altLen   = element["altlen"],
-		lenEnum  = element.childOrNull("enum")?.text,
+		constLen = constArrayLength(element),
 		sType    = element["values"],
 	)
+
+
+
+	private fun constArrayLength(element: XmlElement): Int? {
+		// Edge case for VkAccelerationStructureVersionInfoKHR.
+		if(element["len"] == "2*ename:VK_UUID_SIZE") return 32
+
+		// No const array length.
+		if(element.text == null || !element.text.contains('[')) return null
+
+		// If [] with no specified array length, then the array length is given as an attribute named 'enum'.
+		// The attribute refers to an API constant.
+		return element.text.split('[').last().substringBefore(']').let {
+			if(it.isEmpty())
+				constantElements.fromName(element.child("enum").text!!).value.toInt()
+			else
+				it.toInt()
+		}
+	}
 
 
 }

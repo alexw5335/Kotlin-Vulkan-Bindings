@@ -35,7 +35,7 @@ class VarElement(
 	val index         : Int,
 	val len           : String?,
 	val altLen        : String?,
-	val lenEnum       : String?,
+	val constLen      : Int?,
 	val sType         : String?,
 ) : Named
 

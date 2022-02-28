@@ -61,8 +61,7 @@ class Constant(
 	override val name : String,
 	val genName       : String,
 	val shouldGen     : Boolean,
-	val value         : String,
-	val aliased       : Boolean
+	val value         : String
 ) : Named
 
 
@@ -137,10 +136,13 @@ class NativeType(
 
 class PrimitiveType(
 	override val name: String,
-	override val genName: String,
 	override val shouldGen: Boolean,
 	override val primitive: Primitive
-) : Type
+) : Type {
+
+	override val genName = primitive.kName
+
+}
 
 
 
