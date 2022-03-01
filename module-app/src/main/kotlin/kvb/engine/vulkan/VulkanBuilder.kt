@@ -1,8 +1,10 @@
-package kvb.vkwrapper
+package kvb.engine.vulkan
 
 import kvb.core.Platform
 import kvb.core.Platforms
 import kvb.core.memory.*
+import kvb.vkwrapper.DebugUtils
+import kvb.vkwrapper.Vulkan
 import kvb.vkwrapper.handle.*
 import kvb.vkwrapper.persistent.QueueFamily
 import kvb.vulkan.*
@@ -83,10 +85,22 @@ class VulkanBuilder {
 			}
 		}
 
-		instance = createInstance()
+		instance = Vulkan.createInstance(
+			appName,
+			appVersion,
+			engineName,
+			engineVersion,
+			apiVersion,
+			instanceLayers,
+			instanceExtensions
+		)
 
 		if(debugEnabled) {
-			debugMessenger = instance.createDebugMessenger(debugSeverities, debugTypes, debugCallback)
+			debugMessenger = instance.createDebugMessenger(
+				debugSeverities,
+				debugTypes,
+				debugCallback
+			)
 		}
 
 		physicalDevice = instance.physicalDevices.firstOrNull { it.isDiscrete } ?: instance.physicalDevices[0]
@@ -96,28 +110,6 @@ class VulkanBuilder {
 		device = physicalDevice.createDevice(queueFamily, deviceExtensions, deviceFeatures)
 
 		queue = device.getQueue(queueFamily, 0)
-	}
-
-
-
-	private fun createInstance() = stackGet {
-		val appInfo = ApplicationInfo {
-			it.applicationName 		= encodeUtf8NT(appName)
-			it.applicationVersion 	= appVersion.value
-			it.engineName 			= encodeUtf8NT(engineName)
-			it.engineVersion 		= engineVersion.value
-			it.apiVersion 			= apiVersion.value
-		}
-
-		val info = InstanceCreateInfo {
-			it.applicationInfo 			= appInfo
-			it.enabledLayerNames 		= encodeUtf8NTList(instanceLayers)
-			it.enabledExtensionNames 	= encodeUtf8NTList(instanceExtensions)
-		}
-
-		val pointer = mallocLong()
-		Commands.createInstance(info, null, pointer).check()
-		Instance(pointer.value)
 	}
 
 

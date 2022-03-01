@@ -14,13 +14,13 @@ import kvb.vulkan.*
 class GraphicsPipelineBuilder(private val device: Device, private val stack: MemStack) {
 
 
-	var flags = PipelineCreateFlags(0)
+	private var flags = PipelineCreateFlags(0)
 
-	var layout: PipelineLayout? = null
+	private var layout: PipelineLayout? = null
 
-	var renderPass: RenderPass? = null
+	private var renderPass: RenderPass? = null
 
-	var subpass: Int = 0
+	private var subpass: Int = 0
 
 
 

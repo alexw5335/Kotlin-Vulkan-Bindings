@@ -376,7 +376,7 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 
 
 	private fun CommandElement.determineType(): CommandType {
-		if(name == "vkGetInstanceProcAddr") return CommandType.STANDALONE
+		if(name == "vkGetInstanceProcAddr") return CommandType.GLOBAL
 		if(name == "vkGetDeviceProcAddr") return CommandType.INSTANCE
 
 		return when(params.first().type) {
@@ -385,7 +385,7 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 			"VkDevice"         -> CommandType.DEVICE
 			"VkQueue"          -> CommandType.DEVICE
 			"VkCommandBuffer"  -> CommandType.DEVICE
-			else               -> CommandType.STANDALONE
+			else               -> CommandType.GLOBAL
 		}
 	}
 

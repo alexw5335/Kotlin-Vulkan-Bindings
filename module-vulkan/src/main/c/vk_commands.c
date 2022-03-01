@@ -2,12 +2,6 @@
 
 
 
-#ifdef WIN32
-#define VKAPI_PTR __stdcall
-#endif
-
-
-
 // Types
 
 
@@ -190,6 +184,43 @@ typedef jint (*PFN_vkSignalSemaphore)(jlong device, jlong pSignalInfo);
 typedef jlong (*PFN_vkGetBufferDeviceAddress)(jlong device, jlong pInfo);
 typedef jlong (*PFN_vkGetBufferOpaqueCaptureAddress)(jlong device, jlong pInfo);
 typedef jlong (*PFN_vkGetDeviceMemoryOpaqueCaptureAddress)(jlong device, jlong pInfo);
+typedef jint (*PFN_vkGetPhysicalDeviceToolProperties)(jlong physicalDevice, jlong pToolCount, jlong pToolProperties);
+typedef jint (*PFN_vkCreatePrivateDataSlot)(jlong device, jlong pCreateInfo, jlong pAllocator, jlong pPrivateDataSlot);
+typedef void (*PFN_vkDestroyPrivateDataSlot)(jlong device, jlong privateDataSlot, jlong pAllocator);
+typedef jint (*PFN_vkSetPrivateData)(jlong device, jint objectType, jlong objectHandle, jlong privateDataSlot, jlong data);
+typedef void (*PFN_vkGetPrivateData)(jlong device, jint objectType, jlong objectHandle, jlong privateDataSlot, jlong pData);
+typedef void (*PFN_vkCmdSetEvent2)(jlong commandBuffer, jlong event, jlong pDependencyInfo);
+typedef void (*PFN_vkCmdResetEvent2)(jlong commandBuffer, jlong event, jlong stageMask);
+typedef void (*PFN_vkCmdWaitEvents2)(jlong commandBuffer, jint eventCount, jlong pEvents, jlong pDependencyInfos);
+typedef void (*PFN_vkCmdPipelineBarrier2)(jlong commandBuffer, jlong pDependencyInfo);
+typedef void (*PFN_vkCmdWriteTimestamp2)(jlong commandBuffer, jlong stage, jlong queryPool, jint query);
+typedef jint (*PFN_vkQueueSubmit2)(jlong queue, jint submitCount, jlong pSubmits, jlong fence);
+typedef void (*PFN_vkCmdCopyBuffer2)(jlong commandBuffer, jlong pCopyBufferInfo);
+typedef void (*PFN_vkCmdCopyImage2)(jlong commandBuffer, jlong pCopyImageInfo);
+typedef void (*PFN_vkCmdCopyBufferToImage2)(jlong commandBuffer, jlong pCopyBufferToImageInfo);
+typedef void (*PFN_vkCmdCopyImageToBuffer2)(jlong commandBuffer, jlong pCopyImageToBufferInfo);
+typedef void (*PFN_vkCmdBlitImage2)(jlong commandBuffer, jlong pBlitImageInfo);
+typedef void (*PFN_vkCmdResolveImage2)(jlong commandBuffer, jlong pResolveImageInfo);
+typedef void (*PFN_vkCmdBeginRendering)(jlong commandBuffer, jlong pRenderingInfo);
+typedef void (*PFN_vkCmdEndRendering)(jlong commandBuffer);
+typedef void (*PFN_vkCmdSetCullMode)(jlong commandBuffer, jint cullMode);
+typedef void (*PFN_vkCmdSetFrontFace)(jlong commandBuffer, jint frontFace);
+typedef void (*PFN_vkCmdSetPrimitiveTopology)(jlong commandBuffer, jint primitiveTopology);
+typedef void (*PFN_vkCmdSetViewportWithCount)(jlong commandBuffer, jint viewportCount, jlong pViewports);
+typedef void (*PFN_vkCmdSetScissorWithCount)(jlong commandBuffer, jint scissorCount, jlong pScissors);
+typedef void (*PFN_vkCmdBindVertexBuffers2)(jlong commandBuffer, jint firstBinding, jint bindingCount, jlong pBuffers, jlong pOffsets, jlong pSizes, jlong pStrides);
+typedef void (*PFN_vkCmdSetDepthTestEnable)(jlong commandBuffer, jint depthTestEnable);
+typedef void (*PFN_vkCmdSetDepthWriteEnable)(jlong commandBuffer, jint depthWriteEnable);
+typedef void (*PFN_vkCmdSetDepthCompareOp)(jlong commandBuffer, jint depthCompareOp);
+typedef void (*PFN_vkCmdSetDepthBoundsTestEnable)(jlong commandBuffer, jint depthBoundsTestEnable);
+typedef void (*PFN_vkCmdSetStencilTestEnable)(jlong commandBuffer, jint stencilTestEnable);
+typedef void (*PFN_vkCmdSetStencilOp)(jlong commandBuffer, jint faceMask, jint failOp, jint passOp, jint depthFailOp, jint compareOp);
+typedef void (*PFN_vkCmdSetRasterizerDiscardEnable)(jlong commandBuffer, jint rasterizerDiscardEnable);
+typedef void (*PFN_vkCmdSetDepthBiasEnable)(jlong commandBuffer, jint depthBiasEnable);
+typedef void (*PFN_vkCmdSetPrimitiveRestartEnable)(jlong commandBuffer, jint primitiveRestartEnable);
+typedef void (*PFN_vkGetDeviceBufferMemoryRequirements)(jlong device, jlong pInfo, jlong pMemoryRequirements);
+typedef void (*PFN_vkGetDeviceImageMemoryRequirements)(jlong device, jlong pInfo, jlong pMemoryRequirements);
+typedef void (*PFN_vkGetDeviceImageSparseMemoryRequirements)(jlong device, jlong pInfo, jlong pSparseMemoryRequirementCount, jlong pSparseMemoryRequirements);
 typedef void (*PFN_vkDestroySurfaceKHR)(jlong instance, jlong surface, jlong pAllocator);
 typedef jint (*PFN_vkGetPhysicalDeviceSurfaceSupportKHR)(jlong physicalDevice, jint queueFamilyIndex, jlong surface, jlong pSupported);
 typedef jint (*PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR)(jlong physicalDevice, jlong surface, jlong pSurfaceCapabilities);
@@ -985,6 +1016,154 @@ JNIEXPORT jlong JNICALL Java_kvb_vulkan_VK_1VERSION_11_12Kt_getDeviceMemoryOpaqu
 	return (jlong) ((PFN_vkGetDeviceMemoryOpaqueCaptureAddress) address) (device, pInfo);
 }
 
+JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_getPhysicalDeviceToolProperties(JNIEnv* env, jobject obj, jlong address, jlong physicalDevice, jlong pToolCount, jlong pToolProperties) {
+	return (jint) ((PFN_vkGetPhysicalDeviceToolProperties) address) (physicalDevice, pToolCount, pToolProperties);
+}
+
+JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_createPrivateDataSlot(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pCreateInfo, jlong pAllocator, jlong pPrivateDataSlot) {
+	return (jint) ((PFN_vkCreatePrivateDataSlot) address) (device, pCreateInfo, pAllocator, pPrivateDataSlot);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_destroyPrivateDataSlot(JNIEnv* env, jobject obj, jlong address, jlong device, jlong privateDataSlot, jlong pAllocator) {
+	((PFN_vkDestroyPrivateDataSlot) address) (device, privateDataSlot, pAllocator);
+}
+
+JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_setPrivateData(JNIEnv* env, jobject obj, jlong address, jlong device, jint objectType, jlong objectHandle, jlong privateDataSlot, jlong data) {
+	return (jint) ((PFN_vkSetPrivateData) address) (device, objectType, objectHandle, privateDataSlot, data);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_getPrivateData(JNIEnv* env, jobject obj, jlong address, jlong device, jint objectType, jlong objectHandle, jlong privateDataSlot, jlong pData) {
+	((PFN_vkGetPrivateData) address) (device, objectType, objectHandle, privateDataSlot, pData);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetEvent2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong event, jlong pDependencyInfo) {
+	((PFN_vkCmdSetEvent2) address) (commandBuffer, event, pDependencyInfo);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdResetEvent2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong event, jlong stageMask) {
+	((PFN_vkCmdResetEvent2) address) (commandBuffer, event, stageMask);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdWaitEvents2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint eventCount, jlong pEvents, jlong pDependencyInfos) {
+	((PFN_vkCmdWaitEvents2) address) (commandBuffer, eventCount, pEvents, pDependencyInfos);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdPipelineBarrier2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong pDependencyInfo) {
+	((PFN_vkCmdPipelineBarrier2) address) (commandBuffer, pDependencyInfo);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdWriteTimestamp2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong stage, jlong queryPool, jint query) {
+	((PFN_vkCmdWriteTimestamp2) address) (commandBuffer, stage, queryPool, query);
+}
+
+JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_queueSubmit2(JNIEnv* env, jobject obj, jlong address, jlong queue, jint submitCount, jlong pSubmits, jlong fence) {
+	return (jint) ((PFN_vkQueueSubmit2) address) (queue, submitCount, pSubmits, fence);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdCopyBuffer2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong pCopyBufferInfo) {
+	((PFN_vkCmdCopyBuffer2) address) (commandBuffer, pCopyBufferInfo);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdCopyImage2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong pCopyImageInfo) {
+	((PFN_vkCmdCopyImage2) address) (commandBuffer, pCopyImageInfo);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdCopyBufferToImage2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong pCopyBufferToImageInfo) {
+	((PFN_vkCmdCopyBufferToImage2) address) (commandBuffer, pCopyBufferToImageInfo);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdCopyImageToBuffer2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong pCopyImageToBufferInfo) {
+	((PFN_vkCmdCopyImageToBuffer2) address) (commandBuffer, pCopyImageToBufferInfo);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdBlitImage2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong pBlitImageInfo) {
+	((PFN_vkCmdBlitImage2) address) (commandBuffer, pBlitImageInfo);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdResolveImage2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong pResolveImageInfo) {
+	((PFN_vkCmdResolveImage2) address) (commandBuffer, pResolveImageInfo);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdBeginRendering(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jlong pRenderingInfo) {
+	((PFN_vkCmdBeginRendering) address) (commandBuffer, pRenderingInfo);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdEndRendering(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer) {
+	((PFN_vkCmdEndRendering) address) (commandBuffer);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetCullMode(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint cullMode) {
+	((PFN_vkCmdSetCullMode) address) (commandBuffer, cullMode);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetFrontFace(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint frontFace) {
+	((PFN_vkCmdSetFrontFace) address) (commandBuffer, frontFace);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetPrimitiveTopology(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint primitiveTopology) {
+	((PFN_vkCmdSetPrimitiveTopology) address) (commandBuffer, primitiveTopology);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetViewportWithCount(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint viewportCount, jlong pViewports) {
+	((PFN_vkCmdSetViewportWithCount) address) (commandBuffer, viewportCount, pViewports);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetScissorWithCount(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint scissorCount, jlong pScissors) {
+	((PFN_vkCmdSetScissorWithCount) address) (commandBuffer, scissorCount, pScissors);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdBindVertexBuffers2(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint firstBinding, jint bindingCount, jlong pBuffers, jlong pOffsets, jlong pSizes, jlong pStrides) {
+	((PFN_vkCmdBindVertexBuffers2) address) (commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes, pStrides);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetDepthTestEnable(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint depthTestEnable) {
+	((PFN_vkCmdSetDepthTestEnable) address) (commandBuffer, depthTestEnable);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetDepthWriteEnable(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint depthWriteEnable) {
+	((PFN_vkCmdSetDepthWriteEnable) address) (commandBuffer, depthWriteEnable);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetDepthCompareOp(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint depthCompareOp) {
+	((PFN_vkCmdSetDepthCompareOp) address) (commandBuffer, depthCompareOp);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetDepthBoundsTestEnable(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint depthBoundsTestEnable) {
+	((PFN_vkCmdSetDepthBoundsTestEnable) address) (commandBuffer, depthBoundsTestEnable);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetStencilTestEnable(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint stencilTestEnable) {
+	((PFN_vkCmdSetStencilTestEnable) address) (commandBuffer, stencilTestEnable);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetStencilOp(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint faceMask, jint failOp, jint passOp, jint depthFailOp, jint compareOp) {
+	((PFN_vkCmdSetStencilOp) address) (commandBuffer, faceMask, failOp, passOp, depthFailOp, compareOp);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetRasterizerDiscardEnable(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint rasterizerDiscardEnable) {
+	((PFN_vkCmdSetRasterizerDiscardEnable) address) (commandBuffer, rasterizerDiscardEnable);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetDepthBiasEnable(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint depthBiasEnable) {
+	((PFN_vkCmdSetDepthBiasEnable) address) (commandBuffer, depthBiasEnable);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_cmdSetPrimitiveRestartEnable(JNIEnv* env, jobject obj, jlong address, jlong commandBuffer, jint primitiveRestartEnable) {
+	((PFN_vkCmdSetPrimitiveRestartEnable) address) (commandBuffer, primitiveRestartEnable);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_getDeviceBufferMemoryRequirements(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pInfo, jlong pMemoryRequirements) {
+	((PFN_vkGetDeviceBufferMemoryRequirements) address) (device, pInfo, pMemoryRequirements);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_getDeviceImageMemoryRequirements(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pInfo, jlong pMemoryRequirements) {
+	((PFN_vkGetDeviceImageMemoryRequirements) address) (device, pInfo, pMemoryRequirements);
+}
+
+JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1VERSION_11_13Kt_getDeviceImageSparseMemoryRequirements(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pInfo, jlong pSparseMemoryRequirementCount, jlong pSparseMemoryRequirements) {
+	((PFN_vkGetDeviceImageSparseMemoryRequirements) address) (device, pInfo, pSparseMemoryRequirementCount, pSparseMemoryRequirements);
+}
+
 JNIEXPORT void JNICALL Java_kvb_vulkan_VK_1KHR_1surfaceKt_destroySurface(JNIEnv* env, jobject obj, jlong address, jlong instance, jlong surface, jlong pAllocator) {
 	((PFN_vkDestroySurfaceKHR) address) (instance, surface, pAllocator);
 }
@@ -1025,19 +1204,19 @@ JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1KHR_1swapchainKt_queuePresent(JNIEnv*
 	return (jint) ((PFN_vkQueuePresentKHR) address) (queue, pPresentInfo);
 }
 
-JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1KHR_1device_1groupKt_getDeviceGroupPresentCapabilities(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pDeviceGroupPresentCapabilities) {
+JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1KHR_1swapchainKt_getDeviceGroupPresentCapabilities(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pDeviceGroupPresentCapabilities) {
 	return (jint) ((PFN_vkGetDeviceGroupPresentCapabilitiesKHR) address) (device, pDeviceGroupPresentCapabilities);
 }
 
-JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1KHR_1device_1groupKt_getDeviceGroupSurfacePresentModes(JNIEnv* env, jobject obj, jlong address, jlong device, jlong surface, jlong pModes) {
+JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1KHR_1swapchainKt_getDeviceGroupSurfacePresentModes(JNIEnv* env, jobject obj, jlong address, jlong device, jlong surface, jlong pModes) {
 	return (jint) ((PFN_vkGetDeviceGroupSurfacePresentModesKHR) address) (device, surface, pModes);
 }
 
-JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1KHR_1device_1groupKt_getPhysicalDevicePresentRectangles(JNIEnv* env, jobject obj, jlong address, jlong physicalDevice, jlong surface, jlong pRectCount, jlong pRects) {
+JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1KHR_1swapchainKt_getPhysicalDevicePresentRectangles(JNIEnv* env, jobject obj, jlong address, jlong physicalDevice, jlong surface, jlong pRectCount, jlong pRects) {
 	return (jint) ((PFN_vkGetPhysicalDevicePresentRectanglesKHR) address) (physicalDevice, surface, pRectCount, pRects);
 }
 
-JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1KHR_1device_1groupKt_acquireNextImage2(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pAcquireInfo, jlong pImageIndex) {
+JNIEXPORT jint JNICALL Java_kvb_vulkan_VK_1KHR_1swapchainKt_acquireNextImage2(JNIEnv* env, jobject obj, jlong address, jlong device, jlong pAcquireInfo, jlong pImageIndex) {
 	return (jint) ((PFN_vkAcquireNextImage2KHR) address) (device, pAcquireInfo, pImageIndex);
 }
 

@@ -2,7 +2,6 @@ package kvb.codegen.vulkan
 
 import kvb.codegen.vulkan.scrape.*
 import kvb.codegen.writer.*
-import kvb.core.memory.Allocator
 import kvb.core.memory.MemStack
 import java.nio.file.Files
 import java.nio.file.Path
@@ -493,7 +492,6 @@ class VulkanGenerator(
 			suppressFile("Unused")
 			package_(packageName)
 			imports(
-				MemStack::class,
 				"kvb.core.memory.*",
 				"kvb.core.memory.direct.*"
 			)
@@ -513,14 +511,14 @@ class VulkanGenerator(
 			group(0) {
 				declaration("private val stackPointer = stack.push()")
 				for(c in registry.commands)
-					if(c.type == CommandType.STANDALONE && c.name != "vkGetInstanceProcAddr")
+					if(c.type == CommandType.GLOBAL && c.name != "vkGetInstanceProcAddr")
 						declaration("private val ${c.genName}Addr = addr(\"${c.name}\")")
 				declaration("init { stack.pop(stackPointer) }")
 			}
 
 			group(1) {
 				for(c in registry.commands)
-					if(c.type == CommandType.STANDALONE && c.name != "vkGetInstanceProcAddr")
+					if(c.type == CommandType.GLOBAL && c.name != "vkGetInstanceProcAddr")
 						function(c.asStandaloneFunction)
 			}
 		}

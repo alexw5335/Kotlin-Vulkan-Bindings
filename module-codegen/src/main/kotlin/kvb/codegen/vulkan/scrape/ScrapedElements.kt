@@ -41,7 +41,7 @@ class Extension(
 
 
 enum class CommandType {
-	INSTANCE, DEVICE, STANDALONE;
+	INSTANCE, DEVICE, GLOBAL;
 }
 
 
