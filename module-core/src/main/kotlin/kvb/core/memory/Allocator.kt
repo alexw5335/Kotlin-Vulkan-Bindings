@@ -229,7 +229,7 @@ interface Allocator {
 		val bytes = string.toByteArray(charset)
 		val buffer = mallocByte(bytes.size + charSize)
 		buffer[0] = bytes
-		for(i in 0 until charSize) buffer[buffer.capacity - 1 - i] = 0
+		for(i in 0 until charSize) buffer.setInt(buffer.capacity - 1 - i, 0)
 		return buffer
 	}
 

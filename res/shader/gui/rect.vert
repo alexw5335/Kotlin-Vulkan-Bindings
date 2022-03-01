@@ -3,11 +3,14 @@
 
 
 
-layout(push_constant) uniform TransformData {
-	vec2 windowSize;
+layout(location = 0) out vec4 outColour;
+
+
+
+layout(push_constant) uniform Data {
 	vec2 offset;
-	float scale;
-	vec2 rectSize;
+	vec2 size;
+	uint colourPacked;
 };
 
 
@@ -22,5 +25,11 @@ vec2 rectVertices[4] = vec2[](
 
 
 void main() {
-	gl_Position = vec4(2 * (offset + rectVertices[gl_VertexIndex] * rectSize) / (windowSize * scale) - 1, 0.0, 1.0);
+	gl_Position = vec4(offset + rectVertices[gl_VertexIndex] * size, 0.0, 1.0);
+	outColour = vec4(
+		colourPacked & 0xFF,
+		(colourPacked >> 8) & 0xFF,
+		(colourPacked >> 16) & 0xFF,
+		colourPacked >> 24
+	) / 256;
 }

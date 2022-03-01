@@ -13,12 +13,4 @@ interface Addressable {
 	val address: Long
 
 
-
-	companion object {
-
-		val Addressable?.addressOrNULL get() = this?.address ?: 0L
-
-	}
-
-
 }

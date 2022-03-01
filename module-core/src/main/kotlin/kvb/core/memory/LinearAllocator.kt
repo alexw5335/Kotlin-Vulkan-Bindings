@@ -54,4 +54,12 @@ open class LinearAllocator(val address: Long, val size: Long) : Allocator {
 	}
 
 
+
+	/**
+	 * Resets this allocator's [pointer], freeing all memory that has been allocated by it. The allocator can be used
+	 * normally after calling [reset], but any memory allocated beforehand is not guaranteed to be valid.
+	 */
+	fun reset() { pointer = address }
+
+
 }

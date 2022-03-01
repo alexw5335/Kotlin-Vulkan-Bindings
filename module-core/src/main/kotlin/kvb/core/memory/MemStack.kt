@@ -74,12 +74,6 @@ class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 	 */
 	fun pop(pointer: Long) { this.pointer = pointer }
 
-	/**
-	 * Resets this stack's [pointer], effectively 'freeing' all memory that has been allocated by it. The stack can be
-	 * used normally after calling [reset], but any memory allocated beforehand is not guaranteed to be valid.
-	 */
-	fun reset() { pointer = address }
-
 
 
 	/*

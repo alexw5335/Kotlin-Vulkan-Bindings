@@ -103,17 +103,17 @@ class DirectByteBuffer(override val address: Long, override val capacity: Int): 
 
 
 
-	operator fun set(index: Int, value: Short) = Unsafe.setShort(address + index, value)
+	fun setShort(index: Int, value: Short) = Unsafe.setShort(address + index, value)
 
-	operator fun set(index: Int, value: Char) = Unsafe.setChar(address + index, value)
+	fun setChar(index: Int, value: Char) = Unsafe.setChar(address + index, value)
 
-	operator fun set(index: Int, value: Int) = Unsafe.setInt(address + index, value)
+	fun setInt(index: Int, value: Int) = Unsafe.setInt(address + index, value)
 
-	operator fun set(index: Int, value: Float) = Unsafe.setFloat(address + index, value)
+	fun setFloat(index: Int, value: Float) = Unsafe.setFloat(address + index, value)
 
-	operator fun set(index: Int, value: Long) = Unsafe.setLong(address + index, value)
+	fun setLong(index: Int, value: Long) = Unsafe.setLong(address + index, value)
 
-	operator fun set(index: Int, value: Double) = Unsafe.setDouble(address + index, value)
+	fun setDouble(index: Int, value: Double) = Unsafe.setDouble(address + index, value)
 
 
 
