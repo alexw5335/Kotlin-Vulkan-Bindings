@@ -18,6 +18,6 @@ layout(push_constant) uniform TransformData {
 
 
 void main() {
-	gl_Position = vec4(2 * (pos + offset) / (screenSize * scale) - 1, 0.0, 1.0);
+	gl_Position = vec4(2 * (pos + offset) / (windowSize * scale) - 1, 0.0, 1.0);
 	texCoordsOut = texCoords;
 }

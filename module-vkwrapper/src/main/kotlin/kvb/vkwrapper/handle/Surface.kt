@@ -18,6 +18,8 @@ class Surface(address: Long, val physicalDevice: PhysicalDevice) : SurfaceH(addr
 
 	val formats = physicalDevice.surfaceFormats(this)
 
+	val presentModes = physicalDevice.surfacePresentModes(this)
+
 	val capabilities = Unsafe.SurfaceCapabilities { }
 
 	val width get() = capabilities.currentExtent.width

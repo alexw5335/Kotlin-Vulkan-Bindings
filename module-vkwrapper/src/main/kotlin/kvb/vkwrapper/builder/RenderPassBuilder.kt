@@ -111,15 +111,41 @@ class RenderPassBuilder(private val stack: MemStack) {
 	/**
 	 * Creates a [SubpassDescription] with a single colour attachment.
 	 */
-	fun colourSubpass(colourAttachment: Int = 0, colourLayout: ImageLayout = ImageLayout.COLOR_ATTACHMENT_OPTIMAL) {
+	fun colourSubpass(attachment: Int = 0, layout: ImageLayout = ImageLayout.COLOR_ATTACHMENT_OPTIMAL) {
 		subpasses.buffer[subpasses.next].also {
 			it.pipelineBindPoint = bindPoint
+
 			it.colorAttachments = stack.AttachmentReference { ref ->
-				ref.attachment = colourAttachment
-				ref.layout = colourLayout
+				ref.attachment = attachment
+				ref.layout = layout
 			}.asBuffer
 		}
 	}
 
+
+
+	/**
+	 * Creates a [SubpassDescription] with a single colour attachment and a corresponding resolve attachment.
+	 */
+	fun colourResolveSubpass(
+		colourAttachment: Int,
+		colourLayout: ImageLayout,
+		resolveAttachment: Int,
+		resolveLayout: ImageLayout
+	) {
+		subpasses.buffer[subpasses.next].also {
+			it.pipelineBindPoint = bindPoint
+
+			it.colorAttachments = stack.AttachmentReference { ref ->
+				ref.attachment = colourAttachment
+				ref.layout = colourLayout
+			}.asBuffer
+
+			it.resolveAttachments = stack.AttachmentReference { ref ->
+				ref.attachment = resolveAttachment
+				ref.layout = resolveLayout
+			}.asBuffer
+		}
+	}
 
 }

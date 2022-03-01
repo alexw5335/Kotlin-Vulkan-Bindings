@@ -7,12 +7,12 @@ import kvb.window.Window
 object Guis {
 
 
-	private lateinit var context: GuiContext
+	private lateinit var context: GuiGraphics
 
 
 
 	fun init(window: Window, device: Device, renderPass: RenderPass) {
-		context = GuiContext(window, device, renderPass)
+		context = GuiGraphics(window, device, renderPass)
 	}
 
 

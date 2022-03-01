@@ -8,7 +8,7 @@ layout(location = 0) out vec4 outColour;
 
 
 layout(push_constant) uniform ColourData {
-	vec4 colour;
+	layout(offset = 32) vec4 colour;
 };
 
 
