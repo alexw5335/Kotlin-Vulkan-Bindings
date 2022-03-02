@@ -19,6 +19,17 @@ object GuiGraphics {
 	val allocator = LinearAllocator(Unsafe, 1 shl 20)
 
 
+	/*
+	- Push constant allocations can use a linear allocator that is reset every frame.
+	- Text will require more sophisticated memory management.
+	- Each character will require 16 bytes. A 256-byte minimum-alignment buffer can fit 16 characters.
+		- There is no use in sub-allocating buffers for text.
+		- Each Text uses a single buffer
+		- Need a heap allocator for a single memory type.
+			- Can allocate more DeviceMemory if it is needed.
+			- Can use multiple DeviceMemory objects.
+	 */
+
 
 	fun renderRect(
 		commandBuffer : CommandBuffer,

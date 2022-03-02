@@ -62,6 +62,10 @@ object ShaderCreation {
 	fun compileAll(srcPath: String, outPath: String) {
 		val srcDirectory = File(srcPath)
 		val outDirectory = File(outPath)
+
+		for(file in srcDirectory.listFiles() ?: return)
+			file.delete()
+
 		for(file in srcDirectory.listFiles() ?: return) {
 			if(stageFromExtension(file.extension) == null) continue
 			val process = Runtime.getRuntime().exec("glslc $file -o $outDirectory/${file.name}.spv")
