@@ -23,6 +23,8 @@ object FileUtils {
 
 	private external fun readFile(file: Long, size: Long, data: Long)
 
+	external fun currentThreadID(): Int
+
 	external fun loadImage(pFile: Long, pImage: Long, desiredChannels: Int)
 
 	external fun freeImageData(pData: Long)

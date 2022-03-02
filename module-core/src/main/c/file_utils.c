@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 
 
@@ -100,4 +101,13 @@ JNIEXPORT void JNICALL Java_kvb_core_FileUtils_readFile(
 	jlong data
 ) {
 	readFile((File) file, size, (void*) data);
+}
+
+
+
+JNIEXPORT jint JNICALL Java_kvb_core_FileUtils_currentThreadID(
+	JNIEnv* env,
+	jobject obj
+) {
+	return pthread_self();
 }

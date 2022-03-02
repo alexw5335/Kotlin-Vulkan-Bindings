@@ -1,21 +1,14 @@
 package kvb.engine
 
 import kvb.core.Platforms
-import kvb.core.memory.Unsafe
-import kvb.core.memory.direct.DirectLong
 import kvb.engine.gui.Colour
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.vulkan.VkContext
 import kvb.engine.vulkan.VkContextBuilder
 import kvb.vkwrapper.shader.ShaderCreation
-import kvb.vkwrapper.shader.ShaderDirectory
-import kvb.vulkan.*
+import kvb.vulkan.VK_TRUE
 import kvb.window.WindowManager
 import kvb.window.winapi.WinApiWindow
-
-
-
-
 
 
 
@@ -86,5 +79,6 @@ object Test {
 
 
 fun main() {
+	Platforms.init()
 	Test.run()
 }
