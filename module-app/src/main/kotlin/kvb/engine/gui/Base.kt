@@ -22,7 +22,7 @@ open class Base {
 
 	var model: BaseModel? = null
 
-	val children = ArrayList<Base>()
+	protected val children = ArrayList<Base>()
 
 	var transparent = false
 
@@ -32,18 +32,24 @@ open class Base {
 
 	val handlers = ArrayList<BaseEventHandler>()
 
+	var padding = Offsets()
+
+	var border = Offsets()
+
+	var margin = Offsets()
 
 
-	fun addChild(child: Base) {
+
+	fun addChildInternal(child: Base) {
 		children.add(child)
 
-		child.parent?.removeChild(child)
+		child.parent?.removeChildInternal(child)
 		child.parent = this
 	}
 
 
 
-	fun removeChild(child: Base) {
+	fun removeChildInternal(child: Base) {
 		children.remove(child)
 		child.parent = null
 	}

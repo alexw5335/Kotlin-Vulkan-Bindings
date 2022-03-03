@@ -62,7 +62,7 @@ object Test {
 		child0.height = 200F
 		child0.model = ColourRectModel().also { it.colour = Colour(0F, 1F, 0F) }
 
-		root.children.add(child0)
+		root.addChildInternal(child0)
 	}
 
 
