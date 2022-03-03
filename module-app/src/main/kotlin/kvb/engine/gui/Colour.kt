@@ -4,7 +4,7 @@ package kvb.engine.gui
 value class Colour(val value: Int) {
 
 
-	constructor(r: Int, g: Int, b: Int, a: Int) : this(
+	constructor(r: Int, g: Int, b: Int, a: Int = 0) : this(
 		((r and 255) shl 0) or
 		((g and 255) shl 8) or
 		((b and 255) shl 16) or
@@ -13,7 +13,7 @@ value class Colour(val value: Int) {
 
 
 
-	constructor(r: Float, g: Float, b: Float, a: Float) : this(
+	constructor(r: Float, g: Float, b: Float, a: Float = 0F) : this(
 		(r * 255).toInt(),
 		(g * 255).toInt(),
 		(b * 255).toInt(),

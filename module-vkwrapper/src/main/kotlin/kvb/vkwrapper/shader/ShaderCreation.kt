@@ -63,7 +63,7 @@ object ShaderCreation {
 		val srcDirectory = File(srcPath)
 		val outDirectory = File(outPath)
 
-		for(file in srcDirectory.listFiles() ?: return)
+		for(file in outDirectory.listFiles() ?: return)
 			file.delete()
 
 		for(file in srcDirectory.listFiles() ?: return) {

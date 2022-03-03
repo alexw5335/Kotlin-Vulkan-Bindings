@@ -470,6 +470,26 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 	)
 
 
+
+	/**
+	 * Implementation of vkCmdPushConstants.
+	 */
+	fun pushConstants(
+		layout  : PipelineLayout,
+		stages  : ShaderStageFlags,
+		offset  : Int,
+		size    : Int,
+		pValues : Addressable
+	) = commands.cmdPushConstants(
+		self,
+		layout,
+		stages,
+		offset,
+		size,
+		DirectLong(pValues.address)
+	)
+
+
 	/*
 	Misc. commands
 	 */

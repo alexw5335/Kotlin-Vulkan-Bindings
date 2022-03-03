@@ -1,4 +1,6 @@
 package kvb.engine.gui
 
-class Gui {
+class Gui(val root: Base) {
+
+
 }
