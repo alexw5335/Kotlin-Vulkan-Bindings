@@ -24,7 +24,7 @@ abstract class BaseEvent(val source: Base) {
 
 
 
-	inline fun< reified T : BaseEvent> tryHandler(handler: BaseEventHandler<T>) {
+	inline fun<reified T : BaseEvent> tryHandler(handler: BaseEventHandler<T>) {
 		if(T::class == this::class)
 			handler.handle(this as T)
 	}
