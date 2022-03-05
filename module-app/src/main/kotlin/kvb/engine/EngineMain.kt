@@ -1,5 +1,6 @@
 package kvb.engine
 
+import kvb.core.Platforms
 import kvb.engine.gui.Base
 import kvb.engine.gui.Colour
 import kvb.engine.gui.ColourRectModel
@@ -62,6 +63,8 @@ object Test {
 
 			if(WindowManager.windows.isEmpty()) break
 
+			Engine.gui.handleCursorPos(Engine.cursorX.toFloat(), Engine.cursorY.toFloat())
+
 			Engine.renderGui()
 
 			val elapsedMicroseconds = (System.nanoTime() - frameStart) / 1_000
@@ -78,10 +81,6 @@ object Test {
 
 
 fun main() {
-	val base = Base()
-	val event = MouseEvent(base, 0F, 0F)
-	val handler = BaseEventHandler<MouseEvent> { println(it) }
-	event.tryHandler(handler)
-	//Platforms.init()
-	//Test.run()
+	Platforms.init()
+	Test.run()
 }

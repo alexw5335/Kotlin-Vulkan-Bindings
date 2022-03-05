@@ -20,14 +20,9 @@ abstract class BaseEvent(val source: Base) {
 
 
 
-	//abstract fun handleAction(base: Base)
+	abstract fun handleAction(base: Base)
 
-
-
-	inline fun<reified T : BaseEvent> tryHandler(handler: BaseEventHandler<T>) {
-		if(T::class == this::class)
-			handler.handle(this as T)
-	}
+	abstract fun tryHandler(handler: BaseEventHandler<*>)
 
 
 }

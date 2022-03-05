@@ -17,6 +17,19 @@ object Engine {
 
 
 
+	/*
+
+	- A GUI is final and is permanently connected to a window.
+	- The GUI's root can be changed. This will reset any state.
+	- How to handle window callbacks for both a GUI and a game?
+
+	- Window (represents a plain platform-specific window, with minimal callbacks).
+	- EngineWindow (wraps a Window and provides a GUI and many callbacks).
+		- EngineWindow can contain the GUI contents and the GUI class can be removed?
+	 */
+
+
+
 	init {
 		window.onClientSizeChanged = { _, _ ->
 			gui.onWindowSizeChanged(window)

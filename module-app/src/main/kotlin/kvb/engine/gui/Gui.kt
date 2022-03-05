@@ -1,5 +1,6 @@
 package kvb.engine.gui
 
+import kvb.engine.gui.event.HoverEvent
 import kvb.window.Window
 
 class Gui(val root: Base) {
@@ -73,6 +74,20 @@ class Gui(val root: Base) {
 
 	fun onHold(cursorX: Float, cursorY: Float) {
 
+	}
+
+
+	fun handleCursorPos(cursorX: Float, cursorY: Float) {
+		val new = root.checkCollision(cursorX, cursorY)
+
+		if(new != hovered) {
+			//hovered?.mouseExitEvent()
+			//new?.mouseEnterEvent()
+
+			hovered = new
+		}
+
+		hovered?.handleEvent(HoverEvent(hovered!!, cursorX, cursorY))
 	}
 
 

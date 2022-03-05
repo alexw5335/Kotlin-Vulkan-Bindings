@@ -2,6 +2,7 @@ package kvb.engine.gui
 
 import kvb.engine.gui.event.BaseEvent
 import kvb.engine.gui.event.BaseEventHandler
+import kvb.engine.gui.event.HoverEvent
 
 open class Base {
 
@@ -34,7 +35,7 @@ open class Base {
 
 	var parent: Base? = null
 
-	//val handlers = ArrayList<BaseEventHandler>()
+	val handlers = ArrayList<BaseEventHandler<*>>()
 
 	var padding = Offsets()
 
@@ -96,19 +97,17 @@ open class Base {
 
 
 	fun handleEvent(event: BaseEvent) {
-		//for(h in handlers) event.tryHandler(h)
-		//event.handleAction(this)
+		event.handleAction(this)
+		handlers.forEach(event::tryHandler)
 	}
 
-	open fun hoverAction() { }
-
-	open fun pressAction() { }
-
-	open fun holdAction() { }
-
-	open fun releaseAction() { }
 
 
+	fun onHover(handler: HoverEvent.Handler) = handlers.add(handler)
+
+
+
+	open fun hoverAction(event: HoverEvent) { }
 
 
 
