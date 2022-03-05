@@ -5,7 +5,7 @@ import kvb.core.memory.Unsafe
 import kvb.window.Window
 import kvb.window.input.Button
 
-class WinApiWindow(address: Long) : Window() {
+class WinApiWindow(address: Long) : Window {
 
 
 	val struct = Struct(address)
@@ -33,6 +33,26 @@ class WinApiWindow(address: Long) : Window() {
 	override val cursorY get() = WinApi.getCursorY(hwnd)
 
 	override val hasFocus get() = WinApi.getFocussedWindow() == hwnd
+
+
+
+	override var onScroll: (Int) -> Unit = { }
+
+	override var onKeyHold: (Button) -> Unit = { }
+
+	override var onKeyPress: (Button) -> Unit = { }
+
+	override var onKeyRelease: (Button) -> Unit = { }
+
+	override var onMouseHold: (Button) -> Unit = { }
+
+	override var onMousePress: (Button) -> Unit = { }
+
+	override var onMouseRelease: (Button) -> Unit = { }
+
+	override var onChar: (Char) -> Unit = { }
+
+	override var onClientSizeChanged: (Int, Int) -> Unit = { _, _ -> }
 
 
 

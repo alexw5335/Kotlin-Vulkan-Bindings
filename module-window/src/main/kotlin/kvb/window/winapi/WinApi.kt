@@ -91,6 +91,8 @@ object WinApi : WindowManager {
 		val buttonsToRemove = HashSet<Button>()
 
 		for(button in Button.pressed) {
+			// Handle swapping windows while the button is still held,
+			// in which case the original window does not receive the message.
 			if(!isButtonPressed(button.code)) {
 				buttonsToRemove.add(button)
 				continue
@@ -133,18 +135,8 @@ object WinApi : WindowManager {
 		translateMessage(message.address)
 		dispatchMessage(message.address)
 
-		val type = MessageType.map[message.message] ?: return
-
-		if(type == MessageType.DESTROY) {
-			windows.firstOrNull { it.hwnd == message.wparam }?.let {
-				windows.remove(it)
-				removeWindow(it.hwnd)
-			}
-
-			return
-		}
-
-		when(type) {
+		when(MessageType.map[message.message] ?: return) {
+			MessageType.DESTROY      -> message.handleDestroy()
 			MessageType.MOUSE_WHEEL  -> message.handleMouseWheel()
 			MessageType.KEY_UP       -> message.handleKeyUp()
 			MessageType.KEY_DOWN     -> message.handleKeyDown()
@@ -154,6 +146,15 @@ object WinApi : WindowManager {
 			MessageType.RBUTTON_UP   -> message.handleMouseButtonUp(Button.RIGHT_MOUSE)
 			MessageType.CHAR         -> message.handleChar()
 			else                     -> { }
+		}
+	}
+
+
+
+	private fun Message.handleDestroy() {
+		windows.firstOrNull { it.hwnd == WinApi.message.wparam }?.let {
+			windows.remove(it)
+			removeWindow(it.hwnd)
 		}
 	}
 

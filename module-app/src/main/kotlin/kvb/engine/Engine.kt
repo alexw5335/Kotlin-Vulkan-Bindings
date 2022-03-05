@@ -3,6 +3,7 @@ package kvb.engine
 import kvb.engine.gui.Gui
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.vulkan.VkContext
+import kvb.window.WindowManager
 
 object Engine {
 
@@ -10,10 +11,6 @@ object Engine {
 	val window = EngineBuilder.window
 
 	val gui = Gui(EngineBuilder.root)
-
-	val cursorX get() = window.cursorX
-
-	val cursorY get() = window.cursorY
 
 
 
@@ -26,8 +23,17 @@ object Engine {
 	- Window (represents a plain platform-specific window, with minimal callbacks).
 	- EngineWindow (wraps a Window and provides a GUI and many callbacks).
 		- EngineWindow can contain the GUI contents and the GUI class can be removed?
+
 	 */
 
+
+
+	fun pollEvents() {
+		WindowManager.pollEvents()
+
+		// Cursor handling should be done via messages.
+		//gui.handleCursorPos(window.cursorX.toFloat(), window.cursorY.toFloat())
+	}
 
 
 	init {

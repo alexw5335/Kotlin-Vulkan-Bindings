@@ -2,7 +2,7 @@ package kvb.window
 
 import kvb.window.input.Button
 
-abstract class Window {
+interface Window {
 
 
 	/*
@@ -11,27 +11,27 @@ abstract class Window {
 
 
 
-	abstract val x: Int
+	val x: Int
 
-	abstract val y: Int
+	val y: Int
 
-	abstract val width: Int
+	val width: Int
 
-	abstract val height: Int
+	val height: Int
 
-	abstract val clientX: Int
+	val clientX: Int
 
-	abstract val clientY: Int
+	val clientY: Int
 
-	abstract val clientWidth: Int
+	val clientWidth: Int
 
-	abstract val clientHeight: Int
+	val clientHeight: Int
 
-	abstract val cursorX: Int
+	val cursorX: Int
 
-	abstract val cursorY: Int
+	val cursorY: Int
 
-	abstract val hasFocus: Boolean
+	val hasFocus: Boolean
 
 
 
@@ -41,9 +41,9 @@ abstract class Window {
 
 
 
-	abstract fun show()
+	fun show()
 
-	abstract fun hide()
+	fun hide()
 
 
 
@@ -53,23 +53,23 @@ abstract class Window {
 
 
 
-	var onScroll: (Int) -> Unit = { }
+	var onScroll: (Int) -> Unit
 
-	var onKeyHold: (Button) -> Unit = { }
+	var onKeyHold: (Button) -> Unit
 
-	var onKeyPress: (Button) -> Unit = { }
+	var onKeyPress: (Button) -> Unit
 
-	var onKeyRelease: (Button) -> Unit = { }
+	var onKeyRelease: (Button) -> Unit
 
-	var onMouseHold: (Button) -> Unit = { }
+	var onMouseHold: (Button) -> Unit
 
-	var onMousePress: (Button) -> Unit = { }
+	var onMousePress: (Button) -> Unit
 
-	var onMouseRelease: (Button) -> Unit = { }
+	var onMouseRelease: (Button) -> Unit
 
-	var onChar: (Char) -> Unit = { }
+	var onChar: (Char) -> Unit
 
-	var onClientSizeChanged: (Int, Int) -> Unit = { _, _ -> }
+	var onClientSizeChanged: (Int, Int) -> Unit
 
 
 }
