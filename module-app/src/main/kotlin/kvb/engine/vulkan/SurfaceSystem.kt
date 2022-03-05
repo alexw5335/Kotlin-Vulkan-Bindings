@@ -126,7 +126,7 @@ class SurfaceSystem(
 
 	private fun onResize() {
 		updateDimensions()
-		if(surface.width == 0 || surface.height == 0) return
+		if(isMinimised) return
 		recreateSwapchain()
 	}
 
@@ -138,7 +138,13 @@ class SurfaceSystem(
 
 
 
+	val isMinimised get() = surface.width == 0 || surface.height == 0
+
+
+
 	fun record(onRecord: (CommandBuffer) -> Unit) {
+		if(isMinimised) return
+
 		commandPool.reset()
 
 		for(i in images.indices) {

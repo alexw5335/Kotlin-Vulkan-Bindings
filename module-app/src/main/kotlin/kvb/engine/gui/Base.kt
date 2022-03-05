@@ -17,8 +17,12 @@ open class Base {
 	var y = 0F
 
 	var width = 0F
+		set(value) { field = value; onSizeChanged() }
 
 	var height = 0F
+		set(value) { field = value; onSizeChanged() }
+
+
 
 	var model: BaseModel? = null
 
@@ -30,13 +34,40 @@ open class Base {
 
 	var parent: Base? = null
 
-	val handlers = ArrayList<BaseEventHandler>()
+	//val handlers = ArrayList<BaseEventHandler>()
 
 	var padding = Offsets()
 
 	var border = Offsets()
 
 	var margin = Offsets()
+
+	private var shouldAlign = false
+
+
+
+	/*
+	Changes
+	 */
+
+
+
+	protected open fun onSizeChanged() {
+		parent?.onInteriorChanged()
+		shouldAlign = true
+	}
+
+
+
+	protected open fun onInteriorChanged() {
+		shouldAlign = true
+	}
+
+
+
+	/*
+	Hierarchy
+	 */
 
 
 
@@ -45,6 +76,7 @@ open class Base {
 
 		child.parent?.removeChildInternal(child)
 		child.parent = this
+		onInteriorChanged()
 	}
 
 
@@ -52,13 +84,47 @@ open class Base {
 	fun removeChildInternal(child: Base) {
 		children.remove(child)
 		child.parent = null
+		onInteriorChanged()
 	}
 
 
 
+	/*
+	Events
+	 */
+
+
+
 	fun handleEvent(event: BaseEvent) {
-		for(h in handlers) event.tryHandler(h)
-		event.handleAction(this)
+		//for(h in handlers) event.tryHandler(h)
+		//event.handleAction(this)
+	}
+
+	open fun hoverAction() { }
+
+	open fun pressAction() { }
+
+	open fun holdAction() { }
+
+	open fun releaseAction() { }
+
+
+
+
+
+	/*
+	Alignment
+	 */
+
+
+
+	protected open fun align() { }
+
+
+
+	fun alignCycle() {
+		align()
+		for(c in children) c.alignCycle()
 	}
 
 

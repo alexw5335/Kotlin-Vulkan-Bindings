@@ -1,5 +1,7 @@
 package kvb.engine.gui
 
+import kvb.window.Window
+
 class Gui(val root: Base) {
 
 
@@ -49,6 +51,31 @@ class Gui(val root: Base) {
 		private set
 
 
+
+	fun onWindowSizeChanged(window: Window) {
+		root.width = window.width.toFloat()
+		root.height = window.height.toFloat()
+	}
+
+
+
+	/*
+	Left mouse press
+	 */
+
+
+
+	fun onPress(cursorX: Float, cursorY: Float) {
+		pressed = hovered
+	}
+
+
+
+	fun onHold(cursorX: Float, cursorY: Float) {
+
+	}
+
+
 }
 
 
@@ -72,5 +99,10 @@ Gui model:
 
 - For the moment, BaseModels are sufficient for rendering.
 	- BaseModel is just an interface with a render function.
+
+- 3 button actions:
+	- press (initial press only)
+	- hold (doesn't include initial press)
+	- release (or click)
 
 */

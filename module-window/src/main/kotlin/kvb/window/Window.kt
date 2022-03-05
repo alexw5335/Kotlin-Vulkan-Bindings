@@ -69,5 +69,7 @@ abstract class Window {
 
 	var onChar: (Char) -> Unit = { }
 
+	var onClientSizeChanged: (Int, Int) -> Unit = { _, _ -> }
+
 
 }

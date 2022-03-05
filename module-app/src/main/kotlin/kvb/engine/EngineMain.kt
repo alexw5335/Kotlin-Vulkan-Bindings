@@ -1,17 +1,17 @@
 package kvb.engine
 
-import kvb.core.Platforms
 import kvb.engine.gui.Base
 import kvb.engine.gui.Colour
 import kvb.engine.gui.ColourRectModel
 import kvb.engine.gui.GuiGraphics
+import kvb.engine.gui.event.BaseEventHandler
+import kvb.engine.gui.event.MouseEvent
 import kvb.engine.vulkan.VkContext
 import kvb.engine.vulkan.VkContextBuilder
 import kvb.vkwrapper.shader.ShaderCreation
 import kvb.vulkan.VK_TRUE
 import kvb.window.WindowManager
 import kvb.window.winapi.WinApiWindow
-import kotlin.random.Random
 
 object Test {
 
@@ -38,47 +38,18 @@ object Test {
 
 		GuiGraphics
 
-		window.show()
-	}
-
-
-
-	val root = Base()
-
-	val child0 = Base()
-
-
-
-	init {
-		root.x = 100F
-		root.y = 100F
-		root.width = 400F
-		root.height = 400F
-		root.model = ColourRectModel().also { it.colour = Colour(1F, 0F, 0F) }
-
-		child0.x = 100F
-		child0.y = 100F
-		child0.width = 200F
-		child0.height = 200F
-		child0.model = ColourRectModel().also { it.colour = Colour(0F, 1F, 0F) }
-
-		root.addChildInternal(child0)
-	}
-
-
-
-	private fun render() {
-		GuiGraphics.resetAllocator()
-
-		VkContext.surfaceSystem.record {
-			GuiGraphics.commandBuffer = it
-			GuiGraphics.preRender(window)
-			root.render(0F, 0F)
+		EngineBuilder.let {
+			it.window = window
+			it.root = Base().also {
+				it.model = ColourRectModel().also {
+					it.colour = Colour(1F, 0F, 0F, 1F)
+				}
+			}
 		}
 
-		VkContext.surfaceSystem.present()
+		Engine
 
-		println(root.checkCollision(window.cursorX.toFloat(), window.cursorY.toFloat()))
+		window.show()
 	}
 
 
@@ -91,7 +62,7 @@ object Test {
 
 			if(WindowManager.windows.isEmpty()) break
 
-			render()
+			Engine.renderGui()
 
 			val elapsedMicroseconds = (System.nanoTime() - frameStart) / 1_000
 
@@ -107,6 +78,10 @@ object Test {
 
 
 fun main() {
-	Platforms.init()
-	Test.run()
+	val base = Base()
+	val event = MouseEvent(base, 0F, 0F)
+	val handler = BaseEventHandler<MouseEvent> { println(it) }
+	event.tryHandler(handler)
+	//Platforms.init()
+	//Test.run()
 }

@@ -73,8 +73,15 @@ object WinApi : WindowManager {
 
 	override fun pollEvents() {
 		for(window in windows) {
+			val prevClientWidth = window.clientWidth
+			val prevClientHeight = window.clientHeight
+
 			updateRect(window.hwnd)
 			updateClientRect(window.hwnd)
+
+			if(window.clientWidth != prevClientWidth || window.clientHeight != prevClientHeight) {
+				window.onClientSizeChanged(prevClientWidth, prevClientHeight)
+			}
 		}
 
 		while(peekMessage(message.address)) {
