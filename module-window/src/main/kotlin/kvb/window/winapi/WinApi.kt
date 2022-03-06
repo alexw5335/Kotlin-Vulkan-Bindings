@@ -15,11 +15,11 @@ object WinApi : WindowManager {
 
 
 
-	external fun createWindow(window: Long, title: Long, x: Int, y: Int, width: Int, height: Int)
+	external fun createWindow(title: Long, x: Int, y: Int, width: Int, height: Int): Long
 
-	external fun destroyWindow(window: Long): Boolean
+	external fun destroyWindow(hwnd: Long): Boolean
 
-	external fun showWindow(window: Long, code: Int): Boolean
+	external fun showWindow(hwnd: Long, code: Int): Boolean
 
 	external fun getSystemMetrics(code: Int): Int
 
@@ -29,13 +29,11 @@ object WinApi : WindowManager {
 
 	external fun dispatchMessage(msg: Long): Int
 
-	external fun updateRect(window: Long)
+	external fun getRect(hwnd: Long, rect: Long)
 
-	external fun updateClientRect(window: Long)
+	external fun getClientRect(hwnd: Long, rect: Long)
 
-	external fun getCursorX(window: Long): Int
-
-	external fun getCursorY(window: Long): Int
+	external fun getCursorPos(hwnd: Long, point: Long)
 
 	external fun getKeyState(virtualKey: Int): Int
 
@@ -56,33 +54,19 @@ object WinApi : WindowManager {
 
 
 	override fun create(title: String, x: Int, y: Int, width: Int, height: Int): Window {
-		val window = WinApiWindow(Unsafe)
-
-		stack {
-			createWindow(window.address, encodeUtf16NT(title).address, x, y, width, height)
+		val hwnd = stackGet {
+			createWindow(encodeUtf16NT(title).address, x, y, width, height)
 		}
 
+		val window = WinApiWindow(hwnd)
+		window.updateDimensions()
 		windows.add(window)
-		updateRect(window.address)
-		updateClientRect(window.address)
 		return window
 	}
 
 
 
 	override fun pollEvents() {
-		for(window in windows) {
-			val prevClientWidth = window.clientWidth
-			val prevClientHeight = window.clientHeight
-
-			updateRect(window.address)
-			updateClientRect(window.address)
-
-			if(window.clientWidth != prevClientWidth || window.clientHeight != prevClientHeight) {
-				window.onClientSizeChanged(prevClientWidth, prevClientHeight)
-			}
-		}
-
 		while(peekMessage(message.address)) {
 			handleMessage()
 		}
@@ -115,8 +99,30 @@ object WinApi : WindowManager {
 
 
 	/*
-	Message
+	Messages
 	 */
+
+
+
+	private val Long.highWord get() = ((this shr 16) and 0xFFFF).toInt()
+
+	private val Long.lowWord get() = (this and 0xFFFF).toInt()
+
+
+
+	fun windowProc(hwnd: Long, msg: Int, wparam: Long, lparam: Long): Boolean {
+		var handled = true
+
+		val window = windows.firstOrNull { it.hwnd == hwnd }
+
+		when(MessageType.map[msg] ?: return false) {
+			MessageType.DESTROY -> windows.removeIf { it.hwnd == hwnd }
+			MessageType.SIZE -> { }
+			else -> handled = false
+		}
+
+		return handled
+	}
 
 
 
@@ -124,22 +130,7 @@ object WinApi : WindowManager {
 
 	private val Message.wparamButton get() = Button.windowsMap[wparam.toInt()] ?: Button.NONE
 
-	private val Message.wparamHigh get() = (wparam shr 16).toShort().toInt()
-
 	private val Message.hwndWindow get() = windows.firstOrNull { it.hwnd == hwnd }
-
-
-
-	fun windowProc(hwnd: Long, msg: Int, wparam: Long, lparam: Long): Boolean {
-		var handled = true
-
-		when(MessageType.map[msg] ?: return false) {
-			MessageType.DESTROY -> { }
-			else -> handled = false
-		}
-
-		return handled
-	}
 
 
 
@@ -163,7 +154,7 @@ object WinApi : WindowManager {
 
 
 	private fun Message.handleMouseWheel() {
-		hwndWindow?.onScroll?.invoke(wparamHigh)
+		hwndWindow?.onScroll?.invoke(wparam.highWord)
 	}
 
 

@@ -7,14 +7,6 @@
 
 
 
-typedef struct {
-	HWND hwnd;
-	RECT rect;
-	RECT clientRect;
-} Window;
-
-
-
 WNDCLASS class = {};
 
 int initialised = FALSE;
@@ -47,7 +39,7 @@ LRESULT CALLBACK windowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 
 
-void createWindow(Window* window, const wchar_t* title, int x, int y, int width, int height) {
+HWND createWindow(const wchar_t* title, int x, int y, int width, int height) {
 	if(!initialised) {
 		class.lpszClassName = L"JNI";
 		class.lpfnWndProc = windowProc;
@@ -73,7 +65,7 @@ void createWindow(Window* window, const wchar_t* title, int x, int y, int width,
 		NULL
 	);
 
-	window->hwnd = hwnd;
+	return hwnd;
 }
 
 
@@ -82,10 +74,9 @@ void createWindow(Window* window, const wchar_t* title, int x, int y, int width,
 
 
 
-JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_createWindow(
+JNIEXPORT HWND JNICALL Java_kvb_window_winapi_WinApi_createWindow(
 	JNIEnv* env,
 	jobject obj,
-	Window* window,
 	const wchar_t* title,
 	jint x,
 	jint y,
@@ -95,7 +86,7 @@ JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_createWindow(
 	globalEnv = env;
 	globalClass = (*env)->GetObjectClass(env, obj);
 	methodID = (*env)->GetMethodID(env, globalClass, "windowProc", "(JIJJ)Z");
-	createWindow(window, title, x, y, width, height);
+	return createWindow(title, x, y, width, height);
 }
 
 
@@ -103,9 +94,9 @@ JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_createWindow(
 JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_destroyWindow(
 	JNIEnv* env,
 	jobject obj,
-	Window* window
+	HWND hwnd
 ) {
-	return DestroyWindow(window->hwnd);
+	return DestroyWindow(hwnd);
 }
 
 
@@ -113,10 +104,10 @@ JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_destroyWindow(
 JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_showWindow(
 	JNIEnv* env,
 	jobject obj,
-	Window* window,
+	HWND hwnd,
 	jint code
 ) {
-	return (jboolean) ShowWindow(window->hwnd, code);
+	return (jboolean) ShowWindow(hwnd, code);
 }
 
 
@@ -161,48 +152,36 @@ JNIEXPORT jint JNICALL Java_kvb_window_winapi_WinApi_dispatchMessage(
 
 
 
-JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_updateRect(
+JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_getRect(
 	JNIEnv* env,
 	jobject obj,
-	Window* window
+	HWND hwnd,
+	RECT* rect
 ) {
-	GetWindowRect(window->hwnd, &window->rect);
+	GetWindowRect(hwnd, rect);
 }
 
 
 
-JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_updateClientRect(
+JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_getClientRect(
 	JNIEnv* env,
 	jobject obj,
-	Window* window
+	HWND hwnd,
+	RECT* rect
 ) {
-	GetClientRect(window->hwnd, &window->clientRect);
+	GetClientRect(hwnd, rect);
 }
 
 
 
-JNIEXPORT jint JNICALL Java_kvb_window_winapi_WinApi_getCursorX(
+JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_getCursorPos(
 	JNIEnv* env,
 	jobject obj,
-	Window* window
+	HWND hwnd,
+	POINT* point
 ) {
-	POINT point = { };
-	GetCursorPos(&point);
-	ScreenToClient(window->hwnd, &point);
-	return point.x;
-}
-
-
-
-JNIEXPORT int JNICALL Java_kvb_window_winapi_WinApi_getCursorY(
-	JNIEnv* env,
-	jobject obj,
-	Window* window
-) {
-	POINT point = { };
-	GetCursorPos(&point);
-	ScreenToClient(window->hwnd, &point);
-	return point.y;
+	GetCursorPos(point);
+	ScreenToClient(hwnd, point);
 }
 
 

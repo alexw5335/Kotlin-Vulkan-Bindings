@@ -6,36 +6,32 @@ import kvb.core.memory.Unsafe
 import kvb.window.Window
 import kvb.window.input.Button
 
-class WinApiWindow(private val struct: Struct) : Window {
+class WinApiWindow(val hwnd: Long) : Window {
 
 
-	constructor(allocator: Allocator) : this(Struct(allocator.calloc(40)))
+	val rect = RECT(Unsafe.calloc(16))
+
+	val clientRect = RECT(Unsafe.calloc(16))
+
+	val cursorPos = POINT(Unsafe.calloc(8))
 
 
 
-	val address = struct.address
+	override val x get() = rect.left
 
-	val hwnd = struct.hwnd
+	override val y get() = rect.top
 
-	override val x get() = struct.x
+	override val width get() = rect.right - rect.left
 
-	override val y get() = struct.y
+	override val height get() = rect.bottom - rect.top
 
-	override val width get() = struct.width
+	override val clientWidth get() = clientRect.right
 
-	override val height get() = struct.height
+	override val clientHeight get() = clientRect.bottom
 
-	override val clientX get() = struct.clientX
+	override val cursorX get() = cursorPos.x
 
-	override val clientY get() = struct.clientY
-
-	override val clientWidth get() = struct.clientWidth
-
-	override val clientHeight get() = struct.clientHeight
-
-	override val cursorX get() = WinApi.getCursorX(address)
-
-	override val cursorY get() = WinApi.getCursorY(address)
+	override val cursorY get() = cursorPos.y
 
 	override val hasFocus get() = WinApi.getFocussedWindow() == hwnd
 
@@ -62,55 +58,16 @@ class WinApiWindow(private val struct: Struct) : Window {
 
 
 	override fun show() {
-		WinApi.showWindow(address, ShowCode.SHOW_NORMAL.value)
+		WinApi.showWindow(hwnd, ShowCode.SHOW_NORMAL.value)
 	}
 
 	override fun hide() {
-		WinApi.showWindow(address, ShowCode.HIDE.value)
+		WinApi.showWindow(hwnd, ShowCode.HIDE.value)
 	}
 
-
-
-	class Struct(override val address: Long) : Addressable {
-
-
-		var hwnd
-			get()      = Unsafe.getLong(address)
-			set(value) = Unsafe.setLong(address, value)
-
-		var x
-			get()      = Unsafe.getInt(address + 8)
-			set(value) = Unsafe.setInt(address + 8, value)
-
-		var y
-			get()      = Unsafe.getInt(address + 12)
-			set(value) = Unsafe.setInt(address + 12, value)
-
-		var width
-			get()      = Unsafe.getInt(address + 16)
-			set(value) = Unsafe.setInt(address + 16, value)
-
-		var height
-			get()      = Unsafe.getInt(address + 20)
-			set(value) = Unsafe.setInt(address + 20, value)
-
-		var clientX
-			get()      = Unsafe.getInt(address + 24)
-			set(value) = Unsafe.setInt(address + 24, value)
-
-		var clientY
-			get()      = Unsafe.getInt(address + 28)
-			set(value) = Unsafe.setInt(address + 28, value)
-
-		var clientWidth
-			get()      = Unsafe.getInt(address + 32)
-			set(value) = Unsafe.setInt(address + 32, value)
-
-		var clientHeight
-			get()      = Unsafe.getInt(address + 36)
-			set(value) = Unsafe.setInt(address + 36, value)
-
-
+	fun updateDimensions() {
+		WinApi.getRect(hwnd, rect.address)
+		WinApi.getClientRect(hwnd, clientRect.address)
 	}
 
 

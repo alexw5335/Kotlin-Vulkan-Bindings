@@ -19,10 +19,6 @@ interface Window {
 
 	val height: Int
 
-	val clientX: Int
-
-	val clientY: Int
-
 	val clientWidth: Int
 
 	val clientHeight: Int
