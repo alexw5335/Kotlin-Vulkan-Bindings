@@ -3,10 +3,7 @@
 #endif
 
 #include <windows.h>
-
-
-
-// Structs
+#include <jni.h>
 
 
 
@@ -18,111 +15,41 @@ typedef struct {
 
 
 
-typedef struct {
-	Window* array;
-	int size;
-	int capacity;
-} WindowList;
-
-
-
-// Functions
-
-
-
-void wl_init(WindowList* list, int initialCapacity) {
-	list->array = calloc(initialCapacity, sizeof(Window));
-	list->capacity = initialCapacity;
-	list->size = 0;
-}
-
-
-
-void wl_resize(WindowList* list, int newCapacity) {
-	list->array = realloc(list->array, newCapacity * sizeof(Window));
-	list->capacity = newCapacity;
-	if(newCapacity < list->size) list->size = newCapacity;
-}
-
-
-
-void wl_add(WindowList* list, Window* window) {
-	if(list->size == list->capacity)
-		wl_resize(list, list->capacity * 2);
-	list->array[list->size++] = *window;
-}
-
-
-
-void wl_remove(WindowList* list, int index) {
-	if(index < 0 || index >= list->size) return;
-	for(int i = index; i < list->size - 1; i++) {
-		list->array[i] = list->array[i + 1];
-	}
-	list->size--;
-}
-
-
-
-int wl_getIndex(WindowList* list, HWND hwnd) {
-	for(int i = 0; i < list->size; i++)
-		if(list->array[i].hwnd == hwnd)
-			return i;
-
-	return -1;
-}
-
-
-
-Window* wl_get(WindowList* list, HWND hwnd) {
-	for(int i = 0; i < list->size; i++)
-		if(list->array[i].hwnd == hwnd)
-			return &list->array[i];
-
-	return NULL;
-}
-
-
-
-// API
-
-
-
 WNDCLASS class = {};
 
-WindowList windows = {};
-
 int initialised = FALSE;
+
+JNIEnv* globalEnv;
+
+jclass globalClass;
+
+jmethodID methodID;
 
 
 
 LRESULT CALLBACK windowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_DESTROY) {
-		PostMessage(NULL, WM_DESTROY, (WPARAM) hwnd, 0);
-		return 0;
-	}
+	int handled = (*globalEnv)->CallBooleanMethod(
+		globalEnv,
+		globalClass,
+		methodID,
+		hwnd,
+		uMsg,
+		wParam,
+		lParam
+	);
 
-	if(uMsg == WM_PAINT) {
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hwnd, &ps);
-		FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
-		EndPaint(hwnd, &ps);
-		return 0;
-	}
-
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	if(!handled)
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 
 
-Window* createWindow(const wchar_t* title, int x, int y, int width, int height) {
+void createWindow(Window* window, const wchar_t* title, int x, int y, int width, int height) {
 	if(!initialised) {
 		class.lpszClassName = L"JNI";
 		class.lpfnWndProc = windowProc;
 		class.hCursor = LoadCursor(NULL, IDC_ARROW);
 		RegisterClass(&class);
-
-		wl_init(&windows, 8);
 		initialised = TRUE;
 	}
 
@@ -143,10 +70,7 @@ Window* createWindow(const wchar_t* title, int x, int y, int width, int height) 
 		NULL
 	);
 
-	Window window = {};
-	window.hwnd = hwnd;
-	wl_add(&windows, &window);
-	return &windows.array[windows.size - 1];
+	window->hwnd = hwnd;
 }
 
 
@@ -155,30 +79,20 @@ Window* createWindow(const wchar_t* title, int x, int y, int width, int height) 
 
 
 
-#include <jni.h>
-
-
-
-JNIEXPORT jlong JNICALL Java_kvb_window_winapi_WinApi_createWindow(
+JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_createWindow(
 	JNIEnv* env,
 	jobject obj,
-	jlong title,
+	Window* window,
+	const wchar_t* title,
 	jint x,
 	jint y,
 	jint width,
 	jint height
 ) {
-	return (jlong) createWindow((const wchar_t *) title, x, y, width, height);
-}
-
-
-
-JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_removeWindow(
-	JNIEnv* env,
-	jobject obj,
-	jlong hwnd
-) {
-	wl_remove(&windows, wl_getIndex(&windows, (HWND) hwnd));
+	globalEnv = env;
+	globalClass = obj;
+	methodID = (*env)->GetStaticMethodID(env, obj, "windowProc", "(JIJJ)Z");
+	createWindow(window, title, x, y, width, height);
 }
 
 
@@ -186,9 +100,9 @@ JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_removeWindow(
 JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_destroyWindow(
 	JNIEnv* env,
 	jobject obj,
-	jlong hwnd
+	Window* window
 ) {
-	return DestroyWindow((HWND) hwnd);
+	return DestroyWindow(window->hwnd);
 }
 
 
@@ -196,10 +110,10 @@ JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_destroyWindow(
 JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_showWindow(
 	JNIEnv* env,
 	jobject obj,
-	jlong hwnd,
+	Window* window,
 	jint code
 ) {
-	return (jboolean) ShowWindow((HWND) hwnd, code);
+	return (jboolean) ShowWindow(window->hwnd, code);
 }
 
 
@@ -227,9 +141,9 @@ JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_peekMessage(
 JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_translateMessage(
 	JNIEnv* env,
 	jobject obj,
-	jlong pMsg
+	MSG* msg
 ) {
-	return (jboolean) TranslateMessage((MSG*) pMsg);
+	return (jboolean) TranslateMessage(msg);
 }
 
 
@@ -237,9 +151,9 @@ JNIEXPORT jboolean JNICALL Java_kvb_window_winapi_WinApi_translateMessage(
 JNIEXPORT jint JNICALL Java_kvb_window_winapi_WinApi_dispatchMessage(
 	JNIEnv* env,
 	jobject obj,
-	jlong pMsg
+	MSG* msg
 ) {
-	return (jint) DispatchMessage((MSG*) pMsg);
+	return (jint) DispatchMessage(msg);
 }
 
 
@@ -247,10 +161,9 @@ JNIEXPORT jint JNICALL Java_kvb_window_winapi_WinApi_dispatchMessage(
 JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_updateRect(
 	JNIEnv* env,
 	jobject obj,
-	jlong hwnd
+	Window* window
 ) {
-	Window* window = wl_get(&windows, (HWND) hwnd);
-	GetWindowRect((HWND) hwnd, &window->rect);
+	GetWindowRect(window->hwnd, &window->rect);
 }
 
 
@@ -258,10 +171,9 @@ JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_updateRect(
 JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_updateClientRect(
 	JNIEnv* env,
 	jobject obj,
-	jlong hwnd
+	Window* window
 ) {
-	Window* window = wl_get(&windows, (HWND) hwnd);
-	GetClientRect((HWND) hwnd, &window->clientRect);
+	GetClientRect(window->hwnd, &window->clientRect);
 }
 
 
@@ -269,11 +181,11 @@ JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_updateClientRect(
 JNIEXPORT jint JNICALL Java_kvb_window_winapi_WinApi_getCursorX(
 	JNIEnv* env,
 	jobject obj,
-	HWND hwnd
+	Window* window
 ) {
 	POINT point = { };
 	GetCursorPos(&point);
-	ScreenToClient(hwnd, &point);
+	ScreenToClient(window->hwnd, &point);
 	return point.x;
 }
 
@@ -282,11 +194,11 @@ JNIEXPORT jint JNICALL Java_kvb_window_winapi_WinApi_getCursorX(
 JNIEXPORT int JNICALL Java_kvb_window_winapi_WinApi_getCursorY(
 	JNIEnv* env,
 	jobject obj,
-	HWND hwnd
+	Window* window
 ) {
 	POINT point = { };
 	GetCursorPos(&point);
-	ScreenToClient(hwnd, &point);
+	ScreenToClient(window->hwnd, &point);
 	return point.y;
 }
 
