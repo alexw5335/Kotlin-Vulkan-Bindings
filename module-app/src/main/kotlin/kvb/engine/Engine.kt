@@ -28,18 +28,19 @@ object Engine {
 
 
 
-	fun pollEvents() {
+	fun update() {
 		WindowManager.pollEvents()
-
-		// Cursor handling should be done via messages.
-		//gui.handleCursorPos(window.cursorX.toFloat(), window.cursorY.toFloat())
+		gui.handleCursorPos(window.cursorX, window.cursorY)
 	}
 
 
+
 	init {
-		window.onClientSizeChanged = { _, _ ->
+		window.onResize = { _, _ ->
 			gui.onWindowSizeChanged(window)
 		}
+
+		window.onMouseRelease
 	}
 
 

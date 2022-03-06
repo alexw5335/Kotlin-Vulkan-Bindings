@@ -77,16 +77,20 @@ class Gui(val root: Base) {
 	}
 
 
-	fun handleCursorPos(cursorX: Float, cursorY: Float) {
+
+	fun onCursorMove(cursorX: Float, cursorY: Float) {
 		val new = root.checkCollision(cursorX, cursorY)
 
 		if(new != hovered) {
-			//hovered?.mouseExitEvent()
-			//new?.mouseEnterEvent()
-
+			hovered?.mouseExitEvent(cursorX, cursorY)
+			new?.mouseEnterEvent(cursorX, cursorY)
 			hovered = new
 		}
+	}
 
+
+
+	fun handleCursorPos(cursorX: Float, cursorY: Float) {
 		hovered?.handleEvent(HoverEvent(hovered!!, cursorX, cursorY))
 	}
 

@@ -41,6 +41,13 @@ object WinApi : WindowManager {
 
 
 
+	private fun isButtonPressed(code: Int) = getKeyState(code) and (1 shl 15) != 0
+
+	val focussedWindow get() = windows.firstOrNull { it.hasFocus }
+
+	fun getWindow(hwnd: Long) = windows.firstOrNull { it.hwnd == hwnd }
+
+
 	/*
 	Implementation
 	 */
@@ -48,8 +55,6 @@ object WinApi : WindowManager {
 
 
 	override val windows = ArrayList<WinApiWindow>()
-
-	val focussedWindow get() = windows.firstOrNull { it.hasFocus }
 
 
 
@@ -59,23 +64,37 @@ object WinApi : WindowManager {
 		}
 
 		val window = WinApiWindow(hwnd)
-		window.updateDimensions()
 		windows.add(window)
 		return window
 	}
 
 
 
-	override fun pollEvents() {
-		while(peekMessage(message.address)) {
-			handleMessage()
-		}
+	override fun getButton(code: Int) = Button.windowsMap[code]
 
+
+
+	/*
+	Event polling
+	 */
+
+
+
+	override fun pollEvents() {
+		while(peekMessage(message.address))
+			handleMessage()
+
+		processHeldButtons()
+	}
+
+
+
+	private fun processHeldButtons() {
 		val buttonsToRemove = HashSet<Button>()
 
 		for(button in Button.pressed) {
-			// Handle swapping windows while the button is still held,
-			// in which case the original window does not receive the message.
+			// Handle swapping windows while the button is still held.
+			// Normally, WM_KEYUP would remove pressed buttons.
 			if(!isButtonPressed(button.code)) {
 				buttonsToRemove.add(button)
 				continue
@@ -92,12 +111,6 @@ object WinApi : WindowManager {
 
 
 
-	override fun getButton(code: Int) = Button.windowsMap[code]
-
-	private fun isButtonPressed(code: Int) = getKeyState(code) and (1 shl 15) != 0
-
-
-
 	/*
 	Messages
 	 */
@@ -110,14 +123,14 @@ object WinApi : WindowManager {
 
 
 
+	@Suppress("unused")
 	fun windowProc(hwnd: Long, msg: Int, wparam: Long, lparam: Long): Boolean {
 		var handled = true
 
-		val window = windows.firstOrNull { it.hwnd == hwnd }
-
-		when(MessageType.map[msg] ?: return false) {
-			MessageType.DESTROY -> windows.removeIf { it.hwnd == hwnd }
-			MessageType.SIZE -> { }
+		when(msg) {
+			MessageType.DESTROY.value -> windows.removeIf { it.hwnd == hwnd }
+			MessageType.SIZE.value    -> getWindow(hwnd)?.resizeAction(lparam.lowWord.toFloat(), lparam.highWord.toFloat())
+			MessageType.MOVE.value    -> getWindow(hwnd)?.moveAction(lparam.lowWord.toFloat(), lparam.highWord.toFloat())
 			else -> handled = false
 		}
 
@@ -138,7 +151,10 @@ object WinApi : WindowManager {
 		translateMessage(message.address)
 		dispatchMessage(message.address)
 
+		println(MessageType.map[message.message])
+
 		when(MessageType.map[message.message] ?: return) {
+			MessageType.MOUSE_MOVE   -> message.handleMouseMove()
 			MessageType.MOUSE_WHEEL  -> message.handleMouseWheel()
 			MessageType.KEY_UP       -> message.handleKeyUp()
 			MessageType.KEY_DOWN     -> message.handleKeyDown()
@@ -149,6 +165,12 @@ object WinApi : WindowManager {
 			MessageType.CHAR         -> message.handleChar()
 			else                     -> { }
 		}
+	}
+
+
+
+	private fun Message.handleMouseMove() {
+		hwndWindow?.cursorMoveAction(lparam.lowWord.toFloat(), lparam.highWord.toFloat())
 	}
 
 

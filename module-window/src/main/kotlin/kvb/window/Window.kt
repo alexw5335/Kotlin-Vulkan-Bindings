@@ -11,21 +11,17 @@ interface Window {
 
 
 
-	val x: Int
+	val x: Float
 
-	val y: Int
+	val y: Float
 
-	val width: Int
+	val width: Float
 
-	val height: Int
+	val height: Float
 
-	val clientWidth: Int
+	val cursorX: Float
 
-	val clientHeight: Int
-
-	val cursorX: Int
-
-	val cursorY: Int
+	val cursorY: Float
 
 	val hasFocus: Boolean
 
@@ -65,7 +61,11 @@ interface Window {
 
 	var onChar: (Char) -> Unit
 
-	var onClientSizeChanged: (Int, Int) -> Unit
+	var onResize: () -> Unit
+
+	var onCursorMove: () -> Unit
+
+	var onMove: () -> Unit
 
 
 }

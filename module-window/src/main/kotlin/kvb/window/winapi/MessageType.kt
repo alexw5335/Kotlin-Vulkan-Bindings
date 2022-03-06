@@ -15,6 +15,8 @@ enum class MessageType(val value: Int) {
 
 	KEY_DOWN(0x0100),
 
+	MOUSE_MOVE(0x0200),
+
 	LBUTTON_DCLICK(0x0203),
 
 	LBUTTON_DOWN(0x0201),
@@ -28,6 +30,8 @@ enum class MessageType(val value: Int) {
 	RBUTTON_UP(0x0205),
 
 	SIZE(0x0005),
+
+	MOVE(0x0003),
 
 	CHAR(0x0102);
 

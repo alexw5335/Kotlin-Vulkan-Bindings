@@ -1,37 +1,38 @@
 package kvb.window.winapi
 
-import kvb.core.memory.Addressable
-import kvb.core.memory.Allocator
-import kvb.core.memory.Unsafe
 import kvb.window.Window
 import kvb.window.input.Button
 
 class WinApiWindow(val hwnd: Long) : Window {
 
 
-	val rect = RECT(Unsafe.calloc(16))
+	private var _x = 0F
 
-	val clientRect = RECT(Unsafe.calloc(16))
+	private var _y = 0F
 
-	val cursorPos = POINT(Unsafe.calloc(8))
+	private var _width = 0F
+
+	private var _height = 0F
+
+	private var _cursorX = 0F
+
+	private var _cursorY = 0F
 
 
 
-	override val x get() = rect.left
+	override val x get() = _x
 
-	override val y get() = rect.top
+	override val y get() = _y
 
-	override val width get() = rect.right - rect.left
+	override val width get() = _width
 
-	override val height get() = rect.bottom - rect.top
+	override val height get() = _height
 
-	override val clientWidth get() = clientRect.right
+	override val cursorX get() = _cursorX
 
-	override val clientHeight get() = clientRect.bottom
+	override val cursorY get() = _cursorY
 
-	override val cursorX get() = cursorPos.x
 
-	override val cursorY get() = cursorPos.y
 
 	override val hasFocus get() = WinApi.getFocussedWindow() == hwnd
 
@@ -53,7 +54,11 @@ class WinApiWindow(val hwnd: Long) : Window {
 
 	override var onChar: (Char) -> Unit = { }
 
-	override var onClientSizeChanged: (Int, Int) -> Unit = { _, _ -> }
+	override var onResize: () -> Unit = { }
+
+	override var onCursorMove: () -> Unit = { }
+
+	override var onMove: () -> Unit = { }
 
 
 
@@ -65,9 +70,24 @@ class WinApiWindow(val hwnd: Long) : Window {
 		WinApi.showWindow(hwnd, ShowCode.HIDE.value)
 	}
 
-	fun updateDimensions() {
-		WinApi.getRect(hwnd, rect.address)
-		WinApi.getClientRect(hwnd, clientRect.address)
+
+
+	internal fun moveAction(x: Float, y: Float) {
+		_x = x
+		_y = y
+		onMove()
+	}
+
+	internal fun resizeAction(width: Float, height: Float) {
+		_width = width
+		_height = height
+		onResize()
+	}
+
+	internal fun cursorMoveAction(cursorX: Float, cursorY: Float) {
+		_cursorX = cursorX
+		_cursorY = cursorY
+		onCursorMove()
 	}
 
 

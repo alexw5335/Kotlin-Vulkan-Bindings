@@ -2,19 +2,19 @@ package kvb.engine.gui.event
 
 import kvb.engine.gui.Base
 
-class HoverEvent(
+class MouseExitEvent(
 	source: Base,
 	cursorX: Float,
 	cursorY: Float
 ) : MouseEvent(source, cursorX, cursorY) {
 
-	override fun handleAction(base: Base) = base.hoverAction(this)
+	override fun handleAction(base: Base) = base.mouseExitAction(this)
 
 	override fun tryHandler(handler: BaseEventHandler<*>) {
 		if(handler is Handler)
 			handler.handle(this)
 	}
 
-	fun interface Handler : BaseEventHandler<HoverEvent>
+	fun interface Handler : BaseEventHandler<MouseExitEvent>
 
 }

@@ -1,8 +1,6 @@
 package kvb.engine.gui
 
-import kvb.engine.gui.event.BaseEvent
-import kvb.engine.gui.event.BaseEventHandler
-import kvb.engine.gui.event.HoverEvent
+import kvb.engine.gui.event.*
 
 open class Base {
 
@@ -103,11 +101,27 @@ open class Base {
 
 
 
-	fun onHover(handler: HoverEvent.Handler) = handlers.add(handler)
-
-
-
 	open fun hoverAction(event: HoverEvent) { }
+
+	open fun mouseEnterAction(event: MouseEnterEvent) { }
+
+	open fun mouseExitAction(event: MouseExitEvent) { }
+
+
+
+	fun hoverEvent(cursorX: Float, cursorY: Float) = HoverEvent(this, cursorX, cursorY).bubble()
+
+	fun mouseEnterEvent(cursorX: Float, cursorY: Float) = MouseEnterEvent(this, cursorX, cursorY).bubble()
+
+	fun mouseExitEvent(cursorX: Float, cursorY: Float) = MouseExitEvent(this, cursorX, cursorY).bubble()
+
+
+
+	fun onHover(action: (HoverEvent) -> Unit) = handlers.add(HoverEvent.Handler(action))
+
+	fun onMouseEnter(action: (MouseEnterEvent) -> Unit) = handlers.add(MouseEnterEvent.Handler(action))
+
+	fun onMouseExit(action: (MouseExitEvent) -> Unit) = handlers.add(MouseExitEvent.Handler(action))
 
 
 

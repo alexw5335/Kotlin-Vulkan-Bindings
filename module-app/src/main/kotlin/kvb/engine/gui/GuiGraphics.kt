@@ -55,7 +55,7 @@ object GuiGraphics {
 
 
 	fun preRender(window: Window) {
-		setWindowSize(window.clientWidth.toFloat(), window.clientHeight.toFloat())
+		setWindowSize(window.width, window.height)
 		setScale(1.0F)
 	}
 
