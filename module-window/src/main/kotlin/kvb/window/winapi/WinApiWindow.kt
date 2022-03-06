@@ -1,14 +1,19 @@
 package kvb.window.winapi
 
 import kvb.core.memory.Addressable
+import kvb.core.memory.Allocator
 import kvb.core.memory.Unsafe
 import kvb.window.Window
 import kvb.window.input.Button
 
-class WinApiWindow(address: Long) : Window {
+class WinApiWindow(private val struct: Struct) : Window {
 
 
-	val struct = Struct(address)
+	constructor(allocator: Allocator) : this(Struct(allocator.calloc(40)))
+
+
+
+	val address = struct.address
 
 	val hwnd = struct.hwnd
 
@@ -28,9 +33,9 @@ class WinApiWindow(address: Long) : Window {
 
 	override val clientHeight get() = struct.clientHeight
 
-	override val cursorX get() = WinApi.getCursorX(hwnd)
+	override val cursorX get() = WinApi.getCursorX(address)
 
-	override val cursorY get() = WinApi.getCursorY(hwnd)
+	override val cursorY get() = WinApi.getCursorY(address)
 
 	override val hasFocus get() = WinApi.getFocussedWindow() == hwnd
 
@@ -57,11 +62,11 @@ class WinApiWindow(address: Long) : Window {
 
 
 	override fun show() {
-		WinApi.showWindow(hwnd, ShowCode.SHOW_NORMAL.value)
+		WinApi.showWindow(address, ShowCode.SHOW_NORMAL.value)
 	}
 
 	override fun hide() {
-		WinApi.showWindow(hwnd, ShowCode.HIDE.value)
+		WinApi.showWindow(address, ShowCode.HIDE.value)
 	}
 
 

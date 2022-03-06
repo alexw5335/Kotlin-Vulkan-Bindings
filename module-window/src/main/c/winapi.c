@@ -28,6 +28,9 @@ jmethodID methodID;
 
 
 LRESULT CALLBACK windowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	if(globalEnv == NULL)
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+
 	int handled = (*globalEnv)->CallBooleanMethod(
 		globalEnv,
 		globalClass,
@@ -90,8 +93,8 @@ JNIEXPORT void JNICALL Java_kvb_window_winapi_WinApi_createWindow(
 	jint height
 ) {
 	globalEnv = env;
-	globalClass = obj;
-	methodID = (*env)->GetStaticMethodID(env, obj, "windowProc", "(JIJJ)Z");
+	globalClass = (*env)->GetObjectClass(env, obj);
+	methodID = (*env)->GetMethodID(env, globalClass, "windowProc", "(JIJJ)Z");
 	createWindow(window, title, x, y, width, height);
 }
 

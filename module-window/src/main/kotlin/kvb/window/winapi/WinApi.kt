@@ -15,29 +15,27 @@ object WinApi : WindowManager {
 
 
 
-	external fun createWindow(title: Long, x: Int, y: Int, width: Int, height: Int): Long
+	external fun createWindow(window: Long, title: Long, x: Int, y: Int, width: Int, height: Int)
 
-	external fun removeWindow(hwnd: Long)
+	external fun destroyWindow(window: Long): Boolean
 
-	external fun destroyWindow(hwnd: Long): Boolean
-
-	external fun showWindow(hwnd: Long, code: Int): Boolean
+	external fun showWindow(window: Long, code: Int): Boolean
 
 	external fun getSystemMetrics(code: Int): Int
 
-	external fun peekMessage(pMsg: Long): Boolean
+	external fun peekMessage(msg: Long): Boolean
 
-	external fun translateMessage(pMsg: Long): Boolean
+	external fun translateMessage(msg: Long): Boolean
 
-	external fun dispatchMessage(pMsg: Long): Int
+	external fun dispatchMessage(msg: Long): Int
 
-	external fun updateRect(hwnd: Long)
+	external fun updateRect(window: Long)
 
-	external fun updateClientRect(hwnd: Long)
+	external fun updateClientRect(window: Long)
 
-	external fun getCursorX(hwnd: Long): Int
+	external fun getCursorX(window: Long): Int
 
-	external fun getCursorY(hwnd: Long): Int
+	external fun getCursorY(window: Long): Int
 
 	external fun getKeyState(virtualKey: Int): Int
 
@@ -58,14 +56,15 @@ object WinApi : WindowManager {
 
 
 	override fun create(title: String, x: Int, y: Int, width: Int, height: Int): Window {
-		val address = stackGet {
-			createWindow(encodeUtf16NT(title).address, x, y, width, height)
+		val window = WinApiWindow(Unsafe)
+
+		stack {
+			createWindow(window.address, encodeUtf16NT(title).address, x, y, width, height)
 		}
 
-		val window = WinApiWindow(address)
 		windows.add(window)
-		updateRect(window.hwnd)
-		updateClientRect(window.hwnd)
+		updateRect(window.address)
+		updateClientRect(window.address)
 		return window
 	}
 
@@ -76,8 +75,8 @@ object WinApi : WindowManager {
 			val prevClientWidth = window.clientWidth
 			val prevClientHeight = window.clientHeight
 
-			updateRect(window.hwnd)
-			updateClientRect(window.hwnd)
+			updateRect(window.address)
+			updateClientRect(window.address)
 
 			if(window.clientWidth != prevClientWidth || window.clientHeight != prevClientHeight) {
 				window.onClientSizeChanged(prevClientWidth, prevClientHeight)
@@ -131,12 +130,24 @@ object WinApi : WindowManager {
 
 
 
+	fun windowProc(hwnd: Long, msg: Int, wparam: Long, lparam: Long): Boolean {
+		var handled = true
+
+		when(MessageType.map[msg] ?: return false) {
+			MessageType.DESTROY -> { }
+			else -> handled = false
+		}
+
+		return handled
+	}
+
+
+
 	private fun handleMessage() {
 		translateMessage(message.address)
 		dispatchMessage(message.address)
 
 		when(MessageType.map[message.message] ?: return) {
-			MessageType.DESTROY      -> message.handleDestroy()
 			MessageType.MOUSE_WHEEL  -> message.handleMouseWheel()
 			MessageType.KEY_UP       -> message.handleKeyUp()
 			MessageType.KEY_DOWN     -> message.handleKeyDown()
@@ -146,15 +157,6 @@ object WinApi : WindowManager {
 			MessageType.RBUTTON_UP   -> message.handleMouseButtonUp(Button.RIGHT_MOUSE)
 			MessageType.CHAR         -> message.handleChar()
 			else                     -> { }
-		}
-	}
-
-
-
-	private fun Message.handleDestroy() {
-		windows.firstOrNull { it.hwnd == WinApi.message.wparam }?.let {
-			windows.remove(it)
-			removeWindow(it.hwnd)
 		}
 	}
 

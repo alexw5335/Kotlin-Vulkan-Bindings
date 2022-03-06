@@ -5,13 +5,12 @@ import kvb.engine.gui.Base
 import kvb.engine.gui.Colour
 import kvb.engine.gui.ColourRectModel
 import kvb.engine.gui.GuiGraphics
-import kvb.engine.gui.event.BaseEventHandler
-import kvb.engine.gui.event.MouseEvent
 import kvb.engine.vulkan.VkContext
 import kvb.engine.vulkan.VkContextBuilder
 import kvb.vkwrapper.shader.ShaderCreation
 import kvb.vulkan.VK_TRUE
 import kvb.window.WindowManager
+import kvb.window.winapi.WinApi
 import kvb.window.winapi.WinApiWindow
 
 object Test {
@@ -63,7 +62,7 @@ object Test {
 
 			if(WindowManager.windows.isEmpty()) break
 
-			Engine.gui.handleCursorPos(Engine.cursorX.toFloat(), Engine.cursorY.toFloat())
+			//Engine.gui.handleCursorPos(Engine.cursorX.toFloat(), Engine.cursorY.toFloat())
 
 			Engine.renderGui()
 
@@ -82,5 +81,12 @@ object Test {
 
 fun main() {
 	Platforms.init()
-	Test.run()
+	val window = WindowManager.create("My window", 0, 0, 800, 800)
+	window.show()
+	while(true) {
+		WindowManager.pollEvents()
+		if(WindowManager.windows.isEmpty()) break
+		Thread.sleep(16)
+	}
+	//Test.run()
 }
