@@ -38,7 +38,17 @@ class WinApiWindow(val hwnd: Long) : Window {
 
 
 
-	override var onScroll: (Int) -> Unit = { }
+	override fun show() {
+		WinApi.showWindow(hwnd, ShowCode.SHOW_NORMAL.value)
+	}
+
+	override fun hide() {
+		WinApi.showWindow(hwnd, ShowCode.HIDE.value)
+	}
+
+
+
+	override var onScroll: (Float) -> Unit = { }
 
 	override var onKeyHold: (Button) -> Unit = { }
 
@@ -56,38 +66,33 @@ class WinApiWindow(val hwnd: Long) : Window {
 
 	override var onResize: () -> Unit = { }
 
-	override var onCursorMove: () -> Unit = { }
-
 	override var onMove: () -> Unit = { }
 
-
-
-	override fun show() {
-		WinApi.showWindow(hwnd, ShowCode.SHOW_NORMAL.value)
-	}
-
-	override fun hide() {
-		WinApi.showWindow(hwnd, ShowCode.HIDE.value)
-	}
+	override var onMouseMove: () -> Unit = { }
 
 
 
-	internal fun moveAction(x: Float, y: Float) {
+	fun moveAction(x: Float, y: Float) {
 		_x = x
 		_y = y
 		onMove()
 	}
 
-	internal fun resizeAction(width: Float, height: Float) {
+
+
+	fun resizeAction(width: Float, height: Float) {
 		_width = width
 		_height = height
 		onResize()
+
 	}
 
-	internal fun cursorMoveAction(cursorX: Float, cursorY: Float) {
+
+
+	fun mouseMoveAction(cursorX: Float, cursorY: Float) {
 		_cursorX = cursorX
 		_cursorY = cursorY
-		onCursorMove()
+		onMouseMove()
 	}
 
 

@@ -4,6 +4,7 @@ import kvb.engine.gui.Gui
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.vulkan.VkContext
 import kvb.window.WindowManager
+import kvb.window.input.Button
 
 object Engine {
 
@@ -14,34 +15,31 @@ object Engine {
 
 
 
-	/*
-
-	- A GUI is final and is permanently connected to a window.
-	- The GUI's root can be changed. This will reset any state.
-	- How to handle window callbacks for both a GUI and a game?
-
-	- Window (represents a plain platform-specific window, with minimal callbacks).
-	- EngineWindow (wraps a Window and provides a GUI and many callbacks).
-		- EngineWindow can contain the GUI contents and the GUI class can be removed?
-
-	 */
+	init {
+		window.onResize = { gui.onWindowResize(window.width, window.height) }
+		window.onMouseMove = { gui.onMouseMove(window.cursorX, window.cursorY) }
+		window.onMousePress = {
+			if(it == Button.LEFT_MOUSE)
+				gui.onPress(window.cursorX, window.cursorY)
+		}
+		window.onMouseRelease = {
+			if(it == Button.LEFT_MOUSE)
+				gui.onRelease(window.cursorX, window.cursorY)
+		}
+	}
 
 
 
 	fun update() {
 		WindowManager.pollEvents()
-		gui.handleCursorPos(window.cursorX, window.cursorY)
+		gui.handleMousePos(window.cursorX, window.cursorY)
+		gui.onHold(window.cursorX, window.cursorY)
+		gui.root.alignCycle()
 	}
 
 
 
-	init {
-		window.onResize = { _, _ ->
-			gui.onWindowSizeChanged(window)
-		}
-
-		window.onMouseRelease
-	}
+	fun shouldFinish() = WindowManager.windows.isEmpty()
 
 
 

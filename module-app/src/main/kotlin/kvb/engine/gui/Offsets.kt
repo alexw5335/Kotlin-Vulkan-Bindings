@@ -1,29 +1,29 @@
 package kvb.engine.gui
 
-@JvmInline
-value class Offsets private constructor(private val value: Long) {
+data class Offsets(val top: Float, val right: Float, val bottom: Float, val left: Float) {
 
 
-	constructor(top: Int, right: Int, bottom: Int, left: Int) : this(
-		top.toLong() or
-		(right.toLong() shl 16) or
-		(bottom.toLong() shl 32) or
-		(left.toLong() shl 48)
-	)
+	constructor(all: Float) : this(all, all, all, all)
 
-	constructor(all: Int) : this(all, all, all, all)
-
-	constructor() : this(0L)
+	constructor() : this(0F, 0F, 0F, 0F)
 
 
 
-	val top: Int get() = (value and 0xFFFFFFFF).toInt()
+	val horizontal get() = left + right
 
-	val right: Int get() = ((value shr 16) and 0xFFFFFFFF).toInt()
+	val vertical get() = top + bottom
 
-	val bottom: Int get() = ((value shr 32) and 0xFFFFFFFF).toInt()
+	val valid get() = top != 0F && right != 0F && bottom != 0F && left != 0F
 
-	val left: Int get() = (value shr 48).toInt()
+
+
+	fun withTop(top: Float) = Offsets(top, right, bottom, left)
+
+	fun withRight(right: Float) = Offsets(top, right, bottom, left)
+
+	fun withBottom(bottom: Float) = Offsets(top, right, bottom, left)
+
+	fun withLeft(left: Float) = Offsets(top, right, bottom, left)
 
 
 

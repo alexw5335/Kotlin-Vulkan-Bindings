@@ -151,8 +151,6 @@ object WinApi : WindowManager {
 		translateMessage(message.address)
 		dispatchMessage(message.address)
 
-		println(MessageType.map[message.message])
-
 		when(MessageType.map[message.message] ?: return) {
 			MessageType.MOUSE_MOVE   -> message.handleMouseMove()
 			MessageType.MOUSE_WHEEL  -> message.handleMouseWheel()
@@ -170,13 +168,13 @@ object WinApi : WindowManager {
 
 
 	private fun Message.handleMouseMove() {
-		hwndWindow?.cursorMoveAction(lparam.lowWord.toFloat(), lparam.highWord.toFloat())
+		hwndWindow?.mouseMoveAction(lparam.lowWord.toFloat(), lparam.highWord.toFloat())
 	}
 
 
 
 	private fun Message.handleMouseWheel() {
-		hwndWindow?.onScroll?.invoke(wparam.highWord)
+		hwndWindow?.onScroll?.invoke(wparam.highWord.toFloat())
 	}
 
 

@@ -1,7 +1,6 @@
 package kvb.engine.gui
 
 import kvb.engine.gui.event.HoverEvent
-import kvb.window.Window
 
 class Gui(val root: Base) {
 
@@ -53,32 +52,58 @@ class Gui(val root: Base) {
 
 
 
-	fun onWindowSizeChanged(window: Window) {
-		root.width = window.width.toFloat()
-		root.height = window.height.toFloat()
-	}
+	/**
+	 * The cursor's x position when the last new press event was triggered.
+	 */
+	private var pressOriginX = 0F
+
+	/**
+	 * The cursor's y position when the last new press event was triggered.
+	 */
+	private var pressOriginY = 0F
 
 
 
 	/*
-	Left mouse press
+	Events
 	 */
+
+
+
+	fun onWindowResize(width: Float, height: Float) {
+		root.width = width
+		root.height = height
+	}
 
 
 
 	fun onPress(cursorX: Float, cursorY: Float) {
 		pressed = hovered
+
+		pressOriginX = cursorX
+		pressOriginY = cursorY
+	}
+
+
+
+	fun onRelease(cursorX: Float, cursorY: Float) {
+		if(pressed == hovered)
+			hovered?.clickEvent(cursorX, cursorY)
+
+		hovered?.releaseEvent(cursorX, cursorY)
+
+		pressed = null
 	}
 
 
 
 	fun onHold(cursorX: Float, cursorY: Float) {
-
+		pressed?.pressEvent(cursorX, cursorY, pressOriginX, pressOriginY, hovered == pressed)
 	}
 
 
 
-	fun onCursorMove(cursorX: Float, cursorY: Float) {
+	fun onMouseMove(cursorX: Float, cursorY: Float) {
 		val new = root.checkCollision(cursorX, cursorY)
 
 		if(new != hovered) {
@@ -90,7 +115,7 @@ class Gui(val root: Base) {
 
 
 
-	fun handleCursorPos(cursorX: Float, cursorY: Float) {
+	fun handleMousePos(cursorX: Float, cursorY: Float) {
 		hovered?.handleEvent(HoverEvent(hovered!!, cursorX, cursorY))
 	}
 

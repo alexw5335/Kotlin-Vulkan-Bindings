@@ -45,7 +45,7 @@ interface Window {
 
 
 
-	var onScroll: (Int) -> Unit
+	var onScroll: (Float) -> Unit
 
 	var onKeyHold: (Button) -> Unit
 
@@ -63,9 +63,9 @@ interface Window {
 
 	var onResize: () -> Unit
 
-	var onCursorMove: () -> Unit
-
 	var onMove: () -> Unit
+
+	var onMouseMove: () -> Unit
 
 
 }

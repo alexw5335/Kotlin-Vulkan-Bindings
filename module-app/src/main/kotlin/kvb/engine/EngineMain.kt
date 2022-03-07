@@ -1,10 +1,7 @@
 package kvb.engine
 
 import kvb.core.Platforms
-import kvb.engine.gui.Base
-import kvb.engine.gui.Colour
-import kvb.engine.gui.ColourRectModel
-import kvb.engine.gui.GuiGraphics
+import kvb.engine.gui.*
 import kvb.engine.vulkan.VkContext
 import kvb.engine.vulkan.VkContextBuilder
 import kvb.vkwrapper.shader.ShaderCreation
@@ -40,10 +37,14 @@ object Test {
 
 		EngineBuilder.let {
 			it.window = window
-			it.root = Base().also {
-				it.model = ColourRectModel().also {
-					it.colour = Colour(1F, 0F, 0F, 1F)
-				}
+			it.root = VBox().apply {
+				model = ColourRectModel(Colour(1F, 0F, 0F))
+
+				addChild(Base().apply {
+					model = ColourRectModel(Colour(0F, 1F, 0F))
+					width = 100F
+					height = 100F
+				})
 			}
 		}
 
@@ -58,12 +59,8 @@ object Test {
 		while(true) {
 			val frameStart = System.nanoTime()
 
-			WindowManager.pollEvents()
-
-			if(WindowManager.windows.isEmpty()) break
-
-			//Engine.gui.handleCursorPos(Engine.cursorX.toFloat(), Engine.cursorY.toFloat())
-
+			Engine.update()
+			if(Engine.shouldFinish()) break
 			Engine.renderGui()
 
 			val elapsedMicroseconds = (System.nanoTime() - frameStart) / 1_000
@@ -81,12 +78,5 @@ object Test {
 
 fun main() {
 	Platforms.init()
-	val window = WindowManager.create("My window", 0, 0, 800, 800)
-	window.show()
-	while(true) {
-		WindowManager.pollEvents()
-		if(WindowManager.windows.isEmpty()) break
-		Thread.sleep(16)
-	}
-	//Test.run()
+	Test.run()
 }
