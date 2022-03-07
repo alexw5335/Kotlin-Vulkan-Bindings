@@ -1,6 +1,7 @@
 package kvb.engine.gui
 
 import kvb.engine.gui.event.*
+import kvb.engine.gui.layout.Padding
 import kvb.engine.gui.model.BaseModel
 
 open class Base {
@@ -22,6 +23,9 @@ open class Base {
 	var height = 0F
 		set(value) { field = value; onSizeChanged() }
 
+	var padding = Padding(0F, 0F, 0F, 0F)
+		set(value) { field = value; onInteriorChanged() }
+
 
 
 	var model: BaseModel? = null
@@ -36,13 +40,7 @@ open class Base {
 
 	val handlers = ArrayList<BaseEventHandler<*>>()
 
-	var padding = Offsets()
-
-	var border = Offsets()
-
-	var margin = Offsets()
-
-	var shouldAlign = false
+	protected var shouldAlign = false
 
 
 
@@ -235,9 +233,8 @@ open class Base {
 
 
 	/*
-	Compound dimensions
+	Dimensions
 	 */
-
 
 
 
@@ -250,23 +247,6 @@ open class Base {
 	var interiorHeight
 		get()      = height - padding.vertical
 		set(value) { height = value + padding.vertical }
-
-
-
-	/** The [width] plus the left and right [margin] and [border]. */
-	var totalWidth
-		get()      = width + margin.horizontal + border.horizontal
-		set(value) { width = value - margin.horizontal - border.horizontal }
-
-	/** The [height] plus the top and bottom [margin] and [border]. */
-	var totalHeight
-		get()      = height + margin.vertical + border.vertical
-		set(value) { height = value - margin.vertical - border.vertical }
-
-
-	/*
-	Dimensions
-	 */
 
 
 
@@ -297,66 +277,6 @@ open class Base {
 	var Base.paddingLeft: Float
 		get() = padding.left
 		set(value) { padding = padding.withLeft(value) }
-
-
-
-	/**
-	 * Getter-setter pair for the top side of the [border].
-	 */
-	var Base.borderTop: Float
-		get() = border.top
-		set(value) { border = border.withTop(value) }
-
-	/**
-	 * Getter-setter pair for the right side of the [border].
-	 */
-	var Base.borderRight: Float
-		get() = border.right
-		set(value) { border = border.withRight(value) }
-
-	/**
-	 * Getter-setter pair for the bottom side of the [border].
-	 */
-	var Base.borderBottom: Float
-		get() = border.bottom
-		set(value) { border = border.withBottom(value) }
-
-	/**
-	 * Getter-setter pair for the left side of the [border].
-	 */
-	var Base.borderLeft: Float
-		get() = border.left
-		set(value) { border = border.withLeft(value) }
-
-
-
-	/**
-	 * Getter-setter pair for the top side of the [margin].
-	 */
-	var Base.marginTop: Float
-		get() = margin.top
-		set(value) { margin = margin.withTop(value) }
-
-	/**
-	 * Getter-setter pair for the right side of the [margin].
-	 */
-	var Base.marginRight: Float
-		get() = margin.right
-		set(value) { margin = margin.withRight(value) }
-
-	/**
-	 * Getter-setter pair for the bottom side of the [margin].
-	 */
-	var Base.marginBottom: Float
-		get() = margin.bottom
-		set(value) { margin = margin.withBottom(value) }
-
-	/**
-	 * Getter-setter pair for the left side of the [margin].
-	 */
-	var Base.marginLeft: Float
-		get() = margin.left
-		set(value) { margin = margin.withLeft(value) }
 
 
 }

@@ -43,10 +43,10 @@ class Box(val orientation: Orientation) : Pane(), Oriented by orientation, Align
 		childrenLength += (children.size - 1) * spacing
 
 		var startPos = when(alignment1) {
-			Alignment.START  -> firstPadding1
-			Alignment.END    -> firstPadding1 + length1 - childrenLength
-			Alignment.CENTRE -> firstPadding1 + (interiorLength1 - childrenLength) / 2
-			Alignment.FILL   -> firstPadding1
+			Alignment.START  -> startPadding1
+			Alignment.END    -> startPadding1 + length1 - childrenLength
+			Alignment.CENTRE -> startPadding1 + (interiorLength1 - childrenLength) / 2
+			Alignment.FILL   -> startPadding1
 		}
 
 		var pos = 0F
