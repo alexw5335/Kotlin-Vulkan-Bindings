@@ -1,7 +1,7 @@
 package kvb.engine.gui
 
 import kvb.engine.gui.event.*
-import kvb.engine.gui.layout.Padding
+import kvb.engine.gui.layout.*
 import kvb.engine.gui.model.BaseModel
 
 open class Base {
@@ -22,6 +22,8 @@ open class Base {
 
 	var height = 0F
 		set(value) { field = value; onSizeChanged() }
+
+
 
 	var padding = Padding(0F, 0F, 0F, 0F)
 		set(value) { field = value; onInteriorChanged() }
@@ -233,48 +235,52 @@ open class Base {
 
 
 	/*
+	Alignment
+	 */
+
+
+
+	fun Orientation.align(alignment: Alignment, child: Base) = when(alignment) {
+		Alignment.START  -> child.pos = startPadding
+		Alignment.END    -> child.pos = length - endPadding - child.length
+		Alignment.CENTRE -> child.pos = (length - child.length) / 2
+	}
+
+	fun vAlign(alignment: Alignment, child: Base) = VOrientation.align(alignment, child)
+
+	fun hAlign(alignment: Alignment, child: Base) = HOrientation.align(alignment, child)
+
+
+
+	/*
 	Dimensions
 	 */
 
 
 
-	/** The [width] minus the left and right [padding]. I.e. the usable content width. */
 	var interiorWidth
 		get()      = width - padding.horizontal
-		set(value) { width = value + padding.horizontal }
+		set(value) { width = value + padding.left + padding.right }
 
-	/** The [height] minus the top and bottom [padding]. I.e. the usable content height. */
 	var interiorHeight
 		get()      = height - padding.vertical
-		set(value) { height = value + padding.vertical }
+		set(value) { height = value + padding.top + padding.bottom }
 
 
 
-	/**
-	 * Getter-setter pair for the top side of the [padding].
-	 */
-	var Base.paddingTop: Float
+	var paddingTop: Float
 		get() = padding.top
 		set(value) { padding = padding.withTop(value) }
 
-	/**
-	 * Getter-setter pair for the right side of the [padding].
-	 */
-	var Base.paddingRight: Float
+	var paddingRight: Float
 		get() = padding.right
 		set(value) { padding = padding.withRight(value) }
 
-	/**
-	 * Getter-setter pair for the bottom side of the [padding].
-	 */
-	var Base.paddingBottom: Float
+	var paddingBottom: Float
 		get() = padding.bottom
 		set(value) { padding = padding.withBottom(value) }
 
-	/**
-	 * Getter-setter pair for the left side of the [padding].
-	 */
-	var Base.paddingLeft: Float
+	var paddingLeft: Float
 		get() = padding.left
 		set(value) { padding = padding.withLeft(value) }
 

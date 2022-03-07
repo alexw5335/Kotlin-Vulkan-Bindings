@@ -5,7 +5,7 @@ import kvb.engine.gui.Base
 object HOrientation : Orientation {
 
 
-	override var Base.pos1: Float
+	override var Base.pos: Float
 		get()      = x
 		set(value) { x = value }
 
@@ -15,7 +15,7 @@ object HOrientation : Orientation {
 
 
 
-	override var Base.length1: Float
+	override var Base.length: Float
 		get()      = width
 		set(value) { width = value }
 
@@ -23,7 +23,7 @@ object HOrientation : Orientation {
 		get()      = height
 		set(value) { height = value }
 
-	override var Base.interiorLength1: Float
+	override var Base.interiorLength: Float
 		get()      = interiorWidth
 		set(value) { interiorWidth = value }
 
@@ -33,7 +33,7 @@ object HOrientation : Orientation {
 
 
 
-	override var Base.startPadding1: Float
+	override var Base.startPadding: Float
 		get()      = paddingLeft
 		set(value) { paddingLeft = value }
 
@@ -41,7 +41,7 @@ object HOrientation : Orientation {
 		get()      = paddingTop
 		set(value) { paddingTop = value }
 	
-	override var Base.endPadding1: Float
+	override var Base.endPadding: Float
 		get()      = paddingRight
 		set(value) { paddingRight = value }
 	
@@ -51,7 +51,7 @@ object HOrientation : Orientation {
 
 
 
-	override var Aligned.alignment1
+	override var Aligned.alignment
 		get()      = hAlignment
 		set(value) { hAlignment = value }
 
