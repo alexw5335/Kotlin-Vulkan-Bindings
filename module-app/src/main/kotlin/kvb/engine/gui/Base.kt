@@ -1,6 +1,7 @@
 package kvb.engine.gui
 
 import kvb.engine.gui.event.*
+import kvb.engine.gui.model.BaseModel
 
 open class Base {
 

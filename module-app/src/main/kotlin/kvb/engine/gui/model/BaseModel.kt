@@ -1,6 +1,6 @@
-package kvb.engine.gui
+package kvb.engine.gui.model
 
-import kvb.vkwrapper.handle.CommandBuffer
+import kvb.engine.gui.Base
 
 interface BaseModel {
 

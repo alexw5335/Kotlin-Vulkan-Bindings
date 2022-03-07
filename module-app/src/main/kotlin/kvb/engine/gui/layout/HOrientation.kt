@@ -1,8 +1,8 @@
-package kvb.engine.gui.orientation
+package kvb.engine.gui.layout
 
 import kvb.engine.gui.Base
 
-object VOrientation : Oriented {
+object HOrientation : Orientation {
 
 
 	override var Base.pos1: Float
@@ -111,6 +111,16 @@ object VOrientation : Oriented {
 
 	override val Base.margin2: Float
 		get() = margin.vertical
+
+
+
+	override var Aligned.alignment1
+		get()      = hAlignment
+		set(value) { hAlignment = value }
+
+	override var Aligned.alignment2
+		get()      = vAlignment
+		set(value) { vAlignment = value }
 
 
 }

@@ -1,4 +1,8 @@
-package kvb.engine.gui
+package kvb.engine.gui.model
+
+import kvb.engine.gui.Base
+import kvb.engine.gui.Colour
+import kvb.engine.gui.GuiGraphics
 
 class ColourRectModel(var colour: Colour) : BaseModel {
 

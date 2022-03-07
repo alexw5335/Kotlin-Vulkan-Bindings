@@ -1,8 +1,8 @@
-package kvb.engine.gui.orientation
+package kvb.engine.gui.layout
 
 import kvb.engine.gui.Base
 
-sealed interface Oriented {
+interface Oriented {
 	
 	
 	var Base.pos1: Float
@@ -34,6 +34,9 @@ sealed interface Oriented {
 	var Base.secondMargin2: Float
 	val Base.margin1: Float
 	val Base.margin2: Float
+
+	var Aligned.alignment1: Alignment
+	var Aligned.alignment2: Alignment
 	
 	
 }

@@ -2,12 +2,12 @@ package kvb.engine
 
 import kvb.core.Platforms
 import kvb.engine.gui.*
+import kvb.engine.gui.model.ColourRectModel
 import kvb.engine.vulkan.VkContext
 import kvb.engine.vulkan.VkContextBuilder
 import kvb.vkwrapper.shader.ShaderCreation
 import kvb.vulkan.VK_TRUE
 import kvb.window.WindowManager
-import kvb.window.winapi.WinApi
 import kvb.window.winapi.WinApiWindow
 
 object Test {
@@ -40,11 +40,7 @@ object Test {
 			it.root = VBox().apply {
 				model = ColourRectModel(Colour(1F, 0F, 0F))
 
-				addChild(Base().apply {
-					model = ColourRectModel(Colour(0F, 1F, 0F))
-					width = 100F
-					height = 100F
-				})
+				addChild(RectBase(100F, 100F, Colour(0F, 1F, 0F)))
 			}
 		}
 
