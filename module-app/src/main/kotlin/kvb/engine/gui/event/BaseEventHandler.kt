@@ -1,6 +1,6 @@
 package kvb.engine.gui.event
 
-fun interface BaseEventHandler<T : BaseEvent> {
+fun interface BaseEventHandler<in T : BaseEvent> {
 
 	fun handle(event: T)
 
