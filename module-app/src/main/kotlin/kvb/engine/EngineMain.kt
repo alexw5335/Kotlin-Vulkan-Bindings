@@ -2,7 +2,10 @@ package kvb.engine
 
 import kvb.core.Platforms
 import kvb.engine.gui.*
-import kvb.engine.gui.model.ColourRectModel
+import kvb.engine.gui.layout.Alignment
+import kvb.engine.gui.layout.HOrientation
+import kvb.engine.gui.layout.Padding
+import kvb.engine.gui.layout.VOrientation
 import kvb.engine.vulkan.VkContext
 import kvb.engine.vulkan.VkContextBuilder
 import kvb.vkwrapper.shader.ShaderCreation
@@ -37,10 +40,15 @@ object Test {
 
 		EngineBuilder.let {
 			it.window = window
-			it.root = VBox().apply {
-				model = ColourRectModel(Colour(1F, 0F, 0F))
-
+			it.root = Box(VOrientation).apply {
+				spacing = 50F
+				hAlignment = Alignment.CENTRE
+				vAlignment = Alignment.START
+				padding = Padding(50F)
 				addChild(RectBase(100F, 100F, Colour(0F, 1F, 0F)))
+				addChild(RectBase(100F, 100F, Colour(0F, 0F, 1F)))
+				addChild(SimpleButton(100F, 50F))
+				addChild(SimpleText("public static void main(String[] args) { System.out.println(\"Hello World\"); } ", 2F))
 			}
 		}
 

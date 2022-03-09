@@ -22,5 +22,11 @@ interface Oriented {
 	var Aligned.alignment: Alignment
 	var Aligned.alignment2: Alignment
 
+	fun Base.align(alignment: Alignment, child: Base)
+	fun Base.align2(alignment: Alignment, child: Base)
+
+	fun<T> T.align(child: Base) where T : Base, T : Aligned = align(alignment, child)
+	fun<T> T.align2(child: Base) where T : Base, T : Aligned = align2(alignment2, child)
+
 	
 }

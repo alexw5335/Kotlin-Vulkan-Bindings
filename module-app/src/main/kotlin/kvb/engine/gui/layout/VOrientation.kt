@@ -58,6 +58,12 @@ object VOrientation : Orientation {
 	override var Aligned.alignment2
 		get()      = hAlignment
 		set(value) { hAlignment = value }
-	
+
+
+
+	override fun Base.align(alignment: Alignment, child: Base) = vAlign(alignment, child)
+
+	override fun Base.align2(alignment: Alignment, child: Base) = hAlign(alignment, child)
+
 
 }

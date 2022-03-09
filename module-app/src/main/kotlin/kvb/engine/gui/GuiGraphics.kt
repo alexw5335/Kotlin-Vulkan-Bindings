@@ -4,7 +4,9 @@ import kvb.core.memory.LinearAllocator
 import kvb.core.memory.Unsafe
 import kvb.core.memory.direct.DirectLong
 import kvb.engine.vulkan.VkContext
+import kvb.vkwrapper.allocation.VkLinearAllocator
 import kvb.vkwrapper.builder.GraphicsPipelineBuilder
+import kvb.vkwrapper.handle.Buffer
 import kvb.vkwrapper.handle.CommandBuffer
 import kvb.vkwrapper.handle.Pipeline
 import kvb.vkwrapper.shader.ShaderDirectory
@@ -24,6 +26,15 @@ object GuiGraphics {
 		VkContext.device.buildGraphicsPipeline(block).also(pipelines::add)
 
 	lateinit var commandBuffer: CommandBuffer
+
+	private val dummyBuffer = VkContext.device.createBuffer(32L, BufferUsageFlags.VERTEX_BUFFER)
+
+	val textAllocator = VkLinearAllocator(VkContext.device.allocateMemory(
+		size           = 1L shl 20,
+		property1      = MemoryPropertyFlags.HOST_VISIBLE,
+		property2      = MemoryPropertyFlags.DEVICE_LOCAL,
+		memoryTypeBits = dummyBuffer.memoryRequirements().memoryTypeBits
+	))
 
 
 
@@ -61,19 +72,6 @@ object GuiGraphics {
 
 
 
-	/*
-	- Push constant allocations can use a linear allocator that is reset every frame.
-	- Text will require more sophisticated memory management.
-	- Each character will require 16 bytes. A 256-byte minimum-alignment buffer can fit 16 characters.
-		- There is no use in sub-allocating buffers for text.
-		- Each Text uses a single buffer
-		- Need a heap allocator for a single memory type.
-			- Can allocate more DeviceMemory if it is needed.
-			- Can use multiple DeviceMemory objects.
-	 */
-
-
-
 	fun renderRect(
 		offsetX : Float,
 		offsetY : Float,
@@ -106,15 +104,35 @@ object GuiGraphics {
 
 
 
-/*	val binaryFontPipeline = VkContext.device.buildGraphicsPipeline {
+	val binaryFontPipeline = VkContext.device.buildGraphicsPipeline {
 		vertexBinding { vec2(); uvec2() }
 		renderPass(VkContext.surfaceSystem.renderPass)
-		pushConstant(ShaderStageFlags.VERTEX, 0, 20)
+		pushConstant(ShaderStageFlags.VERTEX, 0, 32)
 		shaders(shaderDirectory["font"])
 		pointList()
 		simpleBlendAttachment()
 		dynamicViewportAndScissor()
-	}*/
+	}
+
+
+
+	fun renderText(
+		offsetX   : Float,
+		offsetY   : Float,
+		buffer    : Buffer,
+		textScale : Float,
+		numChars  : Int,
+	) {
+		val data = allocator.mallocByte(12)
+		data.setFloat(0, offsetX)
+		data.setFloat(4, offsetY)
+		data.setFloat(8, textScale)
+
+		commandBuffer.bindPipeline(binaryFontPipeline)
+		commandBuffer.pushConstants(binaryFontPipeline.layout, ShaderStageFlags.VERTEX, 16, data.byteSize, data)
+		commandBuffer.bindVertexBuffer(buffer)
+		commandBuffer.draw(numChars)
+	}
 
 
 }

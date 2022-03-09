@@ -9,6 +9,12 @@ class VkLinearAllocator(val memory: DeviceMemory) : VkAllocator {
 	private var pointer = 0L
 
 
+	init {
+		if(!memory.mapped)
+			memory.mapWhole()
+	}
+
+
 
 	override fun allocate(size: Long, alignment: Long) : VkAllocation {
 		val offset = (pointer + (alignment - 1)) and -alignment

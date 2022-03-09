@@ -60,4 +60,10 @@ object HOrientation : Orientation {
 		set(value) { vAlignment = value }
 
 
+
+	override fun Base.align(alignment: Alignment, child: Base) = hAlign(alignment, child)
+
+	override fun Base.align2(alignment: Alignment, child: Base) = vAlign(alignment, child)
+
+
 }

@@ -1,0 +1,56 @@
+
+Gui model:
+	- Each window has a GUI, although there is only one window.
+	- A Base can access the GUI that it is in through Gui.current. This
+	should only be used in methods that are called by the GUI.
+	- Each Base has a protected list of internal children.
+		- If a Base is designed to add other children, then it must extend Pane.
+	- Each Base has a padding, border, and margin.
+
+- Need to work out how to initialise the GUI, window, and graphics.
+	- Make everything global?
+- GUIs are not instantiated by the user. They are maintained for each window by the Guis object.
+	- val window = Engine.createWindow?
+- The Engine object encapsulates the global window, global Vulkan Context, and the global GUI.
+- EngineBuilder configures all engine initialisation config.
+	- Engine.root = StackPane { }
+
+- For the moment, BaseModels are sufficient for rendering.
+	- BaseModel is just an interface with a render function.
+
+- 3 button actions:
+	- press (initial press only)
+	- hold (doesn't include initial press)
+	- release (or click)
+
+
+
+
+Margin and border are not necessary for a simple GUI.
+
+Simplest GUI:
+
+- All sizes are absolute.
+- The root's size is always set to the size of the window.
+- Bases are aligned according to width, height, and padding.
+	- No border not margin
+	- Any borders are entirely cosmetic and do not interfere with alignment.
+- Parents may change the size of children and children may change the size of parents.
+	- E.g. A button's text changes, so it must be resized.
+	- E.g. A packed box must conform to the size of its children.
+	- E.g. A slider sets the size of its key and track whenever it is resized.
+	- E.g. A StackPane always ensures that its children are the same size as it.
+- Alignment must not result in immediately requiring another alignment.
+	- I.e. A parent that sets the size of its children must not in turn be sized by its children.
+	- E.g. A button does not size its text, but its text may size it?
+
+
+
+- Push constant allocations can use a linear allocator that is reset every frame.
+- Text will require more sophisticated memory management.
+- Each character will require 16 bytes. A 256-byte minimum-alignment buffer can fit 16 characters.
+	- There is no use in sub-allocating buffers for text.
+	- Each Text uses a single buffer
+	- Need a heap allocator for a single memory type.
+		- Can allocate more DeviceMemory if it is needed.
+		- Can use multiple DeviceMemory objects.

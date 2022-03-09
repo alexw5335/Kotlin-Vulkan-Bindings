@@ -33,8 +33,9 @@ object Engine {
 	fun update() {
 		WindowManager.pollEvents()
 		gui.handleMousePos(window.cursorX, window.cursorY)
-		gui.onHold(window.cursorX, window.cursorY)
+		if(Button.LEFT_MOUSE.isPressed) gui.onHold(window.cursorX, window.cursorY)
 		gui.root.alignCycle()
+		gui.root.updateCycle()
 	}
 
 

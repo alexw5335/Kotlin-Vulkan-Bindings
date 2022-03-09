@@ -23,8 +23,6 @@ open class Base {
 	var height = 0F
 		set(value) { field = value; onSizeChanged() }
 
-
-
 	var padding = Padding(0F, 0F, 0F, 0F)
 		set(value) { field = value; onInteriorChanged() }
 
@@ -104,11 +102,13 @@ open class Base {
 
 	open fun hoverAction(event: HoverEvent) { }
 
+	open fun pressAction(event: PressEvent) { }
+
 	open fun mouseEnterAction(event: MouseEnterEvent) { }
 
 	open fun mouseExitAction(event: MouseExitEvent) { }
 
-	open fun pressAction(event: PressEvent) { }
+	open fun holdAction(event: HoldEvent) { }
 
 	open fun releaseAction(event: ReleaseEvent) { }
 
@@ -118,11 +118,13 @@ open class Base {
 
 	fun hoverEvent(cursorX: Float, cursorY: Float) = HoverEvent(this, cursorX, cursorY).bubble()
 
+	fun pressEvent(cursorX: Float, cursorY: Float) = PressEvent(this, cursorX, cursorY).bubble()
+
 	fun mouseEnterEvent(cursorX: Float, cursorY: Float) = MouseEnterEvent(this, cursorX, cursorY).bubble()
 
 	fun mouseExitEvent(cursorX: Float, cursorY: Float) = MouseExitEvent(this, cursorX, cursorY).bubble()
 
-	fun pressEvent(cursorX: Float, cursorY: Float, originX: Float, originY: Float, hovered: Boolean) = PressEvent(this, cursorX, cursorY, originX, originY, hovered).bubble()
+	fun holdEvent(cursorX: Float, cursorY: Float, originX: Float, originY: Float, hovered: Boolean) = HoldEvent(this, cursorX, cursorY, originX, originY, hovered).bubble()
 
 	fun releaseEvent(cursorX: Float, cursorY: Float) = ReleaseEvent(this, cursorX, cursorY).bubble()
 
@@ -133,11 +135,13 @@ open class Base {
 
 	fun onHover(action: (HoverEvent) -> Unit) = handlers.add(HoverEvent.Handler(action))
 
+	fun onPress(action: (PressEvent) -> Unit) = handlers.add(PressEvent.Handler(action))
+
 	fun onMouseEnter(action: (MouseEnterEvent) -> Unit) = handlers.add(MouseEnterEvent.Handler(action))
 
 	fun onMouseExit(action: (MouseExitEvent) -> Unit) = handlers.add(MouseExitEvent.Handler(action))
 
-	fun onPress(action: (PressEvent) -> Unit) = handlers.add(PressEvent.Handler(action))
+	fun onHold(action: (HoldEvent) -> Unit) = handlers.add(HoldEvent.Handler(action))
 
 	fun onRelease(action: (ReleaseEvent) -> Unit) = handlers.add(ReleaseEvent.Handler(action))
 
@@ -158,6 +162,24 @@ open class Base {
 	fun alignCycle() {
 		if(shouldAlign) align()
 		for(c in children) c.alignCycle()
+	}
+
+
+	/*
+	Update
+	 */
+
+
+
+	protected open fun update() { }
+
+
+
+	fun updateCycle() {
+		update()
+
+		for(child in children)
+			child.updateCycle()
 	}
 
 
@@ -240,15 +262,17 @@ open class Base {
 
 
 
-	fun Orientation.align(alignment: Alignment, child: Base) = when(alignment) {
-		Alignment.START  -> child.pos = startPadding
-		Alignment.END    -> child.pos = length - endPadding - child.length
-		Alignment.CENTRE -> child.pos = (length - child.length) / 2
+	fun hAlign(alignment: Alignment, child: Base) = when(alignment) {
+		Alignment.START  -> child.x = padding.left
+		Alignment.END    -> child.x = width - padding.right - child.width
+		Alignment.CENTRE -> child.x = (width - child.width) / 2
 	}
 
-	fun vAlign(alignment: Alignment, child: Base) = VOrientation.align(alignment, child)
-
-	fun hAlign(alignment: Alignment, child: Base) = HOrientation.align(alignment, child)
+	fun vAlign(alignment: Alignment, child: Base) = when(alignment) {
+		Alignment.START  -> child.y = padding.top
+		Alignment.END    -> child.y = height - padding.top - child.height
+		Alignment.CENTRE -> child.y = (height - child.height) / 2
+	}
 
 
 

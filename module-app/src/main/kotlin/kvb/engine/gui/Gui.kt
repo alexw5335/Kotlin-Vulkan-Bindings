@@ -19,7 +19,7 @@ class Gui(val root: Base) {
 		private set
 
 	/**
-	 * The [Base] over which the cursor was located when the last [newPressEvent] was triggered.
+	 * The [Base] over which the cursor was located when the last press event was triggered.
 	 */
 	var pressed: Base? = null
 		private set
@@ -82,6 +82,8 @@ class Gui(val root: Base) {
 
 		pressOriginX = cursorX
 		pressOriginY = cursorY
+
+		pressed?.pressEvent(cursorX, cursorY)
 	}
 
 
@@ -98,7 +100,7 @@ class Gui(val root: Base) {
 
 
 	fun onHold(cursorX: Float, cursorY: Float) {
-		pressed?.pressEvent(cursorX, cursorY, pressOriginX, pressOriginY, hovered == pressed)
+		pressed?.holdEvent(cursorX, cursorY, pressOriginX, pressOriginY, hovered == pressed)
 	}
 
 
@@ -121,32 +123,3 @@ class Gui(val root: Base) {
 
 
 }
-
-
-
-/*
-Gui model:
-	- Each window has a GUI, although there is only one window.
-	- A Base can access the GUI that it is in through Gui.current. This
-	should only be used in methods that are called by the GUI.
-	- Each Base has a protected list of internal children.
-		- If a Base is designed to add other children, then it must extend Pane.
-	- Each Base has a padding, border, and margin.
-
-- Need to work out how to initialise the GUI, window, and graphics.
-	- Make everything global?
-- GUIs are not instantiated by the user. They are maintained for each window by the Guis object.
-	- val window = Engine.createWindow?
-- The Engine object encapsulates the global window, global Vulkan Context, and the global GUI.
-- EngineBuilder configures all engine initialisation config.
-	- Engine.root = StackPane { }
-
-- For the moment, BaseModels are sufficient for rendering.
-	- BaseModel is just an interface with a render function.
-
-- 3 button actions:
-	- press (initial press only)
-	- hold (doesn't include initial press)
-	- release (or click)
-
-*/
