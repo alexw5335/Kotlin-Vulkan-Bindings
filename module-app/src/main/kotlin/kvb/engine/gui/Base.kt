@@ -1,5 +1,6 @@
 package kvb.engine.gui
 
+import kvb.engine.Engine
 import kvb.engine.gui.event.*
 import kvb.engine.gui.layout.*
 import kvb.engine.gui.model.BaseModel
@@ -30,6 +31,10 @@ open class Base {
 
 	var model: BaseModel? = null
 
+	var hoveredColour
+		get() = model!!.hoveredColour
+		set(value) { model!!.hoveredColour = value!! }
+
 	protected val children = ArrayList<Base>()
 
 	var transparent = false
@@ -41,6 +46,12 @@ open class Base {
 	val handlers = ArrayList<BaseEventHandler<*>>()
 
 	protected var shouldAlign = false
+
+	val gui get() = Engine.gui
+
+	val isHovered get() = gui.hovered == this
+
+	val isPressed get() = gui.pressed == this
 
 
 

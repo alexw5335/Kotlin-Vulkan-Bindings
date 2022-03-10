@@ -34,4 +34,12 @@ value class Colour(val value: Int) {
 	override fun toString() = "$value: ($r, $g, $b, $a)"
 
 
+
+	companion object {
+
+		val NULL = Colour(0)
+
+	}
+
+
 }

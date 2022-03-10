@@ -54,3 +54,22 @@ Simplest GUI:
 	- Need a heap allocator for a single memory type.
 		- Can allocate more DeviceMemory if it is needed.
 		- Can use multiple DeviceMemory objects.
+
+
+How to handle colour changes on press and hover
+- Three states: default, hovered, held.
+- Set state or handle with events?
+- mouseEnter and mouseExit can set hovered
+- press can set held.
+- heldEnd?
+- mouseState: none, hovered, held.
+	- Doesn't include press and click as these are strictly events, never states.
+- Doesn't need to be an enum.
+
+- Disconnect between models, bases, and styles
+	- How to handle things like toggle buttons?
+	- Multiple hovered and pressed colours
+	- Combinations of models, base subclasses, colours, textures, styles, geometry, etc.
+	- Should a button have multiple models?
+	- Render by overriding render or by setting a model?
+	- How to handle base-specific rendering?
