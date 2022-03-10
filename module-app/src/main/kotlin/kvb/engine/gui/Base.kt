@@ -27,13 +27,7 @@ open class Base {
 	var padding = Padding(0F, 0F, 0F, 0F)
 		set(value) { field = value; onInteriorChanged() }
 
-
-
 	var model: BaseModel? = null
-
-	var hoveredColour
-		get() = model!!.hoveredColour
-		set(value) { model!!.hoveredColour = value!! }
 
 	protected val children = ArrayList<Base>()
 

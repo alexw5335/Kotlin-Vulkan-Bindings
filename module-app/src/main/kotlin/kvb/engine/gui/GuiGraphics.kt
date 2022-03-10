@@ -2,7 +2,6 @@ package kvb.engine.gui
 
 import kvb.core.memory.LinearAllocator
 import kvb.core.memory.Unsafe
-import kvb.core.memory.direct.DirectLong
 import kvb.engine.vulkan.VkContext
 import kvb.vkwrapper.allocation.VkLinearAllocator
 import kvb.vkwrapper.builder.GraphicsPipelineBuilder
@@ -73,15 +72,15 @@ object GuiGraphics {
 
 
 	fun renderRect(
-		offsetX : Float,
-		offsetY : Float,
-		width   : Float,
-		height  : Float,
-		colour  : Colour
+		x      : Float,
+		y      : Float,
+		width  : Float,
+		height : Float,
+		colour : Colour
 	) {
 		val data = allocator.mallocByte(20)
-		data.setFloat(0, offsetX)
-		data.setFloat(4, offsetY)
+		data.setFloat(0, x)
+		data.setFloat(4, y)
 		data.setFloat(8, width)
 		data.setFloat(12, height)
 		data.setInt(16, colour.value)

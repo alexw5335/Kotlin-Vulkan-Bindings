@@ -48,6 +48,7 @@ object WinApi : WindowManager {
 	fun getWindow(hwnd: Long) = windows.firstOrNull { it.hwnd == hwnd }
 
 
+
 	/*
 	Implementation
 	 */

@@ -5,10 +5,10 @@ value class Colour(val value: Int) {
 
 
 	constructor(r: Int, g: Int, b: Int, a: Int = 0) : this(
-		((r and 255) shl 0) or
-		((g and 255) shl 8) or
-		((b and 255) shl 16) or
-		((a and 255) shl 24)
+		(r.coerceAtMost(255) shl 0) or
+		(g.coerceAtMost(255) shl 8) or
+		(b.coerceAtMost(255) shl 16) or
+		(a.coerceAtMost(255) shl 24)
 	)
 
 
@@ -29,6 +29,7 @@ value class Colour(val value: Int) {
 	val b get() = (value shr 16) and 0xFF
 
 	val a get() = (value shr 24) and 0xFF
+
 
 
 	override fun toString() = "$value: ($r, $g, $b, $a)"

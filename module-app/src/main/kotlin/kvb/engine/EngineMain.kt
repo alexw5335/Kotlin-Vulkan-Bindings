@@ -3,7 +3,6 @@ package kvb.engine
 import kvb.core.Platforms
 import kvb.engine.gui.*
 import kvb.engine.gui.layout.Alignment
-import kvb.engine.gui.layout.HOrientation
 import kvb.engine.gui.layout.Padding
 import kvb.engine.gui.layout.VOrientation
 import kvb.engine.vulkan.VkContext
@@ -13,74 +12,37 @@ import kvb.vulkan.VK_TRUE
 import kvb.window.WindowManager
 import kvb.window.winapi.WinApiWindow
 
-object Test {
-
-
-	private val window = WindowManager.create("My window", 0, 0, 600, 600)
-
-	private const val targetFps = 200
-
-	private const val frameTime = 1F / targetFps
-
-
-
-	init {
-		ShaderCreation.compileAll("res/shader/gui", "res/shader/gui/out")
-
-		VkContextBuilder.let {
-			it.debugEnabled = true
-			it.windowingEnabled = true
-			it.deviceFeatures.geometryShader = VK_TRUE
-			it.window = window as WinApiWindow
-		}
-
-		VkContext.surfaceSystem.backgroundColour(0.1F, 0.7F, 0.3F, 1.0F)
-
-		GuiGraphics
-
-		EngineBuilder.let {
-			it.window = window
-			it.root = Box(VOrientation).apply {
-				spacing = 50F
-				hAlignment = Alignment.CENTRE
-				vAlignment = Alignment.START
-				padding = Padding(50F)
-				addChild(RectBase(100F, 100F, Colour(0F, 1F, 0F)))
-				addChild(RectBase(100F, 100F, Colour(0F, 0F, 1F)))
-				addChild(SimpleButton(100F, 50F))
-				addChild(SimpleText("public static void main(String[] args) { System.out.println(\"Hello World\"); } ", 2F))
-			}
-		}
-
-		Engine
-
-		window.show()
-	}
-
-
-
-	fun run() {
-		while(true) {
-			val frameStart = System.nanoTime()
-
-			Engine.update()
-			if(Engine.shouldFinish()) break
-			Engine.renderGui()
-
-			val elapsedMicroseconds = (System.nanoTime() - frameStart) / 1_000
-
-			if(elapsedMicroseconds < frameTime) {
-				Thread.sleep((frameTime.toLong() - elapsedMicroseconds) / 1000)
-			}
-		}
-	}
-
-
-}
-
 
 
 fun main() {
 	Platforms.init()
-	Test.run()
+	//ShaderCreation.compileAll("res/shader/gui", "res/shader/gui/out")
+
+	val window = WindowManager.create("My Window", 0, 0, 900, 600)
+
+	VkContextBuilder.let {
+		it.debugEnabled = true
+		it.windowingEnabled = true
+		it.deviceFeatures.geometryShader = VK_TRUE
+		it.window = window as WinApiWindow
+	}
+
+	VkContext.surfaceSystem.backgroundColour(0.1F, 0.7F, 0.3F, 1.0F)
+
+	EngineBuilder.let {
+		it.window = window
+
+		it.root = Box(VOrientation).apply {
+			spacing = 50F
+			hAlignment = Alignment.CENTRE
+			vAlignment = Alignment.START
+			padding = Padding(50F)
+			addChild(RectBase(100F, 100F, Colour(0F, 1F, 0F)))
+			addChild(RectBase(100F, 100F, Colour(0F, 0F, 1F)))
+			addChild(SimpleButton(100F, 50F, Colour(0F, 0F, 0F), Colour(100, 100, 100), Colour(50, 50, 50)))
+			addChild(SimpleText("public static void main(String[] args) { System.out.println(\"Hello World\"); }", 2F, 2F, 200F))
+		}
+	}
+
+	Engine.run()
 }

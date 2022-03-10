@@ -1,14 +1,29 @@
 package kvb.engine.gui
 
 import kvb.engine.gui.font.Fonts
+import kvb.engine.gui.font.ParagraphBuilder
 import kvb.engine.vulkan.VkContext
 import kvb.vkwrapper.handle.Buffer
 import kvb.vulkan.BufferUsageFlags
 
-class SimpleText(val text: String, val scale: Float) : Base() {
+class SimpleText(
+	val text: String,
+	val scale: Float,
+	val lineSpacing: Float,
+	val wrapWidth: Float
+) : Base() {
 
+
+	val paragraph = ParagraphBuilder(Fonts.font, scale, lineSpacing, wrapWidth).build(text)
 
 	val buffer = createBuffer()
+
+
+
+	init {
+		width = paragraph.width
+		height = paragraph.height
+	}
 
 
 
@@ -17,22 +32,19 @@ class SimpleText(val text: String, val scale: Float) : Base() {
 		buffer.bindMemory(GuiGraphics.textAllocator.allocate(buffer))
 
 		buffer.flush { data ->
-			var x = 0F
-			val y = 0F
+			var i = 0
+			for(line in paragraph.lines) {
+				var x = 0F
 
-			for((i, c) in text.withIndex()) {
-				val char = Fonts.font[c]
-
-				data.setFloat(i * 16 + 0, x + char.xOffset * scale)
-				data.setFloat(i * 16 + 4, y + char.yOffset * scale)
-				data.setLong(i * 16 + 8, char.texture)
-				x += (char.width + 1) * scale
+				for(binaryChar in line.chars) {
+					data.setFloat(i, x)
+					data.setFloat(i + 4, line.y + binaryChar.yOffset * scale)
+					data.setLong(i + 8, binaryChar.texture)
+					x += binaryChar.width * scale + scale
+					i += 16
+				}
 			}
-
-			width = x - scale
-			height = Fonts.font.size.toFloat()
 		}
-
 
 		return buffer
 	}
