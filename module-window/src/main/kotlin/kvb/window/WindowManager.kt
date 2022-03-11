@@ -12,7 +12,7 @@ interface WindowManager {
 
 	fun pollEvents()
 
-	fun create(title: String, x: Int, y: Int, width: Int, height: Int): Window
+	fun create(title: String, x: Int?, y: Int?, width: Int?, height: Int?): Window
 
 	fun getButton(code: Int): Button?
 
@@ -20,7 +20,7 @@ interface WindowManager {
 
 	companion object : WindowManager by when {
 		Platforms.isWindows -> WinApi
-		else                -> throw RuntimeException("Window implementation supported only on Windows.")
+		else -> throw RuntimeException("Window implementation supported only on Windows.")
 	}
 
 

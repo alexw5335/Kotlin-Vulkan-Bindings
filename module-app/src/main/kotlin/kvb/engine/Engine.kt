@@ -1,9 +1,10 @@
 package kvb.engine
 
+import kvb.engine.gui.AnchorPane
 import kvb.engine.gui.Gui
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.vulkan.VkContext
-import kvb.engine.vulkan.VkContextBuilder
+import kvb.engine.vulkan.VulkanBuilder
 import kvb.vulkan.VK_TRUE
 import kvb.window.WindowManager
 import kvb.window.input.Button
@@ -12,9 +13,13 @@ import kvb.window.winapi.WinApiWindow
 object Engine {
 
 
+	init { EngineBuilder.build() }
+
+
+
 	val window = EngineBuilder.window
 
-	val gui = Gui(EngineBuilder.root)
+	val gui = Gui(AnchorPane())
 
 	var targetFps = 200
 
@@ -29,28 +34,15 @@ object Engine {
 
 
 
-	/*
-	Init
-	 */
-
-
-
-	private fun initVulkan() {
-		VkContextBuilder.let {
-			it.debugEnabled = true
-			it.windowingEnabled = true
-			it.deviceFeatures.geometryShader = VK_TRUE
-			it.window = EngineBuilder.window as WinApiWindow
+	private fun initWindowCallbacks() {
+		window.onResize = {
+			gui.onWindowResize(window.width, window.height)
 		}
 
-		VkContext.surfaceSystem.backgroundColour(0.1F, 0.7F, 0.3F, 1.0F)
-	}
+		window.onMouseMove = {
+			gui.onMouseMove(window.cursorX, window.cursorY)
+		}
 
-
-
-	private fun initWindowCallbacks() {
-		window.onResize = { gui.onWindowResize(window.width, window.height) }
-		window.onMouseMove = { gui.onMouseMove(window.cursorX, window.cursorY) }
 		window.onMousePress = {
 			if(it == Button.LEFT_MOUSE)
 				gui.onPress(window.cursorX, window.cursorY)

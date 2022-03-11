@@ -3,23 +3,23 @@ package kvb.engine.vulkan
 object VkContext {
 
 
-	init { VkContextBuilder.build() }
+	init { VulkanBuilder.build() }
 
 
 
-	val window = VkContextBuilder.window
+	val window = VulkanBuilder.window
 
-	val instance = VkContextBuilder.instance
+	val instance = VulkanBuilder.instance
 
-	val debugMessenger = VkContextBuilder.debugMessenger
+	val debugMessenger = VulkanBuilder.debugMessenger
 
-	val physicalDevice = VkContextBuilder.physicalDevice
+	val physicalDevice = VulkanBuilder.physicalDevice
 
-	val device = VkContextBuilder.device
+	val device = VulkanBuilder.device
 
-	val queue = VkContextBuilder.queue
+	val queue = VulkanBuilder.queue
 
-	val surfaceSystem = VkContextBuilder.surfaceSystem
+	val surfaceSystem = VulkanBuilder.surfaceSystem
 
 
 }

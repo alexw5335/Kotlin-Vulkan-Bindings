@@ -2,8 +2,7 @@ package kvb.engine.gui
 
 import kvb.engine.gui.event.HoverEvent
 
-class Gui(val root: Base) {
-
+class Gui(var root: Base) {
 
 
 	/*

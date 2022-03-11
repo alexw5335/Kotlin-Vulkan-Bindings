@@ -1,6 +1,7 @@
 package kvb.window.winapi
 
-import kvb.core.memory.*
+import kvb.core.memory.Unsafe
+import kvb.core.memory.stackGet
 import kvb.window.Window
 import kvb.window.WindowManager
 import kvb.window.input.Button
@@ -49,6 +50,10 @@ object WinApi : WindowManager {
 
 
 
+	private const val CW_USE_DEFAULT =  -0x80000000
+
+
+
 	/*
 	Implementation
 	 */
@@ -59,14 +64,16 @@ object WinApi : WindowManager {
 
 
 
-	override fun create(title: String, x: Int, y: Int, width: Int, height: Int): Window {
-		val hwnd = stackGet {
-			createWindow(encodeUtf16NT(title).address, x, y, width, height)
-		}
+	override fun create(title: String, x: Int?, y: Int?, width: Int?, height: Int?) = stackGet {
+		val hwnd = createWindow(
+			encodeUtf16NT(title).address,
+			x ?: CW_USE_DEFAULT,
+			y ?: CW_USE_DEFAULT,
+			width ?: CW_USE_DEFAULT,
+			height ?: CW_USE_DEFAULT
+		)
 
-		val window = WinApiWindow(hwnd)
-		windows.add(window)
-		return window
+		WinApiWindow(hwnd).also(windows::add)
 	}
 
 

@@ -73,3 +73,9 @@ How to handle colour changes on press and hover
 	- Should a button have multiple models?
 	- Render by overriding render or by setting a model?
 	- How to handle base-specific rendering?
+
+What needs to be given to the EngineBuilder?
+- The window dimensions, which should be the same as the size of the GUI.
+- The GUI root does not have to be specified at creation time.
+	- The dimensions should match up with the window dimensions in order to prevent immediate resizing.
+	- Or, the window can be made visible only when the GUI is first set.
