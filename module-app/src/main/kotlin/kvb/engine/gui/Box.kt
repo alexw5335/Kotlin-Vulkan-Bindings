@@ -9,18 +9,20 @@ class Box(val orientation: Orientation) : Pane(), Oriented by orientation, Align
 
 
 	var spacing = 0F
+		set(value) { field = value; shouldAlign = true }
 
 	override var hAlignment = Alignment.CENTRE
+		set(value) { field = value; shouldAlign = true }
 
 	override var vAlignment = Alignment.CENTRE
-
-
+		set(value) { field = value; shouldAlign = true }
 
 	var pack = false
+		set(value) { field = value; shouldAlign = true }
 
 
 
-	fun childrenLength(): Float {
+	private fun childrenLength(): Float {
 		var value = (children.size - 1) * spacing
 		for(c in children) value += c.length
 		return value

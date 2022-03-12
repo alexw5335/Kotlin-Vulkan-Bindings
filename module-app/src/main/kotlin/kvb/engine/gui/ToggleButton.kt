@@ -1,9 +1,14 @@
 package kvb.engine.gui
 
 import kvb.engine.gui.event.ClickEvent
+import kvb.engine.gui.layout.Padding
 
 class ToggleButton : Base() {
 
+
+	var border = BaseDefaults.controlBorder
+
+	var borderColour = BaseDefaults.controlBorderColour
 
 	var colour = BaseDefaults.controlColour
 
@@ -19,11 +24,19 @@ class ToggleButton : Base() {
 
 	var toggled = false
 
+	val textBase = addChildInternal(SimpleText()) { active = false }
+
 
 
 	init {
 		this.width = BaseDefaults.buttonWidth
 		this.height = BaseDefaults.buttonHeight
+	}
+
+
+
+	override fun align() {
+		alignCentre(textBase)
 	}
 
 
@@ -46,6 +59,7 @@ class ToggleButton : Base() {
 			else      -> colour
 		}
 
+		GuiGraphics.renderRect(x - border.left, y - border.top, width + border.horizontal, height + border.vertical, borderColour)
 		GuiGraphics.renderRect(x, y, width, height, colour)
 	}
 

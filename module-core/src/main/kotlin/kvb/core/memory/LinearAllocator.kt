@@ -34,7 +34,7 @@ open class LinearAllocator(val address: Long, val size: Long) : Allocator {
 
 
 	override fun malloc(size: Long, alignment: Int): Long {
-		// round pointer up to nearest multiple of alignment.
+		// round pointer up to the nearest multiple of alignment.
 		val address = (pointer + (alignment - 1)) and -alignment.toLong()
 
 		pointer = address + size

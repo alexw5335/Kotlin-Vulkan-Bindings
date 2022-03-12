@@ -6,14 +6,8 @@ import kvb.vkwrapper.handle.DeviceMemory
 class VkLinearAllocator(val memory: DeviceMemory) : VkAllocator {
 
 
-	private var pointer = 0L
-
-
-	init {
-		if(!memory.mapped)
-			memory.mapWhole()
-	}
-
+	var pointer = 0L
+		private set
 
 
 	override fun allocate(size: Long, alignment: Long) : VkAllocation {
@@ -32,6 +26,11 @@ class VkLinearAllocator(val memory: DeviceMemory) : VkAllocator {
 	override fun destroy() {
 		memory.free()
 	}
+
+
+
+	fun canAllocate(size: Long, alignment: Long) =
+		size <= memory.size - ((pointer + (alignment - 1) and -alignment))
 
 
 }

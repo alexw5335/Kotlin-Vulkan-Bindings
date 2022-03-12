@@ -33,7 +33,9 @@ object GuiGraphics {
 		property1      = MemoryPropertyFlags.HOST_VISIBLE,
 		property2      = MemoryPropertyFlags.DEVICE_LOCAL,
 		memoryTypeBits = dummyBuffer.memoryRequirements().memoryTypeBits
-	))
+	)).also {
+		it.memory.mapWhole()
+	}
 
 
 

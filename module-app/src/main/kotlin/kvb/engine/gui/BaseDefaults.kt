@@ -1,5 +1,7 @@
 package kvb.engine.gui
 
+import kvb.engine.gui.layout.Padding
+
 /**
  * Default styles for bases.
  */
@@ -10,11 +12,17 @@ object BaseDefaults {
 
 	var buttonHeight = 40F
 
+	var rectWidth = 100F
+
+	var rectHeight = 100F
+
+	var controlBorder = Padding(2F)
+
 
 
 	var controlColour = Colour(0, 0, 0)
 
-	var controlBorderColour = Colour(1F,1F,1F,1F)
+	var controlBorderColour = Colour(1F, 1F, 1F)
 
 	var controlHoveredColour = Colour(50, 50, 50)
 
@@ -25,10 +33,6 @@ object BaseDefaults {
 	var toggledHoveredColour = Colour(0, 150, 150)
 
 	var toggledPressedColour = Colour(0, 75, 75)
-
-	var rectWidth = 100F
-
-	var rectHeight = 100F
 
 
 }

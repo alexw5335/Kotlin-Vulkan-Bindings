@@ -15,7 +15,7 @@ fun vulkanConfig(block: VkContextBuilder.() -> Unit) = VkContextBuilder.also(blo
 
 
 
-fun main() {
+fun run() {
 	Platforms.init()
 	//ShaderCreation.compileAll("res/shader/gui", "res/shader/gui/out")
 

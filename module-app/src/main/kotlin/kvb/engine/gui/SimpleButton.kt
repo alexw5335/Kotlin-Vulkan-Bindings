@@ -1,13 +1,11 @@
 package kvb.engine.gui
 
-import kvb.engine.gui.layout.Padding
-
 class SimpleButton : Base() {
 
 
-	var border = Padding(2F)
+	var border = BaseDefaults.controlBorder
 
-	var borderColour = Colour.WHITE
+	var borderColour = BaseDefaults.controlBorderColour
 
 	var colour = BaseDefaults.controlColour
 

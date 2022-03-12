@@ -93,3 +93,48 @@ pClearValues is a pointer to an array of clearValueCount VkClearValue structures
 attachment, if the attachment uses a loadOp value of VK_ATTACHMENT_LOAD_OP_CLEAR or if the attachment has a
 depth/stencil format and uses a stencilLoadOp value of VK_ATTACHMENT_LOAD_OP_CLEAR. The array is indexed by attachment
 number. Only elements corresponding to cleared attachments are used. Other elements of pClearValues are ignored.
+
+
+
+How to handle scrolling bases with very large content areas?
+- Need to dynamically reset bases and text.
+	- E.g. line numbers in a text editor can have their numbers steadily increased.
+- Hex editor project
+	- A single text component for the line numbers.
+		- Not a normal text component.
+		- Does not rely on paragraphs
+
+
+
+Unsigned integers and Two's Complement signed integers.
+0000_0000 can represent 2^8 = 256 possible values, 0..255 inclusive when unsigned.
+1111_1111 = 255 (unsigned). 256 cannot be represented.
+Signed, -128..127 can be represented, 127 + 128 + 1 = 256 possible values.
+
+binary        unsigned  signed
+1111_1111 =   255       -1
+1111_1110 =   254       -2
+1000_0000 =   128       -128
+0111_1111 =   127       127
+0111_1110 =   126       126
+0000_0000 =   0         0
+
+If the last bit is not set, then signed = unsigned
+If the last bit is set, then signed = unsigned - 256
+
+
+
+Simple Heap Allocator
+- Allocation is done via blocks.
+- Each allocation takes up a block.
+- Blocks cannot be resized.
+- Blocks are sized by powers of two
+- The minimum block size is 256 bytes
+	- This is a guaranteed alignment size.
+- Allocations do not take alignment into account.
+- Buffer allocations will not require memory type bits nor alignment
+	- vkGetBufferMemoryRequirements will not be needed.
+- How to allocate the blocks?
+	- List of linear allocators
+	- If a new linear allocator is required, it is sized as the
+	largest block size * 4 by default
