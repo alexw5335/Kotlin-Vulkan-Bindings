@@ -62,7 +62,7 @@ class Image(
 	/**
 	 * Implementation of vkBindImageMemory.
 	 */
-	fun bindMemory(memory: DeviceMemory, offset: Long) {
+	fun bindMemory(memory: DeviceMemory, offset: Long = 0L) {
 		commands.bindImageMemory(self, memory, offset).check()
 		this.memory = memory
 		this.offset = offset

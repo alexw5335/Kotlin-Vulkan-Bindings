@@ -258,6 +258,7 @@ class VulkanGenerator(
 
 			group(1) {
 				declaration("operator fun plus(mask: $name) = $name(value or mask.value)")
+				declaration("operator fun times(mask: $name) = $name(value and mask.value)")
 				declaration("operator fun contains(mask: $name) = value and mask.value == mask.value")
 			}
 		}

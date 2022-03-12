@@ -4,8 +4,8 @@ import kvb.core.Platforms
 import kvb.engine.gui.*
 import kvb.engine.gui.layout.Alignment
 import kvb.engine.gui.layout.Padding
-import kvb.engine.gui.layout.VOrientation
 import kvb.engine.vulkan.VkContextBuilder
+import kvb.vulkan.*
 
 
 
@@ -18,6 +18,10 @@ fun vulkanConfig(block: VkContextBuilder.() -> Unit) = VkContextBuilder.also(blo
 fun main() {
 	Platforms.init()
 	//ShaderCreation.compileAll("res/shader/gui", "res/shader/gui/out")
+
+	vulkanConfig {
+		sampleCount = SampleCountFlags._4
+	}
 
 	engineConfig {
 		windowX = 0
@@ -58,16 +62,22 @@ fun main() {
 		}
 
 		button {
-			textBase = SimpleText("Ab c d e fg h i j kl m n op qr", 2F, 0F, width)
+			with(textBase) {
+				text = "Click Me!"
+				scale = 2F
+				lineSpacing = 1F
+				wrapWidth = this@button.interiorWidth
+			}
 		}
 
 		toggleButton { }
 
-	/*	addChild(SimpleText("public static void main(String[] args) { System.out.println(\"Hello World\"); }",
-			2F,
-			2F,
-			400F
-		))*/
+		text {
+			text = "public static void main(String[] args) { System.out.println(\"Hello World\"); }"
+			scale = 2F
+			lineSpacing = 1F
+			wrapWidth = 400F
+		}
 	}
 
 	Engine.gui = Gui(root)

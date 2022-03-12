@@ -48,6 +48,9 @@ object VkContextBuilder {
 
 	var presentMode = PresentMode.FIFO
 
+	var sampleCount: SampleCountFlags = SampleCountFlags._1
+
+	private val multisampled get() = sampleCount != SampleCountFlags._1
 
 
 	/*
@@ -116,6 +119,11 @@ object VkContextBuilder {
 
 		physicalDevice = instance.physicalDevices.firstOrNull { it.isDiscrete } ?: instance.physicalDevices[0]
 
+		if(!physicalDevice.combinedSampleCounts.contains(sampleCount)) {
+			println("Sample count '$sampleCount' not supported on this physical device.")
+			sampleCount = SampleCountFlags._1
+		}
+
 		val surface = physicalDevice.createWin32Surface(0L, window.hwnd)
 
 		val queueFamily = physicalDevice.queueFamilies.first {
@@ -140,21 +148,38 @@ object VkContextBuilder {
 		}
 
 		val renderPass = device.buildRenderPass {
+			// Colour attachment
 			it.attachment(
 				format         = formatPair.format,
-				samples        = SampleCountFlags._1,
+				samples        = sampleCount,
 				loadOp         = AttachmentLoadOp.CLEAR,
 				storeOp        = AttachmentStoreOp.STORE,
 				stencilLoadOp  = AttachmentLoadOp.DONT_CARE,
 				stencilStoreOp = AttachmentStoreOp.DONT_CARE,
 				initialLayout  = ImageLayout.UNDEFINED,
-				finalLayout    = ImageLayout.PRESENT_SRC
+				finalLayout    = if(multisampled) ImageLayout.COLOR_ATTACHMENT_OPTIMAL else ImageLayout.PRESENT_SRC
 			)
 
-			it.colourSubpass(attachment = 0, layout = ImageLayout.COLOR_ATTACHMENT_OPTIMAL)
+			if(multisampled) {
+				// Resolve attachment
+				it.attachment(
+					format         = formatPair.format,
+					samples        = SampleCountFlags._1,
+					loadOp         = AttachmentLoadOp.CLEAR,
+					storeOp        = AttachmentStoreOp.STORE,
+					stencilLoadOp  = AttachmentLoadOp.DONT_CARE,
+					stencilStoreOp = AttachmentStoreOp.DONT_CARE,
+					initialLayout  = ImageLayout.UNDEFINED,
+					finalLayout    = ImageLayout.PRESENT_SRC
+				)
+
+				it.colourResolveSubpass(0, ImageLayout.COLOR_ATTACHMENT_OPTIMAL, 1, ImageLayout.COLOR_ATTACHMENT_OPTIMAL)
+			} else {
+				it.colourSubpass(attachment = 0, layout = ImageLayout.COLOR_ATTACHMENT_OPTIMAL)
+			}
 		}
 
-		surfaceSystem = SurfaceSystem(surface, device, queue, renderPass, format, colourSpace, presentMode)
+		surfaceSystem = SurfaceSystem(surface, device, queue, renderPass, format, colourSpace, presentMode, sampleCount)
 	}
 
 

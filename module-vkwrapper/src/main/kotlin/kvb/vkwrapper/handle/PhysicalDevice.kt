@@ -101,6 +101,14 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 
 
 
+	val combinedSampleCounts = with(limits) {
+		framebufferColorSampleCounts *
+		framebufferDepthSampleCounts *
+		framebufferStencilSampleCounts
+	}
+
+
+
 	/*
 	Surface
 	 */

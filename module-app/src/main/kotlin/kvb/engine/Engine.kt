@@ -4,6 +4,7 @@ import kvb.engine.gui.AnchorPane
 import kvb.engine.gui.Gui
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.vulkan.VkContext
+import kvb.vkwrapper.handle.PhysicalDevice
 import kvb.window.WindowManager
 import kvb.window.input.Button
 

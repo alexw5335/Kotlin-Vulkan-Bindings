@@ -81,12 +81,21 @@ open class Base {
 
 
 
-	protected fun addChildInternal(child: Base) {
+	protected fun<T : Base> addChildInternal(child: T) : T {
 		children.add(child)
 
 		child.parent?.removeChildInternal(child)
 		child.parent = this
 		onInteriorChanged()
+		return child
+	}
+
+
+
+	protected fun<T : Base> addChildInternal(child: T, block: T.() -> Unit): T {
+		block(child)
+		addChildInternal(child)
+		return child
 	}
 
 
@@ -172,6 +181,7 @@ open class Base {
 
 	fun alignCycle() {
 		if(shouldAlign) align()
+		shouldAlign = false
 		for(c in children) c.alignCycle()
 	}
 

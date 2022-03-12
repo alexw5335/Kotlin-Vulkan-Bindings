@@ -293,6 +293,12 @@ class GraphicsPipelineBuilder(private val device: Device, private val stack: Mem
 
 
 
+	fun samples(sampleCount: SampleCountFlags) {
+		rasterizationSamples = sampleCount
+	}
+
+
+
 	/*
 	Multisample state
 	 */

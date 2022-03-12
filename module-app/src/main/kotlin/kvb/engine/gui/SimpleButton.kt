@@ -1,7 +1,13 @@
 package kvb.engine.gui
 
+import kvb.engine.gui.layout.Padding
+
 class SimpleButton : Base() {
 
+
+	var border = Padding(2F)
+
+	var borderColour = Colour.WHITE
 
 	var colour = BaseDefaults.controlColour
 
@@ -9,14 +15,7 @@ class SimpleButton : Base() {
 
 	var pressedColour = BaseDefaults.controlPressedColour
 
-	var textBase: SimpleText? = null
-		set(value) {
-			field = value
-			if(value != null) {
-				addChildInternal(value)
-				value.active = false
-			}
-		}
+	val textBase = addChildInternal(SimpleText()) { active = false }
 
 
 
@@ -28,7 +27,7 @@ class SimpleButton : Base() {
 
 
 	override fun align() {
-		textBase?.let(::alignCentre)
+		alignCentre(textBase)
 	}
 
 
@@ -40,6 +39,7 @@ class SimpleButton : Base() {
 			else      -> this.colour
 		}
 
+		GuiGraphics.renderRect(x - border.left, y - border.top, width + border.horizontal, height + border.vertical, borderColour)
 		GuiGraphics.renderRect(x, y, width, height, colour)
 	}
 

@@ -1,53 +1,44 @@
 package kvb.engine.gui
 
 import kvb.engine.gui.font.Fonts
+import kvb.engine.gui.font.Paragraph
 import kvb.engine.gui.font.ParagraphBuilder
 import kvb.engine.vulkan.VkContext
 import kvb.vkwrapper.handle.Buffer
 import kvb.vulkan.BufferUsageFlags
 import kotlin.math.round
 
-class SimpleText(
-	val text: String,
-	val scale: Float,
-	val lineSpacing: Float,
-	val wrapWidth: Float
-) : Base() {
+class SimpleText : Base() {
 
 
-	val paragraph = ParagraphBuilder(Fonts.font, scale, lineSpacing, wrapWidth).build(text)
+	var text: String = ""
+		set(value) { field = value; shouldAlign = true }
 
-	var buffer = create()
+	var scale = 1F
+		set(value) { field = value; shouldAlign = true }
 
+	var lineSpacing = 1F
+		set(value) { field = value; shouldAlign = true }
 
+	var wrapWidth = 0F
+		set(value) { field = value; shouldAlign = true }
 
-	private fun create(): Buffer {
-		val buffer = VkContext.device.createVertexBuffer(text.length * 16)
-		buffer.bindMemory(GuiGraphics.textAllocator.allocate(buffer))
-		return buffer
-	}
+	var paragraph: Paragraph? = null
+		private set
+
+	var buffer: Buffer? = null
+		private set
 
 
 
 	override fun align() {
-		super.align()
+		val paragraph = ParagraphBuilder(Fonts.font, scale, lineSpacing, wrapWidth).build(text)
+		if(buffer == null || buffer!!.size < text.length * 16) {
+			buffer = VkContext.device.createVertexBuffer(text.length * 16)
+			buffer!!.bindMemory(GuiGraphics.textAllocator.allocate(buffer!!))
+		}
 
-	}
-
-
-
-	init {
-		width = paragraph.width
-		height = paragraph.height
-	}
-
-
-
-	private fun createBuffer(): Buffer {
-		val buffer = VkContext.device.createBuffer(text.length * 16L, BufferUsageFlags.VERTEX_BUFFER)
-		buffer.bindMemory(GuiGraphics.textAllocator.allocate(buffer))
-
-		buffer.flush { data ->
+		buffer!!.flush { data ->
 			var i = 0
 			for(line in paragraph.lines) {
 				var x = 0F
@@ -62,13 +53,19 @@ class SimpleText(
 			}
 		}
 
-		return buffer
+		this.paragraph = paragraph
+		this.buffer = buffer
+
+		width = paragraph.width
+		height = paragraph.height
 	}
 
 
 
 	override fun renderThis(x: Float, y: Float) {
-		GuiGraphics.renderText(round(x), round(y), buffer, scale, text.length)
+		buffer?.let {
+			GuiGraphics.renderText(round(x), round(y), it, scale, text.length)
+		}
 	}
 
 

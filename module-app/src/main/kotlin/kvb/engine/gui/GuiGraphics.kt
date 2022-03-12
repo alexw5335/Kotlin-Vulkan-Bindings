@@ -99,6 +99,7 @@ object GuiGraphics {
 		triangleStrip()
 		noBlendAttachment()
 		dynamicViewportAndScissor()
+		samples(VkContext.surfaceSystem.sampleCount)
 	}
 
 
@@ -111,6 +112,7 @@ object GuiGraphics {
 		pointList()
 		simpleBlendAttachment()
 		dynamicViewportAndScissor()
+		samples(VkContext.surfaceSystem.sampleCount)
 	}
 
 

@@ -17,3 +17,5 @@ fun Pane.button(block: SimpleButton.() -> Unit) = addChild(SimpleButton(), block
 fun Pane.toggleButton(block: ToggleButton.() -> Unit) = addChild(ToggleButton(), block)
 
 fun Pane.rect(block: RectBase.() -> Unit) = addChild(RectBase(), block)
+
+fun Pane.text(block: SimpleText.() -> Unit) = addChild(SimpleText(), block)

@@ -1,6 +1,7 @@
 package kvb.engine.vulkan
 
 import kvb.core.memory.Unsafe
+import kvb.core.memory.stack
 import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
 
@@ -11,8 +12,51 @@ class SurfaceSystem(
 	val renderPass  : RenderPass,
 	val format      : Format,
 	val colourSpace : ColorSpace,
-	val presentMode : PresentMode
+	val presentMode : PresentMode,
+	val sampleCount : SampleCountFlags
 ) {
+
+
+	private var multisampleImage: Image? = null
+
+	private var multisampleImageView: ImageView? = null
+
+	private var multisampleImageMemory: DeviceMemory? = null
+
+
+
+	init {
+		if(sampleCount.isMulti) updateMultisample()
+	}
+
+
+
+	private fun updateMultisample() {
+		multisampleImageView?.destroy()
+		multisampleImage?.destroy()
+		multisampleImageMemory?.free()
+
+		multisampleImage = device.createImage2D(
+			width   = surface.width,
+			height  = surface.height,
+			usage   = ImageUsageFlags { TRANSIENT_ATTACHMENT + COLOR_ATTACHMENT },
+			format  = format,
+			samples = sampleCount,
+		)
+
+		multisampleImageView = device.createImageView(multisampleImage!!, ImageAspectFlags.COLOR)
+
+		val memRequirements = multisampleImage!!.memoryRequirements()
+
+		multisampleImageMemory = device.allocateMemory(
+			size           = memRequirements.size,
+			property1      = MemoryPropertyFlags.DEVICE_LOCAL,
+			memoryTypeBits = memRequirements.memoryTypeBits
+		)
+
+		multisampleImage!!.bindMemory(multisampleImageMemory!!)
+	}
+
 
 
 	private var swapchain = createSwapchain(null)
@@ -104,7 +148,10 @@ class SurfaceSystem(
 	private fun createImageViews() = images.map(device::createImageView)
 
 	private fun createFramebuffers() = imageViews.map {
-		device.createFramebuffer(renderPass, listOf(it), surface.width, surface.height, 1)
+		if(sampleCount.isMulti)
+			device.createFramebuffer(renderPass, listOf(multisampleImageView!!, it), surface.width, surface.height, 1)
+		else
+			device.createFramebuffer(renderPass, listOf(it), surface.width, surface.height, 1)
 	}
 
 
@@ -128,6 +175,7 @@ class SurfaceSystem(
 		updateDimensions()
 		if(isMinimised) return
 		recreateSwapchain()
+		updateMultisample()
 	}
 
 

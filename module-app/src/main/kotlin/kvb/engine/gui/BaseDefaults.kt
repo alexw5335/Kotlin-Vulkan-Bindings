@@ -14,6 +14,8 @@ object BaseDefaults {
 
 	var controlColour = Colour(0, 0, 0)
 
+	var controlBorderColour = Colour(1F,1F,1F,1F)
+
 	var controlHoveredColour = Colour(50, 50, 50)
 
 	var controlPressedColour = Colour(30, 30, 30)

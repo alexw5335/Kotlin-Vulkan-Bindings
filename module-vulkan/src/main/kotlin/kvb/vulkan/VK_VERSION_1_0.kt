@@ -5460,6 +5460,8 @@ value class SampleCountFlags(val value: Int) {
 	
 	
 	operator fun plus(mask: SampleCountFlags) = SampleCountFlags(value or mask.value)
+
+	operator fun times(mask: SampleCountFlags) = SampleCountFlags(value and mask.value)
 	
 	operator fun contains(mask: SampleCountFlags) = value and mask.value == mask.value
 
