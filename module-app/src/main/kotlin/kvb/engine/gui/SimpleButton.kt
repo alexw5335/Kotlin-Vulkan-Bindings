@@ -1,20 +1,34 @@
 package kvb.engine.gui
 
-import kvb.engine.gui.model.ColourRectModel
+class SimpleButton : Base() {
 
-class SimpleButton(
-	width             : Float,
-	height            : Float,
-	var colour        : Colour,
-	var hoveredColour : Colour,
-	var pressedColour : Colour
-) : Base() {
+
+	var colour = BaseDefaults.controlColour
+
+	var hoveredColour = BaseDefaults.controlHoveredColour
+
+	var pressedColour = BaseDefaults.controlPressedColour
+
+	var textBase: SimpleText? = null
+		set(value) {
+			field = value
+			if(value != null) {
+				addChildInternal(value)
+				value.active = false
+			}
+		}
+
 
 
 	init {
-		this.width = width
-		this.height = height
-		model = ColourRectModel(Colour(0F, 0F, 0F))
+		this.width = BaseDefaults.buttonWidth
+		this.height = BaseDefaults.buttonHeight
+	}
+
+
+
+	override fun align() {
+		textBase?.let(::alignCentre)
 	}
 
 

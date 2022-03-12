@@ -5,6 +5,7 @@ import kvb.engine.gui.font.ParagraphBuilder
 import kvb.engine.vulkan.VkContext
 import kvb.vkwrapper.handle.Buffer
 import kvb.vulkan.BufferUsageFlags
+import kotlin.math.round
 
 class SimpleText(
 	val text: String,
@@ -16,7 +17,22 @@ class SimpleText(
 
 	val paragraph = ParagraphBuilder(Fonts.font, scale, lineSpacing, wrapWidth).build(text)
 
-	val buffer = createBuffer()
+	var buffer = create()
+
+
+
+	private fun create(): Buffer {
+		val buffer = VkContext.device.createVertexBuffer(text.length * 16)
+		buffer.bindMemory(GuiGraphics.textAllocator.allocate(buffer))
+		return buffer
+	}
+
+
+
+	override fun align() {
+		super.align()
+
+	}
 
 
 
@@ -52,7 +68,7 @@ class SimpleText(
 
 
 	override fun renderThis(x: Float, y: Float) {
-		GuiGraphics.renderText(x, y, buffer, scale, text.length)
+		GuiGraphics.renderText(round(x), round(y), buffer, scale, text.length)
 	}
 
 

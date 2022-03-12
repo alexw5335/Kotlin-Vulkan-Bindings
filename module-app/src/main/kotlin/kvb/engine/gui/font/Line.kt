@@ -8,4 +8,6 @@ class Line {
 
 	var width = 0F
 
+	var height = 0F
+
 }

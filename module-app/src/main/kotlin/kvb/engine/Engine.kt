@@ -4,11 +4,8 @@ import kvb.engine.gui.AnchorPane
 import kvb.engine.gui.Gui
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.vulkan.VkContext
-import kvb.engine.vulkan.VulkanBuilder
-import kvb.vulkan.VK_TRUE
 import kvb.window.WindowManager
 import kvb.window.input.Button
-import kvb.window.winapi.WinApiWindow
 
 object Engine {
 
@@ -19,7 +16,11 @@ object Engine {
 
 	val window = EngineBuilder.window
 
-	val gui = Gui(AnchorPane())
+	var gui: Gui = Gui(AnchorPane())
+		set(value) {
+			field = value
+			value.onWindowResize(window.width, window.height)
+		}
 
 	var targetFps = 200
 
@@ -56,6 +57,12 @@ object Engine {
 
 
 
+	/*
+	Run cycle
+	 */
+
+
+
 	fun run() {
 		while(true) {
 			val frameStart = System.nanoTime()
@@ -74,23 +81,20 @@ object Engine {
 
 
 
-	fun update() {
+	private fun update() {
 		WindowManager.pollEvents()
-		gui.handleMousePos(window.cursorX, window.cursorY)
-		if(Button.LEFT_MOUSE.isPressed) gui.onHold(window.cursorX, window.cursorY)
-		gui.root.alignCycle()
-		gui.root.updateCycle()
+		gui.update(window)
 	}
 
 
 
-	fun renderGui() {
+	private fun renderGui() {
 		GuiGraphics.resetAllocator()
 
 		VkContext.surfaceSystem.record {
 			GuiGraphics.commandBuffer = it
 			GuiGraphics.preRender(window)
-			gui.root.render(0F, 0F)
+			gui.render()
 		}
 
 		VkContext.surfaceSystem.present()

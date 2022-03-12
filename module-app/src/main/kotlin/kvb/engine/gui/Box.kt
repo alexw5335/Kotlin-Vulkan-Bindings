@@ -16,6 +16,10 @@ class Box(val orientation: Orientation) : Pane(), Oriented by orientation, Align
 
 
 
+	var pack = false
+
+
+
 	fun childrenLength(): Float {
 		var value = (children.size - 1) * spacing
 		for(c in children) value += c.length
@@ -25,7 +29,19 @@ class Box(val orientation: Orientation) : Pane(), Oriented by orientation, Align
 
 
 	override fun align() {
-		if(children.isEmpty()) return
+		if(children.isEmpty()) {
+			if(pack) {
+				width = 0F
+				height = 0F
+			}
+
+			return
+		}
+
+		if(pack) {
+			length = childrenLength() + startPadding + endPadding
+			length2 = children.maxOf { it.length2 } + startPadding2 + endPadding2
+		}
 
 		var pos = when(alignment) {
 			Alignment.START  -> startPadding

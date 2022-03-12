@@ -20,4 +20,11 @@ abstract class Pane : Base() {
 	}
 
 
+	fun<T : Base> addChild(child: T, block: T.() -> Unit): T {
+		block(child)
+		addChild(child)
+		return child
+	}
+
+
 }

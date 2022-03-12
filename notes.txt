@@ -55,7 +55,6 @@ Simplest GUI:
 		- Can allocate more DeviceMemory if it is needed.
 		- Can use multiple DeviceMemory objects.
 
-
 How to handle colour changes on press and hover
 - Three states: default, hovered, held.
 - Set state or handle with events?
@@ -79,3 +78,13 @@ What needs to be given to the EngineBuilder?
 - The GUI root does not have to be specified at creation time.
 	- The dimensions should match up with the window dimensions in order to prevent immediate resizing.
 	- Or, the window can be made visible only when the GUI is first set.
+
+EngineBuilder, VkContextBuilder, GUI, root base, window, how to order creation?
+- Perhaps don't make everything an object.
+- Need a way to enforce window bounds. This is done through a GUI.
+- No GUI elements may be instantiated before Engine and Vulkan initialisation is complete.
+- Should the GUI store a reference to its graphics?
+
+Text buffer data
+- A text has a single buffer.
+- If the text changes and the buffer is no longer large enough, then a new one is allocated.

@@ -1,7 +1,7 @@
 package kvb.engine
 
 import kvb.engine.vulkan.VkContext
-import kvb.engine.vulkan.VulkanBuilder
+import kvb.engine.vulkan.VkContextBuilder
 import kvb.vulkan.VK_TRUE
 import kvb.window.Window
 import kvb.window.WindowManager
@@ -29,7 +29,7 @@ object EngineBuilder {
 	fun build() {
 		window = WindowManager.create(windowTitle, windowX, windowY, windowWidth, windowHeight)
 
-		VulkanBuilder.let {
+		VkContextBuilder.let {
 			it.debugEnabled = true
 			it.windowingEnabled = true
 			it.deviceFeatures.geometryShader = VK_TRUE

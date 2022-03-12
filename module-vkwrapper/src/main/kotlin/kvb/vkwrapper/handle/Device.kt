@@ -67,6 +67,12 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	}
 
 
+	/**
+	 * Convenience implementation of vkCreateBuffer.
+	 */
+	fun createVertexBuffer(size: Int) = createBuffer(size.toLong(), BufferUsageFlags.VERTEX_BUFFER)
+
+
 
 	/*
 	Buffer view

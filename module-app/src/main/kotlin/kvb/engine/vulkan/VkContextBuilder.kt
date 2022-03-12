@@ -9,7 +9,7 @@ import kvb.vkwrapper.handle.*
 import kvb.vulkan.*
 import kvb.window.winapi.WinApiWindow
 
-object VulkanBuilder {
+object VkContextBuilder {
 
 
 	/*

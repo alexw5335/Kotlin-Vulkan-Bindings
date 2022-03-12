@@ -8,7 +8,6 @@ class ParagraphBuilder(
 ) {
 
 
-
 	private val lines = ArrayList<Line>().also { it.add(Line()) }
 
 	private val line get() = lines.last()
@@ -17,16 +16,11 @@ class ParagraphBuilder(
 
 	private var wordWidth = 0F
 
-	private var width = 0F
-
 	private var height = font.size.toFloat() * scale
 
 
 
 	private fun newLine() {
-		if(line.width > width)
-			width = line.width
-
 		val newLine = Line()
 		newLine.y = height + spacing * scale
 		height = newLine.y + font.size * scale
@@ -40,10 +34,14 @@ class ParagraphBuilder(
 			line.width += char.width * scale
 		} else if(line.width + scale + char.width * scale > wrapWidth) {
 			newLine()
+			if(char.char == ' ') return
 			line.width += char.width * scale
 		} else {
 			line.width += char.width * scale + scale
 		}
+
+		if(char.height > line.height)
+			line.height = char.height.toFloat()
 
 		line.chars.add(char)
 	}
@@ -83,7 +81,19 @@ class ParagraphBuilder(
 		if(word.isNotEmpty())
 			addWord()
 
-		return Paragraph(font, scale, spacing, wrapWidth, lines, lines.maxOf { it.width }, height)
+		for(l in lines)
+			if(l.chars.isNotEmpty() && l.chars.last().char == ' ')
+				l.width = l.width - l.chars.last().width * scale - scale
+
+		val width = lines.maxOf { it.width }
+
+		val height = if(lines.size == 1) {
+			line.height * scale
+		} else {
+			height - (font.size - font.baseline) * scale
+		}
+
+		return Paragraph(font, scale, spacing, wrapWidth, lines, width, height)
 	}
 
 

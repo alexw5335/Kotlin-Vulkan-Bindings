@@ -47,6 +47,13 @@ open class Base {
 
 	val isPressed get() = gui.pressed == this
 
+	var style = BaseStyle.NULL
+		set(value) {
+			field.remove(this)
+			field = value
+			field.add(this)
+		}
+
 
 
 	/*
@@ -276,6 +283,11 @@ open class Base {
 		Alignment.START  -> child.y = padding.top
 		Alignment.END    -> child.y = height - padding.top - child.height
 		Alignment.CENTRE -> child.y = (height - child.height) / 2
+	}
+
+	fun alignCentre(child: Base) {
+		hAlign(Alignment.CENTRE, child)
+		vAlign(Alignment.CENTRE, child)
 	}
 
 

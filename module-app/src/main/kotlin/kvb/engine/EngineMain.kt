@@ -5,11 +5,13 @@ import kvb.engine.gui.*
 import kvb.engine.gui.layout.Alignment
 import kvb.engine.gui.layout.Padding
 import kvb.engine.gui.layout.VOrientation
-import kvb.engine.vulkan.VkContext
-import kvb.engine.vulkan.VulkanBuilder
-import kvb.vulkan.VK_TRUE
-import kvb.window.WindowManager
-import kvb.window.winapi.WinApiWindow
+import kvb.engine.vulkan.VkContextBuilder
+
+
+
+fun engineConfig(block: EngineBuilder.() -> Unit) = EngineBuilder.also(block)
+
+fun vulkanConfig(block: VkContextBuilder.() -> Unit) = VkContextBuilder.also(block)
 
 
 
@@ -17,23 +19,58 @@ fun main() {
 	Platforms.init()
 	//ShaderCreation.compileAll("res/shader/gui", "res/shader/gui/out")
 
-	EngineBuilder.let {
-		it.windowX = 0
-		it.windowY = 0
-		it.windowWidth = 900
-		it.windowHeight = 600
+	engineConfig {
+		windowX = 0
+		windowY = 0
+		windowWidth = 900
+		windowHeight = 600
 	}
 
-	Engine.gui.root = Box(VOrientation).apply {
+	Engine
+
+	val root = vbox {
 		spacing = 50F
 		hAlignment = Alignment.CENTRE
 		vAlignment = Alignment.START
 		padding = Padding(50F)
-		addChild(RectBase(100F, 100F, Colour(0F, 1F, 0F)))
-		addChild(RectBase(100F, 100F, Colour(0F, 0F, 1F)))
-		addChild(SimpleButton(100F, 50F, Colour(0F, 0F, 0F), Colour(100, 100, 100), Colour(50, 50, 50)))
-		addChild(SimpleText("public static void main(String[] args) { System.out.println(\"Hello World\"); }", 2F, 2F, 200F))
+
+		rect {
+			width = 200F
+			height = 100F
+			colour = Colour(0F, 0.5F, 0F)
+		}
+
+		hbox {
+			pack = true
+			spacing = 10F
+
+			rect {
+				width = 100F
+				height = 100F
+				colour = Colour(0F, 0F, 1F)
+			}
+
+			rect {
+				width = 50F
+				height = 50F
+				colour = Colour(0F, 0F, 1F)
+			}
+		}
+
+		button {
+			textBase = SimpleText("Ab c d e fg h i j kl m n op qr", 2F, 0F, width)
+		}
+
+		toggleButton { }
+
+	/*	addChild(SimpleText("public static void main(String[] args) { System.out.println(\"Hello World\"); }",
+			2F,
+			2F,
+			400F
+		))*/
 	}
+
+	Engine.gui = Gui(root)
 
 	Engine.run()
 }

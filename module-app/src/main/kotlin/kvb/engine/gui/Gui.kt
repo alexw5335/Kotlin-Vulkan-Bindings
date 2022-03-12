@@ -1,8 +1,11 @@
 package kvb.engine.gui
 
+import kvb.engine.Engine
 import kvb.engine.gui.event.HoverEvent
+import kvb.window.Window
+import kvb.window.input.Button
 
-class Gui(var root: Base) {
+class Gui(val root: Base) {
 
 
 	/*
@@ -118,6 +121,24 @@ class Gui(var root: Base) {
 
 	fun handleMousePos(cursorX: Float, cursorY: Float) {
 		hovered?.handleEvent(HoverEvent(hovered!!, cursorX, cursorY))
+	}
+
+
+
+	fun update(window: Window) {
+		handleMousePos(window.cursorX, Engine.window.cursorY)
+
+		if(Button.LEFT_MOUSE.isPressed)
+			onHold(window.cursorX, window.cursorY)
+
+		root.alignCycle()
+		root.updateCycle()
+	}
+
+
+
+	fun render() {
+		root.render(0F, 0F)
 	}
 
 
