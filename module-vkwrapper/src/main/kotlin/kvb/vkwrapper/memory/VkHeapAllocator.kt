@@ -4,13 +4,14 @@ import kvb.vkwrapper.exception.VkException
 import kvb.vkwrapper.handle.Buffer
 import kvb.vkwrapper.handle.Device
 import kvb.vkwrapper.handle.DeviceMemory
+import kvb.vkwrapper.handle.VkResource
 import kvb.vkwrapper.persistent.MemoryTypeP
 
 class VkHeapAllocator(
 	val device: Device,
 	val memoryType: MemoryTypeP,
 	val persistentlyMapped: Boolean
-) {
+) : VkAllocator {
 
 
 	private val linearAllocators = ArrayList<VkLinearAllocator>()
@@ -28,7 +29,7 @@ class VkHeapAllocator(
 
 
 
-	fun allocate(size: Long): VkAllocation {
+	fun allocate(size: Long, alignment: Long): Long {
 		val blockSize = if(size.countOneBits() == 1) size else size.takeHighestOneBit() * 2
 
 		val blocks = blockLists.getOrPut(blockSize, ::ArrayList)
@@ -42,18 +43,18 @@ class VkHeapAllocator(
 				.also(linearAllocators::add)
 				.also { if(persistentlyMapped) it.memory.mapWhole() }
 
-			val blockAllocation = allocator.allocate(blockSize, 256)
-			Block(allocator.memory, blockAllocation.offset, blockSize, true).also(blocks::add)
+			val blockOffset = allocator.allocate(blockSize, 256)
+			Block(allocator.memory, blockOffset, blockSize, true).also(blocks::add)
 		} else {
 			existingBlock.also { it.allocated = true }
 		}
 
-		return VkAllocation(block.memory, block.offset)
+		return block.offset
 	}
 
 
 
-	fun allocate(buffer: Buffer) {
+	fun allocate(resource: VkResource) {
 		// Align size to a power of 256
 		val size = (buffer.size + (256 - 1)) and -256
 		val allocation = allocate(size)

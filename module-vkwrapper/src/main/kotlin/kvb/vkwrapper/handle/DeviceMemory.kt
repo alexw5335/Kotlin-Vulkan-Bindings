@@ -35,6 +35,8 @@ class DeviceMemory(
 	 */
 	fun free() = commands.freeMemory(this, null)
 
+	override fun hashCode() = address.hashCode()
+
 
 
 	/*

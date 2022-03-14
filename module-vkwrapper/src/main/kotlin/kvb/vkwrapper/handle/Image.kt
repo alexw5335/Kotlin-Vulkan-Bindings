@@ -16,7 +16,7 @@ class Image(
 	val mipLevels   : Int,
 	val arrayLayers : Int,
 	val tiling      : ImageTiling,
-) : ImageH(address) {
+) : ImageH(address), VkResource {
 
 
 	/**
@@ -34,48 +34,60 @@ class Image(
 	 */
 	fun destroy() = commands.destroyImage(this, null)
 
+	override fun hashCode() = (address / 2).toInt()
+
+	override fun equals(other: Any?) = other is Image && other.address == address
+
+	override fun toString() = "VkImage(address=$address, size=${memoryRequirements.size})"
+
 
 
 	/*
-	Memory
+	Resource implementation
 	 */
 
 
 
 	/**
-	 * If vkBindImageMemory has been called for this image.
+	 * Internal backing field for [memory].
 	 */
-	var isBound = false; private set
+	private var _memory: DeviceMemory? = null
 
 	/**
-	 * The backing memory that is bound to this image. This variable is uninitialised before [bindMemory] is called.
+	 * The [DeviceMemory] that was bound to this image using vkBindImageMemory. Must not be accessed if no memory has
+	 * been bound.
 	 */
-	lateinit var memory: DeviceMemory
+	override val memory get() = _memory!!
+
+	/**
+	 * Internal backing field for [offset].
+	 */
+	private var _offset: Long = 0L
 
 	/**
 	 * The offset into the [memory] that represents the start of this image's memory.
 	 */
-	var offset = 0L
+	override val offset get() = _offset
+
+	/**
+	 * If vkBindImageMemory has been called for this image. Once bound, an image cannot be unbound nor rebound.
+	 */
+	override val isBound get() = _memory != null
+
+	/**
+	 * The size in bytes that this image takes up in the bound device [memory].
+	 */
+	override val size get() = memoryRequirements.size
 
 
 
 	/**
 	 * Implementation of vkBindImageMemory.
 	 */
-	fun bindMemory(memory: DeviceMemory, offset: Long = 0L) {
-		commands.bindImageMemory(self, memory, offset).check()
-		this.memory = memory
-		this.offset = offset
-		isBound = true
-	}
-
-
-
-	/**
-	 * Convenience implementation of vkBindImageMemory.
-	 */
-	fun bindMemory(allocation: VkAllocation) {
-		bindMemory(allocation.memory, allocation.offset)
+	override fun bindMemory(memory: DeviceMemory, offset: Long) {
+		commands.bindImageMemory(this, memory, offset).check()
+		_memory = memory
+		_offset = offset
 	}
 
 
@@ -83,11 +95,12 @@ class Image(
 	/**
 	 * Persistent implementation of vkGetImageMemoryRequirements.
 	 */
-	fun memoryRequirements() = stackGet {
+	override val memoryRequirements by stackLazy {
 		val requirements = MemoryRequirements { }
 		commands.getImageMemoryRequirements(self, requirements)
 		MemoryRequirementsP(requirements)
 	}
+
 
 
 }
