@@ -1,5 +1,10 @@
 package kvb.engine.vulkan
 
+import kvb.engine.gui.GuiGraphics
+import kvb.vkwrapper.memory.VkHeapAllocator
+import kvb.vulkan.BufferUsageFlags
+import kvb.vulkan.MemoryPropertyFlags
+
 object VkContext {
 
 
@@ -23,5 +28,17 @@ object VkContext {
 
 	val memoryManager = VkContextBuilder.memoryManager
 
+
+
+	private val dummyVertexBuffer = device.createBuffer(32L, BufferUsageFlags.VERTEX_BUFFER)
+
+
+
+	fun mappedHeapAllocator() = VkHeapAllocator(device, device.physicalDevice.chooseMemoryType(
+		property1      = MemoryPropertyFlags.HOST_VISIBLE,
+		property2      = MemoryPropertyFlags.DEVICE_LOCAL,
+		property3      = MemoryPropertyFlags.HOST_COHERENT,
+		memoryTypeBits = dummyVertexBuffer.memoryRequirements().memoryTypeBits
+	)!!, true)
 
 }

@@ -6,7 +6,11 @@ import kvb.vkwrapper.handle.Device
 import kvb.vkwrapper.handle.DeviceMemory
 import kvb.vkwrapper.persistent.MemoryTypeP
 
-class VkHeapAllocator(val device: Device, val memoryType: MemoryTypeP, val persistentlyMapped: Boolean) {
+class VkHeapAllocator(
+	val device: Device,
+	val memoryType: MemoryTypeP,
+	val persistentlyMapped: Boolean
+) {
 
 
 	private val linearAllocators = ArrayList<VkLinearAllocator>()

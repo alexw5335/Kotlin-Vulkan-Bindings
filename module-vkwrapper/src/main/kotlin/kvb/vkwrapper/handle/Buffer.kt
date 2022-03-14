@@ -13,11 +13,11 @@ import kotlin.math.min
  * [VkMemoryRequirements][MemoryRequirements], which is the actual size.
  */
 class Buffer(
-	address    : Long,
-	val device : Device,
-	val size   : Long,
-	val usage  : BufferUsageFlags
-) : BufferH(address) {
+	address           : Long,
+	val device        : Device,
+	override val size : Long,
+	val usage         : BufferUsageFlags
+) : BufferH(address), VkResource {
 
 
 	val commands get() = device.commands
@@ -41,19 +41,31 @@ class Buffer(
 
 
 	/**
-	 * If vkBindBufferMemory has been called for this buffer.
+	 * Internal backing field for [memory].
 	 */
-	var isBound = false; private set
+	private var _memory: DeviceMemory? = null
 
 	/**
-	 * The backing memory that is bound to this buffer. This variable is uninitialised before [bindMemory] is called.
+	 * Internal backing field for [offset].
 	 */
-	lateinit var memory: DeviceMemory; private set
+	private var _offset: Long = 0L
+
+	/**
+	 * The [DeviceMemory] that was bound to this buffer using vkBindBufferMemory. If this buffer has not been bound,
+	 * then this variable should not be accessed. Use [isBound] to check if memory has been bound to this buffer.
+	 */
+	override val memory get() = _memory!!
+
+	/**
+	 * If vkBindBufferMemory has been called for this buffer. Once bound, a buffer cannot be unbound nor rebound to a
+	 * different [DeviceMemory].
+	 */
+	override val isBound get() = _memory != null
 
 	/**
 	 * The offset into the [memory] that represents the start of this buffer's memory.
 	 */
-	var offset = 0L; private set
+	override val offset get() = _offset
 
 
 
@@ -97,19 +109,11 @@ class Buffer(
 	/**
 	 * Implementation of vkBindBufferMemory.
 	 */
-	fun bindMemory(memory: DeviceMemory, offset: Long) {
+	override fun bindMemory(memory: DeviceMemory, offset: Long) {
 		commands.bindBufferMemory(this, memory, offset).check()
-		this.memory = memory
-		this.offset = offset
-		isBound = true
+		_memory = memory
+		_offset = offset
 	}
-
-
-
-	/**
-	 * Convenience implementation of vkBindBufferMemory.
-	 */
-	fun bindMemory(memory: DeviceMemory) = bindMemory(memory, 0L)
 
 
 
