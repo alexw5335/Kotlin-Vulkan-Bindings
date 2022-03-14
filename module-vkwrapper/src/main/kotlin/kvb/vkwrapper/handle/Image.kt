@@ -1,7 +1,7 @@
 package kvb.vkwrapper.handle
 
 import kvb.core.memory.*
-import kvb.vkwrapper.allocation.VkAllocation
+import kvb.vkwrapper.memory.VkAllocation
 import kvb.vkwrapper.persistent.MemoryRequirementsP
 import kvb.vulkan.*
 

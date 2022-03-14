@@ -1,9 +1,11 @@
 package kvb.core
 
+import kvb.core.memory.MemStack
+import kvb.core.memory.Persistent
 import kvb.core.memory.Unsafe
 import java.nio.file.*
 
-object Platforms {
+object Core {
 
 
 	/*
@@ -63,18 +65,14 @@ object Platforms {
 
 
 	private fun loadNatives() {
-		if(Files.exists(Paths.get("natives"))) {
-			when(current) {
-				Platform.WINDOWS -> loadFileNatives("natives/windows", ".dll")
-				Platform.LINUX   -> loadFileNatives("natives/linux", ".so")
-				Platform.MAC     -> loadFileNatives("natives/mac", ".dylib")
-			}
-		} else {
-			when(current) {
-				Platform.WINDOWS -> loadResourceNatives("/natives/windows", "natives/windows", ".dll")
-				Platform.LINUX   -> loadResourceNatives("/natives/linux", "natives/linux", ".so")
-				Platform.MAC     -> loadResourceNatives("/natives/mac", "natives/mac", ".dylib")
-			}
+		if(Files.exists(Paths.get("natives"))) when(current) {
+			Platform.WINDOWS -> loadFileNatives("natives/windows", ".dll")
+			Platform.LINUX   -> loadFileNatives("natives/linux", ".so")
+			Platform.MAC     -> loadFileNatives("natives/mac", ".dylib")
+		} else when(current) {
+			Platform.WINDOWS -> loadResourceNatives("/natives/windows", "natives/windows", ".dll")
+			Platform.LINUX   -> loadResourceNatives("/natives/linux", "natives/linux", ".so")
+			Platform.MAC     -> loadResourceNatives("/natives/mac", "natives/mac", ".dylib")
 		}
 	}
 
@@ -87,10 +85,15 @@ object Platforms {
 
 
 	init {
+		loadNatives()
+
+		Unsafe
+		MemStack
+		Persistent
+
+
 		if(Unsafe.instance.addressSize() == 4)
 			throw IllegalStateException("32-bit JVMs are not supported.")
-
-		loadNatives()
 	}
 
 

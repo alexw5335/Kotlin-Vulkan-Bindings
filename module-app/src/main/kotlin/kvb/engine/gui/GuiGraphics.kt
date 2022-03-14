@@ -3,11 +3,11 @@ package kvb.engine.gui
 import kvb.core.memory.LinearAllocator
 import kvb.core.memory.Unsafe
 import kvb.engine.vulkan.VkContext
-import kvb.vkwrapper.allocation.VkLinearAllocator
 import kvb.vkwrapper.builder.GraphicsPipelineBuilder
 import kvb.vkwrapper.handle.Buffer
 import kvb.vkwrapper.handle.CommandBuffer
 import kvb.vkwrapper.handle.Pipeline
+import kvb.vkwrapper.memory.VkHeapAllocator
 import kvb.vkwrapper.shader.ShaderDirectory
 import kvb.vulkan.*
 import kvb.window.Window
@@ -28,14 +28,14 @@ object GuiGraphics {
 
 	private val dummyBuffer = VkContext.device.createBuffer(32L, BufferUsageFlags.VERTEX_BUFFER)
 
-	val textAllocator = VkLinearAllocator(VkContext.device.allocateMemory(
-		size           = 1L shl 20,
-		property1      = MemoryPropertyFlags.HOST_VISIBLE,
-		property2      = MemoryPropertyFlags.DEVICE_LOCAL,
-		memoryTypeBits = dummyBuffer.memoryRequirements().memoryTypeBits
-	)).also {
-		it.memory.mapWhole()
-	}
+
+
+	val textAllocator = VkHeapAllocator(VkContext.device, VkContext.device.physicalDevice.chooseMemoryType(
+		MemoryPropertyFlags.HOST_VISIBLE,
+		MemoryPropertyFlags.DEVICE_LOCAL,
+		MemoryPropertyFlags.HOST_COHERENT,
+		dummyBuffer.memoryRequirements().memoryTypeBits
+	)!!, true)
 
 
 

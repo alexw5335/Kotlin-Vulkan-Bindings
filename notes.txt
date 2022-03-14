@@ -138,3 +138,38 @@ Simple Heap Allocator
 	- List of linear allocators
 	- If a new linear allocator is required, it is sized as the
 	largest block size * 4 by default
+- How to free the blocks?
+	- Freeing will take in a DeviceMemory and an offset.
+
+
+
+Memory management (updating memory)
+- Most buffer memory will be host-visible device-local host-coherent
+- There will always be some host-visible memory.
+- Cannot rely on there being a large host-visible device-local memory type.
+- Staging will be buffered unless it is required immediately.
+- Memory management takes place through a VkMemoryManager.
+	- Keeps track of queued staging operations.
+	- Keeps track of regions to flush.
+	- Contains a large staging buffer of host-local, possibly device-local, and possibly host-coherent memory.
+	- Contains a large staging buffer for images as well.
+	- Also manages layout transitions (related to image staging)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

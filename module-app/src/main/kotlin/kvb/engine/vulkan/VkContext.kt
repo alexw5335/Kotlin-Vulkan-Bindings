@@ -21,5 +21,7 @@ object VkContext {
 
 	val surfaceSystem = VkContextBuilder.surfaceSystem
 
+	val memoryManager = VkContextBuilder.memoryManager
+
 
 }

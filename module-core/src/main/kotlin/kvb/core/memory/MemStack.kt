@@ -1,5 +1,7 @@
 package kvb.core.memory
 
+import kvb.core.CoreConfig
+
 /**
  * Represents a contiguous array of off-heap memory that can be sub-allocated in a stack-like fashion. The [with] and
  * [get] methods free any memory that is allocated within their blocks. These functions will not implicitly free memory
@@ -8,7 +10,7 @@ package kvb.core.memory
  * then no memory is leaked. Exceptions caught outside any block should result in the [resetting][reset] of the
  * MemStack. Using try-with-resources statements (or the equivalent 'use' function in Kotlin) is avoided in order to
  * improve performance as the block functions are used very frequently. None of these precautions are necessary if the
- * exceptions are never caught.
+ * exceptions are never caught. This class must be loaded from the main thread.
  *
  * ### Examples:
  *
@@ -49,7 +51,7 @@ package kvb.core.memory
  *     // TODO: Add memory-safe block functions
  *     // TODO: Document other memory leaks such as returning early from block functions.
  */
-class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
+open class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 
 
 	constructor(allocator: Allocator, size: Long) : this(allocator.malloc(size, 8), size)
@@ -121,7 +123,7 @@ class MemStack(address: Long, size: Long) : LinearAllocator(address, size) {
 		/**
 		 * A [ThreadLocal] that stores a single 1 MB [MemStack] per thread.
 		 */
-		private val locals = ThreadLocal.withInitial { MemStack(Unsafe, 1L shl 20) }
+		private val locals = ThreadLocal.withInitial { MemStack(Unsafe, CoreConfig.localStackSize) }
 
 		/**
 		 * The thread-local [MemStack] associated with the current thread.

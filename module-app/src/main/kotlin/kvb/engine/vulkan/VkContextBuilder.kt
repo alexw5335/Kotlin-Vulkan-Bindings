@@ -1,11 +1,12 @@
 package kvb.engine.vulkan
 
 import kvb.core.Platform
-import kvb.core.Platforms
+import kvb.core.Core
 import kvb.core.memory.*
 import kvb.vkwrapper.DebugUtils
 import kvb.vkwrapper.Vulkan
 import kvb.vkwrapper.handle.*
+import kvb.vkwrapper.memory.VkMemoryManager
 import kvb.vulkan.*
 import kvb.window.winapi.WinApiWindow
 
@@ -50,7 +51,10 @@ object VkContextBuilder {
 
 	var sampleCount: SampleCountFlags = SampleCountFlags._1
 
-	private val multisampled get() = sampleCount != SampleCountFlags._1
+	val multisampled get() = sampleCount != SampleCountFlags._1
+
+	var stagingBufferSize = 1L shl 20
+
 
 
 	/*
@@ -75,6 +79,8 @@ object VkContextBuilder {
 
 	lateinit var surfaceSystem: SurfaceSystem
 
+	lateinit var memoryManager: VkMemoryManager
+
 
 
 	/*
@@ -93,8 +99,8 @@ object VkContextBuilder {
 			deviceExtensions.add("VK_KHR_swapchain")
 			instanceExtensions.add("VK_KHR_surface")
 
-			when(Platforms.current) {
-				Platform.WINDOWS -> instanceExtensions.add("VK_KHR_win32_surface")
+			when {
+				Core.isWindows -> instanceExtensions.add("VK_KHR_win32_surface")
 				else -> { }
 			}
 		}
@@ -180,6 +186,8 @@ object VkContextBuilder {
 		}
 
 		surfaceSystem = SurfaceSystem(surface, device, queue, renderPass, format, colourSpace, presentMode, sampleCount)
+
+		memoryManager = VkMemoryManager(device, queue, stagingBufferSize)
 	}
 
 

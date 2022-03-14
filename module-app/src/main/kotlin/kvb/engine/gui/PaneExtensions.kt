@@ -8,9 +8,13 @@ fun vbox(block: Box.() -> Unit) = Box(VOrientation).also(block)
 
 fun hbox(block: Box.() -> Unit) = Box(HOrientation).also(block)
 
+fun anchorPane(block: AnchorPane.() -> Unit) = AnchorPane().also(block)
+
 fun Pane.vbox(block: Box.() -> Unit) = addChild(Box(VOrientation), block)
 
 fun Pane.hbox(block: Box.() -> Unit) = addChild(Box(HOrientation), block)
+
+fun Pane.anchorPane(block: AnchorPane.() -> Unit) = addChild(AnchorPane(), block)
 
 fun Pane.button(block: SimpleButton.() -> Unit) = addChild(SimpleButton(), block)
 

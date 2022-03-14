@@ -67,6 +67,7 @@ class Device(address: Long, val physicalDevice: PhysicalDevice) : DeviceH(addres
 	}
 
 
+
 	/**
 	 * Convenience implementation of vkCreateBuffer.
 	 */

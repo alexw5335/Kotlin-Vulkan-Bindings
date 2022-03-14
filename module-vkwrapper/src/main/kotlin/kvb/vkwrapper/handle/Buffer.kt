@@ -2,7 +2,7 @@ package kvb.vkwrapper.handle
 
 import kvb.core.memory.*
 import kvb.core.memory.direct.DirectByteBuffer
-import kvb.vkwrapper.allocation.VkAllocation
+import kvb.vkwrapper.memory.VkAllocation
 import kvb.vkwrapper.exception.VkException
 import kvb.vkwrapper.persistent.MemoryRequirementsP
 import kvb.vulkan.*
@@ -25,6 +25,12 @@ class Buffer(
 	private val self = this
 
 	fun destroy() = commands.destroyBuffer(this, null)
+
+	override fun hashCode() = (address / 2).toInt()
+
+	override fun equals(other: Any?) = other is Buffer && other.address == address
+
+	override fun toString() = "VkBuffer(address = $address, size = $size, usage = $usage)"
 
 
 
@@ -71,10 +77,14 @@ class Buffer(
 
 
 
-	inline fun flush(block: (DirectByteBuffer) -> Unit) {
+	inline fun flush(offset: Long = 0L, size: Long = this.size, block: (DirectByteBuffer) -> Unit) {
 		block(data())
 		memory.flush(offset, size)
 	}
+
+
+
+	fun isMapped(offset: Long, size: Long) = memory.isMapped(this.offset + offset, size)
 
 
 
@@ -99,9 +109,14 @@ class Buffer(
 	/**
 	 * Convenience implementation of vkBindBufferMemory.
 	 */
-	fun bindMemory(allocation: VkAllocation) {
-		bindMemory(allocation.memory, allocation.offset)
-	}
+	fun bindMemory(memory: DeviceMemory) = bindMemory(memory, 0L)
+
+
+
+	/**
+	 * Convenience implementation of vkBindBufferMemory.
+	 */
+	fun bindMemory(allocation: VkAllocation) = bindMemory(allocation.memory, allocation.offset)
 
 
 

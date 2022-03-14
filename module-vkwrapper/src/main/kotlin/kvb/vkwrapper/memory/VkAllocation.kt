@@ -1,4 +1,4 @@
-package kvb.vkwrapper.allocation
+package kvb.vkwrapper.memory
 
 import kvb.vkwrapper.handle.DeviceMemory
 

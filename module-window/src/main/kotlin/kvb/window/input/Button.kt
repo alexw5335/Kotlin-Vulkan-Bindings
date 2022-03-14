@@ -208,14 +208,7 @@ enum class Button(val code: Int, val type: Type = Type.KEY) {
 
 
 
-	enum class Type {
-
-		KEY,
-
-		MOUSE;
-
-	}
-
+	enum class Type { KEY, MOUSE; }
 
 
 

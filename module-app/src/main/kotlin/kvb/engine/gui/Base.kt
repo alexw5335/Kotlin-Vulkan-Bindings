@@ -137,38 +137,6 @@ open class Base {
 
 
 
-	fun hoverEvent(cursorX: Float, cursorY: Float) = HoverEvent(this, cursorX, cursorY).bubble()
-
-	fun pressEvent(cursorX: Float, cursorY: Float) = PressEvent(this, cursorX, cursorY).bubble()
-
-	fun mouseEnterEvent(cursorX: Float, cursorY: Float) = MouseEnterEvent(this, cursorX, cursorY).bubble()
-
-	fun mouseExitEvent(cursorX: Float, cursorY: Float) = MouseExitEvent(this, cursorX, cursorY).bubble()
-
-	fun holdEvent(cursorX: Float, cursorY: Float, originX: Float, originY: Float, hovered: Boolean) = HoldEvent(this, cursorX, cursorY, originX, originY, hovered).bubble()
-
-	fun releaseEvent(cursorX: Float, cursorY: Float) = ReleaseEvent(this, cursorX, cursorY).bubble()
-
-	fun clickEvent(cursorX: Float, cursorY: Float) = ClickEvent(this, cursorX, cursorY).bubble()
-
-
-
-	fun onHover(action: (HoverEvent) -> Unit) = handlers.add(HoverEvent.Handler(action))
-
-	fun onPress(action: (PressEvent) -> Unit) = handlers.add(PressEvent.Handler(action))
-
-	fun onMouseEnter(action: (MouseEnterEvent) -> Unit) = handlers.add(MouseEnterEvent.Handler(action))
-
-	fun onMouseExit(action: (MouseExitEvent) -> Unit) = handlers.add(MouseExitEvent.Handler(action))
-
-	fun onHold(action: (HoldEvent) -> Unit) = handlers.add(HoldEvent.Handler(action))
-
-	fun onRelease(action: (ReleaseEvent) -> Unit) = handlers.add(ReleaseEvent.Handler(action))
-
-	fun onClick(action: (ClickEvent) -> Unit) = handlers.add(ClickEvent.Handler(action))
-
-
-
 	/*
 	Alignment
 	 */

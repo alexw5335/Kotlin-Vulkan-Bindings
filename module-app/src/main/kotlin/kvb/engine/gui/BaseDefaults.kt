@@ -20,13 +20,13 @@ object BaseDefaults {
 
 
 
-	var controlColour = Colour(0, 0, 0)
+	var controlColour = Colour.BLACK
 
-	var controlBorderColour = Colour(1F, 1F, 1F)
+	var controlBorderColour = Colour.WHITE
 
-	var controlHoveredColour = Colour(50, 50, 50)
+	var controlHoveredColour = Colour.rgb(30)
 
-	var controlPressedColour = Colour(30, 30, 30)
+	var controlPressedColour = Colour.rgb(10)
 
 	var toggledColour = Colour(0, 100, 100)
 

@@ -1,9 +1,8 @@
 package kvb.window
 
-import kvb.core.Platforms
+import kvb.core.Core
 import kvb.window.input.Button
 import kvb.window.winapi.WinApi
-import kvb.window.winapi.WinApiWindow
 
 interface WindowManager {
 
@@ -19,7 +18,7 @@ interface WindowManager {
 
 
 	companion object : WindowManager by when {
-		Platforms.isWindows -> WinApi
+		Core.isWindows -> WinApi
 		else -> throw RuntimeException("Window implementation supported only on Windows.")
 	}
 

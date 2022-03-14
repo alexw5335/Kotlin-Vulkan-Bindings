@@ -1,7 +1,7 @@
 package kvb.engine.gui
 
 @JvmInline
-value class Colour(val value: Int) {
+value class Colour private constructor(val value: Int) {
 
 
 	constructor(r: Int, g: Int, b: Int, a: Int = 1) : this(
@@ -49,6 +49,10 @@ value class Colour(val value: Int) {
 		val GREEN = Colour(0F, 1F, 0F)
 
 		val BLUE = Colour(0F, 0F, 1F)
+
+		fun rgb(rgb: Int) = Colour(rgb, rgb, rgb)
+
+		fun rgba(rgba: Int) = Colour(rgba, rgba, rgba, rgba)
 
 	}
 

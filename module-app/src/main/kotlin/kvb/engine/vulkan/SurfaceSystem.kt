@@ -41,11 +41,9 @@ class SurfaceSystem(
 			height  = surface.height,
 			usage   = ImageUsageFlags { TRANSIENT_ATTACHMENT + COLOR_ATTACHMENT },
 			format  = format,
+
 			samples = sampleCount,
 		)
-
-		multisampleImageView = device.createImageView(multisampleImage!!, ImageAspectFlags.COLOR)
-
 		val memRequirements = multisampleImage!!.memoryRequirements()
 
 		multisampleImageMemory = device.allocateMemory(
@@ -55,6 +53,8 @@ class SurfaceSystem(
 		)
 
 		multisampleImage!!.bindMemory(multisampleImageMemory!!)
+
+		multisampleImageView = device.createImageView(multisampleImage!!, ImageAspectFlags.COLOR)
 	}
 
 

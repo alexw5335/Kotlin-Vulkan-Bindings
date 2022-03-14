@@ -1,9 +1,6 @@
 package kvb.engine.gui
 
-import kvb.engine.gui.layout.Aligned
-import kvb.engine.gui.layout.Alignment
-import kvb.engine.gui.layout.Orientation
-import kvb.engine.gui.layout.Oriented
+import kvb.engine.gui.layout.*
 
 class Box(val orientation: Orientation) : Pane(), Oriented by orientation, Aligned {
 
@@ -23,8 +20,8 @@ class Box(val orientation: Orientation) : Pane(), Oriented by orientation, Align
 
 
 	private fun childrenLength(): Float {
-		var value = (children.size - 1) * spacing
-		for(c in children) value += c.length
+		var value = (externalChildren.size - 1) * spacing
+		for(c in externalChildren) value += c.length
 		return value
 	}
 
@@ -42,16 +39,16 @@ class Box(val orientation: Orientation) : Pane(), Oriented by orientation, Align
 
 		if(pack) {
 			length = childrenLength() + startPadding + endPadding
-			length2 = children.maxOf { it.length2 } + startPadding2 + endPadding2
+			length2 = externalChildren.maxOf { it.length2 } + startPadding2 + endPadding2
 		}
 
 		var pos = when(alignment) {
 			Alignment.START  -> startPadding
 			Alignment.END    -> length - childrenLength() - endPadding
-			Alignment.CENTRE -> (interiorLength - childrenLength()) / 2
+			Alignment.CENTRE -> (length - childrenLength()) / 2
 		}
 
-		for(child in children) {
+		for(child in externalChildren) {
 			child.pos = pos
 			align2(child)
 			pos += child.length + spacing
