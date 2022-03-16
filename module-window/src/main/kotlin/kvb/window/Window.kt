@@ -1,6 +1,6 @@
 package kvb.window
 
-import kvb.window.input.Button
+import kvb.window.input.InputButton
 
 interface Window {
 
@@ -47,17 +47,17 @@ interface Window {
 
 	var onScroll: (Float) -> Unit
 
-	var onKeyHold: (Button) -> Unit
+	var onKeyHold: (InputButton) -> Unit
 
-	var onKeyPress: (Button) -> Unit
+	var onKeyPress: (InputButton) -> Unit
 
-	var onKeyRelease: (Button) -> Unit
+	var onKeyRelease: (InputButton) -> Unit
 
-	var onMouseHold: (Button) -> Unit
+	var onMouseHold: (InputButton) -> Unit
 
-	var onMousePress: (Button) -> Unit
+	var onMousePress: (InputButton) -> Unit
 
-	var onMouseRelease: (Button) -> Unit
+	var onMouseRelease: (InputButton) -> Unit
 
 	var onChar: (Char) -> Unit
 

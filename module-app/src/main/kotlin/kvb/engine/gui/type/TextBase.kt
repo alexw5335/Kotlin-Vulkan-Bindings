@@ -1,5 +1,7 @@
-package kvb.engine.gui
+package kvb.engine.gui.type
 
+import kvb.engine.gui.Base
+import kvb.engine.gui.GuiGraphics
 import kvb.engine.gui.font.Fonts
 import kvb.engine.gui.font.Paragraph
 import kvb.engine.gui.font.ParagraphBuilder
@@ -7,7 +9,7 @@ import kvb.engine.vulkan.VkContext
 import kvb.vkwrapper.handle.Buffer
 import kotlin.math.round
 
-class SimpleText : Base() {
+class TextBase : Base() {
 
 
 	var text: String = ""
@@ -31,7 +33,18 @@ class SimpleText : Base() {
 
 
 	override fun align() {
-		val paragraph = ParagraphBuilder(Fonts.font, scale, lineSpacing, wrapWidth).build(text)
+		paragraph = ParagraphBuilder(Fonts.font, scale, lineSpacing, wrapWidth).build(text)
+		this.width = paragraph!!.width
+		this.height = paragraph!!.height
+
+		if(text.isEmpty()) {
+			if(buffer != null)
+				GuiGraphics.textAllocator.free(buffer!!)
+
+			buffer = null
+			return
+		}
+
 		if(buffer == null || buffer!!.size < text.length * 16) {
 			if(buffer != null) {
 				GuiGraphics.textAllocator.free(buffer!!.memory, buffer!!.offset)
@@ -42,7 +55,7 @@ class SimpleText : Base() {
 
 		VkContext.memoryManager.write(buffer!!, 0, text.length * 16L) { data ->
 			var i = 0
-			for(line in paragraph.lines) {
+			for(line in paragraph!!.lines) {
 				var x = 0F
 
 				for(binaryChar in line.chars) {
@@ -54,12 +67,6 @@ class SimpleText : Base() {
 				}
 			}
 		}
-
-		this.paragraph = paragraph
-		this.buffer = buffer
-
-		width = paragraph.width
-		height = paragraph.height
 	}
 
 

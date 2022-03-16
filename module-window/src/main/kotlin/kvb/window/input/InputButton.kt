@@ -3,7 +3,7 @@ package kvb.window.input
 /**
  * Codes are based on WinApi codes.
  */
-enum class Button(val code: Int, val type: Type = Type.KEY) {
+enum class InputButton(val code: Int, val type: Type = Type.KEY) {
 
 
 	NONE(0x00),
@@ -222,7 +222,7 @@ enum class Button(val code: Int, val type: Type = Type.KEY) {
 
 		val windowsMap = values.associateBy { it.code }
 
-		val pressed = HashSet<Button>()
+		val pressed = HashSet<InputButton>()
 
 	}
 

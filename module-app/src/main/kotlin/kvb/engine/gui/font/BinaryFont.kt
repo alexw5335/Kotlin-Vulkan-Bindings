@@ -11,6 +11,8 @@ class BinaryFont(
 
 	val map = characters.associateBy { it.char }
 
+	operator fun contains(char: Char) = map.containsKey(char)
+
 	operator fun get(char: Char) = map[char] ?: nullCharacter
 
 

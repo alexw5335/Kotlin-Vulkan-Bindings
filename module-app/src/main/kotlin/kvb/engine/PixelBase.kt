@@ -4,7 +4,9 @@ import kvb.engine.gui.Base
 import kvb.engine.gui.Colour
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.gui.event.HoldEvent
+import kvb.engine.gui.event.HoverEvent
 import kvb.engine.gui.event.PressEvent
+import kvb.window.input.InputButton
 
 class PixelBase : Base() {
 
@@ -27,9 +29,12 @@ class PixelBase : Base() {
 
 
 
-	override fun pressAction(event: PressEvent) {
-		super.pressAction(event)
-		toggled = !toggled
+	override fun hoverAction(event: HoverEvent) {
+		super.hoverAction(event)
+
+		if(!InputButton.LEFT_MOUSE.isPressed) return
+
+		toggled = !InputButton.E.isPressed
 	}
 
 

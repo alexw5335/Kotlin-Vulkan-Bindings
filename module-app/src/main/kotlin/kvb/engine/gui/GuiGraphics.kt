@@ -34,7 +34,7 @@ object GuiGraphics {
 		MemoryPropertyFlags.HOST_VISIBLE,
 		MemoryPropertyFlags.DEVICE_LOCAL,
 		MemoryPropertyFlags.HOST_COHERENT,
-		dummyBuffer.memoryRequirements().memoryTypeBits
+		dummyBuffer.memoryTypeBits
 	)!!, true)
 
 

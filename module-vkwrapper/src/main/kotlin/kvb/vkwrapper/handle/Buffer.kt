@@ -18,13 +18,7 @@ class Buffer(
 
 	val commands get() = device.commands
 
-	private val self = this
-
 	fun destroy() = commands.destroyBuffer(this, null)
-
-	override fun hashCode() = (address / 8).toInt()
-
-	override fun equals(other: Any?) = other is Buffer && other.address == address
 
 	override fun toString() = "VkBuffer(address = $address, size = $size, usage = $usage)"
 
@@ -62,6 +56,16 @@ class Buffer(
 	 */
 	override val isBound get() = _memory != null
 
+	/**
+	 * The required memory alignment of this buffer.
+	 */
+	override val alignment get() = memoryRequirements.alignment
+
+	/**
+	 * A bitmask of the indices of the memory types that can be used with this image.
+	 */
+	override val memoryTypeBits get() = memoryRequirements.memoryTypeBits
+
 
 
 	/**
@@ -80,7 +84,7 @@ class Buffer(
 	 */
 	override val memoryRequirements by stackLazy {
 		val requirements = MemoryRequirements { }
-		commands.getBufferMemoryRequirements(self, requirements)
+		commands.getBufferMemoryRequirements(this@Buffer, requirements)
 		MemoryRequirementsP(requirements)
 	}
 

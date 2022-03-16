@@ -19,7 +19,7 @@ class VkLinearAllocator(val memory: DeviceMemory) : VkAllocator {
 		if(this.offset > memory.size)
 			throw VkException("Linear allocator has run out of memory.")
 
-		return VkAllocation(memory, size, alignment)
+		return VkAllocation(memory, offset, size)
 	}
 
 

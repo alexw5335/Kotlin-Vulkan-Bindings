@@ -1,4 +1,6 @@
-package kvb.engine.gui
+package kvb.engine.gui.type
+
+import kvb.engine.gui.Base
 
 abstract class Pane : Base() {
 

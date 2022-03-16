@@ -32,7 +32,7 @@ class VkMemoryManager(val device: Device, val queue: Queue, stagingBufferSize: L
 		property1      = MemoryPropertyFlags.HOST_VISIBLE,
 		property2      = MemoryPropertyFlags.DEVICE_LOCAL,
 		property3      = MemoryPropertyFlags.HOST_COHERENT,
-		memoryTypeBits = stagingBuffer.memoryRequirements().memoryTypeBits
+		memoryTypeBits = stagingBuffer.memoryTypeBits
 	).also(stagingBuffer::bindMemory).also(DeviceMemory::mapWhole)
 
 	private val stagingAllocator = VkLinearAllocator(stagingBufferMemory)

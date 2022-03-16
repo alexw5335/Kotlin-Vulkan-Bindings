@@ -135,6 +135,12 @@ open class Base {
 
 	open fun clickAction(event: ClickEvent) { }
 
+	open fun toggleAction(event: ToggleEvent) { }
+
+	open fun buttonInputAction(event: ButtonInputEvent) { }
+
+	open fun charAction(event: CharEvent) { }
+
 
 
 	/*

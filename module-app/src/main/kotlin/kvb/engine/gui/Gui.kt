@@ -1,9 +1,11 @@
 package kvb.engine.gui
 
 import kvb.engine.Engine
+import kvb.engine.gui.event.ButtonInputEvent
 import kvb.engine.gui.event.HoverEvent
+import kvb.engine.gui.type.Button
 import kvb.window.Window
-import kvb.window.input.Button
+import kvb.window.input.InputButton
 
 class Gui(val root: Base) {
 
@@ -32,7 +34,7 @@ class Gui(val root: Base) {
 	 * The [Base] that is currently receiving key input.
 	 */
 	var keyFocus: Base? = null
-		private set
+		//private set
 
 	/**
 	 * The [Base] that is currently receiving scroll input.
@@ -69,6 +71,18 @@ class Gui(val root: Base) {
 	/*
 	Events
 	 */
+
+
+
+	fun onCharInput(char: Char) {
+		keyFocus?.charEvent(char)
+	}
+
+
+
+	fun onButtonInput(button: InputButton, type: ButtonInputEvent.Type) {
+		keyFocus?.buttonInputEvent(button, type)
+	}
 
 
 
@@ -128,7 +142,7 @@ class Gui(val root: Base) {
 	fun update(window: Window) {
 		handleMousePos(window.cursorX, Engine.window.cursorY)
 
-		if(Button.LEFT_MOUSE.isPressed)
+		if(InputButton.LEFT_MOUSE.isPressed)
 			onHold(window.cursorX, window.cursorY)
 
 		root.alignCycle()

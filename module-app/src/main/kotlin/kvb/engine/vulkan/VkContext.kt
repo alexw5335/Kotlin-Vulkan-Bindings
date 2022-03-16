@@ -38,7 +38,7 @@ object VkContext {
 		property1      = MemoryPropertyFlags.HOST_VISIBLE,
 		property2      = MemoryPropertyFlags.DEVICE_LOCAL,
 		property3      = MemoryPropertyFlags.HOST_COHERENT,
-		memoryTypeBits = dummyVertexBuffer.memoryRequirements().memoryTypeBits
+		memoryTypeBits = dummyVertexBuffer.memoryTypeBits
 	)!!, true)
 
 }

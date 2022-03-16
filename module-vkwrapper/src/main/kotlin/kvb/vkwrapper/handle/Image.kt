@@ -19,26 +19,9 @@ class Image(
 ) : ImageH(address), VkResource {
 
 
-	/**
-	 * Convenience variable.
-	 */
 	val commands get() = device.commands
 
-	/**
-	 * Convenience variable for 'this' due to MemStack extension functions.
-	 */
-	private val self get() = this
-
-	/**
-	 * Implementation of vkDestroyImage.
-	 */
 	fun destroy() = commands.destroyImage(this, null)
-
-	override fun hashCode() = (address / 2).toInt()
-
-	override fun equals(other: Any?) = other is Image && other.address == address
-
-	override fun toString() = "VkImage(address=$address, size=${memoryRequirements.size})"
 
 
 
@@ -79,6 +62,16 @@ class Image(
 	 */
 	override val size get() = memoryRequirements.size
 
+	/**
+	 * The required memory alignment of this image.
+	 */
+	override val alignment get() = memoryRequirements.alignment
+
+	/**
+	 * A bitmask of the indices of the memory types that can be used with this image.
+	 */
+	override val memoryTypeBits get() = memoryRequirements.memoryTypeBits
+
 
 
 	/**
@@ -97,7 +90,7 @@ class Image(
 	 */
 	override val memoryRequirements by stackLazy {
 		val requirements = MemoryRequirements { }
-		commands.getImageMemoryRequirements(self, requirements)
+		commands.getImageMemoryRequirements(this@Image, requirements)
 		MemoryRequirementsP(requirements)
 	}
 

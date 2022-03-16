@@ -1,7 +1,7 @@
-package kvb.engine.gui
+package kvb.engine.gui.type
 
+import kvb.engine.gui.*
 import kvb.engine.gui.event.ClickEvent
-import kvb.engine.gui.layout.Padding
 
 class ToggleButton : Base() {
 
@@ -24,7 +24,7 @@ class ToggleButton : Base() {
 
 	var toggled = false
 
-	val textBase = addChildInternal(SimpleText()) { active = false }
+	val textBase = addChildInternal(TextBase()) { active = false }
 
 
 
@@ -36,6 +36,7 @@ class ToggleButton : Base() {
 
 
 	override fun align() {
+		textBase.wrapWidth = interiorWidth
 		alignCentre(textBase)
 	}
 
@@ -44,6 +45,7 @@ class ToggleButton : Base() {
 	override fun clickAction(event: ClickEvent) {
 		super.clickAction(event)
 		toggled = !toggled
+		toggleEvent(toggled)
 	}
 
 
@@ -59,7 +61,13 @@ class ToggleButton : Base() {
 			else      -> colour
 		}
 
-		GuiGraphics.renderRect(x - border.left, y - border.top, width + border.horizontal, height + border.vertical, borderColour)
+		GuiGraphics.renderRect(
+			x - border.left,
+			y - border.top,
+			width + border.horizontal,
+			height + border.vertical,
+			borderColour
+		)
 		GuiGraphics.renderRect(x, y, width, height, colour)
 	}
 

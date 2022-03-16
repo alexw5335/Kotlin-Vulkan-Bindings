@@ -2,9 +2,8 @@ package kvb.window.winapi
 
 import kvb.core.memory.Unsafe
 import kvb.core.memory.stackGet
-import kvb.window.Window
 import kvb.window.WindowManager
-import kvb.window.input.Button
+import kvb.window.input.InputButton
 
 @Suppress("MemberVisibilityCanBePrivate")
 object WinApi : WindowManager {
@@ -78,7 +77,7 @@ object WinApi : WindowManager {
 
 
 
-	override fun getButton(code: Int) = Button.windowsMap[code]
+	override fun getButton(code: Int) = InputButton.windowsMap[code]
 
 
 
@@ -98,9 +97,9 @@ object WinApi : WindowManager {
 
 
 	private fun processHeldButtons() {
-		val buttonsToRemove = HashSet<Button>()
+		val buttonsToRemove = HashSet<InputButton>()
 
-		for(button in Button.pressed) {
+		for(button in InputButton.pressed) {
 			// Handle swapping windows while the button is still held.
 			// Normally, WM_KEYUP would remove pressed buttons.
 			if(!isButtonPressed(button.code)) {
@@ -109,12 +108,12 @@ object WinApi : WindowManager {
 			}
 
 			when(button.type) {
-				Button.Type.KEY -> focussedWindow?.onKeyHold?.invoke(button)
-				Button.Type.MOUSE -> focussedWindow?.onMouseHold?.invoke(button)
+				InputButton.Type.KEY -> focussedWindow?.onKeyHold?.invoke(button)
+				InputButton.Type.MOUSE -> focussedWindow?.onMouseHold?.invoke(button)
 			}
 		}
 
-		Button.pressed.removeAll(buttonsToRemove)
+		InputButton.pressed.removeAll(buttonsToRemove)
 	}
 
 
@@ -149,7 +148,7 @@ object WinApi : WindowManager {
 
 	private val message = Message(Unsafe)
 
-	private val Message.wparamButton get() = Button.windowsMap[wparam.toInt()] ?: Button.NONE
+	private val Message.wparamButton get() = InputButton.windowsMap[wparam.toInt()] ?: InputButton.NONE
 
 	private val Message.hwndWindow get() = windows.firstOrNull { it.hwnd == hwnd }
 
@@ -164,10 +163,10 @@ object WinApi : WindowManager {
 			MessageType.MOUSE_WHEEL  -> message.handleMouseWheel()
 			MessageType.KEY_UP       -> message.handleKeyUp()
 			MessageType.KEY_DOWN     -> message.handleKeyDown()
-			MessageType.LBUTTON_DOWN -> message.handleMouseButtonDown(Button.LEFT_MOUSE)
-			MessageType.LBUTTON_UP   -> message.handleMouseButtonUp(Button.LEFT_MOUSE)
-			MessageType.RBUTTON_DOWN -> message.handleMouseButtonDown(Button.RIGHT_MOUSE)
-			MessageType.RBUTTON_UP   -> message.handleMouseButtonUp(Button.RIGHT_MOUSE)
+			MessageType.LBUTTON_DOWN -> message.handleMouseButtonDown(InputButton.LEFT_MOUSE)
+			MessageType.LBUTTON_UP   -> message.handleMouseButtonUp(InputButton.LEFT_MOUSE)
+			MessageType.RBUTTON_DOWN -> message.handleMouseButtonDown(InputButton.RIGHT_MOUSE)
+			MessageType.RBUTTON_UP   -> message.handleMouseButtonUp(InputButton.RIGHT_MOUSE)
 			MessageType.CHAR         -> message.handleChar()
 			else                     -> { }
 		}
@@ -189,7 +188,7 @@ object WinApi : WindowManager {
 
 	private fun Message.handleKeyUp() {
 		val button = wparamButton
-		Button.pressed.remove(button)
+		InputButton.pressed.remove(button)
 		hwndWindow?.onKeyRelease?.invoke(button)
 	}
 
@@ -197,21 +196,21 @@ object WinApi : WindowManager {
 
 	private fun Message.handleKeyDown() {
 		val button = wparamButton
-		Button.pressed.add(button)
+		InputButton.pressed.add(button)
 		hwndWindow?.onKeyPress?.invoke(button)
 	}
 
 
 
-	private fun Message.handleMouseButtonDown(button: Button) {
-		Button.pressed.add(button)
+	private fun Message.handleMouseButtonDown(button: InputButton) {
+		InputButton.pressed.add(button)
 		hwndWindow?.onMousePress?.invoke(button)
 	}
 
 
 
-	private fun Message.handleMouseButtonUp(button: Button) {
-		Button.pressed.remove(button)
+	private fun Message.handleMouseButtonUp(button: InputButton) {
+		InputButton.pressed.remove(button)
 		hwndWindow?.onMouseRelease?.invoke(button)
 	}
 

@@ -43,6 +43,7 @@ fun run() {
 		spacing = 20F
 
 		val pixels = ArrayList<PixelBase>()
+
 		anchorPane {
 			width = 7 * 50F
 			height = 9 * 50F
@@ -62,7 +63,7 @@ fun run() {
 			spacing = 20F
 
 			text {
-				text = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 for(i in 0 until 10) { test[2 * i] = 15 + i; }"
+				text = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 for(i in 0 until 10) { test[2*i] == 15 + i - 2; } 4-3+8*5/6"
 				wrapWidth = 400F
 				lineSpacing = 1F
 				scale = 2F
@@ -71,7 +72,6 @@ fun run() {
 			button {
 				with(textBase) {
 					text = "build"
-					wrapWidth = 1000F
 					scale = 3F
 				}
 
@@ -85,63 +85,12 @@ fun run() {
 					println(value)
 				}
 			}
+
+			textBox {
+
+			}
 		}
 	}
-
-	/*val root = vbox {
-		spacing = 50F
-		hAlignment = Alignment.CENTRE
-		vAlignment = Alignment.START
-		padding = Padding(50F)
-
-		rect {
-			width = 200F
-			height = 100F
-			colour = Colour(0F, 0.5F, 0F)
-		}
-
-		hbox {
-			pack = true
-			spacing = 10F
-
-			rect {
-				width = 100F
-				height = 100F
-				colour = Colour(0F, 0F, 1F)
-			}
-
-			rect {
-				width = 50F
-				height = 50F
-				colour = Colour(0F, 0F, 1F)
-			}
-		}
-
-		button {
-			with(textBase) {
-				text = "Click Me!"
-				scale = 2F
-				lineSpacing = 1F
-				wrapWidth = this@button.interiorWidth
-			}
-		}
-
-		toggleButton {
-			with(textBase) {
-				text = "CLICK ME!"
-				scale = 3F
-				lineSpacing = 1F
-				wrapWidth = this@toggleButton.interiorWidth
-			}
-		}
-
-		text {
-			text = "public static void main(String[] args) { System.out.println(\"Hello World\"); }"
-			scale = 2F
-			lineSpacing = 1F
-			wrapWidth = 400F
-		}
-	}*/
 
 	Engine.gui = Gui(root)
 

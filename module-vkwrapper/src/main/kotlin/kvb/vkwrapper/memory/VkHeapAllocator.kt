@@ -1,7 +1,6 @@
 package kvb.vkwrapper.memory
 
 import kvb.vkwrapper.exception.VkException
-import kvb.vkwrapper.handle.Buffer
 import kvb.vkwrapper.handle.Device
 import kvb.vkwrapper.handle.DeviceMemory
 import kvb.vkwrapper.handle.VkResource
@@ -14,51 +13,65 @@ class VkHeapAllocator(
 ) : VkAllocator {
 
 
-	private val linearAllocators = ArrayList<VkLinearAllocator>()
+	private val allocators = ArrayList<VkLinearAllocator>()
 
 	private val blockLists = HashMap<Long, ArrayList<Block>>()
 
 
 
-	class Block(
-		val memory: DeviceMemory,
-		val offset: Long,
-		val size: Long,
-		var allocated: Boolean
-	)
-
-
-
-	fun allocate(size: Long, alignment: Long): Long {
-		val blockSize = if(size.countOneBits() == 1) size else size.takeHighestOneBit() * 2
-
-		val blocks = blockLists.getOrPut(blockSize, ::ArrayList)
-
-		val existingBlock = blocks.firstOrNull { !it.allocated }
-
-		val block = if(existingBlock == null) {
-			val allocator = linearAllocators
-				.firstOrNull { it.canAllocate(blockSize, 256) }
-				?: VkLinearAllocator(device.allocateMemory(blockSize * 4, memoryType.index))
-				.also(linearAllocators::add)
-				.also { if(persistentlyMapped) it.memory.mapWhole() }
-
-			val blockOffset = allocator.allocate(blockSize, 256)
-			Block(allocator.memory, blockOffset, blockSize, true).also(blocks::add)
-		} else {
-			existingBlock.also { it.allocated = true }
-		}
-
-		return block.offset
+	override fun allocate(size: Long, alignment: Long): VkAllocation {
+		val block = getBlock(size, alignment)
+		block.allocated = true
+		return VkAllocation(block.memory, block.offset, size)
 	}
 
 
 
-	fun allocate(resource: VkResource) {
-		// Align size to a power of 256
-		val size = (buffer.size + (256 - 1)) and -256
-		val allocation = allocate(size)
-		buffer.bindMemory(allocation)
+	override fun destroy() {
+		for(l in allocators)
+			l.destroy()
+	}
+
+
+
+	class Block(
+		val memory    : DeviceMemory,
+		val offset    : Long,
+		val size      : Long,
+		var allocated : Boolean
+	)
+
+
+
+	private fun getBlock(size: Long, alignment: Long): Block {
+		val blockSize = if(size.countOneBits() == 1) size else size.takeHighestOneBit() * 2
+		val blocks = blockLists.getOrPut(blockSize, ::ArrayList)
+
+		for(block in blocks)
+			if(!block.allocated)
+				return block
+
+		val allocation = getAllocator(size, alignment, blockSize).allocate(blockSize, alignment)
+		val block = Block(allocation.memory, allocation.offset, blockSize, false)
+		blocks.add(block)
+		return block
+	}
+
+
+
+	private fun getAllocator(size: Long, alignment: Long, blockSize: Long): VkLinearAllocator {
+		for(l in allocators)
+			if(l.canAllocate(size, alignment))
+				return l
+
+		val allocator = VkLinearAllocator(device.allocateMemory(blockSize * 4, memoryType.index))
+
+		allocators.add(allocator)
+
+		if(persistentlyMapped)
+			allocator.memory.mapWhole()
+
+		return allocator
 	}
 
 
@@ -79,15 +92,20 @@ class VkHeapAllocator(
 
 
 
+	fun free(resource: VkResource) = free(resource.memory, resource.offset)
+
+
+
+	@Suppress("unused")
 	fun printAnalytics() {
 		if(blockLists.isEmpty())
 			println("This allocator is empty.")
 
 		println("Heap Allocator:")
-		println("\tTotal memory capacity: ${linearAllocators.sumOf { it.memory.size }}")
+		println("\tTotal memory capacity: ${allocators.sumOf { it.memory.size }}")
 		println("\tTotal memory usage: ${blockLists.flatMap { it.value }.filter { it.allocated }.sumOf { it.size }}")
 
-		for(l in linearAllocators) {
+		for(l in allocators) {
 			println("\tsub-allocator(size = ${l.memory.size}, used = ${l.offset})")
 		}
 

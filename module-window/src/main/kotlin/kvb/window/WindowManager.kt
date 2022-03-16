@@ -1,7 +1,7 @@
 package kvb.window
 
 import kvb.core.Core
-import kvb.window.input.Button
+import kvb.window.input.InputButton
 import kvb.window.winapi.WinApi
 
 interface WindowManager {
@@ -13,7 +13,7 @@ interface WindowManager {
 
 	fun create(title: String, x: Int?, y: Int?, width: Int?, height: Int?): Window
 
-	fun getButton(code: Int): Button?
+	fun getButton(code: Int): InputButton?
 
 
 

@@ -1,6 +1,7 @@
 package kvb.engine.gui
 
 import kvb.engine.gui.layout.*
+import kvb.engine.gui.type.*
 
 
 
@@ -16,10 +17,12 @@ fun Pane.hbox(block: Box.() -> Unit) = addChild(Box(HOrientation), block)
 
 fun Pane.anchorPane(block: AnchorPane.() -> Unit) = addChild(AnchorPane(), block)
 
-fun Pane.button(block: SimpleButton.() -> Unit) = addChild(SimpleButton(), block)
+fun Pane.button(block: Button.() -> Unit) = addChild(Button(), block)
 
 fun Pane.toggleButton(block: ToggleButton.() -> Unit) = addChild(ToggleButton(), block)
 
 fun Pane.rect(block: RectBase.() -> Unit) = addChild(RectBase(), block)
 
-fun Pane.text(block: SimpleText.() -> Unit) = addChild(SimpleText(), block)
+fun Pane.text(block: TextBase.() -> Unit) = addChild(TextBase(), block)
+
+fun Pane.textBox(block: TextBox.() -> Unit) = addChild(TextBox(), block)

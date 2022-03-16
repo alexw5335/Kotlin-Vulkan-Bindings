@@ -44,7 +44,8 @@ class SurfaceSystem(
 
 			samples = sampleCount,
 		)
-		val memRequirements = multisampleImage!!.memoryRequirements()
+
+		val memRequirements = multisampleImage!!.memoryRequirements
 
 		multisampleImageMemory = device.allocateMemory(
 			size           = memRequirements.size,

@@ -1,11 +1,12 @@
 package kvb.engine
 
-import kvb.engine.gui.AnchorPane
+import kvb.engine.gui.type.AnchorPane
 import kvb.engine.gui.Gui
 import kvb.engine.gui.GuiGraphics
+import kvb.engine.gui.event.ButtonInputEvent
 import kvb.engine.vulkan.VkContext
 import kvb.window.WindowManager
-import kvb.window.input.Button
+import kvb.window.input.InputButton
 
 object Engine {
 
@@ -45,13 +46,29 @@ object Engine {
 		}
 
 		window.onMousePress = {
-			if(it == Button.LEFT_MOUSE)
+			if(it == InputButton.LEFT_MOUSE)
 				gui.onPress(window.cursorX, window.cursorY)
 		}
 
 		window.onMouseRelease = {
-			if(it == Button.LEFT_MOUSE)
+			if(it == InputButton.LEFT_MOUSE)
 				gui.onRelease(window.cursorX, window.cursorY)
+		}
+
+		window.onKeyPress = {
+			gui.onButtonInput(it, ButtonInputEvent.Type.PRESS)
+		}
+
+		window.onKeyHold = {
+			gui.onButtonInput(it, ButtonInputEvent.Type.HOLD)
+		}
+
+		window.onKeyRelease = {
+			gui.onButtonInput(it, ButtonInputEvent.Type.RELEASE)
+		}
+
+		window.onChar = {
+			gui.onCharInput(it)
 		}
 	}
 

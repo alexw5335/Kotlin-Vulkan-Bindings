@@ -3,7 +3,6 @@ package kvb.window.winapi
 import kvb.core.memory.Addressable
 import kvb.core.memory.Allocator
 import kvb.core.memory.Unsafe
-import kvb.window.input.Button
 
 class Message(override val address: Long): Addressable {
 

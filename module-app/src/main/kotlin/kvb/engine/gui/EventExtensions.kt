@@ -1,6 +1,7 @@
 package kvb.engine.gui
 
 import kvb.engine.gui.event.*
+import kvb.window.input.InputButton
 
 
 
@@ -18,6 +19,12 @@ fun Base.releaseEvent(cursorX: Float, cursorY: Float) = ReleaseEvent(this, curso
 
 fun Base.clickEvent(cursorX: Float, cursorY: Float) = ClickEvent(this, cursorX, cursorY).bubble()
 
+fun Base.toggleEvent(toggled: Boolean) = ToggleEvent(this, toggled).bubble()
+
+fun Base.buttonInputEvent(button: InputButton, type: ButtonInputEvent.Type) = ButtonInputEvent(this, button, type).bubble()
+
+fun Base.charEvent(char: Char) = CharEvent(this, char).bubble()
+
 
 
 fun Base.onHover(action: (HoverEvent) -> Unit) = handlers.add(HoverEvent.Handler(action))
@@ -33,3 +40,9 @@ fun Base.onHold(action: (HoldEvent) -> Unit) = handlers.add(HoldEvent.Handler(ac
 fun Base.onRelease(action: (ReleaseEvent) -> Unit) = handlers.add(ReleaseEvent.Handler(action))
 
 fun Base.onClick(action: (ClickEvent) -> Unit) = handlers.add(ClickEvent.Handler(action))
+
+fun Base.onToggle(action: (ToggleEvent) -> Unit) = handlers.add(ToggleEvent.Handler(action))
+
+fun Base.onButtonInput(action: (ButtonInputEvent) -> Unit) = handlers.add(ButtonInputEvent.Handler(action))
+
+fun Base.onChar(action: (CharEvent) -> Unit) = handlers.add(CharEvent.Handler(action))
