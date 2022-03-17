@@ -240,16 +240,20 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 		memoryTypeBits : Int                  = UInt.MAX_VALUE.toInt(),
 		failureIndex   : Int                  = -1
 	): MemoryTypeP? {
-		for(m in memoryTypes)
-			if(m.isValid(memoryTypeBits) && m.index > failureIndex && m.flags.contains(property1 + property2 + property3))
+		val validTypes = memoryTypes.filter {
+			it.isValid(memoryTypeBits) && it.index > failureIndex
+		}
+
+		for(m in validTypes)
+			if(m.flags.contains(property1 + property2 + property3))
 				return m
 
 		for(m in memoryTypes)
-			if(m.isValid(memoryTypeBits) && m.index > failureIndex && m.flags.contains(property1 + property2))
+			if(m.flags.contains(property1 + property2))
 				return m
 
 		for(m in memoryTypes)
-			if(m.isValid(memoryTypeBits) && m.index > failureIndex && m.flags.contains(property1))
+			if(m.flags.contains(property1))
 				return m
 
 		return null

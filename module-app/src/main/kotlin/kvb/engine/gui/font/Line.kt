@@ -12,4 +12,6 @@ class Line {
 
 	var height = 0F
 
+	var index = 0
+
 }

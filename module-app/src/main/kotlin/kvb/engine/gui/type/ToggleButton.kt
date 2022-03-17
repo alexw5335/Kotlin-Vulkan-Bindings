@@ -23,9 +23,10 @@ class ToggleButton : Base() {
 
 	var toggledPressedColour = BaseDefaults.toggledPressedColour
 
-	var toggled = false
-
 	val textBase = addChildInternal(TextBase()) { active = false }
+
+	var toggled = false
+		set(value) { field = value; toggleEvent(value) }
 
 	var hAlignment = Alignment.CENTRE
 		set(value) { field = value; shouldAlign = true }
@@ -54,7 +55,6 @@ class ToggleButton : Base() {
 	override fun clickAction(event: ClickEvent) {
 		super.clickAction(event)
 		toggled = !toggled
-		toggleEvent(toggled)
 	}
 
 

@@ -8,6 +8,7 @@ import kvb.engine.gui.event.FocusGainEvent
 import kvb.engine.gui.event.FocusLossEvent
 import kvb.engine.gui.event.PressEvent
 import kvb.engine.gui.font.Fonts
+import kvb.engine.gui.font.TextCollision
 import kvb.engine.gui.layout.Alignment
 import kvb.engine.gui.layout.Padding
 
@@ -29,6 +30,20 @@ class TextBox : Base() {
 
 	var vAlignment = Alignment.START
 		set(value)  { field = value; shouldAlign = true }
+
+	private var collision: TextCollision? = null
+		set(value) { field = value; onTextCollision(value) }
+
+
+
+	private fun onTextCollision(collision: TextCollision?) {
+		caret.isBlinking = collision != null
+
+		if(collision != null) {
+			caret.x = textBase.x + collision.x
+			caret.y = textBase.y + collision.y
+		}
+	}
 
 
 
@@ -52,37 +67,21 @@ class TextBox : Base() {
 		vAlign(vAlignment, textBase)
 
 		caret.width = textBase.scale
-
 		caret.height = Fonts.font.size.toFloat() * textBase.scale
-
-		textBase.paragraph?.lines?.last()?.let {
-			var x = textBase.x + it.x
-
-			for(c in it.chars)
-				x += c.width * textBase.scale + textBase.scale
-
-			caret.x = x
-			caret.y = textBase.y + it.y
-		}
-
-		if(textBase.paragraph == null) {
-			caret.x = padding.left
-			caret.y = padding.top
-		}
-	}
-
-
-
-	override fun focusGainAction(event: FocusGainEvent) {
-		super.focusGainAction(event)
-		caret.isBlinking = true
 	}
 
 
 
 	override fun focusLossAction(event: FocusLossEvent) {
 		super.focusLossAction(event)
-		caret.isBlinking = false
+		collision = null
+	}
+
+
+
+	override fun pressAction(event: PressEvent) {
+		super.pressAction(event)
+		collision = textBase.paragraph?.collision(event.cursorX, event.cursorY)
 	}
 
 
@@ -90,26 +89,38 @@ class TextBox : Base() {
 	override fun charAction(event: CharEvent) {
 		super.charAction(event)
 
+		val collision = this.collision ?: return
+
+		if(textBase.text.isEmpty()) return
+
+		val totalIndex = collision.totalCharIndex()
+
 		if(event.char.code == 8) {
-			if(textBase.text.isNotEmpty())
-				textBase.text = textBase.text.dropLast(1)
+			textBase.text = if(totalIndex == textBase.text.length)
+				textBase.text.dropLast(1)
+			else
+				buildString {
+					append(textBase.text.dropLast(textBase.text.length - totalIndex))
+					append(textBase.text.drop(totalIndex))
+				}
 		} else {
-			if(event.char in Fonts.font)
-				textBase.text += event.char
+			if(event.char !in Fonts.font) return
+
+			textBase.text = if(totalIndex == textBase.text.length)
+				textBase.text + event.char
+			else
+				buildString {
+					append(textBase.text.dropLast(textBase.text.length - totalIndex))
+					append(event.char)
+					append(textBase.text.drop(totalIndex))
+				}
 		}
 	}
 
 
 
 	override fun renderThis(x: Float, y: Float) {
-		GuiGraphics.renderRect(
-			x - border.left,
-			y - border.top,
-			width + border.horizontal,
-			height + border.vertical,
-			borderColour
-		)
-
+		GuiGraphics.renderBorder(x, y, width, height, borderColour, border)
 		GuiGraphics.renderRect(x, y, width, height, backgroundColour)
 	}
 

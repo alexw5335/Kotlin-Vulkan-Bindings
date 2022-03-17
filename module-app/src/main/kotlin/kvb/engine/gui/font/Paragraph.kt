@@ -11,4 +11,27 @@ class Paragraph(
 	val lines     : List<Line>,
 	val width     : Float,
 	val height    : Float
-)
+) {
+
+
+	fun collision(mouseX: Float, mouseY: Float): TextCollision? {
+		val line = lines.firstOrNull {
+			mouseY <= it.y + font.size * scale
+		} ?: return null
+
+		if(line.chars.isEmpty())
+			return TextCollision(this, line, 0, line.x, line.y)
+
+		var x = line.x
+
+		for(c in line.chars) {
+			if(mouseX <= x + scale / 2F)
+				return TextCollision(this, line, 0, x, line.y)
+			x += c.width * scale
+		}
+
+		return TextCollision(this, line, line.chars.size, x - scale, line.y)
+	}
+
+
+}

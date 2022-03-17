@@ -25,6 +25,7 @@ class ParagraphBuilder(
 
 	private fun newLine() {
 		val newLine = Line()
+		newLine.index = lines.size
 		newLine.y = height + spacing * scale
 		height = newLine.y + font.size * scale
 		lines.add(newLine)
