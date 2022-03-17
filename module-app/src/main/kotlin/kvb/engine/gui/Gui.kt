@@ -7,7 +7,7 @@ import kvb.engine.gui.type.Button
 import kvb.window.Window
 import kvb.window.input.InputButton
 
-class Gui(val root: Base) {
+class Gui(private val root: Base) {
 
 
 	/*
@@ -28,30 +28,10 @@ class Gui(val root: Base) {
 	var pressed: Base? = null
 		private set
 
-
-
 	/**
-	 * The [Base] that is currently receiving key input.
+	 * The [Base] that is currently receiving input events. This is usually assigned when pressing on a base.
 	 */
-	var keyFocus: Base? = null
-		//private set
-
-	/**
-	 * The [Base] that is currently receiving scroll input.
-	 */
-	var scrollFocus: Base? = null
-		private set
-
-	/**
-	 * The [Base] that is currently receiving drag input.
-	 */
-	var dragFocus: Base? = null
-		private set
-
-	/**
-	 * The [Base] that is currently receiving mouse input.
-	 */
-	var mouseFocus: Base? = null
+	var focussed: Base? = null
 		private set
 
 
@@ -68,6 +48,21 @@ class Gui(val root: Base) {
 
 
 
+	fun assignFocus(base: Base?) {
+		removeFocus()
+		this.focussed = base
+		this.focussed?.focusGainEvent()
+	}
+
+
+
+	fun removeFocus() {
+		focussed?.focusLossEvent()
+		focussed = null
+	}
+
+
+
 	/*
 	Events
 	 */
@@ -75,13 +70,13 @@ class Gui(val root: Base) {
 
 
 	fun onCharInput(char: Char) {
-		keyFocus?.charEvent(char)
+		focussed?.charEvent(char)
 	}
 
 
 
 	fun onButtonInput(button: InputButton, type: ButtonInputEvent.Type) {
-		keyFocus?.buttonInputEvent(button, type)
+		focussed?.buttonInputEvent(button, type)
 	}
 
 

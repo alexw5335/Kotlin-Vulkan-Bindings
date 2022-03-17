@@ -25,6 +25,10 @@ fun Base.buttonInputEvent(button: InputButton, type: ButtonInputEvent.Type) = Bu
 
 fun Base.charEvent(char: Char) = CharEvent(this, char).bubble()
 
+fun Base.focusGainEvent() = FocusGainEvent(this).bubble()
+
+fun Base.focusLossEvent() = FocusLossEvent(this).bubble()
+
 
 
 fun Base.onHover(action: (HoverEvent) -> Unit) = handlers.add(HoverEvent.Handler(action))
@@ -46,3 +50,7 @@ fun Base.onToggle(action: (ToggleEvent) -> Unit) = handlers.add(ToggleEvent.Hand
 fun Base.onButtonInput(action: (ButtonInputEvent) -> Unit) = handlers.add(ButtonInputEvent.Handler(action))
 
 fun Base.onChar(action: (CharEvent) -> Unit) = handlers.add(CharEvent.Handler(action))
+
+fun Base.onFocusGain(action: (FocusGainEvent) -> Unit) = handlers.add(FocusGainEvent.Handler(action))
+
+fun Base.onFocusLoss(action: (FocusLossEvent) -> Unit) = handlers.add(FocusLossEvent.Handler(action))

@@ -4,9 +4,12 @@ import kvb.engine.gui.Base
 import kvb.engine.gui.BaseDefaults
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.gui.event.CharEvent
+import kvb.engine.gui.event.FocusGainEvent
+import kvb.engine.gui.event.FocusLossEvent
 import kvb.engine.gui.event.PressEvent
 import kvb.engine.gui.font.Fonts
 import kvb.engine.gui.layout.Alignment
+import kvb.engine.gui.layout.Padding
 
 class TextBox : Base() {
 
@@ -21,6 +24,12 @@ class TextBox : Base() {
 
 	var borderColour = BaseDefaults.controlBorderColour
 
+	var hAlignment = Alignment.START
+		set(value) { field = value; shouldAlign = true }
+
+	var vAlignment = Alignment.START
+		set(value)  { field = value; shouldAlign = true }
+
 
 
 	init {
@@ -30,25 +39,50 @@ class TextBox : Base() {
 
 		textBase.scale = 2F
 		textBase.lineSpacing = 1f
-	}
 
-
-
-	override fun pressAction(event: PressEvent) {
-		super.pressAction(event)
-		gui.keyFocus = this
+		focussable = true
+		focusOnPress = true
 	}
 
 
 
 	override fun align() {
 		textBase.wrapWidth = interiorWidth
-		hAlign(Alignment.START, textBase)
-		vAlign(Alignment.START, textBase)
+		hAlign(hAlignment, textBase)
+		vAlign(vAlignment, textBase)
 
-		caret.x = 50F
-		caret.y = 50F
-		caret.height = 15F
+		caret.width = textBase.scale
+
+		caret.height = Fonts.font.size.toFloat() * textBase.scale
+
+		textBase.paragraph?.lines?.last()?.let {
+			var x = textBase.x + it.x
+
+			for(c in it.chars)
+				x += c.width * textBase.scale + textBase.scale
+
+			caret.x = x
+			caret.y = textBase.y + it.y
+		}
+
+		if(textBase.paragraph == null) {
+			caret.x = padding.left
+			caret.y = padding.top
+		}
+	}
+
+
+
+	override fun focusGainAction(event: FocusGainEvent) {
+		super.focusGainAction(event)
+		caret.isBlinking = true
+	}
+
+
+
+	override fun focusLossAction(event: FocusLossEvent) {
+		super.focusLossAction(event)
+		caret.isBlinking = false
 	}
 
 

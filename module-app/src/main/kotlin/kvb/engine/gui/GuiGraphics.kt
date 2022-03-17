@@ -2,6 +2,7 @@ package kvb.engine.gui
 
 import kvb.core.memory.LinearAllocator
 import kvb.core.memory.Unsafe
+import kvb.engine.gui.layout.Padding
 import kvb.engine.vulkan.VkContext
 import kvb.vkwrapper.builder.GraphicsPipelineBuilder
 import kvb.vkwrapper.handle.Buffer
@@ -94,6 +95,49 @@ object GuiGraphics {
 
 
 
+	fun renderBorder(
+		x: Float,
+		y: Float,
+		width: Float,
+		height: Float,
+		colour: Colour,
+		border: Padding
+	) = renderRect(
+		x - border.left,
+		y - border.top,
+		width + border.horizontal,
+		height + border.vertical,
+		colour
+	)
+
+
+
+	fun renderText(
+		offsetX   : Float,
+		offsetY   : Float,
+		buffer    : Buffer,
+		textScale : Float,
+		numChars  : Int,
+	) {
+		val data = allocator.mallocByte(12)
+		data.setFloat(0, offsetX)
+		data.setFloat(4, offsetY)
+		data.setFloat(8, textScale)
+
+		commandBuffer.bindPipeline(binaryFontPipeline)
+		commandBuffer.pushConstants(binaryFontPipeline.layout, ShaderStageFlags.VERTEX, 16, data.byteSize, data)
+		commandBuffer.bindVertexBuffer(buffer)
+		commandBuffer.draw(numChars)
+	}
+
+
+
+	/*
+	Pipelines
+	 */
+
+
+
 	val singleColourRectPipeline = pipeline {
 		renderPass(VkContext.surfaceSystem.renderPass)
 		pushConstant(ShaderStageFlags.VERTEX, 0, 36)
@@ -115,26 +159,6 @@ object GuiGraphics {
 		simpleBlendAttachment()
 		dynamicViewportAndScissor()
 		samples(VkContext.surfaceSystem.sampleCount)
-	}
-
-
-
-	fun renderText(
-		offsetX   : Float,
-		offsetY   : Float,
-		buffer    : Buffer,
-		textScale : Float,
-		numChars  : Int,
-	) {
-		val data = allocator.mallocByte(12)
-		data.setFloat(0, offsetX)
-		data.setFloat(4, offsetY)
-		data.setFloat(8, textScale)
-
-		commandBuffer.bindPipeline(binaryFontPipeline)
-		commandBuffer.pushConstants(binaryFontPipeline.layout, ShaderStageFlags.VERTEX, 16, data.byteSize, data)
-		commandBuffer.bindVertexBuffer(buffer)
-		commandBuffer.draw(numChars)
 	}
 
 

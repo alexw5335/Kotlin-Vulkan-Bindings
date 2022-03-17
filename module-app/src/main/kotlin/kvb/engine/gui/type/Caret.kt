@@ -16,6 +16,7 @@ class Caret : Base() {
 	var blinkState = false
 
 	var isBlinking = false
+		set(value) { field = value; blinkState = true; lastBlinkTime = 0L }
 
 
 
@@ -27,6 +28,8 @@ class Caret : Base() {
 
 
 	override fun renderThis(x: Float, y: Float) {
+		if(!isBlinking) return
+
 		if(System.currentTimeMillis() - lastBlinkTime >= blinkMillis) {
 			lastBlinkTime = System.currentTimeMillis()
 			blinkState = !blinkState

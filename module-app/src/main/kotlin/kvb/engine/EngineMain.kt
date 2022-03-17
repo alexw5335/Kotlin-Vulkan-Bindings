@@ -4,6 +4,7 @@ import kvb.core.Core
 import kvb.engine.gui.*
 import kvb.engine.gui.layout.Alignment
 import kvb.engine.gui.layout.Padding
+import kvb.engine.gui.layout.TextAlignment
 import kvb.engine.gui.model.BaseModel
 import kvb.engine.vulkan.VkContextBuilder
 import kvb.vulkan.*
@@ -87,7 +88,7 @@ fun run() {
 			}
 
 			textBox {
-
+				textBase.alignment = TextAlignment.LEFT
 			}
 		}
 	}

@@ -32,9 +32,10 @@ class PixelBase : Base() {
 	override fun hoverAction(event: HoverEvent) {
 		super.hoverAction(event)
 
-		if(!InputButton.LEFT_MOUSE.isPressed) return
-
-		toggled = !InputButton.E.isPressed
+		if(InputButton.LEFT_MOUSE.isPressed)
+			toggled = true
+		else if(InputButton.RIGHT_MOUSE.isPressed)
+			toggled = false
 	}
 
 

@@ -30,4 +30,10 @@ data class Padding(val top: Float, val right: Float, val bottom: Float, val left
 	override fun toString() = "(top: $top, right: $right, bottom: $bottom, left: $left)"
 
 
+
+	companion object {
+		val EMPTY = Padding(0F, 0F, 0F, 0F)
+	}
+
+
 }

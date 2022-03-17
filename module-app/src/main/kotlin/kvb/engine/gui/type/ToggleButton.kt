@@ -2,6 +2,7 @@ package kvb.engine.gui.type
 
 import kvb.engine.gui.*
 import kvb.engine.gui.event.ClickEvent
+import kvb.engine.gui.layout.Alignment
 
 class ToggleButton : Base() {
 
@@ -26,18 +27,26 @@ class ToggleButton : Base() {
 
 	val textBase = addChildInternal(TextBase()) { active = false }
 
+	var hAlignment = Alignment.CENTRE
+		set(value) { field = value; shouldAlign = true }
+
+	var vAlignment = Alignment.CENTRE
+		set(value) { field = value; shouldAlign = true }
+
 
 
 	init {
 		this.width = BaseDefaults.buttonWidth
 		this.height = BaseDefaults.buttonHeight
+		this.padding = BaseDefaults.controlPadding
 	}
 
 
 
 	override fun align() {
 		textBase.wrapWidth = interiorWidth
-		alignCentre(textBase)
+		hAlign(hAlignment, textBase)
+		vAlign(vAlignment, textBase)
 	}
 
 
@@ -61,13 +70,7 @@ class ToggleButton : Base() {
 			else      -> colour
 		}
 
-		GuiGraphics.renderRect(
-			x - border.left,
-			y - border.top,
-			width + border.horizontal,
-			height + border.vertical,
-			borderColour
-		)
+		GuiGraphics.renderBorder(x, y, width, height, borderColour, border)
 		GuiGraphics.renderRect(x, y, width, height, colour)
 	}
 

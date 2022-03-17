@@ -24,6 +24,8 @@ object BaseDefaults {
 
 	var controlBorder = Padding(2F)
 
+	var controlPadding = Padding(5F)
+
 	var caretWidth = 1F
 
 	var caretColour = Colour.WHITE

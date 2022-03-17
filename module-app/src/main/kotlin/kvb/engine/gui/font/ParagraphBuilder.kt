@@ -1,10 +1,13 @@
 package kvb.engine.gui.font
 
+import kvb.engine.gui.layout.TextAlignment
+
 class ParagraphBuilder(
 	val font      : BinaryFont,
 	val scale     : Float,
 	val spacing   : Float,
-	val wrapWidth : Float
+	val wrapWidth : Float,
+	val alignment : TextAlignment
 ) {
 
 
@@ -40,8 +43,8 @@ class ParagraphBuilder(
 			line.width += char.width * scale + scale
 		}
 
-		if(char.height > line.height)
-			line.height = char.height.toFloat()
+		if(char.height + char.yOffset > line.height)
+			line.height = char.height.toFloat() + char.yOffset
 
 		line.chars.add(char)
 	}
@@ -93,7 +96,15 @@ class ParagraphBuilder(
 			height - (font.size - font.baseline) * scale
 		}
 
-		return Paragraph(font, scale, spacing, wrapWidth, lines, width, height)
+		for(l in lines) {
+			l.x = when(alignment) {
+				TextAlignment.LEFT -> 0F
+				TextAlignment.CENTRE -> (width - l.width) / 2
+				TextAlignment.RIGHT -> width - l.width
+			}
+		}
+
+		return Paragraph(font, scale, spacing, wrapWidth, alignment, lines, width, height)
 	}
 
 

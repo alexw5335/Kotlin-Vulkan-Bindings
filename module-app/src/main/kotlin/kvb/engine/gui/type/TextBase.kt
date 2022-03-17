@@ -5,6 +5,7 @@ import kvb.engine.gui.GuiGraphics
 import kvb.engine.gui.font.Fonts
 import kvb.engine.gui.font.Paragraph
 import kvb.engine.gui.font.ParagraphBuilder
+import kvb.engine.gui.layout.TextAlignment
 import kvb.engine.vulkan.VkContext
 import kvb.vkwrapper.handle.Buffer
 import kotlin.math.round
@@ -24,6 +25,9 @@ class TextBase : Base() {
 	var wrapWidth = 0F
 		set(value) { field = value; shouldAlign = true }
 
+	var alignment = TextAlignment.LEFT
+		set(value) { field = value; shouldAlign = true }
+
 	var paragraph: Paragraph? = null
 		private set
 
@@ -33,7 +37,7 @@ class TextBase : Base() {
 
 
 	override fun align() {
-		paragraph = ParagraphBuilder(Fonts.font, scale, lineSpacing, wrapWidth).build(text)
+		paragraph = ParagraphBuilder(Fonts.font, scale, lineSpacing, wrapWidth, alignment).build(text)
 		this.width = paragraph!!.width
 		this.height = paragraph!!.height
 
@@ -55,8 +59,9 @@ class TextBase : Base() {
 
 		VkContext.memoryManager.write(buffer!!, 0, text.length * 16L) { data ->
 			var i = 0
+
 			for(line in paragraph!!.lines) {
-				var x = 0F
+				var x = line.x
 
 				for(binaryChar in line.chars) {
 					data.setFloat(i, x)

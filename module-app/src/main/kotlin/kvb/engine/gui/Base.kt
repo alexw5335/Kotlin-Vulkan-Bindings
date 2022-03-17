@@ -54,6 +54,10 @@ open class Base {
 			field.add(this)
 		}
 
+	var focussable = false
+
+	var focusOnPress = true
+
 
 
 	/*
@@ -123,7 +127,13 @@ open class Base {
 
 	open fun hoverAction(event: HoverEvent) { }
 
-	open fun pressAction(event: PressEvent) { }
+	open fun pressAction(event: PressEvent) {
+		if(event.source == this && gui.focussed != this)
+			gui.removeFocus()
+
+		if(focussable && focusOnPress)
+			gui.assignFocus(this)
+	}
 
 	open fun mouseEnterAction(event: MouseEnterEvent) { }
 
@@ -140,6 +150,10 @@ open class Base {
 	open fun buttonInputAction(event: ButtonInputEvent) { }
 
 	open fun charAction(event: CharEvent) { }
+
+	open fun focusGainAction(event: FocusGainEvent) { }
+
+	open fun focusLossAction(event: FocusLossEvent) { }
 
 
 
