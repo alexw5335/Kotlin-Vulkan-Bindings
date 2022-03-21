@@ -1,17 +1,12 @@
 package kvb.engine.gui.font
 
-class Line {
-
-	val chars = ArrayList<BinaryChar>()
-
-	var x = 0F
-
-	var y = 0F
-
-	var width = 0F
-
-	var height = 0F
-
-	var index = 0
-
+class Line(
+	val index: Int,
+	val x: Float,
+	val y: Float,
+	val width: Float,
+	val height: Float,
+	val chars: ArrayList<BinaryChar>
+) {
+	
 }

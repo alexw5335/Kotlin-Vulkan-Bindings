@@ -9,6 +9,12 @@ class TextCollision(
 ) {
 
 
+	val atEndOfLine get() = charIndex == line.chars.size
+
+	val atStartOfLine get() = charIndex == 0
+
+
+
 	fun totalCharIndex(): Int {
 		var count = charIndex
 

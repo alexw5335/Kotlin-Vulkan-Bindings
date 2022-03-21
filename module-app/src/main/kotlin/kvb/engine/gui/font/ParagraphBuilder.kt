@@ -4,14 +4,22 @@ import kvb.engine.gui.layout.TextAlignment
 
 class ParagraphBuilder(
 	val font      : BinaryFont,
-	val scale     : Float,
 	val spacing   : Float,
 	val wrapWidth : Float,
 	val alignment : TextAlignment
 ) {
 
 
-	private val lines = ArrayList<Line>().also { it.add(Line()) }
+	private class TempLine {
+		var index = 0
+		val chars = ArrayList<BinaryChar>()
+		var width = 0F
+		var height = 0F
+	}
+
+
+
+	private val lines = ArrayList<TempLine>().also { it.add(TempLine()) }
 
 	private val line get() = lines.last()
 
@@ -19,16 +27,12 @@ class ParagraphBuilder(
 
 	private var wordWidth = 0F
 
-	private var height = font.size.toFloat() * scale
 
 
-
-	private fun newLine() {
-		val newLine = Line()
-		newLine.index = lines.size
-		newLine.y = height + spacing * scale
-		height = newLine.y + font.size * scale
-		lines.add(newLine)
+	private fun newline() {
+		val newline = TempLine()
+		newline.index = lines.size
+		lines.add(newline)
 	}
 
 
@@ -37,7 +41,7 @@ class ParagraphBuilder(
 		if(line.chars.isEmpty()) {
 			line.width += char.width * scale
 		} else if(line.width + scale + char.width * scale > wrapWidth) {
-			newLine()
+			newline()
 			if(char.char == ' ') return
 			line.width += char.width * scale
 		} else {
@@ -54,7 +58,7 @@ class ParagraphBuilder(
 
 	private fun addWord() {
 		if(line.chars.isNotEmpty() && line.width + scale + wordWidth > wrapWidth)
-			newLine()
+			newline()
 
 		word.forEach(::addChar)
 		word.clear()
@@ -92,17 +96,23 @@ class ParagraphBuilder(
 		val width = lines.maxOf { it.width }
 
 		val height = if(lines.size == 1) {
-			line.height * scale
+			line.height
 		} else {
-			height - (font.size - font.baseline) * scale
-		}
+			(lines.size - 1) * spacing + font.size - (font.size - font.baseline)
+		} * scale
 
-		for(l in lines) {
-			l.x = when(alignment) {
+		var y = 0F
+
+		val lines = this.lines.map {
+			val x = when(alignment) {
 				TextAlignment.LEFT -> 0F
-				TextAlignment.CENTRE -> (width - l.width) / 2
-				TextAlignment.RIGHT -> width - l.width
+				TextAlignment.CENTRE -> (width - it.width) / 2
+				TextAlignment.RIGHT -> width - it.width
 			}
+
+			val line = Line(x, y, it.width, it.height, it.chars)
+			y += (font.size + spacing) * scale
+			line
 		}
 
 		return Paragraph(font, scale, spacing, wrapWidth, alignment, lines, width, height)
