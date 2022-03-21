@@ -15,6 +15,9 @@ class Paragraph(
 
 
 	fun collision(mouseX: Float, mouseY: Float): TextCollision? {
+		if(lines.first().chars.isEmpty())
+			return TextCollision(this, lines.first(), 0, lines.first().x, lines.first().y)
+
 		val line = lines.firstOrNull {
 			mouseY <= it.y + font.size * scale
 		} ?: return null

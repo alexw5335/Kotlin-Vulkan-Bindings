@@ -90,6 +90,10 @@ fun run() {
 			textBox {
 				textBase.alignment = TextAlignment.LEFT
 			}
+
+			toggleButton {
+
+			}
 		}
 	}
 

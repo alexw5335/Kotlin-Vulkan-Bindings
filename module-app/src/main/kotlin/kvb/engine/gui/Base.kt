@@ -27,6 +27,9 @@ open class Base {
 	var padding = Padding(0F, 0F, 0F, 0F)
 		set(value) { field = value; onInteriorChanged() }
 
+	var border = Padding(0F, 0F, 0F, 0F)
+		set(value) { field = value; onBorderChanged() }
+
 	var model: BaseModel? = null
 
 	protected val children = ArrayList<Base>()
@@ -76,6 +79,10 @@ open class Base {
 	protected open fun onInteriorChanged() {
 		shouldAlign = true
 	}
+
+
+
+	protected open fun onBorderChanged() { }
 
 
 

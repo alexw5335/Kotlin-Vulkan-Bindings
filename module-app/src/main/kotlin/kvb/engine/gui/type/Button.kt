@@ -5,10 +5,8 @@ import kvb.engine.gui.BaseDefaults
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.gui.layout.Alignment
 
-class Button : Base() {
+open class Button : Base() {
 
-
-	var border = BaseDefaults.controlBorder
 
 	var borderColour = BaseDefaults.controlBorderColour
 
@@ -17,6 +15,12 @@ class Button : Base() {
 	var hoveredColour = BaseDefaults.controlHoveredColour
 
 	var pressedColour = BaseDefaults.controlPressedColour
+
+	open val supplyColour get() = colour
+
+	open val supplyHoveredColour get() = hoveredColour
+
+	open val supplyPressedColour get() = pressedColour
 
 	val textBase = addChildInternal(TextBase()) { active = false }
 
@@ -29,9 +33,10 @@ class Button : Base() {
 
 
 	init {
-		this.width = BaseDefaults.buttonWidth
-		this.height = BaseDefaults.buttonHeight
-		this.padding = BaseDefaults.controlPadding
+		width = BaseDefaults.buttonWidth
+		height = BaseDefaults.buttonHeight
+		padding = BaseDefaults.controlPadding
+		border = BaseDefaults.controlBorder
 	}
 
 
@@ -46,9 +51,9 @@ class Button : Base() {
 
 	override fun renderThis(x: Float, y: Float) {
 		val colour = when {
-			isPressed -> pressedColour
-			isHovered -> hoveredColour
-			else      -> this.colour
+			isPressed -> supplyPressedColour
+			isHovered -> supplyHoveredColour
+			else      -> supplyColour
 		}
 
 		GuiGraphics.renderBorder(x, y, width, height, borderColour, border)

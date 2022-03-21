@@ -21,8 +21,6 @@ class TextBox : Base() {
 
 	var backgroundColour = BaseDefaults.controlColour
 
-	var border = BaseDefaults.controlBorder
-
 	var borderColour = BaseDefaults.controlBorderColour
 
 	var hAlignment = Alignment.START
@@ -51,6 +49,7 @@ class TextBox : Base() {
 		width = BaseDefaults.textBoxWidth
 		height = BaseDefaults.textBoxHeight
 		padding = BaseDefaults.textBoxPadding
+		border = BaseDefaults.controlBorder
 
 		textBase.scale = 2F
 		textBase.lineSpacing = 1f
@@ -91,18 +90,20 @@ class TextBox : Base() {
 
 		val collision = this.collision ?: return
 
-		if(textBase.text.isEmpty()) return
-
 		val totalIndex = collision.totalCharIndex()
 
 		if(event.char.code == 8) {
-			textBase.text = if(totalIndex == textBase.text.length)
-				textBase.text.dropLast(1)
-			else
+			textBase.text = if(totalIndex == textBase.text.length) {
+				if(textBase.text.isEmpty())
+					textBase.text
+				else
+					textBase.text.dropLast(1)
+			} else {
 				buildString {
 					append(textBase.text.dropLast(textBase.text.length - totalIndex))
 					append(textBase.text.drop(totalIndex))
 				}
+			}
 		} else {
 			if(event.char !in Fonts.font) return
 
