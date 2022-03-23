@@ -27,6 +27,10 @@ object Engine {
 
 	val frameTime get() = 1F / targetFps
 
+	val KEY_REPEAT_MILLIS = 16
+
+	val KEY_REPEAT_DELAY = 500
+
 
 
 	init {
@@ -55,8 +59,8 @@ object Engine {
 				gui.onRelease(window.cursorX, window.cursorY)
 		}
 
-		window.onKeyPress = {
-			gui.onButtonInput(it, ButtonInputEvent.Type.PRESS)
+		window.onKeyPress = { button, repeatCount ->
+			gui.onButtonInput(button, ButtonInputEvent.Type.PRESS, repeatCount)
 		}
 
 		window.onKeyHold = {

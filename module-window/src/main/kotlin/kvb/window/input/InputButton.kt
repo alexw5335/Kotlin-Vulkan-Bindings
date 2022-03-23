@@ -212,7 +212,51 @@ enum class InputButton(val code: Int, val type: Type = Type.KEY) {
 
 
 
-	val isPressed get() = pressed.contains(this)
+	var isPressed = false
+
+	var lastRepeatTime = 0L
+
+	var shouldRepeat = false
+
+	var repeatCount = 0
+
+
+
+	fun onPress() {
+		lastRepeatTime = System.currentTimeMillis()
+		pressed.add(this)
+		isPressed = true
+		shouldRepeat = false
+		repeatCount = 0
+	}
+
+
+
+	fun onRelease() {
+		pressed.remove(this)
+		isPressed = false
+		shouldRepeat = false
+		repeatCount = 0
+	}
+
+
+
+	fun processPressed() {
+		if(repeatCount == 0) {
+		//	println(System.currentTimeMillis() - lastRepeatTime)
+			if(System.currentTimeMillis() - lastRepeatTime >= REPEAT_DELAY_MILLIS) {
+				shouldRepeat = true
+				lastRepeatTime = System.currentTimeMillis()
+				repeatCount++
+			}
+		} else if(System.currentTimeMillis() - lastRepeatTime >= REPEAT_INTERVAL_MILLIS) {
+			lastRepeatTime = System.currentTimeMillis()
+			shouldRepeat = true
+			repeatCount++
+		} else {
+			shouldRepeat = false
+		}
+	}
 
 
 
@@ -223,6 +267,10 @@ enum class InputButton(val code: Int, val type: Type = Type.KEY) {
 		val windowsMap = values.associateBy { it.code }
 
 		val pressed = HashSet<InputButton>()
+
+		const val REPEAT_DELAY_MILLIS = 1000
+
+		const val REPEAT_INTERVAL_MILLIS = 50
 
 	}
 

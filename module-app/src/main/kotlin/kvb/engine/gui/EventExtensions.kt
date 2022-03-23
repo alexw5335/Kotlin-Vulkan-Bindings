@@ -21,7 +21,7 @@ fun Base.clickEvent(cursorX: Float, cursorY: Float) = ClickEvent(this, cursorX, 
 
 fun Base.toggleEvent(toggled: Boolean) = ToggleEvent(this, toggled).bubble()
 
-fun Base.buttonInputEvent(button: InputButton, type: ButtonInputEvent.Type) = ButtonInputEvent(this, button, type).bubble()
+fun Base.buttonInputEvent(button: InputButton, type: ButtonInputEvent.Type, repeatCount: Int) = ButtonInputEvent(this, button, type, repeatCount).bubble()
 
 fun Base.charEvent(char: Char) = CharEvent(this, char).bubble()
 

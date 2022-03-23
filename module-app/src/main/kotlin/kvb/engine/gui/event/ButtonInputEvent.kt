@@ -4,13 +4,14 @@ import kvb.engine.gui.Base
 import kvb.window.input.InputButton
 
 class ButtonInputEvent(
-	source     : Base,
-	val button : InputButton,
-	val type   : Type
+	source          : Base,
+	val button      : InputButton,
+	val type        : Type,
+	val repeatCount : Int
 ) : BaseEvent(source) {
 
 	enum class Type {
-		PRESS, HOLD, RELEASE
+		PRESS, HOLD, REPEAT, RELEASE
 	}
 
 	override fun handleAction(base: Base) = base.buttonInputAction(this)

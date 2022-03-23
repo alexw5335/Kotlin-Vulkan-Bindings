@@ -12,6 +12,7 @@ class ParagraphBuilder(
 
 	private class TempLine {
 		var index = 0
+		var charIndex = 0
 		val chars = ArrayList<BinaryChar>()
 		var width = 0F
 		var advanceWidth = 0F
@@ -35,6 +36,7 @@ class ParagraphBuilder(
 	private fun newline() {
 		val newline = TempLine()
 		newline.index = lines.size
+		newline.charIndex = line.charIndex + line.chars.size
 		lines.add(newline)
 	}
 
@@ -100,7 +102,7 @@ class ParagraphBuilder(
 				TextAlignment.RIGHT  -> width - it.width
 			}
 
-			val line = Line(it.index, x, y, it.width, it.height, it.chars)
+			val line = Line(it.index, it.charIndex, x, y, it.width, it.height, it.chars)
 			y += font.size + spacing
 			line
 		}

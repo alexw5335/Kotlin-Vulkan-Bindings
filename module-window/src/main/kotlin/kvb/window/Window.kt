@@ -49,7 +49,7 @@ interface Window {
 
 	var onKeyHold: (InputButton) -> Unit
 
-	var onKeyPress: (InputButton) -> Unit
+	var onKeyPress: (InputButton, repeatCount: Int) -> Unit
 
 	var onKeyRelease: (InputButton) -> Unit
 

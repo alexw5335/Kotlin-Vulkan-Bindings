@@ -75,8 +75,8 @@ class Gui(private val root: Base) {
 
 
 
-	fun onButtonInput(button: InputButton, type: ButtonInputEvent.Type) {
-		focussed?.buttonInputEvent(button, type)
+	fun onButtonInput(button: InputButton, type: ButtonInputEvent.Type, repeatCount: Int = 1) {
+		focussed?.buttonInputEvent(button, type, repeatCount)
 	}
 
 

@@ -97,15 +97,17 @@ object WinApi : WindowManager {
 
 
 	private fun processHeldButtons() {
-		val buttonsToRemove = HashSet<InputButton>()
+		val released = HashSet<InputButton>()
 
 		for(button in InputButton.pressed) {
 			// Handle swapping windows while the button is still held.
 			// Normally, WM_KEYUP would remove pressed buttons.
 			if(!isButtonPressed(button.code)) {
-				buttonsToRemove.add(button)
+				released.add(button)
 				continue
 			}
+
+			button.processPressed()
 
 			when(button.type) {
 				InputButton.Type.KEY -> focussedWindow?.onKeyHold?.invoke(button)
@@ -113,7 +115,7 @@ object WinApi : WindowManager {
 			}
 		}
 
-		InputButton.pressed.removeAll(buttonsToRemove)
+		for(button in released) button.onRelease()
 	}
 
 
@@ -152,6 +154,8 @@ object WinApi : WindowManager {
 
 	private val Message.hwndWindow get() = windows.firstOrNull { it.hwnd == hwnd }
 
+	private val Message.repeatCount get() = lparam.lowWord
+
 
 
 	private fun handleMessage() {
@@ -188,7 +192,7 @@ object WinApi : WindowManager {
 
 	private fun Message.handleKeyUp() {
 		val button = wparamButton
-		InputButton.pressed.remove(button)
+		button.onRelease()
 		hwndWindow?.onKeyRelease?.invoke(button)
 	}
 
@@ -196,21 +200,21 @@ object WinApi : WindowManager {
 
 	private fun Message.handleKeyDown() {
 		val button = wparamButton
-		InputButton.pressed.add(button)
-		hwndWindow?.onKeyPress?.invoke(button)
+		button.onPress()
+		hwndWindow?.onKeyPress?.invoke(button, repeatCount)
 	}
 
 
 
 	private fun Message.handleMouseButtonDown(button: InputButton) {
-		InputButton.pressed.add(button)
+		button.onPress()
 		hwndWindow?.onMousePress?.invoke(button)
 	}
 
 
 
 	private fun Message.handleMouseButtonUp(button: InputButton) {
-		InputButton.pressed.remove(button)
+		button.onRelease()
 		hwndWindow?.onMouseRelease?.invoke(button)
 	}
 

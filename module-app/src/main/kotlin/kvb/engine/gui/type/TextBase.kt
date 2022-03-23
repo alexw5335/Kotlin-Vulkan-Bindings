@@ -41,10 +41,16 @@ class TextBase : Base() {
 
 
 
-	override fun align() {
+	fun rebuildParagraph() {
 		paragraph = ParagraphBuilder(font, lineSpacing * font.scale, wrapWidth, alignment).build(text)
 		this.width = paragraph!!.width
 		this.height = paragraph!!.height
+	}
+
+
+
+	override fun align() {
+		rebuildParagraph()
 
 		if(text.isEmpty()) {
 			if(buffer != null)

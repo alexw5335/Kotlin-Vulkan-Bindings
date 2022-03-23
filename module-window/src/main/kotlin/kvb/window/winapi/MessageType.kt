@@ -33,7 +33,9 @@ enum class MessageType(val value: Int) {
 
 	MOVE(0x0003),
 
-	CHAR(0x0102);
+	CHAR(0x0102),
+
+	HOTKEY(0x0312);
 
 
 

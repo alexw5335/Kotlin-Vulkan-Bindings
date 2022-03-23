@@ -52,7 +52,7 @@ class WinApiWindow(val hwnd: Long) : Window {
 
 	override var onKeyHold: (InputButton) -> Unit = { }
 
-	override var onKeyPress: (InputButton) -> Unit = { }
+	override var onKeyPress: (InputButton, repeatCount: Int) -> Unit = { _, _ -> }
 
 	override var onKeyRelease: (InputButton) -> Unit = { }
 
