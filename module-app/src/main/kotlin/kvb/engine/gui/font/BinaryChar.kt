@@ -6,6 +6,7 @@ class BinaryChar(
 	val yOffset: Int,
 	val width: Int,
 	val height: Int,
+	val advanceWidth: Int,
 	val scale: Int = 1
 ) {
 
@@ -16,6 +17,7 @@ class BinaryChar(
 		yOffset * scale / this.scale,
 		width * scale / this.scale,
 		height * scale / this.scale,
+		advanceWidth * scale / this.scale,
 		scale,
 	)
 

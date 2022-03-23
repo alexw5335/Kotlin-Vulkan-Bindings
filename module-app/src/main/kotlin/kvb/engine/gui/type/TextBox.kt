@@ -51,7 +51,7 @@ class TextBox : Base() {
 		padding = BaseDefaults.textBoxPadding
 		border = BaseDefaults.controlBorder
 
-		textBase.scale = 2F
+		textBase.scale = 2
 		textBase.lineSpacing = 1f
 
 		focussable = true
@@ -65,7 +65,7 @@ class TextBox : Base() {
 		hAlign(hAlignment, textBase)
 		vAlign(vAlignment, textBase)
 
-		caret.width = textBase.scale
+		caret.width = textBase.scale.toFloat()
 		caret.height = Fonts.font.size.toFloat() * textBase.scale
 	}
 
@@ -80,7 +80,8 @@ class TextBox : Base() {
 
 	override fun pressAction(event: PressEvent) {
 		super.pressAction(event)
-		collision = textBase.paragraph?.collision(event.cursorX, event.cursorY)
+		println("${textBase.transformUpXAbsolute(event.cursorX)} ${textBase.transformUpYAbsolute(event.cursorY)}")
+		collision = textBase.paragraph?.collision(textBase.transformUpXAbsolute(event.cursorX), textBase.transformUpYAbsolute(event.cursorY))
 	}
 
 
@@ -115,6 +116,8 @@ class TextBox : Base() {
 					append(event.char)
 					append(textBase.text.drop(totalIndex))
 				}
+
+			this.collision = textBase.paragraph!!.incrementedCollision(collision)
 		}
 	}
 

@@ -13,14 +13,24 @@ class Paragraph(
 ) {
 
 
-/*	fun incrementedCollision(collision: TextCollision): TextCollision {
+	fun incrementedCollision(collision: TextCollision): TextCollision {
 		if(collision.atEndOfLine) {
-			if(collision.line == lines.last())
+			if(collision.line.index == lines.lastIndex)
 				return collision
 
-			return TextCollision(this, lines[collision.line.index + 1], )
+			val line = lines[collision.line.index + 1]
+
+			return TextCollision(this, line, 0, line.x, line.y)
 		}
-	}*/
+
+		return TextCollision(
+			this,
+			collision.line,
+			collision.charIndex + 1,
+			collision.line.charX(collision.charIndex + 1),
+			collision.y
+		)
+	}
 
 
 
@@ -38,12 +48,12 @@ class Paragraph(
 		var x = line.x
 
 		for(c in line.chars) {
-			if(mouseX <= x + font.charSpacing / 2F)
-				return TextCollision(this, line, 0, x, line.y)
-			x += c.width
+			if(mouseX <= x + (c.advanceWidth - c.width) / 2F)
+				return TextCollision(this, line, 0, x - 1, line.y)
+			x += c.advanceWidth
 		}
 
-		return TextCollision(this, line, line.chars.size, x - font.charSpacing, line.y)
+		return TextCollision(this, line, line.chars.size, x, line.y)
 	}
 
 

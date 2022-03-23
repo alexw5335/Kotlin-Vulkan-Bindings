@@ -1,12 +1,15 @@
 package kvb.engine.gui.font
 
 class BinaryFont(
-	val size: Int,
-	val baseline: Int,
-	val characters: List<BinaryChar>,
-	val scale: Int = 1,
-	val charSpacing: Int = scale
+	val size       : Int,
+	val baseline   : Int,
+	val characters : List<BinaryChar>,
+	val scale      : Int = 1
 ) {
+
+
+	val descent = size - baseline
+
 
 
 	fun scaled(scale: Int) = BinaryFont(

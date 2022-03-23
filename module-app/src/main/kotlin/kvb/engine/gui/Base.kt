@@ -206,13 +206,40 @@ open class Base {
 
 
 
+
+	/**
+	 * From the parent's coordinates to this base's coordinates.
+	 */
 	open fun transformX(x: Float) = x + this.x
 
+	/**
+	 * From the parent's coordinates to this base's coordinates.
+	 */
 	open fun transformY(y: Float) = y + this.y
 
+	/**
+	 * From this base's coordinates to the parent's coordinates.
+	 */
 	open fun transformUpX(x: Float) = x - this.x
 
+	/**
+	 * From this base's coordinates to the parent's coordinates.
+	 */
 	open fun transformUpY(y: Float) = y - this.y
+
+
+
+	/**
+	 * From absolute coordinates to this base's coordinate system.
+	 */
+	fun transformUpXAbsolute(absoluteX: Float): Float =
+		transformUpX(parent?.transformUpXAbsolute(absoluteX) ?: absoluteX)
+
+	/**
+	 * From absolute coordinates to this base's coordinate system.
+	 */
+	fun transformUpYAbsolute(absoluteY: Float): Float =
+		transformUpY(parent?.transformUpYAbsolute(absoluteY) ?: absoluteY)
 
 
 

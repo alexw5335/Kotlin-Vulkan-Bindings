@@ -14,6 +14,7 @@ class ParagraphBuilder(
 		var index = 0
 		val chars = ArrayList<BinaryChar>()
 		var width = 0F
+		var advanceWidth = 0F
 		var height = 0F
 	}
 
@@ -27,6 +28,8 @@ class ParagraphBuilder(
 
 	private var wordWidth = 0F
 
+	private var wordAdvanceWidth = 0F
+
 
 
 	private fun newline() {
@@ -38,18 +41,14 @@ class ParagraphBuilder(
 
 
 	private fun addChar(char: BinaryChar) {
-		if(line.chars.isEmpty()) {
-			line.width += char.width * scale
-		} else if(line.width + scale + char.width * scale > wrapWidth) {
+		if(line.advanceWidth + char.width > wrapWidth) {
 			newline()
 			if(char.char == ' ') return
-			line.width += char.width * scale
+			line.width += char.width
 		} else {
-			line.width += char.width * scale + scale
+			line.width = line.advanceWidth + char.width
+			line.advanceWidth += char.advanceWidth
 		}
-
-		if(char.height + char.yOffset > line.height)
-			line.height = char.height.toFloat() + char.yOffset
 
 		line.chars.add(char)
 	}
@@ -57,12 +56,13 @@ class ParagraphBuilder(
 
 
 	private fun addWord() {
-		if(line.chars.isNotEmpty() && line.width + scale + wordWidth > wrapWidth)
+		if(line.chars.isNotEmpty() && line.advanceWidth + wordWidth > wrapWidth)
 			newline()
 
 		word.forEach(::addChar)
 		word.clear()
 		wordWidth = 0F
+		wordAdvanceWidth = 0F
 	}
 
 
@@ -74,10 +74,8 @@ class ParagraphBuilder(
 			if(char != ' ') {
 				word.add(binaryChar)
 
-				wordWidth += if(word.isEmpty())
-					binaryChar.width * scale
-				else
-					binaryChar.width * scale + scale
+				wordWidth = wordAdvanceWidth + binaryChar.width
+				wordAdvanceWidth += binaryChar.advanceWidth
 			} else {
 				if(word.isNotEmpty())
 					addWord()
@@ -89,33 +87,25 @@ class ParagraphBuilder(
 		if(word.isNotEmpty())
 			addWord()
 
-		for(l in lines)
-			if(l.chars.isNotEmpty() && l.chars.last().char == ' ')
-				l.width = l.width - l.chars.last().width * scale - scale
-
 		val width = lines.maxOf { it.width }
 
-		val height = if(lines.size == 1) {
-			line.height
-		} else {
-			(lines.size - 1) * spacing + font.size - (font.size - font.baseline)
-		} * scale
+		val height = lines.size * font.size + (lines.size - 1) * spacing
 
 		var y = 0F
 
 		val lines = this.lines.map {
 			val x = when(alignment) {
-				TextAlignment.LEFT -> 0F
+				TextAlignment.LEFT   -> 0F
 				TextAlignment.CENTRE -> (width - it.width) / 2
-				TextAlignment.RIGHT -> width - it.width
+				TextAlignment.RIGHT  -> width - it.width
 			}
 
-			val line = Line(x, y, it.width, it.height, it.chars)
-			y += (font.size + spacing) * scale
+			val line = Line(it.index, x, y, it.width, it.height, it.chars)
+			y += font.size + spacing
 			line
 		}
 
-		return Paragraph(font, scale, spacing, wrapWidth, alignment, lines, width, height)
+		return Paragraph(font, spacing, wrapWidth, alignment, lines, width, height)
 	}
 
 

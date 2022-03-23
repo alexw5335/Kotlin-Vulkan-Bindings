@@ -67,13 +67,13 @@ fun run() {
 				text = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 for(i in 0 until 10) { test[2*i] == 15 + i - 2; } 4-3+8*5/6"
 				wrapWidth = 400F
 				lineSpacing = 1F
-				scale = 2F
+				scale = 2
 			}
 
 			button {
 				with(textBase) {
 					text = "build"
-					scale = 3F
+					scale = 3
 				}
 
 				onClick {
