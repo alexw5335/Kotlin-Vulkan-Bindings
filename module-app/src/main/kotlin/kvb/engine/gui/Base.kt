@@ -62,6 +62,11 @@ open class Base {
 	var focusOnPress = true
 
 
+	/*
+	Drag
+	 */
+
+
 
 	/*
 	Changes
@@ -161,6 +166,8 @@ open class Base {
 	open fun focusGainAction(event: FocusGainEvent) { }
 
 	open fun focusLossAction(event: FocusLossEvent) { }
+
+	open fun dragAction(event: DragEvent) { }
 
 
 

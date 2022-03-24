@@ -144,7 +144,7 @@ Simple Heap Allocator
 
 
 Memory management (updating memory)
-- Most buffer memory will be host-visible device-local host-coherent
+- Most buffer-memory will be host-visible device-local host-coherent
 - There will always be some host-visible memory.
 - Cannot rely on there being a large host-visible device-local memory type.
 - Staging will be buffered unless it is required immediately.
@@ -155,6 +155,39 @@ Memory management (updating memory)
 	- Contains a large staging buffer for images as well.
 	- Also manages layout transitions (related to image staging)
 
+- Problem with spaces in paragraphs
+	- Disconnect between paragraph and texture
+	- Need a way to unify alignment and texture generation.
+- How to build paragraphs?
+	- No ParagraphBuilder, make Paragraph mutable.
+	- Paragraph can have its contents modified at any point.
+		- The entire paragraph can then be iterated over more easily.
+
+- Naming of input actions
+	- Release, for when the button is released.
+	- Repeat, for when the windowing system says that a button is repeated.
+	- Hold, for each frame when the button is held.
+	- Press, for when the button is initially pressed.
+
+- How to handle drag?
+- Three types of drag
+	- internal drag, i.e. sliders, scrollBars, viewPanes.
+	- mouse drag, i.e. mouse moving over a base while it is pressed.
+		- Not handled through HoldEvent as HoldEvent goes to the base that was hovered
+		when the press was initiated.
+		- Handled through HoverEvent, querying if the mouse is pressed
+			- HoverEvent could take a 'pressed' argument.
+	- Drag and drop
+		- Picking up a base and dropping it somewhere else.
+		- A form of internal drag, perhaps handled by some sort of DragPane?
+		- Also native interactions with files dropped into the program.
+- Only one DragEvent, with a DragType.
+	- A Base can choose the buttons that must be pressed in order for a drag
+	to be initiated.
+		- e.g. left, middle, or right mouse button, or maybe control must be pressed.
+		- Drag is initiated through ButtonInputEvent, not PressEvent.
+- The drag origin is in base coordinates, not absolute coordinates.
+	- The base should easily be able to access the drag difference.
 
 
 
