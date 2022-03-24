@@ -6,6 +6,7 @@ import kvb.engine.gui.GuiGraphics
 import kvb.engine.gui.event.ButtonInputEvent
 import kvb.engine.vulkan.VkContext
 import kvb.window.WindowManager
+import kvb.window.input.InputAction
 import kvb.window.input.InputButton
 
 object Engine {
@@ -49,26 +50,16 @@ object Engine {
 			gui.onMouseMove(window.cursorX, window.cursorY)
 		}
 
-		window.onMousePress = {
-			if(it == InputButton.LEFT_MOUSE)
-				gui.onPress(window.cursorX, window.cursorY)
-		}
+		window.onButtonInput = { button, action ->
+			if(button == InputButton.LEFT_MOUSE) {
+				if(action == InputAction.PRESS) {
+					gui.onPress(window.cursorX, window.cursorY)
+				} else if(action == InputAction.RELEASE) {
+					gui.onRelease(window.cursorX, window.cursorY)
+				}
+			}
 
-		window.onMouseRelease = {
-			if(it == InputButton.LEFT_MOUSE)
-				gui.onRelease(window.cursorX, window.cursorY)
-		}
-
-		window.onKeyPress = { button, repeatCount ->
-			gui.onButtonInput(button, ButtonInputEvent.Type.PRESS, repeatCount)
-		}
-
-		window.onKeyHold = {
-			gui.onButtonInput(it, ButtonInputEvent.Type.HOLD)
-		}
-
-		window.onKeyRelease = {
-			gui.onButtonInput(it, ButtonInputEvent.Type.RELEASE)
+			gui.onButtonInput(button, action, 1)
 		}
 
 		window.onChar = {

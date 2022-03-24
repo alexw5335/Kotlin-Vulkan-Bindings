@@ -28,9 +28,10 @@ object BaseDefaults {
 
 	var caretWidth = 1F
 
+
 	var caretColour = Colour.WHITE
 
-
+	var textColour = Colour.WHITE
 
 	var controlColour = Colour.BLACK
 

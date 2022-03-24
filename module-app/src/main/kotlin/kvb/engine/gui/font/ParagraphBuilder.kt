@@ -45,8 +45,9 @@ class ParagraphBuilder(
 	private fun addChar(char: BinaryChar) {
 		if(line.advanceWidth + char.width > wrapWidth) {
 			newline()
-			if(char.char == ' ') return
-			line.width += char.width
+			//?
+			if(char.char != ' ')
+				line.width += char.width
 		} else {
 			line.width = line.advanceWidth + char.width
 			line.advanceWidth += char.advanceWidth

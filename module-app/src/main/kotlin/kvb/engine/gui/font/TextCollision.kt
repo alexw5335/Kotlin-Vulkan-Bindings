@@ -1,3 +1,8 @@
 package kvb.engine.gui.font
 
-class TextCollision(val index: Int, val x: Float, val y: Float)
+class TextCollision(
+	val index: Int,
+	val lineIndex: Int,
+	val x: Float,
+	val y: Float
+)

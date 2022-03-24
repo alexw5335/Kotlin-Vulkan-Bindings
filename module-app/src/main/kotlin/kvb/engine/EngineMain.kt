@@ -7,6 +7,7 @@ import kvb.engine.gui.layout.Padding
 import kvb.engine.gui.layout.TextAlignment
 import kvb.engine.gui.model.BaseModel
 import kvb.engine.vulkan.VkContextBuilder
+import kvb.vkwrapper.shader.ShaderCreation
 import kvb.vulkan.*
 
 
@@ -25,7 +26,7 @@ fun main() {
 
 fun run() {
 	Core.init()
-	//ShaderCreation.compileAll("res/shader/gui", "res/shader/gui/out")
+	ShaderCreation.compileAll("res/shader/gui", "res/shader/gui/out")
 
 	vulkanConfig {
 		sampleCount = SampleCountFlags._4

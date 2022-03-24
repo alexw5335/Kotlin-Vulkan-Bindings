@@ -1,7 +1,7 @@
 package kvb.engine.gui
 
 @JvmInline
-value class Colour private constructor(val value: Int) {
+value class Colour(val value: Int) {
 
 
 	constructor(r: Int, g: Int, b: Int, a: Int = 1) : this(

@@ -1,6 +1,7 @@
 package kvb.window.winapi
 
 import kvb.window.Window
+import kvb.window.input.InputAction
 import kvb.window.input.InputButton
 
 class WinApiWindow(val hwnd: Long) : Window {
@@ -50,17 +51,7 @@ class WinApiWindow(val hwnd: Long) : Window {
 
 	override var onScroll: (Float) -> Unit = { }
 
-	override var onKeyHold: (InputButton) -> Unit = { }
-
-	override var onKeyPress: (InputButton, repeatCount: Int) -> Unit = { _, _ -> }
-
-	override var onKeyRelease: (InputButton) -> Unit = { }
-
-	override var onMouseHold: (InputButton) -> Unit = { }
-
-	override var onMousePress: (InputButton) -> Unit = { }
-
-	override var onMouseRelease: (InputButton) -> Unit = { }
+	override var onButtonInput: (InputButton, InputAction) -> Unit = { _, _ -> }
 
 	override var onChar: (Char) -> Unit = { }
 

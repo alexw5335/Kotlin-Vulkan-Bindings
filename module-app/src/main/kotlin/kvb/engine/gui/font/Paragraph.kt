@@ -15,35 +15,50 @@ class Paragraph(
 
 	fun collision(index: Int): TextCollision? {
 		if(index < 0) return null
-		for(l in lines)
-			if(index <= l.charIndex + l.chars.size)
-				return TextCollision(index, l.charX(index - l.charIndex), l.y)
+
+		for(line in lines)
+			if(index <= line.charIndex + line.chars.size)
+				return TextCollision(index, line.index, line.charX(index - line.charIndex), line.y)
 
 		return null
 	}
 
 
 
+	fun collision(lineIndex: Int, collisionX: Float) = if(lineIndex in lines.indices)
+		collision(lines[lineIndex], collisionX)
+	else
+		null
+
+
+
+	fun collision(line: Line, collisionX: Float): TextCollision {
+		var x = line.x
+
+		for((i, c) in line.chars.withIndex()) {
+			if(collisionX <= x + (c.advanceWidth - c.width) / 2F)
+				return TextCollision(line.charIndex + i, line.index, x - 1, line.y)
+
+			x += c.advanceWidth
+		}
+
+		return TextCollision(line.charIndex + line.chars.size, line.index, x, line.y)
+	}
+
+
+
 	fun collision(mouseX: Float, mouseY: Float): TextCollision? {
-		if(lines[0].chars.isEmpty())
-			return TextCollision(0, lines[0].x, lines[0].y)
+		if(lines.size == 1 && lines[0].chars.isEmpty())
+			return TextCollision(0, 0, lines[0].x, lines[0].y)
 
 		val line = lines.firstOrNull {
 			mouseY <= it.y + font.size
 		} ?: return null
 
 		if(line.chars.isEmpty())
-			return TextCollision(line.charIndex, line.x, line.y)
+			return TextCollision(line.charIndex, line.index, line.x, line.y)
 
-		var x = line.x
-
-		for((i, c) in line.chars.withIndex()) {
-			if(mouseX <= x + (c.advanceWidth - c.width) / 2F)
-				return TextCollision(line.charIndex + i, x - 1, line.y)
-			x += c.advanceWidth
-		}
-
-		return TextCollision(line.charIndex + line.chars.size, x, line.y)
+		return collision(line, mouseX)
 	}
 
 

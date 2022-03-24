@@ -118,11 +118,13 @@ object GuiGraphics {
 		buffer    : Buffer,
 		textScale : Float,
 		numChars  : Int,
+		colour    : Colour
 	) {
-		val data = allocator.mallocByte(12)
+		val data = allocator.mallocByte(20)
 		data.setFloat(0, offsetX)
 		data.setFloat(4, offsetY)
 		data.setFloat(8, textScale)
+		data.setInt(12, colour.value)
 
 		commandBuffer.bindPipeline(binaryFontPipeline)
 		commandBuffer.pushConstants(binaryFontPipeline.layout, ShaderStageFlags.VERTEX, 16, data.byteSize, data)
@@ -153,7 +155,7 @@ object GuiGraphics {
 	val binaryFontPipeline = VkContext.device.buildGraphicsPipeline {
 		vertexBinding { vec2(); uvec2() }
 		renderPass(VkContext.surfaceSystem.renderPass)
-		pushConstant(ShaderStageFlags.VERTEX, 0, 32)
+		pushConstant(ShaderStageFlags.VERTEX, 0, 40)
 		shaders(shaderDirectory["font"])
 		pointList()
 		simpleBlendAttachment()

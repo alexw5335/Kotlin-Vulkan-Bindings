@@ -3,7 +3,9 @@ package kvb.window.winapi
 import kvb.core.memory.Unsafe
 import kvb.core.memory.stackGet
 import kvb.window.WindowManager
+import kvb.window.input.InputAction
 import kvb.window.input.InputButton
+import kvb.window.winapi.WinApi.hwndWindow
 
 @Suppress("MemberVisibilityCanBePrivate")
 object WinApi : WindowManager {
@@ -91,31 +93,9 @@ object WinApi : WindowManager {
 		while(peekMessage(message.address))
 			handleMessage()
 
-		processHeldButtons()
-	}
-
-
-
-	private fun processHeldButtons() {
-		val released = HashSet<InputButton>()
-
-		for(button in InputButton.pressed) {
-			// Handle swapping windows while the button is still held.
-			// Normally, WM_KEYUP would remove pressed buttons.
-			if(!isButtonPressed(button.code)) {
-				released.add(button)
-				continue
-			}
-
-			button.processPressed()
-
-			when(button.type) {
-				InputButton.Type.KEY -> focussedWindow?.onKeyHold?.invoke(button)
-				InputButton.Type.MOUSE -> focussedWindow?.onMouseHold?.invoke(button)
-			}
-		}
-
-		for(button in released) button.onRelease()
+		// Handle swapping windows while the button is still held, which doesn't produce WM_KEYUP.
+		InputButton.pressed.filter { !isButtonPressed(it.code) }.forEach { it.onRelease() }
+		InputButton.pressed.forEach { focussedWindow?.onButtonInput?.invoke(it, InputAction.HOLD) }
 	}
 
 
@@ -154,8 +134,6 @@ object WinApi : WindowManager {
 
 	private val Message.hwndWindow get() = windows.firstOrNull { it.hwnd == hwnd }
 
-	private val Message.repeatCount get() = lparam.lowWord
-
 
 
 	private fun handleMessage() {
@@ -193,29 +171,38 @@ object WinApi : WindowManager {
 	private fun Message.handleKeyUp() {
 		val button = wparamButton
 		button.onRelease()
-		hwndWindow?.onKeyRelease?.invoke(button)
+		hwndWindow?.onButtonInput?.invoke(button, InputAction.RELEASE)
 	}
 
 
 
 	private fun Message.handleKeyDown() {
 		val button = wparamButton
-		button.onPress()
-		hwndWindow?.onKeyPress?.invoke(button, repeatCount)
+
+		if(button.isPressed) {
+			hwndWindow?.onButtonInput?.invoke(button, InputAction.REPEAT)
+		} else {
+			button.onPress()
+			hwndWindow?.onButtonInput?.invoke(button, InputAction.PRESS)
+		}
 	}
 
 
 
 	private fun Message.handleMouseButtonDown(button: InputButton) {
-		button.onPress()
-		hwndWindow?.onMousePress?.invoke(button)
+		if(button.isPressed) {
+			hwndWindow?.onButtonInput?.invoke(button, InputAction.REPEAT)
+		} else {
+			button.onPress()
+			hwndWindow?.onButtonInput?.invoke(button, InputAction.PRESS)
+		}
 	}
 
 
 
 	private fun Message.handleMouseButtonUp(button: InputButton) {
 		button.onRelease()
-		hwndWindow?.onMouseRelease?.invoke(button)
+		hwndWindow?.onButtonInput?.invoke(button, InputAction.RELEASE)
 	}
 
 

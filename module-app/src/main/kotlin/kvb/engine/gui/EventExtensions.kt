@@ -1,6 +1,7 @@
 package kvb.engine.gui
 
 import kvb.engine.gui.event.*
+import kvb.window.input.InputAction
 import kvb.window.input.InputButton
 
 
@@ -21,7 +22,7 @@ fun Base.clickEvent(cursorX: Float, cursorY: Float) = ClickEvent(this, cursorX, 
 
 fun Base.toggleEvent(toggled: Boolean) = ToggleEvent(this, toggled).bubble()
 
-fun Base.buttonInputEvent(button: InputButton, type: ButtonInputEvent.Type, repeatCount: Int) = ButtonInputEvent(this, button, type, repeatCount).bubble()
+fun Base.buttonInputEvent(button: InputButton, action: InputAction, repeatCount: Int) = ButtonInputEvent(this, button, action, repeatCount).bubble()
 
 fun Base.charEvent(char: Char) = CharEvent(this, char).bubble()
 

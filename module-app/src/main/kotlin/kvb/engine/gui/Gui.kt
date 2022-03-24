@@ -1,10 +1,9 @@
 package kvb.engine.gui
 
 import kvb.engine.Engine
-import kvb.engine.gui.event.ButtonInputEvent
 import kvb.engine.gui.event.HoverEvent
-import kvb.engine.gui.type.Button
 import kvb.window.Window
+import kvb.window.input.InputAction
 import kvb.window.input.InputButton
 
 class Gui(private val root: Base) {
@@ -75,8 +74,8 @@ class Gui(private val root: Base) {
 
 
 
-	fun onButtonInput(button: InputButton, type: ButtonInputEvent.Type, repeatCount: Int = 1) {
-		focussed?.buttonInputEvent(button, type, repeatCount)
+	fun onButtonInput(button: InputButton, action: InputAction, repeatCount: Int = 1) {
+		focussed?.buttonInputEvent(button, action, repeatCount)
 	}
 
 

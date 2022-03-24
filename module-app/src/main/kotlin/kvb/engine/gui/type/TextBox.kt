@@ -7,7 +7,7 @@ import kvb.engine.gui.event.*
 import kvb.engine.gui.font.Fonts
 import kvb.engine.gui.font.TextCollision
 import kvb.engine.gui.layout.Alignment
-import kvb.engine.gui.layout.Padding
+import kvb.window.input.InputAction
 import kvb.window.input.InputButton
 
 class TextBox : Base() {
@@ -29,6 +29,8 @@ class TextBox : Base() {
 
 	private var collision: TextCollision? = null
 		set(value) { field = value; onTextCollision(value) }
+
+	var collisionX = 0F
 
 
 
@@ -82,7 +84,7 @@ class TextBox : Base() {
 		collision = textBase.paragraph?.collision(
 			textBase.transformUpXAbsolute(event.cursorX),
 			textBase.transformUpYAbsolute(event.cursorY)
-		)
+		)?.also { collisionX = it.x }
 	}
 
 
@@ -92,12 +94,14 @@ class TextBox : Base() {
 
 		val collision = this.collision ?: return
 
-		if(event.type != ButtonInputEvent.Type.PRESS) return
+		if(event.action != InputAction.REPEAT && event.action != InputAction.PRESS) return
 
 		when(event.button) {
-			InputButton.LEFT -> textBase.paragraph?.collision(collision.index - 1)?.let { this.collision = it }
-			InputButton.RIGHT -> textBase.paragraph?.collision(collision.index + 1)?.let { this.collision = it }
-			else -> return
+			InputButton.LEFT -> textBase.paragraph?.collision(collision.index - 1)?.let { this.collision = it; collisionX = it.x }
+			InputButton.RIGHT -> textBase.paragraph?.collision(collision.index + 1)?.let { this.collision = it; collisionX = it.x }
+			InputButton.UP -> textBase.paragraph?.collision(collision.lineIndex - 1, collisionX)?.let { this.collision = it }
+			InputButton.DOWN -> textBase.paragraph?.collision(collision.lineIndex + 1, collisionX)?.let { this.collision = it }
+			else -> { }
 		}
 	}
 
@@ -123,8 +127,7 @@ class TextBox : Base() {
 				}
 			}
 
-			textBase.rebuildParagraph()
-			this.collision = textBase.paragraph!!.collision(collision.index - 1)
+			this.collision = textBase.paragraph!!.collision(collision.index - 1)?.also { collisionX = it.x }
 		} else {
 			if(event.char !in Fonts.font) return
 
@@ -137,8 +140,7 @@ class TextBox : Base() {
 					append(textBase.text.drop(collision.index))
 				}
 
-			textBase.rebuildParagraph()
-			this.collision = textBase.paragraph!!.collision(collision.index + 1)
+			this.collision = textBase.paragraph!!.collision(collision.index + 1)?.also { collisionX = it.x }
 		}
 	}
 

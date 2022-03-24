@@ -5,6 +5,8 @@
 
 layout(location = 0) in vec2 texCoords;
 layout(location = 1) flat in uvec2 texture;
+
+layout(location = 2) flat in uint packedColour;
 layout(location = 0) out vec4 outColour;
 
 
@@ -13,5 +15,12 @@ void main() {
 	int index = int(texCoords.y) * 7 + int(texCoords.x);
 	uint value = texture[index / 32];
 	uint mask = 1 << (index % 32);
-	outColour = vec4(value & mask);
+
+	vec3 colour = vec3(
+     	packedColour & 0xFF,
+     	(packedColour >> 8) & 0xFF,
+     	(packedColour >> 16) & 0xFF
+    ) / 256;
+
+	outColour = vec4(colour, value & mask);
 }
