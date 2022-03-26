@@ -11,6 +11,10 @@ import kvb.window.winapi.WinApi.hwndWindow
 object WinApi : WindowManager {
 
 
+	// TODO: Handle repeat count. May miss some key inputs otherwise.
+
+
+
 	/*
 	Natives
 	 */

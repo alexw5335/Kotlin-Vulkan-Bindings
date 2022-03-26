@@ -13,6 +13,7 @@ class Paragraph(
 ) {
 
 
+
 	fun collision(index: Int): TextCollision? {
 		if(index < 0) return null
 
