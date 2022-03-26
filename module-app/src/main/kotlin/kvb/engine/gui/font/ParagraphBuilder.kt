@@ -3,6 +3,7 @@ package kvb.engine.gui.font
 import kvb.engine.gui.layout.TextAlignment
 
 class ParagraphBuilder(
+	val text      : String,
 	val font      : BinaryFont,
 	val spacing   : Float,
 	val wrapWidth : Float,
@@ -31,6 +32,8 @@ class ParagraphBuilder(
 
 	private var wordAdvanceWidth = 0F
 
+	private val xPositions = IntArray(text.length)
+
 
 
 	private fun newline() {
@@ -44,10 +47,9 @@ class ParagraphBuilder(
 
 	private fun addChar(char: BinaryChar) {
 		if(line.advanceWidth + char.width > wrapWidth) {
-			newline()
-			//?
 			if(char.char != ' ')
-				line.width += char.width
+				newline()
+			line.width += char.width
 		} else {
 			line.width = line.advanceWidth + char.width
 			line.advanceWidth += char.advanceWidth
@@ -70,7 +72,7 @@ class ParagraphBuilder(
 
 
 
-	fun build(text: String): Paragraph {
+	fun build(): Paragraph {
 		for(char in text) {
 			val binaryChar = font[char]
 

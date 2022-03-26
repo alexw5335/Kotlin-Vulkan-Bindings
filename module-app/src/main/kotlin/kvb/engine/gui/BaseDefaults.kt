@@ -20,13 +20,14 @@ object BaseDefaults {
 
 	var textBoxHeight = 200F
 
-	var textBoxPadding = Padding(10F)
+	var textBoxPadding = Padding(15F)
 
 	var controlBorder = Padding(2F)
 
 	var controlPadding = Padding(5F)
 
 	var caretWidth = 1F
+
 
 
 	var caretColour = Colour.WHITE
