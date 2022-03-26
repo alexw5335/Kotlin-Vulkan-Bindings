@@ -41,7 +41,7 @@ open class Base {
 
 	var parent: Base? = null
 
-	val handlers = ArrayList<BaseEventHandler<*>>()
+	val handlers = ArrayList<Pair<Class<*>, (Any) -> Unit>>()
 
 	protected var shouldAlign = false
 
@@ -81,12 +81,12 @@ open class Base {
 
 	//
 
-	fun dragPress(event: ButtonInputEvent) {
+	/*fun dragPress(event: ButtonInputEvent) {
 		if(!draggable || event.button != dragButton || !dragPredicate) {
 
 		}
 		if(event.action.isPress)
-	}
+	}*/
 	/*
 	Changes
 	 */
@@ -150,8 +150,24 @@ open class Base {
 
 
 	fun handleEvent(event: BaseEvent) {
-		event.handleAction(this)
-		handlers.forEach(event::tryHandler)
+		eventAction(event)
+
+		for(h in handlers)
+			event.tryHandler(h.first, h.second)
+
+		parent?.handleEvent(event)
+	}
+
+
+
+	open fun eventAction(event: BaseEvent) {
+
+	}
+
+
+
+	inline fun<reified T : BaseEvent> addHandler(handler: BaseEventHandler<T>) {
+		handlers.add(Pair(T::class.java, handler as (Any) -> Unit))
 	}
 
 

@@ -2,6 +2,7 @@ package kvb.engine
 
 import kvb.core.Core
 import kvb.engine.gui.*
+import kvb.engine.gui.event.ClickEvent
 import kvb.engine.gui.layout.Alignment
 import kvb.engine.gui.layout.Padding
 import kvb.engine.gui.layout.TextAlignment
@@ -19,7 +20,11 @@ fun vulkanConfig(block: VkContextBuilder.() -> Unit) = VkContextBuilder.also(blo
 
 
 fun main() {
-	run()
+	val handler: (Int) -> Unit = { println(it) }
+	val handler2: (Any) -> Unit = handler as (Any) -> Unit
+	handler2(1)
+
+ 	//run()
 }
 
 

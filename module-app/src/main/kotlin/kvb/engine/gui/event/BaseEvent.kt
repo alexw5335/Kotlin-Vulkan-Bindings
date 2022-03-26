@@ -2,27 +2,23 @@ package kvb.engine.gui.event
 
 import kvb.engine.gui.Base
 
-abstract class BaseEvent(val source: Base) {
+interface BaseEvent {
 
 
-	var finished = false
+	val source: Base
 
 
 
-	fun bubble() {
-		var current = source
-
-		while(!finished) {
-			current.handleEvent(this)
-			current = current.parent ?: break
-		}
+	fun tryHandler(c: Class<*>, handler: (Any) -> Unit) {
+		if(c == this::class.java)
+			handler.invoke(this)
 	}
 
 
-
-	abstract fun handleAction(base: Base)
-
-	abstract fun tryHandler(handler: BaseEventHandler<*>)
-
-
 }
+
+
+
+class ClickEvent(override val source: Base, val mouseX: Float, val mouseY: Float) : BaseEvent
+class HoverEvent(override val source: Base, val mouseX: Float, val mouseY: Float) : BaseEvent
+class HoldEvent(override val source: Base, val mouseX: Float, val mouseY: Float): BaseEvent
