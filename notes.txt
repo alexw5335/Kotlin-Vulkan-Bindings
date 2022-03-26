@@ -186,11 +186,74 @@ Memory management (updating memory)
 	to be initiated.
 		- e.g. left, middle, or right mouse button, or maybe control must be pressed.
 		- Drag is initiated through ButtonInputEvent, not PressEvent.
-- The drag origin is in base coordinates, not absolute coordinates.
-	- The base should easily be able to access the drag difference.
+- Drag conditions:
+	- The cursor is hovering over a draggable base
+	- The base's drag button is being held and its predicate is being satisfied?
+		- How to handle multiple presses?
+		- Should button state be updated first and then press callbacks called?
+		- What about input mods?
+	- This sets the base as the drag candidate and origin.
+	- If the button is released, then the drag origin and candidate are reset.
+- Large ambiguities between presses, holds, hovers, left mouse vs general button inputs, etc.
+	- Need to reorganise the events. Press and hover should not handle drag.
+
+Event types
+- HoverEvent (polled): The mouse is hovered over a base
+	- mouseX, mouseY
+- PressEvent (immediate, button-specific): The mouse is hovered over a base and the left mouse button is initially pressed.
+	- mouseX, mouseY
+- HoldEvent (polled, button-specific): The mouse is hovered over a base and the left mouse button is held.
+	- mouseX, mouseY
+- ReleaseEvent (immediate, button-specific): The mouse is hovered over a base and the left mouse button is released.
+	- mouseX, mouseY
+- ClickEvent (immediate, button-specific): The mouse is released over the base over which the mouse was initially pressed.
+	- mouseY, mouseY
+- MouseEnterEvent (polled): The mouse is hovered over a base over which it was not hovered during the previous poll.
+	- mouseX, mouseY
+- MouseExitEvent (polled): The mouse is no longer hovered over a base over which it was hovered during the previous poll.
+	- mouseX, mouseY
+- ButtonInputEvent (immediate): A button is pressed, held, or released.
+	- mouseX, mouseY, button (perhaps also mods and other pressed buttons)
+- ToggleEvent (anytime): A ToggleButton is toggled.
+	- toggled
+- FocusGainEvent (anytime): A base gains focus
+	- none
+- FocusLossEvent (anytime): A base loses focus
+	- none
+- DragStartEvent (polled): A base starts drag
+	- mouseX, mouseY
+- DragUpdateEvent (polled): A base is being dragged
+	- mouseX, mouseY
+- DragEndEvent (polled): A base ends drag.
+	- mouseX, mouseY
+
+Event classes
+- BaseEvent
+	- source
+- MouseEvent
+	- mouseX, mouseX
+- ToggleEvent
+	- toggled
+
+
+button.onMouseEvent(BaseEventType.CLICK) {
+
+}
+
+button.onEvent(BaseEventType.FOCUS_GAIN) {
+
+}
+
+button.onClick {
+
+}
 
 
 
+- Combine into one class
+	- source: Base
+	- mouseX: Float
+	- mouseY: Float
 
 
 

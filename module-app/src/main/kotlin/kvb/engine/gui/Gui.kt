@@ -150,4 +150,9 @@ class Gui(private val root: Base) {
 	}
 
 
+
+	var dragOriginX = 0F
+	var dragOriginY = 0F
+
+
 }

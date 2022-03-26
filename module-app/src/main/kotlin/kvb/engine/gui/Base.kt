@@ -4,6 +4,7 @@ import kvb.engine.Engine
 import kvb.engine.gui.event.*
 import kvb.engine.gui.layout.*
 import kvb.engine.gui.model.BaseModel
+import kvb.window.input.InputButton
 
 open class Base {
 
@@ -62,12 +63,30 @@ open class Base {
 	var focusOnPress = true
 
 
+
 	/*
 	Drag
 	 */
 
 
 
+	open val draggable get() = false
+
+	open val dragThreshold get() = 9F // 3 pixels
+
+	open val dragButton get() = InputButton.LEFT_MOUSE
+
+	open val dragPredicate: () -> Boolean get() = { true }
+
+
+	//
+
+	fun dragPress(event: ButtonInputEvent) {
+		if(!draggable || event.button != dragButton || !dragPredicate) {
+
+		}
+		if(event.action.isPress)
+	}
 	/*
 	Changes
 	 */
