@@ -4,6 +4,7 @@ import kvb.engine.gui.type.AnchorPane
 import kvb.engine.gui.Gui
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.vulkan.VkContext
+import kvb.window.Window
 import kvb.window.WindowManager
 import kvb.window.input.InputAction
 import kvb.window.input.InputButton
@@ -30,13 +31,13 @@ object Engine {
 
 
 	init {
-		initWindowCallbacks()
+		initWindowCallbacks(window)
 		window.show()
 	}
 
 
 
-	private fun initWindowCallbacks() {
+	private fun initWindowCallbacks(window: Window) {
 		window.onResize = {
 			gui.onWindowResize(window.width, window.height)
 		}

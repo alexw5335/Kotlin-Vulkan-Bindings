@@ -55,7 +55,7 @@ object WinApi : WindowManager {
 
 
 
-	private const val CW_USE_DEFAULT =  -0x80000000
+	private val CW_USE_DEFAULT = 0x80000000.toUInt().toInt()
 
 
 
@@ -72,10 +72,10 @@ object WinApi : WindowManager {
 	override fun create(title: String, x: Int?, y: Int?, width: Int?, height: Int?) = stackGet {
 		val hwnd = createWindow(
 			encodeUtf16NT(title).address,
-			x ?: CW_USE_DEFAULT,
-			y ?: CW_USE_DEFAULT,
-			width ?: CW_USE_DEFAULT,
-			height ?: CW_USE_DEFAULT
+			x ?: 0,
+			y ?: 0,
+			width ?: 600,
+			height ?: 600
 		)
 
 		WinApiWindow(hwnd).also(windows::add)

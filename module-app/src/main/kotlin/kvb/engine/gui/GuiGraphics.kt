@@ -12,6 +12,7 @@ import kvb.vkwrapper.memory.VkHeapAllocator
 import kvb.vkwrapper.shader.ShaderDirectory
 import kvb.vulkan.*
 import kvb.window.Window
+import kvb.window.input.InputButton
 
 object GuiGraphics {
 
