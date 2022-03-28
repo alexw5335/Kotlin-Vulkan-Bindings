@@ -98,7 +98,6 @@ class Gui(private val root: Base) {
 	fun onPress(mouseX: Float, mouseY: Float) {
 		pressed = hovered
 
-		// No press events while dragging
 		if(!dragging)
 			focussed?.createEvent { PressEvent(it, mouseX, mouseY) }
 	}
@@ -106,7 +105,6 @@ class Gui(private val root: Base) {
 
 
 	fun onRelease(mouseX: Float, mouseY: Float) {
-		// No click events while dragging
 		if(!dragging && pressed == hovered)
 			hovered?.createEvent { ClickEvent(it, mouseX, mouseY) }
 
