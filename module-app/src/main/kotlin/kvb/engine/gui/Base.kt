@@ -1,8 +1,8 @@
 package kvb.engine.gui
 
 import kvb.engine.Engine
-import kvb.engine.gui.event.*
-import kvb.engine.gui.layout.*
+import kvb.engine.gui.layout.Alignment
+import kvb.engine.gui.layout.Padding
 import kvb.engine.gui.model.BaseModel
 import kvb.window.input.InputButton
 
@@ -43,13 +43,13 @@ open class Base {
 
 	val handlers = ArrayList<Pair<Class<*>, (Any) -> Unit>>()
 
-	protected var shouldAlign = false
+	protected var shouldAlign = true
 
 	val gui get() = Engine.gui
 
-	val isHovered get() = gui.hovered == this
+	val isHovered get() = (!gui.dragging || gui.dragFocus == this) && gui.hovered == this
 
-	val isPressed get() = gui.pressed == this
+	val isPressed get() = (!gui.dragging || gui.dragFocus == this) && gui.pressed == this
 
 	var style = BaseStyle.NULL
 		set(value) {
@@ -72,21 +72,18 @@ open class Base {
 
 	open val draggable get() = false
 
-	open val dragThreshold get() = 9F // 3 pixels
+	open val dragThreshold get() = 25F
 
-	open val dragButton get() = InputButton.LEFT_MOUSE
+	open val dragButtons get() = listOf(InputButton.LEFT_MOUSE)
 
-	open val dragPredicate: () -> Boolean get() = { true }
+	open val dragPredicate: () -> Boolean = { InputButton.pressed.containsAll(dragButtons) }
+
+	open val dragFromOrigin get() = false
+
+	open val dragImmediately get() = false
 
 
-	//
 
-	/*fun dragPress(event: ButtonInputEvent) {
-		if(!draggable || event.button != dragButton || !dragPredicate) {
-
-		}
-		if(event.action.isPress)
-	}*/
 	/*
 	Changes
 	 */
@@ -149,60 +146,42 @@ open class Base {
 
 
 
+	inline fun createEvent(block: (Base) -> BaseEvent) = handleEvent(block(this))
+
+
+
 	fun handleEvent(event: BaseEvent) {
+		if(event.finished) return
+
 		eventAction(event)
 
 		for(h in handlers)
-			event.tryHandler(h.first, h.second)
+			if(event.isValid(h.first))
+				h.second(event)
 
 		parent?.handleEvent(event)
 	}
 
 
 
-	open fun eventAction(event: BaseEvent) {
+	protected open fun eventAction(event: BaseEvent) {
+		when(event) {
+			is PressEvent -> {
+				if(event.source == this && gui.focussed != this)
+					gui.removeFocus()
 
+				if(focussable && focusOnPress)
+					gui.assignFocus(this)
+			}
+		}
 	}
 
 
 
-	inline fun<reified T : BaseEvent> addHandler(handler: BaseEventHandler<T>) {
-		handlers.add(Pair(T::class.java, handler as (Any) -> Unit))
+	@Suppress("unchecked_cast")
+	inline fun<reified T : BaseEvent> addHandler(noinline handler: (T) -> Unit) {
+		handlers.add(T::class.java to handler as (Any) -> Unit)
 	}
-
-
-
-	open fun hoverAction(event: HoverEvent) { }
-
-	open fun pressAction(event: PressEvent) {
-		if(event.source == this && gui.focussed != this)
-			gui.removeFocus()
-
-		if(focussable && focusOnPress)
-			gui.assignFocus(this)
-	}
-
-	open fun mouseEnterAction(event: MouseEnterEvent) { }
-
-	open fun mouseExitAction(event: MouseExitEvent) { }
-
-	open fun holdAction(event: HoldEvent) { }
-
-	open fun releaseAction(event: ReleaseEvent) { }
-
-	open fun clickAction(event: ClickEvent) { }
-
-	open fun toggleAction(event: ToggleEvent) { }
-
-	open fun buttonInputAction(event: ButtonInputEvent) { }
-
-	open fun charAction(event: CharEvent) { }
-
-	open fun focusGainAction(event: FocusGainEvent) { }
-
-	open fun focusLossAction(event: FocusLossEvent) { }
-
-	open fun dragAction(event: DragEvent) { }
 
 
 

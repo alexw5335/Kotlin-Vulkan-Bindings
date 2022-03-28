@@ -1,6 +1,7 @@
 package kvb.engine.gui.layout
 
 import kvb.engine.gui.Base
+import kvb.engine.gui.MouseEvent
 
 object HOrientation : Orientation {
 
@@ -64,6 +65,18 @@ object HOrientation : Orientation {
 	override fun Base.align(alignment: Alignment, child: Base) = hAlign(alignment, child)
 
 	override fun Base.align2(alignment: Alignment, child: Base) = vAlign(alignment, child)
+
+
+
+	override fun Base.transformUpAbsolute(pos: Float) = transformUpXAbsolute(pos)
+
+	override fun Base.transformUpAbsolute2(pos: Float) = transformUpYAbsolute(pos)
+
+
+
+	override fun Base.transformUpAbsolute(event: MouseEvent) = transformUpXAbsolute(event.mouseX)
+
+	override fun Base.transformUpAbsolute2(event: MouseEvent) = transformUpYAbsolute(event.mouseY)
 
 
 }

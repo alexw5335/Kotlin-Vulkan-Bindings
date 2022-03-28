@@ -1,7 +1,6 @@
 package kvb.engine.gui
 
 import kvb.engine.Engine
-import kvb.engine.gui.event.HoverEvent
 import kvb.window.Window
 import kvb.window.input.InputAction
 import kvb.window.input.InputButton
@@ -34,31 +33,15 @@ class Gui(private val root: Base) {
 		private set
 
 
+	var dragCandidate: Base? = null
 
-	/**
-	 * The cursor's x position when the last new press event was triggered.
-	 */
-	private var pressOriginX = 0F
+	var dragFocus: Base? = null
 
-	/**
-	 * The cursor's y position when the last new press event was triggered.
-	 */
-	private var pressOriginY = 0F
+	var dragOriginX = 0F
 
+	var dragOriginY = 0F
 
-
-	fun assignFocus(base: Base?) {
-		removeFocus()
-		this.focussed = base
-		this.focussed?.focusGainEvent()
-	}
-
-
-
-	fun removeFocus() {
-		focussed?.focusLossEvent()
-		focussed = null
-	}
+	val dragging get() = dragCandidate != null || dragFocus != null
 
 
 
@@ -68,14 +51,39 @@ class Gui(private val root: Base) {
 
 
 
-	fun onCharInput(char: Char) {
-		focussed?.charEvent(char)
+	fun assignFocus(base: Base?) {
+		removeFocus()
+		focussed = base
+		focussed?.createEvent { FocusGainEvent(it) }
 	}
 
 
 
-	fun onButtonInput(button: InputButton, action: InputAction, repeatCount: Int = 1) {
-		focussed?.buttonInputEvent(button, action, repeatCount)
+	fun removeFocus() {
+		focussed?.createEvent { FocusLossEvent(it) }
+		focussed = null
+	}
+
+
+
+	fun onCharInput(char: Char) {
+		focussed?.createEvent { CharEvent(it, char) }
+	}
+
+
+
+	fun onButtonInput(button: InputButton, action: InputAction, mouseX: Float, mouseY: Float) {
+		focussed?.createEvent { ButtonInputEvent(it, mouseX, mouseY, button, action) }
+
+		hovered?.let {
+			if(dragging) return
+
+			if(it.draggable && it.dragPredicate()) {
+				dragCandidate = it
+				dragOriginX = mouseX
+				dragOriginY = mouseY
+			}
+		}
 	}
 
 
@@ -87,22 +95,23 @@ class Gui(private val root: Base) {
 
 
 
-	fun onPress(cursorX: Float, cursorY: Float) {
+	fun onPress(mouseX: Float, mouseY: Float) {
 		pressed = hovered
 
-		pressOriginX = cursorX
-		pressOriginY = cursorY
-
-		pressed?.pressEvent(cursorX, cursorY)
+		// No press events while dragging
+		if(!dragging)
+			focussed?.createEvent { PressEvent(it, mouseX, mouseY) }
 	}
 
 
 
-	fun onRelease(cursorX: Float, cursorY: Float) {
-		if(pressed == hovered)
-			hovered?.clickEvent(cursorX, cursorY)
+	fun onRelease(mouseX: Float, mouseY: Float) {
+		// No click events while dragging
+		if(!dragging && pressed == hovered)
+			hovered?.createEvent { ClickEvent(it, mouseX, mouseY) }
 
-		hovered?.releaseEvent(cursorX, cursorY)
+		if(!dragging)
+			hovered?.createEvent { ReleaseEvent(it, mouseX, mouseY) }
 
 		pressed = null
 	}
@@ -110,25 +119,56 @@ class Gui(private val root: Base) {
 
 
 	fun onHold(cursorX: Float, cursorY: Float) {
-		pressed?.holdEvent(cursorX, cursorY, pressOriginX, pressOriginY, hovered == pressed)
+		if(!dragging)
+			pressed?.createEvent { HoldEvent(it, cursorX, cursorY) }
 	}
 
 
 
-	fun onMouseMove(cursorX: Float, cursorY: Float) {
-		val new = root.checkCollision(cursorX, cursorY)
+	fun onMouseMove(mouseX: Float, mouseY: Float) { }
+
+
+
+	fun handleMousePos(mouseX: Float, mouseY: Float) {
+		val new = root.checkCollision(mouseX, mouseY)
 
 		if(new != hovered) {
-			hovered?.mouseExitEvent(cursorX, cursorY)
-			new?.mouseEnterEvent(cursorX, cursorY)
+			if(!dragging) {
+				hovered?.createEvent { MouseExitEvent(it, mouseX, mouseY) }
+				new?.createEvent { MouseEnterEvent(it, mouseX, mouseY) }
+			}
+
 			hovered = new
 		}
-	}
 
+		if(!dragging)
+			hovered?.createEvent { HoverEvent(it, mouseX, mouseY) }
 
+		dragFocus?.let { focus ->
+			if(!focus.dragPredicate()) {
+				dragFocus?.createEvent { DragEndEvent(it, mouseX, mouseY) }
+				dragFocus = null
+				return@let
+			} else {
+				dragFocus?.createEvent { DragUpdateEvent(it, mouseX, mouseY) }
+			}
+		}
 
-	fun handleMousePos(cursorX: Float, cursorY: Float) {
-		hovered?.handleEvent(HoverEvent(hovered!!, cursorX, cursorY))
+		dragCandidate?.let { candidate ->
+			if(!candidate.dragPredicate()) {
+				dragCandidate = null
+				return@let
+			}
+
+			val x = mouseX - dragOriginX
+			val y = mouseY - dragOriginY
+
+			if(candidate.dragImmediately || x*x + y*y >= candidate.dragThreshold) {
+				dragCandidate = null
+				dragFocus = candidate
+				dragFocus?.createEvent { DragStartEvent(it, mouseX, mouseY) }
+			}
+		}
 	}
 
 
@@ -148,11 +188,6 @@ class Gui(private val root: Base) {
 	fun render() {
 		root.render(0F, 0F)
 	}
-
-
-
-	var dragOriginX = 0F
-	var dragOriginY = 0F
 
 
 }

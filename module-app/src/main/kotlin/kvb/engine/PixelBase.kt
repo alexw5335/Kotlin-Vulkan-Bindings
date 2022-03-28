@@ -3,9 +3,8 @@ package kvb.engine
 import kvb.engine.gui.Base
 import kvb.engine.gui.Colour
 import kvb.engine.gui.GuiGraphics
-import kvb.engine.gui.event.HoldEvent
-import kvb.engine.gui.event.HoverEvent
-import kvb.engine.gui.event.PressEvent
+import kvb.engine.gui.BaseEvent
+import kvb.engine.gui.HoverEvent
 import kvb.window.input.InputButton
 
 class PixelBase : Base() {
@@ -29,15 +28,16 @@ class PixelBase : Base() {
 
 
 
-	override fun hoverAction(event: HoverEvent) {
-		super.hoverAction(event)
+	override fun eventAction(event: BaseEvent) {
+		super.eventAction(event)
 
-		if(InputButton.LEFT_MOUSE.isPressed)
-			toggled = true
-		else if(InputButton.RIGHT_MOUSE.isPressed)
-			toggled = false
+		if(event is HoverEvent) {
+			if(InputButton.LEFT_MOUSE.isPressed)
+				toggled = true
+			else if(InputButton.RIGHT_MOUSE.isPressed)
+				toggled = false
+		}
 	}
-
 
 
 }

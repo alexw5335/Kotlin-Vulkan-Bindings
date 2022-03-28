@@ -1,14 +1,16 @@
 package kvb.engine.gui.type
 
 import kvb.engine.gui.*
-import kvb.engine.gui.event.ClickEvent
-import kvb.engine.gui.layout.Alignment
+import kvb.engine.gui.BaseEvent
+import kvb.engine.gui.ClickEvent
+import kvb.engine.gui.ToggleEvent
+import kvb.window.input.InputButton
 
 class ToggleButton : Button() {
 
 
 	var toggled = false
-		set(value) { field = value; toggleEvent(value) }
+		set(value) { field = value; createEvent { ToggleEvent(it, value) } }
 
 	var toggledColour = BaseDefaults.toggledColour
 
@@ -24,9 +26,12 @@ class ToggleButton : Button() {
 
 
 
-	override fun clickAction(event: ClickEvent) {
-		super.clickAction(event)
-		toggled = !toggled
+	override fun eventAction(event: BaseEvent) {
+		super.eventAction(event)
+
+		when(event) {
+			is ClickEvent -> toggled = !toggled
+		}
 	}
 
 

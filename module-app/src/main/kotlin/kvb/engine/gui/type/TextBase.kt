@@ -45,7 +45,7 @@ class TextBase : Base() {
 
 
 	private fun rebuildParagraph() {
-		paragraph = ParagraphBuilder(font, lineSpacing * font.scale, wrapWidth, alignment).build(text)
+		paragraph = ParagraphBuilder(text, font, lineSpacing * font.scale, wrapWidth, alignment).build()
 		this.width = paragraph!!.width
 		this.height = paragraph!!.height
 	}

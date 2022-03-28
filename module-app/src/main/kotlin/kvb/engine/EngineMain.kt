@@ -2,11 +2,10 @@ package kvb.engine
 
 import kvb.core.Core
 import kvb.engine.gui.*
-import kvb.engine.gui.event.ClickEvent
-import kvb.engine.gui.layout.Alignment
-import kvb.engine.gui.layout.Padding
+import kvb.engine.gui.ClickEvent
+import kvb.engine.gui.layout.HOrientation
 import kvb.engine.gui.layout.TextAlignment
-import kvb.engine.gui.model.BaseModel
+import kvb.engine.gui.type.Slider
 import kvb.engine.vulkan.VkContextBuilder
 import kvb.vkwrapper.shader.ShaderCreation
 import kvb.vulkan.*
@@ -20,11 +19,7 @@ fun vulkanConfig(block: VkContextBuilder.() -> Unit) = VkContextBuilder.also(blo
 
 
 fun main() {
-	val handler: (Int) -> Unit = { println(it) }
-	val handler2: (Any) -> Unit = handler as (Any) -> Unit
-	handler2(1)
-
- 	//run()
+ 	run()
 }
 
 
@@ -82,7 +77,7 @@ fun run() {
 					scale = 3
 				}
 
-				onClick {
+				addHandler<ClickEvent> {
 					var value = 0L
 
 					for((i, p) in pixels.withIndex())
@@ -100,6 +95,8 @@ fun run() {
 			toggleButton {
 
 			}
+
+			addChild(Slider(HOrientation))
 		}
 	}
 

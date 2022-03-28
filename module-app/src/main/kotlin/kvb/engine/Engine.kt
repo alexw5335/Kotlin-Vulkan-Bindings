@@ -3,7 +3,6 @@ package kvb.engine
 import kvb.engine.gui.type.AnchorPane
 import kvb.engine.gui.Gui
 import kvb.engine.gui.GuiGraphics
-import kvb.engine.gui.event.ButtonInputEvent
 import kvb.engine.vulkan.VkContext
 import kvb.window.WindowManager
 import kvb.window.input.InputAction
@@ -28,10 +27,6 @@ object Engine {
 
 	val frameTime get() = 1F / targetFps
 
-	val KEY_REPEAT_MILLIS = 16
-
-	val KEY_REPEAT_DELAY = 500
-
 
 
 	init {
@@ -51,15 +46,13 @@ object Engine {
 		}
 
 		window.onButtonInput = { button, action ->
-			if(button == InputButton.LEFT_MOUSE) {
-				if(action == InputAction.PRESS) {
-					gui.onPress(window.cursorX, window.cursorY)
-				} else if(action == InputAction.RELEASE) {
-					gui.onRelease(window.cursorX, window.cursorY)
-				}
+			when {
+				button != InputButton.LEFT_MOUSE -> Unit
+				action == InputAction.PRESS      -> gui.onPress(window.cursorX, window.cursorY)
+				action == InputAction.RELEASE    -> gui.onRelease(window.cursorX, window.cursorY)
 			}
 
-			gui.onButtonInput(button, action, 1)
+			gui.onButtonInput(button, action, window.cursorX, window.cursorY)
 		}
 
 		window.onChar = {

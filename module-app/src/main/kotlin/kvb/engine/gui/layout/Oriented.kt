@@ -1,6 +1,7 @@
 package kvb.engine.gui.layout
 
 import kvb.engine.gui.Base
+import kvb.engine.gui.MouseEvent
 
 interface Oriented {
 	
@@ -28,5 +29,11 @@ interface Oriented {
 	fun<T> T.align(child: Base) where T : Base, T : Aligned = align(alignment, child)
 	fun<T> T.align2(child: Base) where T : Base, T : Aligned = align2(alignment2, child)
 
-	
+	fun Base.transformUpAbsolute(pos: Float): Float
+	fun Base.transformUpAbsolute2(pos: Float): Float
+
+	fun Base.transformUpAbsolute(event: MouseEvent): Float
+	fun Base.transformUpAbsolute2(event: MouseEvent): Float
+
+
 }

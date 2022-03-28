@@ -1,9 +1,6 @@
 package kvb.engine.gui.type
 
-import kvb.engine.gui.Base
-import kvb.engine.gui.BaseDefaults
-import kvb.engine.gui.GuiGraphics
-import kvb.engine.gui.event.*
+import kvb.engine.gui.*
 import kvb.engine.gui.font.Fonts
 import kvb.engine.gui.font.TextCollision
 import kvb.engine.gui.layout.Alignment
@@ -71,76 +68,67 @@ class TextBox : Base() {
 
 
 
-	override fun focusLossAction(event: FocusLossEvent) {
-		super.focusLossAction(event)
-		collision = null
-	}
+	override fun eventAction(event: BaseEvent) {
+		super.eventAction(event)
 
+		when(event) {
+			is FocusLossEvent -> collision = null
 
+			is PressEvent -> {
+				collision = textBase.paragraph?.collision(
+					textBase.transformUpXAbsolute(event.mouseX),
+					textBase.transformUpYAbsolute(event.mouseY)
+				)?.also { collisionX = it.x }
+			}
 
-	override fun pressAction(event: PressEvent) {
-		super.pressAction(event)
+			is ButtonInputEvent -> {
+				val collision = this.collision ?: return
 
-		collision = textBase.paragraph?.collision(
-			textBase.transformUpXAbsolute(event.cursorX),
-			textBase.transformUpYAbsolute(event.cursorY)
-		)?.also { collisionX = it.x }
-	}
+				if(event.action != InputAction.REPEAT && event.action != InputAction.PRESS) return
 
-
-
-	override fun buttonInputAction(event: ButtonInputEvent) {
-		super.buttonInputAction(event)
-
-		val collision = this.collision ?: return
-
-		if(event.action != InputAction.REPEAT && event.action != InputAction.PRESS) return
-
-		when(event.button) {
-			InputButton.LEFT -> textBase.paragraph?.collision(collision.index - 1)?.let { this.collision = it; collisionX = it.x }
-			InputButton.RIGHT -> textBase.paragraph?.collision(collision.index + 1)?.let { this.collision = it; collisionX = it.x }
-			InputButton.UP -> textBase.paragraph?.collision(collision.lineIndex - 1, collisionX)?.let { this.collision = it }
-			InputButton.DOWN -> textBase.paragraph?.collision(collision.lineIndex + 1, collisionX)?.let { this.collision = it }
-			else -> { }
-		}
-	}
-
-
-
-	override fun charAction(event: CharEvent) {
-		super.charAction(event)
-
-		val collision = this.collision ?: return
-
-		if(event.char.code == 8) {
-			if(collision.index == 0) return
-
-			textBase.text = if(collision.index == textBase.text.length) {
-				if(textBase.text.isEmpty())
-					textBase.text
-				else
-					textBase.text.dropLast(1)
-			} else {
-				buildString {
-					append(textBase.text.dropLast(textBase.text.length - collision.index))
-					append(textBase.text.drop(collision.index + 1))
+				when(event.button) {
+					InputButton.LEFT -> textBase.paragraph?.collision(collision.index - 1)?.let { this.collision = it; collisionX = it.x }
+					InputButton.RIGHT -> textBase.paragraph?.collision(collision.index + 1)?.let { this.collision = it; collisionX = it.x }
+					InputButton.UP -> textBase.paragraph?.collision(collision.lineIndex - 1, collisionX)?.let { this.collision = it }
+					InputButton.DOWN -> textBase.paragraph?.collision(collision.lineIndex + 1, collisionX)?.let { this.collision = it }
+					else -> { }
 				}
 			}
 
-			this.collision = textBase.paragraph!!.collision(collision.index - 1)?.also { collisionX = it.x }
-		} else {
-			if(event.char !in Fonts.font) return
+			is CharEvent -> {
+				val collision = this.collision ?: return
 
-			textBase.text = if(collision.index == textBase.text.length)
-				textBase.text + event.char
-			else
-				buildString {
-					append(textBase.text.dropLast(textBase.text.length - collision.index))
-					append(event.char)
-					append(textBase.text.drop(collision.index))
+				if(event.char.code == 8) {
+					if(collision.index == 0) return
+
+					textBase.text = if(collision.index == textBase.text.length) {
+						if(textBase.text.isEmpty())
+							textBase.text
+						else
+							textBase.text.dropLast(1)
+					} else {
+						buildString {
+							append(textBase.text.dropLast(textBase.text.length - collision.index))
+							append(textBase.text.drop(collision.index + 1))
+						}
+					}
+
+					this.collision = textBase.paragraph!!.collision(collision.index - 1)?.also { collisionX = it.x }
+				} else {
+					if(event.char !in Fonts.font) return
+
+					textBase.text = if(collision.index == textBase.text.length)
+						textBase.text + event.char
+					else
+						buildString {
+							append(textBase.text.dropLast(textBase.text.length - collision.index))
+							append(event.char)
+							append(textBase.text.drop(collision.index))
+						}
+
+					this.collision = textBase.paragraph!!.collision(collision.index + 1)?.also { collisionX = it.x }
 				}
-
-			this.collision = textBase.paragraph!!.collision(collision.index + 1)?.also { collisionX = it.x }
+			}
 		}
 	}
 
