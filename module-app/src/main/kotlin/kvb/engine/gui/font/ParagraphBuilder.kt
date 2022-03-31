@@ -44,6 +44,12 @@ class ParagraphBuilder(
 
 
 	private fun addChar(char: BinaryChar) {
+		if(char.char == '\n') {
+			line.chars.add(char)
+			newline()
+			return
+		}
+
 		if(line.advanceWidth + char.width > wrapWidth) {
 			if(char.char != ' ')
 				newline()

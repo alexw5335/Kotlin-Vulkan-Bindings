@@ -255,18 +255,22 @@ button.onClick {
 	- mouseX: Float
 	- mouseY: Float
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Decoupling of graphics from components
+- How to store state? E.g. buffers, especially with text.
+- State does not need to be stored for simple primitives.
+- Bases instead store 'skins' (or 'styles' or 'classes')
+	- These include things like colour, texture, geometry.
+	- How to handle size?
+- Do not emulate css classes. These control much more than just graphics
+	- e.g. width, height, padding, border, alignment.
+	- Difficult to decouple dimensions and graphics, especially when handling state.
+	- How to handle context-specific rendering such as hover, press, and toggle states?
+- A 'model' can be a very simple interface that has a single render function.
+- How to handle graphical permutations?
+	- e.g. geometry, colour, texture, gradient?
+	- difficult to decouple geometry from graphics
+		- colour/texture data may be encoded along with the geometry.
+- Base should be able to specify a limited amount of graphical information,
+  which is then used to separately render the base.
+	- More advanced functionality must be provided in subclasses of BaseModel.
+	- Base graphics should be limited.

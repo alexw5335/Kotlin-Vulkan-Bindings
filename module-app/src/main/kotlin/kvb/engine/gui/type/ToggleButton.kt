@@ -18,7 +18,7 @@ class ToggleButton : Button() {
 
 	var toggledPressedColour = BaseDefaults.toggledPressedColour
 
-	override val supplyColour get() = if(toggled) toggledColour else colour
+	override val supplyColour get() = if(toggled) toggledColour else model.colour
 
 	override val supplyHoveredColour get() = if(toggled) toggledHoveredColour else hoveredColour
 

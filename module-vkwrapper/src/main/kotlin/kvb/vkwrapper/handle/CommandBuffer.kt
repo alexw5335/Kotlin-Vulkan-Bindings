@@ -94,10 +94,10 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 		firstViewport	: Int = 0,
 		viewportCount	: Int = viewports.capacity
 	) = commands.cmdSetViewport(
-		commandBuffer 	= this,
-		firstViewport 	= firstViewport,
-		pViewports 		= viewports,
-		viewportCount 	= viewportCount
+		this,
+		firstViewport,
+		viewportCount,
+		viewports,
 	)
 
 
@@ -119,14 +119,16 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 
 
 	/**
+	 * Convenience implementation of vkCmdSetViewport.
+	 */
+	fun setViewport(viewport: Viewport) = commands.cmdSetViewport(this, 0, 1, viewport.asBuffer)
+
+
+
+	/**
 	 * Convenience implementation of vkCmdSetScissor.
 	 */
-	fun setScissor(scissor: Rect2D) = commands.cmdSetScissor(
-		this,
-		0,
-		1,
-		scissor.asBuffer,
-	)
+	fun setScissor(scissor: Rect2D) = commands.cmdSetScissor(this, 0, 1, scissor.asBuffer,)
 
 
 

@@ -65,7 +65,7 @@ open class Base {
 
 	protected var shouldAlign = true
 
-	var model: BaseModel? = null
+	var model: BaseModel = BaseModel.NULL
 
 	val handlers = ArrayList<Pair<Class<*>, (Any) -> Unit>>()
 

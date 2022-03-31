@@ -1,6 +1,7 @@
 package kvb.engine.vulkan
 
 import kvb.engine.gui.GuiGraphics
+import kvb.vkwrapper.exception.VkException
 import kvb.vkwrapper.memory.VkHeapAllocator
 import kvb.vulkan.BufferUsageFlags
 import kvb.vulkan.MemoryPropertyFlags
@@ -34,11 +35,16 @@ object VkContext {
 
 
 
-	fun mappedHeapAllocator() = VkHeapAllocator(device, device.physicalDevice.chooseMemoryType(
+	private val mappedMemoryType = device.physicalDevice.chooseMemoryType(
 		property1      = MemoryPropertyFlags.HOST_VISIBLE,
 		property2      = MemoryPropertyFlags.DEVICE_LOCAL,
 		property3      = MemoryPropertyFlags.HOST_COHERENT,
 		memoryTypeBits = dummyVertexBuffer.memoryTypeBits
-	)!!, true)
+	) ?: throw VkException("No mappable memory type found.")
+
+
+
+	fun mappedHeapAllocator() = VkHeapAllocator(device, mappedMemoryType, true)
+
 
 }

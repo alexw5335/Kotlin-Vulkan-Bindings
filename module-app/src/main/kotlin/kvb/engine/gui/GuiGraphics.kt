@@ -19,27 +19,29 @@ import kvb.window.input.InputButton
 object GuiGraphics {
 
 
+	/*
+	Variables
+	 */
+
+
+
 	private val shaderDirectory = ShaderDirectory("res/shader/gui", VkContext.device)
 
 	private val pipelines = ArrayList<Pipeline>()
 
 	private val allocator = LinearAllocator(Unsafe, 1 shl 20)
 
-	private fun pipeline(block: GraphicsPipelineBuilder.() -> Unit) =
-		VkContext.device.buildGraphicsPipeline(block).also(pipelines::add)
-
 	lateinit var commandBuffer: CommandBuffer
 
-	private val dummyBuffer = VkContext.device.createBuffer(32L, BufferUsageFlags.VERTEX_BUFFER)
+
+
+	/*
+	Text
+	 */
 
 
 
-	val textAllocator = VkHeapAllocator(VkContext.device, VkContext.device.physicalDevice.chooseMemoryType(
-		MemoryPropertyFlags.HOST_VISIBLE,
-		MemoryPropertyFlags.DEVICE_LOCAL,
-		MemoryPropertyFlags.HOST_COHERENT,
-		dummyBuffer.memoryTypeBits
-	)!!, true)
+	val textAllocator = VkContext.mappedHeapAllocator()
 
 
 
@@ -67,27 +69,20 @@ object GuiGraphics {
 
 
 
-	fun setScissor(x: Int, y: Int, width: Int, height: Int) {
-		val scissor = allocator.Rect2D {
-			it.offset.x = x
-			it.offset.y = y
-			it.extent.width = width
-			it.extent.height = height
-		}
+	/*
+	Rendering setup
+	 */
 
-		for(p in pipelines)
-			commandBuffer.setScissor(scissor)
+
+
+	fun setScissor(x: Int, y: Int, width: Int, height: Int) {
+		commandBuffer.setScissor(allocator.Rect2D(x, y, width, height))
 	}
 
 
 
 	fun setViewport(x: Float, y: Float, width: Float, height: Float) {
-		val viewport = allocator.Viewport {
-			it.x = x
-			it.y = y
-			it.width = width
-			it.height = height
-		}
+		commandBuffer.setViewport(allocator.Viewport(x, y, width, height))
 	}
 
 
@@ -117,6 +112,12 @@ object GuiGraphics {
 		setWindowSize(window.width, window.height)
 		setScale(1.0F)
 	}
+
+
+
+	/*
+	Rendering
+	 */
 
 
 
@@ -186,6 +187,12 @@ object GuiGraphics {
 
 
 
+	private fun pipeline(block: GraphicsPipelineBuilder.() -> Unit) = VkContext.device
+		.buildGraphicsPipeline(block)
+		.also(pipelines::add)
+
+
+
 	val singleColourRectPipeline = pipeline {
 		renderPass(VkContext.surfaceSystem.renderPass)
 		pushConstant(ShaderStageFlags.VERTEX, 0, 36)
@@ -198,7 +205,7 @@ object GuiGraphics {
 
 
 
-	val binaryFontPipeline = VkContext.device.buildGraphicsPipeline {
+	val binaryFontPipeline = pipeline {
 		vertexBinding { vec2(); uvec2() }
 		renderPass(VkContext.surfaceSystem.renderPass)
 		pushConstant(ShaderStageFlags.VERTEX, 0, 40)
