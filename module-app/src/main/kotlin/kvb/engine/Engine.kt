@@ -1,6 +1,5 @@
 package kvb.engine
 
-import kvb.engine.gui.type.AnchorPane
 import kvb.engine.gui.Gui
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.vulkan.VkContext
@@ -18,21 +17,22 @@ object Engine {
 
 	val window = EngineBuilder.window
 
-	var gui: Gui = Gui(AnchorPane())
-		set(value) {
-			field = value
-			value.onWindowResize(window.width, window.height)
-		}
+	val gui = Gui(EngineBuilder.initialRoot())
 
-	var targetFps = 200
+	var targetFps = 60
 
 	val frameTime get() = 1F / targetFps
+
+	var running = false
+		private set
+
+	var frameNumber = 0
+		private set
 
 
 
 	init {
 		initWindowCallbacks(window)
-		window.show()
 	}
 
 
@@ -40,10 +40,6 @@ object Engine {
 	private fun initWindowCallbacks(window: Window) {
 		window.onResize = {
 			gui.onWindowResize(window.width, window.height)
-		}
-
-		window.onMouseMove = {
-			gui.onMouseMove(window.cursorX, window.cursorY)
 		}
 
 		window.onButtonInput = { button, action ->
@@ -70,12 +66,17 @@ object Engine {
 
 
 	fun run() {
+		if(running) return
+		running = true
+
 		while(true) {
 			val frameStart = System.nanoTime()
 
 			update()
 			if(WindowManager.windows.isEmpty()) break
 			renderGui()
+
+			if(!window.isVisible) window.show()
 
 			val elapsedMicroseconds = (System.nanoTime() - frameStart) / 1_000
 
@@ -91,6 +92,7 @@ object Engine {
 		WindowManager.pollEvents()
 		gui.update(window)
 		VkContext.memoryManager.executeCommands()
+		frameNumber++
 	}
 
 

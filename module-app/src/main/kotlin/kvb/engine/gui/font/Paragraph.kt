@@ -14,6 +14,16 @@ class Paragraph(
 
 
 
+	fun rightCollision(collision: TextCollision) = collision(collision.index + 1)
+
+	fun leftCollision(collision: TextCollision) = collision(collision.index - 1)
+
+	fun upCollision(collision: TextCollision, x: Float) = collision(collision.lineIndex - 1, x)
+
+	fun downCollision(collision: TextCollision, x: Float) = collision(collision.lineIndex + 1, x)
+
+
+
 	fun collision(index: Int): TextCollision? {
 		if(index < 0) return null
 
@@ -48,13 +58,13 @@ class Paragraph(
 
 
 
-	fun collision(mouseX: Float, mouseY: Float): TextCollision? {
+	fun collision(mouseX: Float, mouseY: Float): TextCollision {
 		if(lines.size == 1 && lines[0].chars.isEmpty())
 			return TextCollision(0, 0, lines[0].x, lines[0].y)
 
 		val line = lines.firstOrNull {
 			mouseY <= it.y + font.size
-		} ?: return null
+		} ?: lines.last()
 
 		if(line.chars.isEmpty())
 			return TextCollision(line.charIndex, line.index, line.x, line.y)

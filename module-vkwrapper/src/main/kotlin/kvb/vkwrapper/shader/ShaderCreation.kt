@@ -59,7 +59,7 @@ object ShaderCreation {
 
 
 
-	fun compileAll(srcPath: String, outPath: String) {
+	fun compileAll(srcPath: String, outPath: String = "$srcPath/out") {
 		val srcDirectory = File(srcPath)
 		val outDirectory = File(outPath)
 

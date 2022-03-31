@@ -10,6 +10,8 @@ class RectBase : Base() {
 
 	var colour = BaseDefaults.controlColour
 
+	var borderColour = BaseDefaults.controlBorderColour
+
 
 
 	init {
@@ -21,6 +23,7 @@ class RectBase : Base() {
 
 
 	override fun renderThis(x: Float, y: Float) {
+		if(border.valid) GuiGraphics.renderBorder(x, y, width, height, borderColour, border)
 		GuiGraphics.renderRect(x, y, width, height, colour)
 	}
 

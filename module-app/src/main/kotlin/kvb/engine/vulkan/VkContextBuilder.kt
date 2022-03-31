@@ -1,8 +1,7 @@
 package kvb.engine.vulkan
 
-import kvb.core.Platform
 import kvb.core.Core
-import kvb.core.memory.*
+import kvb.core.memory.Unsafe
 import kvb.vkwrapper.DebugUtils
 import kvb.vkwrapper.Vulkan
 import kvb.vkwrapper.handle.*
@@ -115,13 +114,11 @@ object VkContextBuilder {
 			instanceExtensions
 		)
 
-		if(debugEnabled) {
-			debugMessenger = instance.createDebugMessenger(
-				debugSeverities,
-				debugTypes,
-				debugCallback
-			)
-		}
+		if(debugEnabled) debugMessenger = instance.createDebugMessenger(
+			debugSeverities,
+			debugTypes,
+			debugCallback
+		)
 
 		physicalDevice = instance.physicalDevices.firstOrNull { it.isDiscrete } ?: instance.physicalDevices[0]
 
@@ -145,49 +142,65 @@ object VkContextBuilder {
 				(it.format == Format.R8G8B8A8_SRGB || it.format == Format.B8G8R8A8_SRGB)
 		}
 
-		val format = formatPair.format
-
-		val colourSpace = formatPair.colourSpace
-
-		val presentMode = surface.presentModes.first {
-			it == this.presentMode
+		if(!surface.presentModes.contains(presentMode)) {
+			println("Requested present mode $presentMode is not supported, defaulting to FIFO.")
+			presentMode = PresentMode.FIFO
 		}
 
-		val renderPass = device.buildRenderPass {
-			// Colour attachment
+		surfaceSystem = SurfaceSystem(
+			surface,
+			device,
+			queue,
+			createRenderPass(formatPair.format),
+			formatPair.format,
+			formatPair.colourSpace,
+			presentMode,
+			sampleCount
+		)
+
+		memoryManager = VkMemoryManager(device, queue, stagingBufferSize)
+	}
+
+
+
+	private fun createRenderPass(format: Format) = device.buildRenderPass {
+		// Colour attachment
+		it.attachment(
+			format         = format,
+			samples        = sampleCount,
+			loadOp         = AttachmentLoadOp.CLEAR,
+			storeOp        = AttachmentStoreOp.STORE,
+			stencilLoadOp  = AttachmentLoadOp.DONT_CARE,
+			stencilStoreOp = AttachmentStoreOp.DONT_CARE,
+			initialLayout  = ImageLayout.UNDEFINED,
+			finalLayout    = if(multisampled) ImageLayout.COLOR_ATTACHMENT_OPTIMAL else ImageLayout.PRESENT_SRC
+		)
+
+		if(multisampled) {
+			// Resolve attachment
 			it.attachment(
-				format         = formatPair.format,
-				samples        = sampleCount,
+				format         = format,
+				samples        = SampleCountFlags._1,
 				loadOp         = AttachmentLoadOp.CLEAR,
 				storeOp        = AttachmentStoreOp.STORE,
 				stencilLoadOp  = AttachmentLoadOp.DONT_CARE,
 				stencilStoreOp = AttachmentStoreOp.DONT_CARE,
 				initialLayout  = ImageLayout.UNDEFINED,
-				finalLayout    = if(multisampled) ImageLayout.COLOR_ATTACHMENT_OPTIMAL else ImageLayout.PRESENT_SRC
+				finalLayout    = ImageLayout.PRESENT_SRC
 			)
 
-			if(multisampled) {
-				// Resolve attachment
-				it.attachment(
-					format         = formatPair.format,
-					samples        = SampleCountFlags._1,
-					loadOp         = AttachmentLoadOp.CLEAR,
-					storeOp        = AttachmentStoreOp.STORE,
-					stencilLoadOp  = AttachmentLoadOp.DONT_CARE,
-					stencilStoreOp = AttachmentStoreOp.DONT_CARE,
-					initialLayout  = ImageLayout.UNDEFINED,
-					finalLayout    = ImageLayout.PRESENT_SRC
-				)
-
-				it.colourResolveSubpass(0, ImageLayout.COLOR_ATTACHMENT_OPTIMAL, 1, ImageLayout.COLOR_ATTACHMENT_OPTIMAL)
-			} else {
-				it.colourSubpass(attachment = 0, layout = ImageLayout.COLOR_ATTACHMENT_OPTIMAL)
-			}
+			it.colourResolveSubpass(
+				colourAttachment  = 0,
+				colourLayout      = ImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+				resolveAttachment = 1,
+				resolveLayout     = ImageLayout.COLOR_ATTACHMENT_OPTIMAL
+			)
+		} else {
+			it.colourSubpass(
+				attachment = 0,
+				layout     = ImageLayout.COLOR_ATTACHMENT_OPTIMAL
+			)
 		}
-
-		surfaceSystem = SurfaceSystem(surface, device, queue, renderPass, format, colourSpace, presentMode, sampleCount)
-
-		memoryManager = VkMemoryManager(device, queue, stagingBufferSize)
 	}
 
 

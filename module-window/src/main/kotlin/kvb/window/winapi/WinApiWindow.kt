@@ -19,6 +19,8 @@ class WinApiWindow(val hwnd: Long) : Window {
 
 	private var _cursorY = 0F
 
+	private var _isVisible = false
+
 
 
 	override val x get() = _x
@@ -33,6 +35,8 @@ class WinApiWindow(val hwnd: Long) : Window {
 
 	override val cursorY get() = _cursorY
 
+	override val isVisible get() = _isVisible
+
 
 
 	override val hasFocus get() = WinApi.getFocussedWindow() == hwnd
@@ -41,10 +45,14 @@ class WinApiWindow(val hwnd: Long) : Window {
 
 	override fun show() {
 		WinApi.showWindow(hwnd, ShowCode.SHOW_NORMAL.value)
+		_isVisible = true
 	}
+
+
 
 	override fun hide() {
 		WinApi.showWindow(hwnd, ShowCode.HIDE.value)
+		_isVisible = false
 	}
 
 

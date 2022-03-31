@@ -1,5 +1,6 @@
 package kvb.engine.gui
 
+import kvb.engine.gui.layout.OrientedDimension
 import kvb.engine.gui.layout.Padding
 
 /**
@@ -27,6 +28,10 @@ object BaseDefaults {
 	var controlPadding = Padding(5F)
 
 	var caretWidth = 1F
+
+	var sliderSize = OrientedDimension(150F, 40F)
+
+	var sliderKeyWidth = 15F
 
 
 

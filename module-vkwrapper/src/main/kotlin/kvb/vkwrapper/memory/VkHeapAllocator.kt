@@ -51,7 +51,7 @@ class VkHeapAllocator(
 			if(!block.allocated)
 				return block
 
-		val allocation = getAllocator(size, alignment, blockSize).allocate(blockSize, alignment)
+		val allocation = getAllocator(blockSize, alignment, blockSize).allocate(blockSize, alignment)
 		val block = Block(allocation.memory, allocation.offset, blockSize, false)
 		blocks.add(block)
 		return block

@@ -110,10 +110,22 @@ class CommandBuffer(address: Long, val commandPool: CommandPool) : CommandBuffer
 		firstScissor	: Int = 0,
 		scissorCount	: Int = scissors.capacity
 	) = commands.cmdSetScissor(
-		commandBuffer 	= this,
-		firstScissor 	= firstScissor,
-		pScissors 		= scissors,
-		scissorCount 	= scissorCount
+		this,
+		firstScissor,
+		scissorCount,
+		scissors
+	)
+
+
+
+	/**
+	 * Convenience implementation of vkCmdSetScissor.
+	 */
+	fun setScissor(scissor: Rect2D) = commands.cmdSetScissor(
+		this,
+		0,
+		1,
+		scissor.asBuffer,
 	)
 
 

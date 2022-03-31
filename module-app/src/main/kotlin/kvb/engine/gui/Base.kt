@@ -10,46 +10,65 @@ open class Base {
 
 
 	/*
-	Variables
+	Variables - dimensions
 	 */
 
 
 
+	/**
+	 * The x pixel coordinate of this base in its parent's coordinate system.
+	 */
 	var x = 0F
 
+	/**
+	 * The y pixel coordinate of this base in its parent's coordinate system.
+	 */
 	var y = 0F
 
+	/**
+	 * The pixel width of this base in its parent's coordinate system.
+	 */
 	var width = 0F
 		set(value) { field = value; onSizeChanged() }
 
+	/**
+	 * The pixel height of this base in its parent's coordinate system.
+	 */
 	var height = 0F
 		set(value) { field = value; onSizeChanged() }
 
+	/**
+	 * The spacing between the edges of this base and its contents.
+	 */
 	var padding = Padding(0F, 0F, 0F, 0F)
 		set(value) { field = value; onInteriorChanged() }
 
+	/**
+	 * The dimensions of the visual border around this base, assuming it is rectangular.
+	 */
 	var border = Padding(0F, 0F, 0F, 0F)
 		set(value) { field = value; onBorderChanged() }
 
-	var model: BaseModel? = null
+
+
+	/*
+	Variables - hierarchy
+	 */
+
+
+
+	var parent: Base? = null
+		private set
 
 	protected val children = ArrayList<Base>()
 
-	var transparent = false
-
-	var active = true
-
-	var parent: Base? = null
-
-	val handlers = ArrayList<Pair<Class<*>, (Any) -> Unit>>()
 
 	protected var shouldAlign = true
 
-	val gui get() = Engine.gui
+	var model: BaseModel? = null
 
-	val isHovered get() = (!gui.dragging || gui.dragFocus == this) && gui.hovered == this
+	val handlers = ArrayList<Pair<Class<*>, (Any) -> Unit>>()
 
-	val isPressed get() = (!gui.dragging || gui.dragFocus == this) && gui.pressed == this
 
 	var style = BaseStyle.NULL
 		set(value) {
@@ -58,9 +77,56 @@ open class Base {
 			field.add(this)
 		}
 
+
+
+	/*
+	Variables - activity
+	 */
+
+
+
+	/**
+	 * If this base can receive input focus.
+	 */
 	var focussable = false
 
+	/**
+	 * If this base should receive input focus when it receives a [PressEvent].
+	 */
 	var focusOnPress = true
+
+	/**
+	 * If this base can trigger mouse events. This does not affect child bases.
+	 */
+	var transparent = false
+
+	/**
+	 * If this base and its children can trigger events, e.g. mouse clicks.
+	 */
+	var active = true
+
+
+
+	/*
+	Variables - gui
+	 */
+
+
+
+	/**
+	 * The [Gui] that currently contains this base.
+	 */
+	val gui get() = Engine.gui
+
+	/**
+	 * If the mouse is hovered over this base. This is a polled form of [HoverEvent].
+	 */
+	val isHovered get() = (!gui.dragging || gui.dragFocus == this) && gui.hovered == this
+
+	/**
+	 * If the left mouse button has just been pressed over this base. This is a polled form of [PressEvent].
+	 */
+	val isPressed get() = (!gui.dragging || gui.dragFocus == this) && gui.pressed == this
 
 
 
@@ -72,15 +138,13 @@ open class Base {
 
 	open val draggable get() = false
 
-	open val dragThreshold get() = 25F
+	open val dragThreshold get() = 5F
 
 	open val dragButtons get() = listOf(InputButton.LEFT_MOUSE)
 
 	open val dragPredicate: () -> Boolean = { InputButton.pressed.containsAll(dragButtons) }
 
 	open val dragFromOrigin get() = false
-
-	open val dragImmediately get() = false
 
 
 

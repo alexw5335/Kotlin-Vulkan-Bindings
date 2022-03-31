@@ -30,16 +30,14 @@ class Slider(val orientation: Orientation = HOrientation) : Base(), Oriented by 
 
 
 	init {
-		when(orientation) {
-			is HOrientation -> {
-				width = 100F
-				height = 40F
-			}
+		length = BaseDefaults.sliderSize.primary
+		length2 = BaseDefaults.sliderSize.secondary
 
-			is VOrientation -> {
-				width = 40F
-				height = 100F
-			}
+		track.border = BaseDefaults.controlBorder
+		key.length = BaseDefaults.sliderKeyWidth
+
+		addHandler<DragUpdateEvent> {
+			ratio = (transformUpAbsolute(it) - key.length / 2) / (length - key.length)
 		}
 	}
 
@@ -47,27 +45,14 @@ class Slider(val orientation: Orientation = HOrientation) : Base(), Oriented by 
 
 	override val draggable = true
 
-	override val dragImmediately = true
-
-
-
-	override fun eventAction(event: BaseEvent) {
-		super.eventAction(event)
-
-		when(event) {
-			is DragUpdateEvent -> {
-				ratio = (transformUpAbsolute(event) - key.length / 2) / (length - key.length)
-			}
-		}
-	}
+	override val dragThreshold = 0F
 
 
 
 	override fun align() {
-		alignCentre(track)
 		track.length = interiorLength
 		track.length2 = interiorLength2
-		key.length = 20F
+		alignCentre(track)
 		key.length2 = interiorLength2
 		key.pos = ratio * (length - key.length)
 	}

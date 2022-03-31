@@ -39,7 +39,13 @@ class ClickEvent(source: Base, mouseX: Float, mouseY: Float) : MouseEvent(source
 
 class DragStartEvent(source: Base, mouseX: Float, mouseY: Float) : MouseEvent(source, mouseX, mouseY)
 
-class DragUpdateEvent(source: Base, mouseX: Float, mouseY: Float) : MouseEvent(source, mouseX, mouseY)
+class DragUpdateEvent(
+	source: Base,
+	mouseX: Float,
+	mouseY: Float,
+	val originX: Float,
+	val originY: Float
+) : MouseEvent(source, mouseX, mouseY)
 
 class DragEndEvent(source: Base, mouseX: Float, mouseY: Float) : MouseEvent(source, mouseX, mouseY)
 

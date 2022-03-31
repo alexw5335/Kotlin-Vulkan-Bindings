@@ -17,7 +17,8 @@ class VkLinearAllocator(val memory: DeviceMemory) : VkAllocator {
 		this.offset += size
 
 		if(this.offset > memory.size)
-			throw VkException("Linear allocator has run out of memory.")
+			throw VkException("Linear allocator has run out of memory (capacity=${memory.size}, used=${this.offset-size}," +
+				" requestedSize=$size, requestedAlignment=$alignment, finalOffset=${this.offset})")
 
 		return VkAllocation(memory, offset, size)
 	}
@@ -33,7 +34,7 @@ class VkLinearAllocator(val memory: DeviceMemory) : VkAllocator {
 
 
 	fun canAllocate(size: Long, alignment: Long) =
-		size <= memory.size - ((offset + (alignment - 1) and -alignment))
+		((offset + alignment - 1) and -alignment) + size <= memory.size
 
 
 

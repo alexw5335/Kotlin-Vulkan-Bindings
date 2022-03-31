@@ -32,8 +32,6 @@ class ParagraphBuilder(
 
 	private var wordAdvanceWidth = 0F
 
-	private val xPositions = IntArray(text.length)
-
 
 
 	private fun newline() {

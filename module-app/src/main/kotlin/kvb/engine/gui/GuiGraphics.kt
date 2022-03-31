@@ -2,6 +2,8 @@ package kvb.engine.gui
 
 import kvb.core.memory.LinearAllocator
 import kvb.core.memory.Unsafe
+import kvb.core.memory.direct.DirectByteBuffer
+import kvb.engine.gui.font.Paragraph
 import kvb.engine.gui.layout.Padding
 import kvb.engine.vulkan.VkContext
 import kvb.vkwrapper.builder.GraphicsPipelineBuilder
@@ -41,8 +43,51 @@ object GuiGraphics {
 
 
 
+	fun populateText(paragraph: Paragraph, data: DirectByteBuffer) {
+		var i = 0
+
+		for(line in paragraph.lines) {
+			var x = line.x
+
+			for(binaryChar in line.chars) {
+				data.setFloat(i, x)
+				data.setFloat(i + 4, line.y + binaryChar.yOffset)
+				data.setLong(i + 8, binaryChar.texture)
+				x += binaryChar.advanceWidth
+				i += 16
+			}
+		}
+	}
+
+
+
 	fun resetAllocator() {
 		allocator.reset()
+	}
+
+
+
+	fun setScissor(x: Int, y: Int, width: Int, height: Int) {
+		val scissor = allocator.Rect2D {
+			it.offset.x = x
+			it.offset.y = y
+			it.extent.width = width
+			it.extent.height = height
+		}
+
+		for(p in pipelines)
+			commandBuffer.setScissor(scissor)
+	}
+
+
+
+	fun setViewport(x: Float, y: Float, width: Float, height: Float) {
+		val viewport = allocator.Viewport {
+			it.x = x
+			it.y = y
+			it.width = width
+			it.height = height
+		}
 	}
 
 

@@ -26,6 +26,8 @@ interface Window {
 
 	val hasFocus: Boolean
 
+	val isVisible: Boolean
+
 
 
 	/*

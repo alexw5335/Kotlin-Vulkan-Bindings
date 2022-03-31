@@ -21,5 +21,7 @@ enum class InputAction {
 
 	val isRelease get() = this == RELEASE
 
+	val isRepeatOrPress get() = this == REPEAT || this == PRESS
+
 
 }

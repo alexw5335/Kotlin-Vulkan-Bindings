@@ -1,11 +1,13 @@
 package kvb.engine.gui.type
 
 import kvb.engine.gui.*
+import kvb.engine.gui.font.Chars
 import kvb.engine.gui.font.Fonts
 import kvb.engine.gui.font.TextCollision
 import kvb.engine.gui.layout.Alignment
-import kvb.window.input.InputAction
 import kvb.window.input.InputButton
+import java.lang.Integer.max
+import java.lang.Integer.min
 
 class TextBox : Base() {
 
@@ -27,16 +29,26 @@ class TextBox : Base() {
 	private var collision: TextCollision? = null
 		set(value) { field = value; onTextCollision(value) }
 
-	var collisionX = 0F
+	private var collisionX = 0F
+
+	private val paragraph get() = textBase.paragraph
+
+	var selectionStartIndex = 0
+
+	var selectionEndIndex = 0
+
+	var selecting = false
 
 
 
 	private fun onTextCollision(collision: TextCollision?) {
-		caret.isBlinking = collision != null
-
 		if(collision != null) {
-			caret.x = textBase.x + collision.x
+			caret.isBlinking = true
+			collisionX = collision.x
+			caret.x = textBase.x + collision.x - caret.width
 			caret.y = textBase.y + collision.y
+		} else {
+			caret.isBlinking = false
 		}
 	}
 
@@ -57,8 +69,15 @@ class TextBox : Base() {
 
 
 
+	override val draggable = true
+
+	override val dragThreshold = 3F
+
+
+
 	override fun align() {
 		textBase.wrapWidth = interiorWidth
+
 		hAlign(hAlignment, textBase)
 		vAlign(vAlignment, textBase)
 
@@ -68,69 +87,127 @@ class TextBox : Base() {
 
 
 
+	private fun onButtonInput(event: ButtonInputEvent) {
+		val collision = this.collision ?: return
+
+		if(event.action.isRepeatOrPress) {
+			val newCollision = when(event.button) {
+				InputButton.LEFT  -> paragraph.leftCollision(collision)
+				InputButton.RIGHT -> paragraph.rightCollision(collision)
+				InputButton.UP    -> paragraph.upCollision(collision, collisionX)
+				InputButton.DOWN  -> paragraph.downCollision(collision, collisionX)
+				else              -> return
+			}
+
+			newCollision?.let {
+				val prevCollisionX = collisionX
+
+				this.collision = it
+
+				if(event.button == InputButton.UP || event.button == InputButton.DOWN)
+					collisionX = prevCollisionX
+			}
+		}
+	}
+
+
+
+	private fun onPress(event: PressEvent) {
+		collision = textBase.paragraph.collision(
+			textBase.transformUpXAbsolute(event.mouseX),
+			textBase.transformUpYAbsolute(event.mouseY)
+		)
+	}
+
+
+
+	private fun backspaceAt(collision: TextCollision) {
+		if(collision.index == 0) return
+
+		val text = textBase.text
+
+		if(collision.index == text.length) {
+			if(textBase.text.isEmpty())
+				return
+			else
+				textBase.text = text.dropLast(1)
+		} else {
+			textBase.text = buildString {
+				append(text.dropLast(text.length - collision.index + 1))
+				append(text.drop(collision.index))
+			}
+		}
+
+		this.collision = paragraph.leftCollision(collision)
+	}
+
+
+
+	private fun addCharAt(collision: TextCollision, char: Char) {
+		if(char !in Fonts.font) return
+
+		val text = textBase.text
+
+		if(collision.index == text.length) {
+			textBase.text += char
+		} else {
+			textBase.text = buildString {
+				append(text.dropLast(text.length - collision.index))
+				append(char)
+				append(text.drop(collision.index))
+			}
+		}
+
+		this.collision = paragraph.rightCollision(collision)
+	}
+
+
+
+	private fun onChar(event: CharEvent) {
+		val collision = this.collision ?: return
+
+		if(event.char == Chars.BACKSPACE)
+			backspaceAt(collision)
+		else
+			addCharAt(collision, event.char)
+	}
+
+
+
 	override fun eventAction(event: BaseEvent) {
 		super.eventAction(event)
 
 		when(event) {
-			is FocusLossEvent -> collision = null
+			is FocusLossEvent   -> collision = null
+			is PressEvent       -> onPress(event)
+			is ButtonInputEvent -> onButtonInput(event)
+			is CharEvent        -> onChar(event)
 
-			is PressEvent -> {
-				collision = textBase.paragraph?.collision(
-					textBase.transformUpXAbsolute(event.mouseX),
-					textBase.transformUpYAbsolute(event.mouseY)
-				)?.also { collisionX = it.x }
+			is DragStartEvent -> {
+				val collision = collisionAt(event.mouseX, event.mouseY)
+				selectionStartIndex = collision.index
+				selecting = true
 			}
 
-			is ButtonInputEvent -> {
-				val collision = this.collision ?: return
-
-				if(event.action != InputAction.REPEAT && event.action != InputAction.PRESS) return
-
-				when(event.button) {
-					InputButton.LEFT -> textBase.paragraph?.collision(collision.index - 1)?.let { this.collision = it; collisionX = it.x }
-					InputButton.RIGHT -> textBase.paragraph?.collision(collision.index + 1)?.let { this.collision = it; collisionX = it.x }
-					InputButton.UP -> textBase.paragraph?.collision(collision.lineIndex - 1, collisionX)?.let { this.collision = it }
-					InputButton.DOWN -> textBase.paragraph?.collision(collision.lineIndex + 1, collisionX)?.let { this.collision = it }
-					else -> { }
-				}
+			is DragUpdateEvent -> {
+				val collision = collisionAt(event.mouseX, event.mouseY)
+				selectionEndIndex = collision.index
+				println("selection: $selectionStartIndex -> $selectionEndIndex")
 			}
 
-			is CharEvent -> {
-				val collision = this.collision ?: return
-
-				if(event.char.code == 8) {
-					if(collision.index == 0) return
-
-					textBase.text = if(collision.index == textBase.text.length) {
-						if(textBase.text.isEmpty())
-							textBase.text
-						else
-							textBase.text.dropLast(1)
-					} else {
-						buildString {
-							append(textBase.text.dropLast(textBase.text.length - collision.index))
-							append(textBase.text.drop(collision.index + 1))
-						}
-					}
-
-					this.collision = textBase.paragraph!!.collision(collision.index - 1)?.also { collisionX = it.x }
-				} else {
-					if(event.char !in Fonts.font) return
-
-					textBase.text = if(collision.index == textBase.text.length)
-						textBase.text + event.char
-					else
-						buildString {
-							append(textBase.text.dropLast(textBase.text.length - collision.index))
-							append(event.char)
-							append(textBase.text.drop(collision.index))
-						}
-
-					this.collision = textBase.paragraph!!.collision(collision.index + 1)?.also { collisionX = it.x }
-				}
+			is DragEndEvent -> {
+				selectionEndIndex = collisionAt(event.mouseX, event.mouseY).index
+				selecting = false
 			}
 		}
 	}
+
+
+
+	private fun collisionAt(x: Float, y: Float) = textBase.paragraph.collision(
+		textBase.transformUpXAbsolute(x),
+		textBase.transformUpYAbsolute(y)
+	)
 
 
 
