@@ -192,7 +192,6 @@ class TextBox : Base() {
 			is DragUpdateEvent -> {
 				val collision = collisionAt(event.mouseX, event.mouseY)
 				selectionEndIndex = collision.index
-				println("selection: $selectionStartIndex -> $selectionEndIndex")
 			}
 
 			is DragEndEvent -> {

@@ -7,13 +7,19 @@ import kvb.engine.gui.layout.Padding
 interface BaseModel {
 
 
-	var colour: Colour
-		get()  = Colour.NULL
-		set(_) = Unit
+	var colour get() = Colour.NULL; set(_) = Unit
 
-	var borderColour: Colour
-		get()  = Colour.NULL
-		set(_) = Unit
+	var borderColour get() = Colour.NULL; set(_) = Unit
+
+	var hoveredColour get() = Colour.NULL; set(_) = Unit
+
+	var pressedColour get() = Colour.NULL; set(_) = Unit
+
+	var toggledColour get() = Colour.NULL; set(_) = Unit
+
+	var toggledHoveredColour get() = Colour.NULL; set(_) = Unit
+
+	var toggledPressedColour get() = Colour.NULL; set(_) = Unit
 
 
 

@@ -131,7 +131,7 @@ open class Base {
 
 
 	/*
-	Drag
+	Variables - drag
 	 */
 
 
@@ -145,6 +145,18 @@ open class Base {
 	open val dragPredicate: () -> Boolean = { InputButton.pressed.containsAll(dragButtons) }
 
 	open val dragFromOrigin get() = false
+
+
+
+	/*
+	Graphics
+	 */
+
+
+
+	open val supplyFinalColour get() = model.colour
+
+	open val supplyFinalBorderColour get() = model.borderColour
 
 
 
@@ -264,6 +276,7 @@ open class Base {
 		shouldAlign = false
 		for(c in children) c.alignCycle()
 	}
+
 
 
 	/*
