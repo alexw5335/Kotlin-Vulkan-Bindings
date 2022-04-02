@@ -2,33 +2,18 @@ package kvb.engine.gui.type
 
 import kvb.engine.gui.Base
 import kvb.engine.gui.BaseDefaults
+import kvb.engine.gui.Colour
 import kvb.engine.gui.GuiGraphics
 import kvb.engine.gui.layout.Alignment
+import kvb.engine.gui.layout.DualAlignment
 import kvb.engine.gui.model.ColourRectModel
 
 open class Button : Base() {
 
 
-	var hoveredColour = BaseDefaults.controlHoveredColour
-
-	var pressedColour = BaseDefaults.controlPressedColour
-
-
-
-	open val supplyColour get() = model.colour
-
-	open val supplyHoveredColour get() = hoveredColour
-
-	open val supplyPressedColour get() = pressedColour
-
-
-
 	val textBase = addChildInternal(TextBase()) { active = false }
 
-	var hAlignment = Alignment.CENTRE
-		set(value) { field = value; shouldAlign = true }
-
-	var vAlignment = Alignment.CENTRE
+	var alignment = DualAlignment.CENTRE
 		set(value) { field = value; shouldAlign = true }
 
 
@@ -36,31 +21,22 @@ open class Button : Base() {
 	init {
 		width = BaseDefaults.buttonWidth
 		height = BaseDefaults.buttonHeight
-		padding = BaseDefaults.controlPadding
-		border = BaseDefaults.controlBorder
-		model = ColourRectModel()
-		model.colour = BaseDefaults.controlColour
-		model.borderColour = BaseDefaults.controlBorderColour
+		BaseDefaults.setControlDefaults(this)
 	}
 
 
 
 	override fun align() {
 		textBase.wrapWidth = interiorWidth
-		hAlign(hAlignment, textBase)
-		vAlign(vAlignment, textBase)
+		align(alignment, textBase)
 	}
 
 
 
-	override fun renderThis(x: Float, y: Float) {
-		model.colour = when {
-			isPressed -> supplyPressedColour
-			isHovered -> supplyHoveredColour
-			else      -> supplyColour
-		}
-
-		model.render(this, x, y)
+	override val supplyFinalColour get() = when {
+		isPressed -> model.pressedColour
+		isHovered -> model.hoveredColour
+		else      -> model.colour
 	}
 
 

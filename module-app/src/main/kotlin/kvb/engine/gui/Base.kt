@@ -2,6 +2,7 @@ package kvb.engine.gui
 
 import kvb.engine.Engine
 import kvb.engine.gui.layout.Alignment
+import kvb.engine.gui.layout.DualAlignment
 import kvb.engine.gui.layout.Padding
 import kvb.engine.gui.model.BaseModel
 import kvb.window.input.InputButton
@@ -62,13 +63,19 @@ open class Base {
 
 	protected val children = ArrayList<Base>()
 
-
 	protected var shouldAlign = true
-
-	var model: BaseModel = BaseModel.NULL
 
 	val handlers = ArrayList<Pair<Class<*>, (Any) -> Unit>>()
 
+
+
+	/*
+	Variables - graphics
+	 */
+
+
+
+	var visible = true
 
 	var style = BaseStyle.NULL
 		set(value) {
@@ -76,6 +83,8 @@ open class Base {
 			field = value
 			field.add(this)
 		}
+
+	var model: BaseModel = BaseModel.NULL
 
 
 
@@ -380,12 +389,14 @@ open class Base {
 
 
 	open fun renderThis(x: Float, y: Float) {
-		model?.render(this, x, y)
+		model.render(this, x, y)
 	}
 
 
 
 	open fun render(x: Float, y: Float) {
+		if(!visible) return
+
 		renderThis(this.x + x, this.y + y)
 
 		val newX = transformX(x)
@@ -418,6 +429,11 @@ open class Base {
 	fun alignCentre(child: Base) {
 		hAlign(Alignment.CENTRE, child)
 		vAlign(Alignment.CENTRE, child)
+	}
+
+	fun align(alignment: DualAlignment, child: Base) {
+		hAlign(alignment.hAlignment, child)
+		vAlign(alignment.vAlignment, child)
 	}
 
 

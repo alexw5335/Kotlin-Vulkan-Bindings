@@ -8,23 +8,13 @@ import kvb.engine.gui.model.ColourRectModel
 class RectBase : Base() {
 
 
-	var colour = BaseDefaults.controlColour
-
-	var borderColour = BaseDefaults.controlBorderColour
-
-
-
 	init {
 		this.width = BaseDefaults.rectWidth
 		this.height = BaseDefaults.rectHeight
-		model = ColourRectModel(colour)
-	}
 
-
-
-	override fun renderThis(x: Float, y: Float) {
-		if(border.valid) GuiGraphics.renderBorder(x, y, width, height, borderColour, border)
-		GuiGraphics.renderRect(x, y, width, height, colour)
+		model = ColourRectModel()
+		model.colour = BaseDefaults.controlColour
+		model.borderColour = BaseDefaults.controlBorderColour
 	}
 
 

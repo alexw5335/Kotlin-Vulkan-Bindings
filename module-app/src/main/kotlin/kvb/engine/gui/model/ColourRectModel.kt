@@ -10,8 +10,6 @@ class ColourRectModel : BaseModel {
 
 	override var colour = Colour.NULL
 
-	override var borderColour = Colour.NULL
-
 	override var hoveredColour = Colour.NULL
 
 	override var pressedColour = Colour.NULL
@@ -22,10 +20,13 @@ class ColourRectModel : BaseModel {
 
 	override var toggledPressedColour = Colour.NULL
 
+	override var borderColour = Colour.NULL
+
 
 
 	override fun render(base: Base, x: Float, y: Float) {
-		GuiGraphics.renderBorder(x, y, base.width, base.height, base.supplyFinalBorderColour, base.border)
+		if(base.border.valid)
+			GuiGraphics.renderBorder(x, y, base.width, base.height, base.supplyFinalBorderColour, base.border)
 		GuiGraphics.renderRect(x, y, base.width, base.height, base.supplyFinalColour)
 	}
 

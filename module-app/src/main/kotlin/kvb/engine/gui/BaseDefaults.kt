@@ -2,6 +2,7 @@ package kvb.engine.gui
 
 import kvb.engine.gui.layout.OrientedDimension
 import kvb.engine.gui.layout.Padding
+import kvb.engine.gui.model.ColourRectModel
 
 /**
  * Default styles for bases.
@@ -52,6 +53,23 @@ object BaseDefaults {
 	var toggledHoveredColour = Colour(0, 150, 150)
 
 	var toggledPressedColour = Colour(0, 75, 75)
+
+
+
+	fun setControlDefaults(base: Base) {
+		base.padding = controlPadding
+		base.border  = controlBorder
+
+		base.model   = ColourRectModel().also { model ->
+			model.colour               = controlColour
+			model.hoveredColour        = controlHoveredColour
+			model.pressedColour        = controlPressedColour
+			model.toggledColour        = toggledColour
+			model.toggledHoveredColour = toggledHoveredColour
+			model.toggledPressedColour = toggledPressedColour
+			model.borderColour         = controlBorderColour
+		}
+	}
 
 
 }

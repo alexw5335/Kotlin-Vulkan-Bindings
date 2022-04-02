@@ -2,14 +2,11 @@ package kvb.engine
 
 import kvb.core.Core
 import kvb.engine.gui.*
-import kvb.engine.gui.ClickEvent
 import kvb.engine.gui.layout.HOrientation
 import kvb.engine.gui.layout.TextAlignment
-import kvb.engine.gui.type.Box
+import kvb.engine.gui.type.CheckBox
 import kvb.engine.gui.type.Slider
-import kvb.engine.vulkan.VkContextBuilder
-import kvb.vkwrapper.shader.ShaderCreation
-import kvb.vulkan.*
+import kvb.vulkan.PresentMode
 
 
 
@@ -88,7 +85,8 @@ fun root() = hbox {
 
 		}
 
-		addChild(Slider(HOrientation)) {
-		}
+		addChild(Slider(HOrientation)) { }
+
+		addChild(CheckBox()) { }
 	}
 }

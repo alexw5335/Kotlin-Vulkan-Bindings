@@ -55,10 +55,6 @@ object WinApi : WindowManager {
 
 
 
-	private val CW_USE_DEFAULT = 0x80000000.toUInt().toInt()
-
-
-
 	/*
 	Implementation
 	 */

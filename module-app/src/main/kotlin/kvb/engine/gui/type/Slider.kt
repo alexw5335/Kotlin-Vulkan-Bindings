@@ -18,12 +18,12 @@ class Slider(val orientation: Orientation = HOrientation) : Base(), Oriented by 
 		}
 
 	val track = addChildInternal(RectBase()) {
-		colour = BaseDefaults.controlColour
+		model.colour = BaseDefaults.controlColour
 		active = false
 	}
 
 	val key = addChildInternal(RectBase()) {
-		colour = BaseDefaults.controlBorderColour
+		model.colour = BaseDefaults.controlBorderColour
 		active = false
 	}
 
