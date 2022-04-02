@@ -19,12 +19,10 @@ class Slider(val orientation: Orientation = HOrientation) : Base(), Oriented by 
 
 	val track = addChildInternal(RectBase()) {
 		model.colour = BaseDefaults.controlColour
-		active = false
 	}
 
 	val key = addChildInternal(RectBase()) {
 		model.colour = BaseDefaults.controlBorderColour
-		active = false
 	}
 
 
@@ -35,6 +33,8 @@ class Slider(val orientation: Orientation = HOrientation) : Base(), Oriented by 
 
 		track.border = BaseDefaults.controlBorder
 		key.length = BaseDefaults.sliderKeyWidth
+
+		childrenAreActive = false
 
 		addHandler<DragUpdateEvent> {
 			ratio = (transformUpAbsolute(it) - key.length / 2) / (length - key.length)

@@ -7,6 +7,7 @@ import kvb.engine.gui.layout.TextAlignment
 import kvb.engine.gui.type.CheckBox
 import kvb.engine.gui.type.Slider
 import kvb.vulkan.PresentMode
+import java.awt.Window
 
 
 
@@ -17,8 +18,15 @@ fun engine(block: EngineBuilder.() -> Unit) {
 }
 
 
+fun main() {
+	//run()
+	val window = Window(null)
+	window.isVisible = true
 
-fun main() = engine {
+}
+
+
+fun run() = engine {
 	vulkan {
 		presentMode = PresentMode.FIFO
 	}

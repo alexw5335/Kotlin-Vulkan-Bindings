@@ -110,9 +110,14 @@ open class Base {
 	var transparent = false
 
 	/**
-	 * If this base and its children can trigger events, e.g. mouse clicks.
+	 * If this base and its children can trigger events.
 	 */
 	var active = true
+
+	/**
+	 * If the children of this base can trigger events.
+	 */
+	var childrenAreActive = true
 
 
 
@@ -313,7 +318,6 @@ open class Base {
 
 
 
-
 	/**
 	 * From the parent's coordinates to this base's coordinates.
 	 */
@@ -372,8 +376,9 @@ open class Base {
 		val newX = transformUpX(x)
 		val newY = transformUpY(y)
 
-		for(base in children)
-			base.checkCollision(newX, newY)?.let { return it }
+		if(childrenAreActive)
+			for(base in children)
+				base.checkCollision(newX, newY)?.let { return it }
 
 		if(transparent) return null
 
