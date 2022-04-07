@@ -14,17 +14,17 @@ class Paragraph(
 
 
 
-	fun rightCollision(collision: TextCollision) = collision(collision.index + 1)
+	fun rightCollision(collision: TextCollision) = collisionAtIndex(collision.index + 1)
 
-	fun leftCollision(collision: TextCollision) = collision(collision.index - 1)
+	fun leftCollision(collision: TextCollision) = collisionAtIndex(collision.index - 1)
 
-	fun upCollision(collision: TextCollision, x: Float) = collision(collision.lineIndex - 1, x)
+	fun upCollision(collision: TextCollision, x: Float) = collisionOnLineOrNull(collision.lineIndex - 1, x)
 
-	fun downCollision(collision: TextCollision, x: Float) = collision(collision.lineIndex + 1, x)
+	fun downCollision(collision: TextCollision, x: Float) = collisionOnLineOrNull(collision.lineIndex + 1, x)
 
 
 
-	fun collision(index: Int): TextCollision? {
+	fun collisionAtIndex(index: Int): TextCollision? {
 		if(index < 0) return null
 
 		for(line in lines)
@@ -36,14 +36,14 @@ class Paragraph(
 
 
 
-	fun collision(lineIndex: Int, collisionX: Float) = if(lineIndex in lines.indices)
-		collision(lines[lineIndex], collisionX)
+	private fun collisionOnLineOrNull(lineIndex: Int, collisionX: Float) = if(lineIndex in lines.indices)
+		collisionOnLine(lines[lineIndex], collisionX)
 	else
 		null
 
 
 
-	fun collision(line: Line, collisionX: Float): TextCollision {
+	private fun collisionOnLine(line: Line, collisionX: Float): TextCollision {
 		var x = line.x
 
 		for((i, c) in line.chars.withIndex()) {
@@ -58,7 +58,7 @@ class Paragraph(
 
 
 
-	fun collision(mouseX: Float, mouseY: Float): TextCollision {
+	fun collisionAtPos(mouseX: Float, mouseY: Float): TextCollision {
 		if(lines.size == 1 && lines[0].chars.isEmpty())
 			return TextCollision(0, 0, lines[0].x, lines[0].y)
 
@@ -69,7 +69,7 @@ class Paragraph(
 		if(line.chars.isEmpty())
 			return TextCollision(line.charIndex, line.index, line.x, line.y)
 
-		return collision(line, mouseX)
+		return collisionOnLine(line, mouseX)
 	}
 
 

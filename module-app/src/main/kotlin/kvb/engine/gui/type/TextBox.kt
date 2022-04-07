@@ -5,9 +5,8 @@ import kvb.engine.gui.font.Chars
 import kvb.engine.gui.font.Fonts
 import kvb.engine.gui.font.TextCollision
 import kvb.engine.gui.layout.Alignment
+import kvb.engine.gui.layout.DualAlignment
 import kvb.window.input.InputButton
-import java.lang.Integer.max
-import java.lang.Integer.min
 
 class TextBox : Base() {
 
@@ -20,11 +19,8 @@ class TextBox : Base() {
 
 	var borderColour = BaseDefaults.controlBorderColour
 
-	var hAlignment = Alignment.START
+	var alignment = DualAlignment.TOP_LEFT
 		set(value) { field = value; shouldAlign = true }
-
-	var vAlignment = Alignment.START
-		set(value)  { field = value; shouldAlign = true }
 
 	private var collision: TextCollision? = null
 		set(value) { field = value; onTextCollision(value) }
@@ -78,8 +74,7 @@ class TextBox : Base() {
 	override fun align() {
 		textBase.wrapWidth = interiorWidth
 
-		hAlign(hAlignment, textBase)
-		vAlign(vAlignment, textBase)
+		align(alignment, textBase)
 
 		caret.width = textBase.scale.toFloat()
 		caret.height = Fonts.font.size.toFloat() * textBase.scale
@@ -113,7 +108,7 @@ class TextBox : Base() {
 
 
 	private fun onPress(event: PressEvent) {
-		collision = textBase.paragraph.collision(
+		collision = textBase.paragraph.collisionAtPos(
 			textBase.transformUpXAbsolute(event.mouseX),
 			textBase.transformUpYAbsolute(event.mouseY)
 		)
@@ -203,7 +198,7 @@ class TextBox : Base() {
 
 
 
-	private fun collisionAt(x: Float, y: Float) = textBase.paragraph.collision(
+	private fun collisionAt(x: Float, y: Float) = textBase.paragraph.collisionAtPos(
 		textBase.transformUpXAbsolute(x),
 		textBase.transformUpYAbsolute(y)
 	)

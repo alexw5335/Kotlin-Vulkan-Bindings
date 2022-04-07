@@ -26,4 +26,16 @@ enum class DualAlignment(val hAlignment: Alignment, val vAlignment: Alignment) {
 	BOTTOM_RIGHT(Alignment.END, Alignment.END);
 
 
+	fun withHorizontal(hAlignment: Alignment) = of(hAlignment, vAlignment)
+
+	fun withVertical(vAlignment: Alignment) = of(hAlignment, vAlignment)
+
+
+
+	companion object {
+		val values = values()
+		fun of(hAlignment: Alignment, vAlignment: Alignment) = values[vAlignment.ordinal * 3 + hAlignment.ordinal]
+	}
+
+
 }

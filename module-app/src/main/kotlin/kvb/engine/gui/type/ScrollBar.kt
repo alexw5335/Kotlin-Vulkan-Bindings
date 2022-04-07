@@ -22,6 +22,9 @@ class ScrollBar(val orientation: Orientation, val scrollable: Scrollable) : Base
 
 	init {
 		childrenAreActive = false
+
+		addHandler(::onDragUpdate)
+		addHandler(::onDragStart)
 	}
 
 
@@ -36,8 +39,8 @@ class ScrollBar(val orientation: Orientation, val scrollable: Scrollable) : Base
 
 	override fun align() {
 		val lengthRatio = when(orientation) {
-			HOrientation -> scrollable.scrollableWidthRatio
-			VOrientation -> scrollable.scrollableHeightRatio
+			Horizontal -> scrollable.scrollableWidthRatio
+			Vertical -> scrollable.scrollableHeightRatio
 		}
 
 		key.length = lengthRatio * length
@@ -73,17 +76,6 @@ class ScrollBar(val orientation: Orientation, val scrollable: Scrollable) : Base
 
 	private fun onDragUpdate(event: DragUpdateEvent) {
 		ratio = (transformUpAbsolute(event) - dragOffset) / (length - key.length)
-	}
-
-
-
-	override fun eventAction(event: BaseEvent) {
-		super.eventAction(event)
-
-		when(event) {
-			is DragStartEvent -> onDragStart(event)
-			is DragUpdateEvent -> onDragUpdate(event)
-		}
 	}
 
 

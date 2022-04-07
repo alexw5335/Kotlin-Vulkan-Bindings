@@ -2,16 +2,13 @@ package kvb.engine.gui.type
 
 import kvb.engine.gui.layout.*
 
-class Box(val orientation: Orientation) : Pane(), Oriented by orientation, Aligned {
+class Box(val orientation: Orientation) : Pane(), Oriented by orientation {
 
 
 	var spacing = 0F
 		set(value) { field = value; shouldAlign = true }
 
-	override var hAlignment = Alignment.CENTRE
-		set(value) { field = value; shouldAlign = true }
-
-	override var vAlignment = Alignment.CENTRE
+	var alignment = DualAlignment.CENTRE
 		set(value) { field = value; shouldAlign = true }
 
 	var pack = false
@@ -42,7 +39,7 @@ class Box(val orientation: Orientation) : Pane(), Oriented by orientation, Align
 			length2 = externalChildren.maxOf { it.length2 } + startPadding2 + endPadding2
 		}
 
-		var pos = when(alignment) {
+		var pos = when(alignment.secondary) {
 			Alignment.START  -> startPadding
 			Alignment.END    -> length - childrenLength() - endPadding
 			Alignment.CENTRE -> (length - childrenLength()) / 2
@@ -50,7 +47,7 @@ class Box(val orientation: Orientation) : Pane(), Oriented by orientation, Align
 
 		for(child in externalChildren) {
 			child.pos = pos
-			align2(child)
+			align2(alignment.secondary, child)
 			pos += child.length + spacing
 		}
 	}

@@ -1,12 +1,11 @@
 package kvb.engine.gui.type
 
 import kvb.engine.gui.*
-import kvb.engine.gui.layout.HOrientation
+import kvb.engine.gui.layout.Horizontal
 import kvb.engine.gui.layout.Orientation
 import kvb.engine.gui.layout.Oriented
-import kvb.engine.gui.layout.VOrientation
 
-class Slider(val orientation: Orientation = HOrientation) : Base(), Oriented by orientation {
+class Slider(val orientation: Orientation = Horizontal) : Base(), Oriented by orientation {
 
 
 	var ratio = 0F
@@ -36,9 +35,7 @@ class Slider(val orientation: Orientation = HOrientation) : Base(), Oriented by 
 
 		childrenAreActive = false
 
-		addHandler<DragUpdateEvent> {
-			ratio = (transformUpAbsolute(it) - key.length / 2) / (length - key.length)
-		}
+		addHandler(::onDragUpdate)
 	}
 
 
@@ -46,6 +43,12 @@ class Slider(val orientation: Orientation = HOrientation) : Base(), Oriented by 
 	override val draggable = true
 
 	override val dragThreshold = 0F
+
+
+
+	private fun onDragUpdate(event: DragUpdateEvent) {
+		ratio = (transformUpAbsolute(event) - key.length / 2) / (length - key.length)
+	}
 
 
 

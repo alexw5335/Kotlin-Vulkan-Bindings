@@ -20,20 +20,22 @@ interface Oriented {
 	var Base.endPadding: Float
 	var Base.endPadding2: Float
 
-	var Aligned.alignment: Alignment
-	var Aligned.alignment2: Alignment
-
 	fun Base.align(alignment: Alignment, child: Base)
 	fun Base.align2(alignment: Alignment, child: Base)
-
-	fun<T> T.align(child: Base) where T : Base, T : Aligned = align(alignment, child)
-	fun<T> T.align2(child: Base) where T : Base, T : Aligned = align2(alignment2, child)
 
 	fun Base.transformUpAbsolute(pos: Float): Float
 	fun Base.transformUpAbsolute2(pos: Float): Float
 
-	fun Base.transformUpAbsolute(event: MouseEvent): Float
-	fun Base.transformUpAbsolute2(event: MouseEvent): Float
+	fun Base.transformUpAbsolute(event: MouseEvent) = transformUpAbsolute(event.primaryPos)
+	fun Base.transformUpAbsolute2(event: MouseEvent) = transformUpAbsolute2(event.secondaryPos)
+
+	val DualAlignment.primary: Alignment
+	val DualAlignment.secondary: Alignment
+	fun DualAlignment.withPrimary(primary: Alignment): DualAlignment
+	fun DualAlignment.withSecondary(secondary: Alignment): DualAlignment
+
+	val MouseEvent.primaryPos: Float
+	val MouseEvent.secondaryPos: Float
 
 
 }

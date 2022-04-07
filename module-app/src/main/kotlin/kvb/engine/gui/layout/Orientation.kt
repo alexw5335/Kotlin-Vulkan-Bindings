@@ -1,6 +1,6 @@
 package kvb.engine.gui.layout
 
 /**
- * Sealed marker interface for [HOrientation] and [VOrientation].
+ * Sealed marker interface for [Horizontal] and [Vertical].
  */
 sealed interface Orientation : Oriented

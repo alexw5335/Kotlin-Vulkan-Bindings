@@ -8,15 +8,15 @@ import kvb.engine.gui.type.*
 @DslMarker
 annotation class BaseMarker
 
-fun vbox(block: Box.() -> Unit) = Box(VOrientation).also(block)
+fun vbox(block: Box.() -> Unit) = Box(Vertical).also(block)
 
-fun hbox(block: Box.() -> Unit) = Box(HOrientation).also(block)
+fun hbox(block: Box.() -> Unit) = Box(Horizontal).also(block)
 
 fun anchorPane(block: AnchorPane.() -> Unit) = AnchorPane().also(block)
 
-fun Pane.vbox(block: Box.() -> Unit) = addChild(Box(VOrientation), block)
+fun Pane.vbox(block: Box.() -> Unit) = addChild(Box(Vertical), block)
 
-fun Pane.hbox(block: Box.() -> Unit) = addChild(Box(HOrientation), block)
+fun Pane.hbox(block: Box.() -> Unit) = addChild(Box(Horizontal), block)
 
 fun Pane.anchorPane(block: AnchorPane.() -> Unit) = addChild(AnchorPane(), block)
 

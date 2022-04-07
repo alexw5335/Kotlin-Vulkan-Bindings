@@ -66,6 +66,8 @@ open class Base {
 
 	protected var shouldAlign = true
 
+	protected var aligning = false
+
 	val handlers = ArrayList<Pair<Class<*>, (Any) -> Unit>>()
 
 
@@ -172,7 +174,6 @@ open class Base {
 	open val supplyFinalColour get() = model.colour
 
 	open val supplyFinalBorderColour get() = model.borderColour
-
 
 
 	/*
@@ -287,8 +288,13 @@ open class Base {
 
 
 	fun alignCycle() {
-		if(shouldAlign) align()
-		shouldAlign = false
+		if(shouldAlign) {
+			aligning = true
+			align()
+			aligning = false
+			shouldAlign = false
+		}
+
 		for(c in children) c.alignCycle()
 	}
 

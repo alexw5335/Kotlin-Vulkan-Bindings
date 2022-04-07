@@ -7,7 +7,6 @@ import kvb.engine.gui.model.ColourRectModel
 import kvb.engine.gui.type.CheckBox
 import kvb.engine.gui.type.ScrollBar
 import kvb.engine.gui.type.Slider
-import kvb.vkwrapper.shader.ShaderCreation
 import kvb.vulkan.*
 
 
@@ -41,9 +40,9 @@ fun run() = engine {
 
 class ScrollPane : Base(), Scrollable {
 
-	var hScrollBar = addChildInternal(ScrollBar(HOrientation, this))
+	var hScrollBar = addChildInternal(ScrollBar(Horizontal, this))
 
-	val vScrollBar = addChildInternal(ScrollBar(VOrientation, this))
+	val vScrollBar = addChildInternal(ScrollBar(Vertical, this))
 
 	var contentWidth = 400F
 
@@ -146,7 +145,7 @@ fun root() = hbox {
 
 		}*/
 
-		addChild(Slider(HOrientation)) { }
+		addChild(Slider(Horizontal)) { }
 
 		addChild(CheckBox()) { }
 

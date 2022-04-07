@@ -8,7 +8,10 @@ class ToggleButton : Button() {
 
 
 	var toggled = false
-		set(value) { field = value; createEvent { ToggleEvent(it, value) } }
+		set(value) {
+			field = value
+			createEvent { ToggleEvent(it, value) }
+		}
 
 
 
