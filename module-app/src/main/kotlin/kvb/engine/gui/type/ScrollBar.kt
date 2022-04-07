@@ -10,17 +10,12 @@ class ScrollBar(val orientation: Orientation, val scrollable: Scrollable) : Base
 		set(value) {
 			if(field == value.coerceIn(0F, 1F)) return
 			field = value.coerceIn(0F, 1F)
+			shouldAlign = true
 			scrollable.onScroll(orientation, field)
 		}
 
-	private val track = addChildInternal(RectBase()) {
-		model.colour = BaseDefaults.controlColour
-		model.borderColour = BaseDefaults.controlBorderColour
-		border = BaseDefaults.controlBorder
-	}
-
 	private val key = addChildInternal(RectBase()) {
-		model.colour = BaseDefaults.controlBorderColour
+		model.colour = Colour.RED
 	}
 
 
@@ -35,12 +30,11 @@ class ScrollBar(val orientation: Orientation, val scrollable: Scrollable) : Base
 
 	override val dragThreshold = 0F
 
+	var dragOffset = 0F
+
 
 
 	override fun align() {
-		track.width = width
-		track.height = height
-
 		val lengthRatio = when(orientation) {
 			HOrientation -> scrollable.scrollableWidthRatio
 			VOrientation -> scrollable.scrollableHeightRatio
@@ -55,20 +49,41 @@ class ScrollBar(val orientation: Orientation, val scrollable: Scrollable) : Base
 
 
 
-	override fun eventAction(event: BaseEvent) {
-		super.eventAction(event)
+	private fun onDragStart(event: DragStartEvent) {
+		val cursor = transformUpAbsolute(event)
+		val offset = cursor - key.pos
 
-		when(event) {
-			is DragStartEvent -> {
-				val pos = transformUpAbsolute(event.mouseX)
-			}
+		if(offset in 0F..key.length) {
+			dragOffset = offset
+			return
+		}
+
+		val middle = key.length / 2F
+
+		ratio = (cursor - middle) / (length - key.length)
+
+		dragOffset = when {
+			cursor < middle              -> cursor
+			cursor > length - middle -> key.length - length + cursor
+			else                         -> middle
 		}
 	}
 
 
 
-	private fun onScroll(event: DragUpdateEvent) {
+	private fun onDragUpdate(event: DragUpdateEvent) {
+		ratio = (transformUpAbsolute(event) - dragOffset) / (length - key.length)
+	}
 
+
+
+	override fun eventAction(event: BaseEvent) {
+		super.eventAction(event)
+
+		when(event) {
+			is DragStartEvent -> onDragStart(event)
+			is DragUpdateEvent -> onDragUpdate(event)
+		}
 	}
 
 

@@ -7,6 +7,7 @@ import kvb.engine.gui.layout.Padding
 import kvb.engine.gui.model.BaseModel
 import kvb.window.input.InputButton
 
+@BaseMarker
 open class Base {
 
 

@@ -132,7 +132,7 @@ class Gui(root: Base) {
 	fun onButtonInput(button: InputButton, action: InputAction, mouseX: Float, mouseY: Float) {
 		focussed?.createEvent { ButtonInputEvent(it, mouseX, mouseY, button, action) }
 
-		hovered?.let {
+		pressed?.let {
 			if(dragging) return
 
 			if(it.draggable && it.dragPredicate()) {

@@ -5,6 +5,9 @@ import kvb.engine.gui.type.*
 
 
 
+@DslMarker
+annotation class BaseMarker
+
 fun vbox(block: Box.() -> Unit) = Box(VOrientation).also(block)
 
 fun hbox(block: Box.() -> Unit) = Box(HOrientation).also(block)
