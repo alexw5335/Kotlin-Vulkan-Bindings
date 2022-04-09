@@ -40,7 +40,6 @@ object EngineBuilder {
 			it.windowingEnabled = true
 			it.deviceFeatures.geometryShader = VK_TRUE
 			it.window = window as WinApiWindow
-			it.sampleCount = SampleCountFlags._1
 		}
 
 		VkContext.surfaceSystem.backgroundColour(0.1F, 0.7F, 0.3F, 1.0F)

@@ -7,6 +7,7 @@ import kvb.engine.gui.model.ColourRectModel
 import kvb.engine.gui.type.CheckBox
 import kvb.engine.gui.type.ScrollBar
 import kvb.engine.gui.type.Slider
+import kvb.vkwrapper.shader.ShaderCreation
 import kvb.vulkan.*
 
 
@@ -33,7 +34,25 @@ fun run() = engine {
 
 	windowWidth = 900
 	windowHeight = 600
-	initialRoot = ::root
+	initialRoot = ::test
+}
+
+
+fun test() = hbox {
+	alignment = DualAlignment.TOP_LEFT
+	button {
+		width = 200F
+		height = 200F
+		padding = Padding(10F)
+		border = Padding(5F)
+		alignment = DualAlignment.TOP_LEFT
+
+		with(textBase) {
+			text = "CLICK ME"
+			wrapWidth = 1000000F
+			scale = 5
+		}
+	}
 }
 
 
@@ -105,7 +124,7 @@ fun root() = hbox {
 	}
 
 	textBox {
-		this@textBox.hAlignment = Alignment.CENTRE
+		alignment = DualAlignment.CENTRE_CENTRE
 		textBase.alignment = TextAlignment.CENTRE
 	}
 

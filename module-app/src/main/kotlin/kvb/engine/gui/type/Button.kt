@@ -2,18 +2,14 @@ package kvb.engine.gui.type
 
 import kvb.engine.gui.Base
 import kvb.engine.gui.BaseDefaults
-import kvb.engine.gui.Colour
-import kvb.engine.gui.GuiGraphics
-import kvb.engine.gui.layout.Alignment
 import kvb.engine.gui.layout.DualAlignment
-import kvb.engine.gui.model.ColourRectModel
 
 open class Button : Base() {
 
 
 	val textBase = addChildInternal(TextBase()) { active = false }
 
-	var alignment = DualAlignment.CENTRE
+	var alignment = DualAlignment.CENTRE_CENTRE
 		set(value) { field = value; shouldAlign = true }
 
 
@@ -27,7 +23,8 @@ open class Button : Base() {
 
 
 	override fun align() {
-		textBase.wrapWidth = interiorWidth
+		//textBase.wrapWidth = interiorWidth
+		textBase.wrapWidth = 1000F
 		align(alignment, textBase)
 	}
 

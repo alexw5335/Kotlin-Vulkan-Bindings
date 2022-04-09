@@ -12,14 +12,14 @@ layout(location = 0) out vec4 outColour;
 
 
 void main() {
-	int index = int(texCoords.y) * 7 + int(texCoords.x);
+	uint index = int(texCoords.y) * 7 + int(texCoords.x);
 	uint value = texture[index / 32];
 	uint mask = 1 << (index % 32);
 
 	vec3 colour = vec3(
-     	packedColour & 0xFF,
-     	(packedColour >> 8) & 0xFF,
-     	(packedColour >> 16) & 0xFF
+     	packedColour & 0xFFu,
+     	(packedColour >> 8) & 0xFFu,
+     	(packedColour >> 16) & 0xFFu
     ) / 256;
 
 	outColour = vec4(colour, value & mask);

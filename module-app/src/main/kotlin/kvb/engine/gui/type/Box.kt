@@ -8,7 +8,7 @@ class Box(val orientation: Orientation) : Pane(), Oriented by orientation {
 	var spacing = 0F
 		set(value) { field = value; shouldAlign = true }
 
-	var alignment = DualAlignment.CENTRE
+	var alignment = DualAlignment.CENTRE_CENTRE
 		set(value) { field = value; shouldAlign = true }
 
 	var pack = false

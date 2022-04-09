@@ -35,7 +35,9 @@ enum class MessageType(val value: Int) {
 
 	CHAR(0x0102),
 
-	HOTKEY(0x0312);
+	HOTKEY(0x0312),
+
+	NC_MOUSE_MOVE(0x00A0);
 
 
 

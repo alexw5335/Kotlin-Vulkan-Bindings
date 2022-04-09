@@ -141,6 +141,7 @@ object WinApi : WindowManager {
 		dispatchMessage(message.address)
 
 		when(MessageType.map[message.message] ?: return) {
+			MessageType.NC_MOUSE_MOVE,
 			MessageType.MOUSE_MOVE   -> message.handleMouseMove()
 			MessageType.MOUSE_WHEEL  -> message.handleMouseWheel()
 			MessageType.KEY_UP       -> message.handleKeyUp()

@@ -13,7 +13,7 @@ enum class DualAlignment(val hAlignment: Alignment, val vAlignment: Alignment) {
 
 	CENTRE_LEFT(Alignment.START, Alignment.CENTRE),
 
-	CENTRE(Alignment.CENTRE, Alignment.CENTRE),
+	CENTRE_CENTRE(Alignment.CENTRE, Alignment.CENTRE),
 
 	CENTRE_RIGHT(Alignment.END, Alignment.CENTRE),
 
