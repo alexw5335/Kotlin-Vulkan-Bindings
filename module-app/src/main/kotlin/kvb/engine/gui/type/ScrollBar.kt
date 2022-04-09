@@ -43,6 +43,15 @@ class ScrollBar(val orientation: Orientation, val scrollable: Scrollable) : Base
 			Vertical -> scrollable.scrollableHeightRatio
 		}
 
+		if(lengthRatio !in 0F..1F) {
+			key.length = 0F
+			key.length2 = 0F
+			key.pos = 0F
+			key.pos2 = 0F
+			
+			return
+		}
+
 		key.length = lengthRatio * length
 		key.length2 = length2
 
