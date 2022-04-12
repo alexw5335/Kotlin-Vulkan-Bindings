@@ -3,6 +3,7 @@ package kvb.engine.gui
 import kvb.core.memory.LinearAllocator
 import kvb.core.memory.Unsafe
 import kvb.core.memory.direct.DirectByteBuffer
+import kvb.engine.Engine
 import kvb.engine.gui.font.Paragraph
 import kvb.engine.gui.layout.Padding
 import kvb.engine.vulkan.VkContext
@@ -194,26 +195,26 @@ object GuiGraphics {
 
 
 	val singleColourRectPipeline = pipeline {
-		renderPass(VkContext.surfaceSystem.renderPass)
+		renderPass(Engine.surfaceSystem.renderPass)
 		pushConstant(ShaderStageFlags.VERTEX, 0, 36)
 		shaders(shaderDirectory["rect"])
 		triangleStrip()
 		noBlendAttachment()
 		dynamicViewportAndScissor()
-		samples(VkContext.surfaceSystem.sampleCount)
+		samples(Engine.surfaceSystem.sampleCount)
 	}
 
 
 
 	val binaryFontPipeline = pipeline {
 		vertexBinding { vec2(); uvec2() }
-		renderPass(VkContext.surfaceSystem.renderPass)
+		renderPass(Engine.surfaceSystem.renderPass)
 		pushConstant(ShaderStageFlags.VERTEX, 0, 40)
 		shaders(shaderDirectory["font"])
 		pointList()
 		simpleBlendAttachment()
 		dynamicViewportAndScissor()
-		samples(VkContext.surfaceSystem.sampleCount)
+		samples(Engine.surfaceSystem.sampleCount)
 	}
 
 

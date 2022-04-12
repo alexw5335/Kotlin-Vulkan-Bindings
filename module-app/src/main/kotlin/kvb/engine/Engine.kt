@@ -17,7 +17,9 @@ object Engine {
 
 	val window = EngineBuilder.window
 
-	val gui = Gui(EngineBuilder.initialRoot())
+	val surfaceSystem = EngineBuilder.surfaceSystem
+
+	val gui = Gui(EngineBuilder.root)
 
 	var targetFps = 60
 
@@ -100,13 +102,13 @@ object Engine {
 	private fun renderGui() {
 		GuiGraphics.resetAllocator()
 
-		VkContext.surfaceSystem.record {
+		surfaceSystem.record {
 			GuiGraphics.commandBuffer = it
 			GuiGraphics.preRender(window)
 			gui.render()
 		}
 
-		VkContext.surfaceSystem.present()
+		surfaceSystem.present()
 	}
 
 

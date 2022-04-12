@@ -2,6 +2,9 @@ package kvb.engine.gui
 
 import kvb.engine.gui.layout.*
 import kvb.engine.gui.type.*
+import kvb.engine.gui.type.pane.AnchorPane
+import kvb.engine.gui.type.pane.Box
+import kvb.engine.gui.type.pane.Pane
 
 
 

@@ -95,4 +95,12 @@ class WinApiWindow(val hwnd: Long) : Window {
 	}
 
 
+
+	override fun hashCode() = hwnd.hashCode()
+
+	override fun equals(other: Any?) = other is WinApiWindow && other.hwnd == hwnd
+
+	override fun toString() = "WinApiWindow(hwnd=$hwnd)"
+
+
 }

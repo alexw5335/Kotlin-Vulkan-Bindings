@@ -307,6 +307,21 @@ open class Base {
 
 
 
+	fun alignmentRequired(): Boolean {
+		if(shouldAlign) return true
+		return children.any { it.alignmentRequired() }
+	}
+
+
+
+	fun alignUntilConstant() {
+		alignCycle()
+
+		if(alignmentRequired()) alignUntilConstant()
+	}
+
+
+
 	/*
 	Update
 	 */

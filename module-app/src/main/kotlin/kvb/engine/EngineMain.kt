@@ -32,9 +32,7 @@ fun run() = engine {
 		sampleCount = SampleCountFlags._4
 	}
 
-	windowWidth = 900
-	windowHeight = 600
-	initialRoot = ::test
+	root = test()
 }
 
 

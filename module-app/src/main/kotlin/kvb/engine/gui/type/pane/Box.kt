@@ -1,4 +1,4 @@
-package kvb.engine.gui.type
+package kvb.engine.gui.type.pane
 
 import kvb.engine.gui.layout.*
 

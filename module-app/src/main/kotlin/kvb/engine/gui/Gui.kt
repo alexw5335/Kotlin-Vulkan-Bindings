@@ -1,7 +1,6 @@
 package kvb.engine.gui
 
 import kvb.engine.Engine
-import kvb.engine.NullBase
 import kvb.window.Window
 import kvb.window.input.InputAction
 import kvb.window.input.InputButton

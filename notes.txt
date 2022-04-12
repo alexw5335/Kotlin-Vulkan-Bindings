@@ -274,3 +274,21 @@ Decoupling of graphics from components
   which is then used to separately render the base.
 	- More advanced functionality must be provided in subclasses of BaseModel.
 	- Base graphics should be limited.
+
+
+
+Engine
+- The window is not created immediately.
+- The GUI root is created first, and then the window according to the GUI's size.
+- The Vulkan context is created first, not including the surface.
+- The surface system is directly coupled to the window.
+	- One surface system for each window.
+	- Although, only one window will be supported.
+- The surface is used when creating the swapchain
+	- The swapchain is used when presenting and when creating images.
+	- The render pass does not depend on the surface.
+		- However, it may depend on the surface's format.
+		- One render pass per surface system (only one surface system anyway).
+- Separate render passes means that graphics pipelines must be duplicated for every window.
+	- Simpler just to have a single surface system and render pass.
+- Keep everything as simple as possible. May even be worth combining VkContextBuilder and EngineBuilder.

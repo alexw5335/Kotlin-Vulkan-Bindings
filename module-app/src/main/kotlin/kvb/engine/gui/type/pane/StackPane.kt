@@ -1,6 +1,4 @@
-package kvb.engine.gui.type
-
-import kvb.engine.gui.type.Pane
+package kvb.engine.gui.type.pane
 
 class StackPane : Pane() {
 
