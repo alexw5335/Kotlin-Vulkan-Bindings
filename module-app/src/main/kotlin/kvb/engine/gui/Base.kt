@@ -277,6 +277,13 @@ open class Base {
 
 
 
+	@Suppress("unchecked_cast")
+	inline fun<reified T : BaseEvent> on(noinline handler: (T) -> Unit) {
+		handlers.add(T::class.java to handler as (Any) -> Unit)
+	}
+
+
+
 	/*
 	Alignment
 	 */

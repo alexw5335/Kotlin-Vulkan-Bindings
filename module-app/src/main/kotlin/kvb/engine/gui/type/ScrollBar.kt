@@ -3,7 +3,7 @@ package kvb.engine.gui.type
 import kvb.engine.gui.*
 import kvb.engine.gui.layout.*
 
-class ScrollBar(val orientation: Orientation, val scrollable: Scrollable) : Base(), Oriented by orientation {
+open class ScrollBar(val orientation: Orientation, val scrollable: Scrollable) : Base(), Oriented by orientation {
 
 
 	var ratio = 0F

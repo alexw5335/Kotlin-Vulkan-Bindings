@@ -17,7 +17,6 @@ class ParagraphBuilder(
 		val chars = ArrayList<BinaryChar>()
 		var width = 0F
 		var advanceWidth = 0F
-		var height = 0F
 	}
 
 
@@ -76,6 +75,22 @@ class ParagraphBuilder(
 
 
 
+	private fun TempLine.height(): Float {
+		if(chars.isEmpty()) return 0F
+
+		var topExtent = 0F
+		var bottomExtent = 0F
+
+		for(c in chars) {
+			if(c.yOffset > topExtent) topExtent = c.yOffset.toFloat()
+			if(c.yExtent > bottomExtent) bottomExtent = c.yExtent.toFloat()
+		}
+
+		return bottomExtent - topExtent
+	}
+
+
+
 	fun build(): Paragraph {
 		for(char in text) {
 			val binaryChar = font[char]
@@ -98,7 +113,7 @@ class ParagraphBuilder(
 
 		val width = lines.maxOf { it.width }
 
-		val height = lines.size * font.size + (lines.size - 1) * spacing
+		val height = if(lines.size == 1) lines[0].height() else lines.size * font.size + (lines.size - 1) * spacing
 
 		var y = 0F
 
@@ -109,7 +124,7 @@ class ParagraphBuilder(
 				TextAlignment.RIGHT  -> width - it.width
 			}
 
-			val line = Line(it.index, it.charIndex, x, y, it.width, it.height, it.chars)
+			val line = Line(it.index, it.charIndex, x, y, it.width, it.chars)
 			y += font.size + spacing
 			line
 		}

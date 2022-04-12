@@ -11,6 +11,10 @@ class BinaryChar(
 ) {
 
 
+	val yExtent = yOffset + height
+
+
+
 	fun scaled(scale: Int) = BinaryChar(
 		char,
 		texture,

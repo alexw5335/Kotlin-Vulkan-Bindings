@@ -38,19 +38,25 @@ fun run() = engine {
 }
 
 
+
 fun test() = hbox {
-	alignment = DualAlignment.TOP_LEFT
+
+	alignment = DualAlignment.CENTRE_CENTRE
 	button {
 		width = 200F
-		height = 200F
+		height = 60F
 		padding = Padding(10F)
 		border = Padding(5F)
-		alignment = DualAlignment.TOP_LEFT
+		alignment = DualAlignment.CENTRE_CENTRE
 
 		with(textBase) {
 			text = "CLICK ME"
 			wrapWidth = 1000000F
 			scale = 5
+
+			on<ClickEvent> {
+				println("Clicked")
+			}
 		}
 	}
 }
@@ -58,6 +64,7 @@ fun test() = hbox {
 
 
 class ScrollPane : Base(), Scrollable {
+
 
 	var hScrollBar = addChildInternal(ScrollBar(Horizontal, this))
 

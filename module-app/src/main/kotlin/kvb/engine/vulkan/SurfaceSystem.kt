@@ -144,9 +144,15 @@ class SurfaceSystem(
 		prevSwapchain
 	)
 
+
+
 	private fun createImages() = swapchain.getImages()
 
+
+
 	private fun createImageViews() = images.map(device::createImageView)
+
+
 
 	private fun createFramebuffers() = imageViews.map {
 		if(sampleCount.isMulti)
@@ -175,8 +181,8 @@ class SurfaceSystem(
 	private fun onResize() {
 		updateDimensions()
 		if(isMinimised) return
-		recreateSwapchain()
 		updateMultisample()
+		recreateSwapchain()
 	}
 
 
