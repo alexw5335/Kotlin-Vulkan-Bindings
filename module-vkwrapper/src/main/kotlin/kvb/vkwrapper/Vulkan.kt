@@ -2,7 +2,7 @@ package kvb.vkwrapper
 
 import kvb.core.memory.*
 import kvb.vkwrapper.handle.Instance
-import kvb.vkwrapper.persistent.LayerPropertiesP
+import kvb.vkwrapper.persistent.*
 import kvb.vulkan.*
 
 /**
@@ -64,7 +64,7 @@ object Vulkan {
 		Commands.enumerateInstanceLayerProperties(count, null).check()
 		val layers = LayerProperties(count.value) { }
 		Commands.enumerateInstanceLayerProperties(count, layers).check()
-		layers.map { LayerPropertiesP(it) }
+		layers.map { it.layerName.decodeUtf8NT() }
 	}
 
 
@@ -77,6 +77,7 @@ object Vulkan {
 		Commands.enumerateInstanceExtensionProperties(null, count, null).check()
 		val extensions = ExtensionProperties(count.value) {  }
 		Commands.enumerateInstanceExtensionProperties(null, count, extensions).check()
+		extensions.map { it.extensionName.decodeUtf8NT() }
 	}
 
 

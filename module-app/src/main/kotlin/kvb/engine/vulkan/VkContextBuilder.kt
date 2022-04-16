@@ -4,6 +4,7 @@ import kvb.core.Core
 import kvb.core.memory.Unsafe
 import kvb.vkwrapper.DebugUtils
 import kvb.vkwrapper.Vulkan
+import kvb.vkwrapper.exception.VkException
 import kvb.vkwrapper.handle.*
 import kvb.vkwrapper.memory.VkMemoryManager
 import kvb.vulkan.*
@@ -52,6 +53,10 @@ object VkContextBuilder {
 	val multisampled get() = sampleCount != SampleCountFlags._1
 
 	var stagingBufferSize = 1L shl 20
+
+	var dynamicRenderingEnabled = false
+
+	var geometryShadingEnabled = false
 
 
 
@@ -105,6 +110,18 @@ object VkContextBuilder {
 			}
 		}
 
+		if(geometryShadingEnabled) {
+			deviceFeatures.geometryShader = VK_TRUE
+		}
+
+		for(e in instanceExtensions)
+			if(!Vulkan.extensions.contains(e))
+				throw VkException("Instance extension $e not supported.")
+
+		for(l in instanceLayers)
+			if(!Vulkan.layers.contains(l))
+				throw VkException("Instance layer $l not supported.")
+
 		instance = Vulkan.createInstance(
 			appName,
 			appVersion,
@@ -131,6 +148,10 @@ object VkContextBuilder {
 		val queueFamily = physicalDevice.queueFamilies.first {
 			it.supportsGraphics && it.supportsCompute
 		}
+
+		for(e in deviceExtensions)
+			if(!physicalDevice.extensions.contains(e))
+				throw VkException("Device extension $e not supported.")
 
 		device = physicalDevice.createDevice(queueFamily, deviceExtensions, deviceFeatures)
 

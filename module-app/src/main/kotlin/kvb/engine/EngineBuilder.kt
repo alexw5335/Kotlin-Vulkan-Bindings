@@ -38,6 +38,7 @@ object EngineBuilder {
 			it.debugEnabled = true
 			it.windowingEnabled = true
 			it.deviceFeatures.geometryShader = VK_TRUE
+			it.deviceExtensions.add("VK_KHR_dynamic_rendering")
 		}
 
 		VkContextBuilder.build()

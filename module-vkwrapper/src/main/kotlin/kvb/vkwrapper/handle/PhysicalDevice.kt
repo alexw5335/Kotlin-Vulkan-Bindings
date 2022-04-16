@@ -36,7 +36,7 @@ class PhysicalDevice(address: Long, val instance: Instance) : PhysicalDeviceH(ad
 		commands.enumerateDeviceExtensionProperties(self, null, count, null).check()
 		val extensions = ExtensionProperties(count.value) {  }
 		commands.enumerateDeviceExtensionProperties(self, null, count, extensions).check()
-		extensions.map { ExtensionPropertiesP(it) }
+		extensions.map { it.extensionName.decodeUtf8NT() }
 	}
 
 
