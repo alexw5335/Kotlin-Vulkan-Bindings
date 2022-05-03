@@ -14,11 +14,12 @@ private fun genVulkan() {
 		"kvb.vulkan"
 	)
 
-	generator.genCommands()
-	generator.genCommandsC()
-	generator.genConstants()
-	generator.genProviders()
-	generator.genUtils()
+	//generator.genCommands()
+	//generator.genCommandsC()
+	//generator.genConstants()
+	//generator.genProviders()
+	//generator.genUtils()
+	generator.genAssembly()
 }
 
 

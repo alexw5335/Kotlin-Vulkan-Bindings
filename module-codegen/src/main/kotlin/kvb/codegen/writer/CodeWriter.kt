@@ -1,9 +1,20 @@
 package kvb.codegen.writer
 
 import java.io.Writer
+import java.nio.file.Files
+import java.nio.file.Path
+import kotlin.io.path.div
 
 @Suppress("Unused")
 open class CodeWriter(private val writer: Writer) : AutoCloseable by writer {
+
+
+	companion object {
+		fun write(directory: Path, fileName: String, block: CodeWriter.() -> Unit) {
+			CodeWriter(Files.newBufferedWriter(directory / fileName)).use(block)
+		}
+	}
+
 
 
 	var atNewline = false
@@ -102,6 +113,13 @@ open class CodeWriter(private val writer: Writer) : AutoCloseable by writer {
 		indent++
 		block()
 		indent--
+	}
+
+	fun indentedDeclaration(signature: String, block: () -> Unit) {
+		declaration {
+			writeln(signature)
+			indented(block)
+		}
 	}
 
 	fun braced(block: () -> Unit) {

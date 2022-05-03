@@ -130,7 +130,7 @@ class VulkanScraper(private val registry: ParsedRegistry) {
 
 	private val TypeElement.shouldGen get() = when(this) {
 		is BitmaskElement -> enumName != null
-		is EnumElement    -> name != "VkStructureType"
+		is EnumElement    -> true//name != "VkStructureType"
 		is StructElement  -> true
 		is HandleElement  -> true
 		else              -> false

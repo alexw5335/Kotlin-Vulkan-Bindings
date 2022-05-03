@@ -5,6 +5,7 @@ import kvb.codegen.writer.*
 import kvb.core.memory.MemStack
 import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.io.path.div
 
 class VulkanGenerator(
 	private val registry    : ScrapedRegistry,
@@ -1011,6 +1012,168 @@ class VulkanGenerator(
 		}
 	}
 
+
+
+	/*
+	Assembly
+	 */
+
+
+
+	fun genAssembly() = AsmWriter.write(directory, "vulkan") {
+		autogenComment()
+
+		declaration {
+			writeln("bits 64")
+			writeln("default rel")
+		}
+
+		group(spacing = 0) {
+			for(type in registry.types)
+				if(type is EnumType && type.shouldGen)
+					for(e in type.entries)
+						if(e.shouldGen)
+							declaration("%define ${e.name} ${e.value}")
+		}
+
+		/*
+				list.add("    // provided by ${registry.getProvider(name).name}")
+
+		if(isUnion)
+			list.add("    union $name {")
+		else
+			list.add("    struct $name {")
+
+		val maxLength = members.maxOfOrNull { it.docType.length + 2 } ?: 0
+
+		for(m in members) {
+			val type = m.docType
+			var string = "        ${m.docType}"
+			repeat(maxLength - type.length) { string += ' ' }
+			string += m.docName
+			list.add(string)
+		}
+
+		list.add("    }")
+
+		if(pNext.isNotEmpty()) {
+			list.add("")
+			list.add("    Valid pNext types:")
+			for(v in pNext) {
+				list.add("        - ${v.name}")
+			}
+		}
+		 */
+
+		group(spacing = 1) {
+			for(type in registry.types) {
+				if(type !is StructType || !type.shouldGen || type.isUnion) continue
+
+				val layout = type.layout64
+
+				declaration {
+					writeln("struc ${type.name}")
+					indented {
+						for((i, m) in type.members.withIndex()) {
+							val nextOffset = if(i == type.members.size - 1) layout.size else layout.offsets[i + 1]
+							val size = nextOffset - layout.offsets[i]
+							writeln(".${m.name} resb $size  ; ${m.docType}")
+						}
+					}
+					writeln("endstruc")
+				}
+			}
+		}
+
+		indentedDeclaration("segment .data") {
+			for(c in registry.commands)
+				writeln("string_${c.name} db \"${c.name}\", 0")
+		}
+
+		indentedDeclaration("segment .bss") {
+			for(c in registry.commands)
+				writeln("${c.name} resb 8")
+		}
+
+		indentedDeclaration("segment .data") {
+			writeln("vulkanLibraryName db \"vulkan-1.dll\", 0")
+			writeln("error_couldNotLoadVulkan db \"Could not load the Vulkan dynamic library\", 0xd, 0xa, 0")
+		}
+
+		indentedDeclaration("segment .bss") {
+			writeln("vkInstance resb 8")
+			writeln("vkDevice resb 8")
+			writeln("vkHModule resb 8")
+		}
+
+		declaration("segment .text")
+
+		multilineDeclaration("""
+			load_vulkan:
+				push rbp
+				mov rbp, rsp
+				sub rsp, 32
+				
+				lea rcx, [vulkanLibraryName]
+				call LoadLibraryA
+				mov [vkHModule], rax
+				
+				cmp vkHModule, 0
+				jnz .continue
+				lea rcx, [error_couldNotLoadVulkan]
+				call printf
+				call ExitProcess
+			.continue:
+				mov rcx, [vkHModule]
+				lea rdx, [string_vkGetInstanceProcAddr]
+				call GetProcAddress
+				mov [vkGetInstanceProcAddr], rax
+				
+				mov rcx, 0
+				lea rdx, [string_vkCreateInstance]
+				call [vkGetInstanceProcAddr]
+				mov [vkCreateInstance], rax
+				
+				mov rcx, 0
+				lea rdx, [string_vkEnumerateInstanceVersion]
+				call [vkGetInstanceProcAddr]
+				mov [vkEnumerateInstanceVersion], rax
+				
+				mov rcx, 0
+				lea rdx, [string_vkEnumerateInstanceLayerProperties]
+				call [vkGetInstanceProcAddr]
+				mov [vkEnumerateInstanceLayerProperties], rax
+				
+				mov rcx, 0
+				lea rdx, [string_vkEnumerateInstanceExtensionProperties]
+				call [vkGetInstanceProcAddr]
+				mov [vkEnumerateInstanceExtensionProperties], rax
+				
+				leave
+				ret
+		""")
+
+		indentedDeclaration("load_instance:") {
+			writeln("push rbp")
+			writeln("mov rbp, rsp")
+			writeln("sub rsp, 32")
+			newline()
+
+			for(c in registry.commands) {
+				if(c.type != CommandType.INSTANCE) continue
+				if(c.name == "vkGetInstanceProcAddr") continue
+
+				writeln("mov rcx, [vkInstance]")
+				writeln("lea rdx, [string_${c.name}]")
+				writeln("call [vkGetInstanceProcAddr]")
+				writeln("mov [${c.name}], rax")
+				newline()
+			}
+
+			writeln("leave")
+			writeln("ret")
+		}
+	}
 
 
 }
