@@ -5,13 +5,14 @@
 - Undocumented, work in progress
 - 64-bit only
   - Currently Windows only
-- Vulkan API generator is complete, bindings can be found in [module-vulkan].
-  - Generator can be found in [module-codegen]
+- Vulkan API generator is complete, bindings can be found in [module-vulkan](module-vulkan).
+  - Generator can be found in [module-codegen](module-codegen)
 - Core module is mostly complete
 - All other modules are incomplete
-- [module-vkwrapper]: Thin wrapper around Vulkan objects
-- [module-window]: API for creating windows and handling window events
+- [module-vkwrapper](module-vkwrapper): Thin wrapper around Vulkan objects
+- [module-window](module-window): API for creating windows and handling window events
   - Only WinApi supported at the moment
-- [module-core]: Utils for loading native libraries and for manipulating native memory.
-- [module-codegen]: Code generation for Vulkan and Core modules 
-- [module-app], [module-engine], [module-font]: Testing modules for higher-level wrappers
+- [module-core](module-core): Utils for loading native libraries and for manipulating native memory.
+- [module-codegen](module-codegen): Code generation for Vulkan and Core modules 
+- [module-app](module-app), [module-engine](module-engine), [module-font](module-font): Testing modules for 
+  higher-level wrappers
